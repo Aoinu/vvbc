@@ -1,0 +1,15 @@
+{
+  "name": "org.vvbc.core",
+  "displayName": "Virtual Venue Baseball Components",
+  "version": "0.0.1",
+  "unity": "2022.3",
+  "description": "Modular open-source baseball components for virtual venues.",
+  "author": {
+    "name": "Aoinu",
+    "email": "aoinu607@gmail.com"
+  },
+  "license": "MIT",
+  "vpmDependencies": {
+    "com.vrchat.worlds": "3.10.5"
+  }
+}
