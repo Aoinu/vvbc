@@ -1,3 +1,9 @@
 {
-	"name": "VVBC.Editor"
+	"name": "VVBC.Editor",
+	"references": [
+		"VVBC.Runtime"
+	],
+	"includePlatforms": [
+		"Editor"
+	]
 }
