@@ -1,1 +1,15 @@
-{"dependencies": {}, "locked": {}}
+{
+  "dependencies": {},
+  "locked": {
+    "com.vrchat.worlds": {
+      "version": "3.10.5",
+      "dependencies": {
+        "com.vrchat.base": "3.10.5"
+      }
+    },
+    "com.vrchat.base": {
+      "version": "3.10.5",
+      "dependencies": {}
+    }
+  }
+}
