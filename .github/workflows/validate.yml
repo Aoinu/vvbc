@@ -1,0 +1,70 @@
+name: Validate VPM package
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-package:
+    name: Validate package structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check required files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_files=(
+            "Packages/org.vvbc.core/package.json"
+            "Packages/org.vvbc.core/README.md"
+            "Packages/org.vvbc.core/CHANGELOG.md"
+            "Packages/org.vvbc.core/LICENSE.md"
+            "Packages/org.vvbc.core/Runtime/VVBC.Runtime.asmdef"
+            "Packages/org.vvbc.core/Editor/VVBC.Editor.asmdef"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error file=$file::Required file is missing"
+              exit 1
+            fi
+          done
+
+      - name: Validate package metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          jq -e '
+            .name == "org.vvbc.core"
+            and (
+              .version
+              | type == "string"
+                and test("^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)(\\.(0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*))*))?(\\+([0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*))?$")
+            )
+            and .unity == "2022.3"
+            and .license == "MIT"
+            and .vpmDependencies["com.vrchat.worlds"] == "3.10.5"
+          ' Packages/org.vvbc.core/package.json > /dev/null
+
+      - name: Validate assembly definitions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          jq -e '.name == "VVBC.Runtime"' \
+            Packages/org.vvbc.core/Runtime/VVBC.Runtime.asmdef > /dev/null
+
+          jq -e '
+            .name == "VVBC.Editor"
+            and ((.references // []) | index("VVBC.Runtime") != null)
+            and ((.includePlatforms // []) | index("Editor") != null)
+          ' Packages/org.vvbc.core/Editor/VVBC.Editor.asmdef > /dev/null
