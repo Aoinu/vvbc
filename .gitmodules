@@ -1,0 +1,3 @@
+[submodule "Packages/org.vvbc.assets"]
+	path = Packages/org.vvbc.assets
+	url = https://github.com/Aoinu/vvbc-assets.git
