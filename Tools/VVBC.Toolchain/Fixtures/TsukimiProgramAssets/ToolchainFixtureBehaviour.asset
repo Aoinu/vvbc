@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Name: ToolchainFixtureBehaviour
+  m_EditorClassIdentifier: 
+  serializedUdonProgramAsset: {fileID: 11400000, guid: c64f5ab2405d87e45bdaa4918910f2be,
+    type: 2}
+  udonAssembly: ".data_start\n    position: %UnityEngineVector3, null\n    .export
+    position\n    velocity: %UnityEngineVector3, null\n    .export velocity\n   
+    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"VVBC.Toolchain.Fixtures.ToolchainFixtureBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Step__SystemSingle_UnityEngineVector3_p_0:
+    %SystemSingle, 0\n    __Step__SystemSingle_UnityEngineVector3_p_1: %UnityEngineVector3,
+    null\n    __Step__SystemSingle_UnityEngineVector3_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Step__SystemSingle_UnityEngineVector3_intnl_0: %UnityEngineVector3, null\n.data_end\n.code_start\n   
+    .export Step__SystemSingle_UnityEngineVector3\n    Step__SystemSingle_UnityEngineVector3:\n       
+    PUSH, velocity\n        PUSH, __Step__SystemSingle_UnityEngineVector3_p_0\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, position\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n       
+    PUSH, position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_p_1\n        PUSH, __Step__SystemSingle_UnityEngineVector3_p_0\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, velocity\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n       
+    PUSH, velocity\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    JUMP_INDIRECT, __Step__SystemSingle_UnityEngineVector3_retjump\n.code_end\n"
+  assemblyError: 
+  sourceCsScript: {fileID: 11500000, guid: 323f185d1d9ce214190f4f704371abc9, type: 3}
+  unresolvedCompileErrors: []
+  sourceFingerprint: 7b985f6c18f727918a772f66bb3741055fd2c7e1cc31626bb8a2e469fd6fcab5
+  compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
+  generatedGpuAssets: []
+  gpuLoadSourceFields: []
+  generatedGpuMaterials: []
+  declaredBehaviourSyncMode: 0
+  fieldLabels: []
+  inspectorFields:
+  - position
+  - velocity
+  inspectorPaths:
+  - 
+  - 
+  optBeforeUasm: ".data_start\n    position: %UnityEngineVector3, null\n    .export
+    position\n    velocity: %UnityEngineVector3, null\n    .export velocity\n   
+    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"VVBC.Toolchain.Fixtures.ToolchainFixtureBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Step__SystemSingle_UnityEngineVector3_p_0:
+    %SystemSingle, 0\n    __Step__SystemSingle_UnityEngineVector3_p_1: %UnityEngineVector3,
+    null\n    __Step__SystemSingle_UnityEngineVector3_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Step__SystemSingle_UnityEngineVector3_intnl_0: %UnityEngineVector3, null\n   
+    __Step__SystemSingle_UnityEngineVector3_intnl_1: %UnityEngineVector3, null\n   
+    __Step__SystemSingle_UnityEngineVector3_intnl_2: %UnityEngineVector3, null\n   
+    __Step__SystemSingle_UnityEngineVector3_intnl_3: %UnityEngineVector3, null\n.data_end\n.code_start\n   
+    .export Step__SystemSingle_UnityEngineVector3\n    Step__SystemSingle_UnityEngineVector3:\n       
+    PUSH, velocity\n        PUSH, __Step__SystemSingle_UnityEngineVector3_p_0\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, position\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_1\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_1\n        PUSH, position\n       
+    COPY\n        PUSH, __Step__SystemSingle_UnityEngineVector3_p_1\n        PUSH,
+    __Step__SystemSingle_UnityEngineVector3_p_0\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, velocity\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_2\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_3\n        PUSH, velocity\n       
+    COPY\n        JUMP_INDIRECT, __Step__SystemSingle_UnityEngineVector3_retjump\n.code_end\n"
+  optAfterUasm: ".data_start\n    position: %UnityEngineVector3, null\n    .export
+    position\n    velocity: %UnityEngineVector3, null\n    .export velocity\n   
+    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"VVBC.Toolchain.Fixtures.ToolchainFixtureBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Step__SystemSingle_UnityEngineVector3_p_0:
+    %SystemSingle, 0\n    __Step__SystemSingle_UnityEngineVector3_p_1: %UnityEngineVector3,
+    null\n    __Step__SystemSingle_UnityEngineVector3_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Step__SystemSingle_UnityEngineVector3_intnl_0: %UnityEngineVector3, null\n.data_end\n.code_start\n   
+    .export Step__SystemSingle_UnityEngineVector3\n    Step__SystemSingle_UnityEngineVector3:\n       
+    PUSH, velocity\n        PUSH, __Step__SystemSingle_UnityEngineVector3_p_0\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, position\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n       
+    PUSH, position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_p_1\n        PUSH, __Step__SystemSingle_UnityEngineVector3_p_0\n       
+    PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, velocity\n        PUSH, __Step__SystemSingle_UnityEngineVector3_intnl_0\n       
+    PUSH, velocity\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    JUMP_INDIRECT, __Step__SystemSingle_UnityEngineVector3_retjump\n.code_end\n"
+  optBeforeInject:
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-6581651845641113295\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-6581651845641113295"
+  optAfterInject:
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-6581651845641113295\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-6581651845641113295"
+  networkCallableSlots: []
+  optExternBefore: 4
+  optExternAfter: 4
+  optInsnBefore: 23
+  optInsnAfter: 17
+  optBytesBefore: 176
+  optBytesAfter: 136
+  optStage: ran

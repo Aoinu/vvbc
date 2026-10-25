@@ -16,6 +16,24 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Python for toolchain static validation
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Test export bookkeeping and rollback
+        run: python -m unittest discover -s Tools/VVBC.Toolchain/tests -v
+
+      - name: Validate generated manifest, hashes, and dependency boundaries
+        run: python Tools/VVBC.Toolchain/toolchain.py check
+
+      - name: Check whitespace errors
+        run: |
+          git diff --check
+          git diff --check HEAD^ HEAD
 
       - name: Check required files
         shell: bash

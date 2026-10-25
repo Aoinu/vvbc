@@ -1,3 +1,6 @@
 {
-	"name": "VVBC.Runtime"
+	"name": "VVBC.Runtime",
+	"references": [
+		"UdonSharp.Runtime"
+	]
 }
