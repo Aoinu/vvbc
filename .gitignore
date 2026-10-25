@@ -11,6 +11,18 @@
 /[Mm]emoryCaptures/
 /[Uu]serSettings/
 
+# ClientSim local persistent state
+/ClientSimStorage/
+
+# TsukimiCode-generated AI skills
+/.agents/skills/
+/.claude/skills/
+
+# TsukimiCode-generated local MCP / AI client configuration
+/.claude/settings.local.json
+/.codex/config.toml
+/.mcp.json
+
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
 

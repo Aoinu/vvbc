@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.tsukimicode.udon-tools": {
+      "version": "file:com.tsukimicode.udon-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.ai.navigation": {
       "version": "1.1.5",
       "depth": 0,
