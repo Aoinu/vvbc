@@ -1,5 +1,9 @@
 {
-  "dependencies": {},
+  "dependencies": {
+    "jp.shiranui-isuzu.unity-mcp": {
+      "version": "4.4.2"
+    }
+  },
   "locked": {
     "com.vrchat.worlds": {
       "version": "3.10.5",
@@ -9,6 +13,10 @@
     },
     "com.vrchat.base": {
       "version": "3.10.5",
+      "dependencies": {}
+    },
+    "jp.shiranui-isuzu.unity-mcp": {
+      "version": "4.4.2",
       "dependencies": {}
     }
   }

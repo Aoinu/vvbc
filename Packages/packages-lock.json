@@ -225,6 +225,14 @@
         "com.unity.ai.navigation": "1.1.5"
       }
     },
+    "jp.shiranui-isuzu.unity-mcp": {
+      "version": "file:jp.shiranui-isuzu.unity-mcp",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      }
+    },
     "org.vvbc.assets": {
       "version": "file:org.vvbc.assets",
       "depth": 0,
