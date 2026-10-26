@@ -3,6 +3,7 @@ param(
     [ValidateSet('package', 'fixture')][string]$Scope = 'package',
     [string]$UnityPath = 'C:\Program Files\Unity\Hub\Editor\2022.3.22f1\Editor\Unity.exe',
     [string]$VpmPath,
+    [string]$TsukimiPackagePath,
     [string]$Python = 'python',
     [switch]$KeepOnSuccess
 )
@@ -15,7 +16,8 @@ if ($runRoot.StartsWith($repoRoot.TrimEnd('\', '/') + [IO.Path]::DirectorySepara
 }
 if (-not (Test-Path -LiteralPath $UnityPath -PathType Leaf)) { throw "Unity executable missing: $UnityPath" }
 & $Python (Join-Path $PSScriptRoot 'toolchain.py') check --scope $Scope
-if ($LASTEXITCODE -ne 0) { throw 'Manifest validation failed before creating consumer.' }
+if ($LASTEXITCODE -ne 0) { throw 'Package static validation failed before creating consumer.' }
+if (-not $TsukimiPackagePath) { $TsukimiPackagePath = Join-Path $repoRoot 'Packages/com.tsukimicode.udon-tools' }
 New-Item -ItemType Directory -Path $runRoot | Out-Null
 Set-Content -LiteralPath (Join-Path $runRoot '.vvbc-consumer-run') -Value $Scope
 $vpmLog = Join-Path $runRoot 'vpm.log'
@@ -48,17 +50,18 @@ try {
     }
     Invoke-Vpm @('add', 'package', 'com.vrchat.worlds@3.10.5', '-p', $project)
     # VPM CLI 0.1.28 logs "Could not get match" but returns 0 for a local path.
-    # Install SDK dependencies through VPM, then validate an exact embedded core snapshot.
+    # Install Worlds through VPM. Reference the licensed local Tsukimi install explicitly;
+    # no compiler binaries are copied, and this does not prove VPM feed resolution.
     $worlds = Get-Content -LiteralPath (Join-Path $project 'Packages/com.vrchat.worlds/package.json') -Raw | ConvertFrom-Json
     if ($worlds.version -ne '3.10.5') { throw 'VPM did not install the pinned Worlds SDK.' }
-    & $Python (Join-Path $PSScriptRoot 'toolchain.py') consumer-prepare --project $project --scope $Scope
+    & $Python (Join-Path $PSScriptRoot 'toolchain.py') consumer-prepare --project $project --scope $Scope --tsukimi-package $TsukimiPackagePath
     if ($LASTEXITCODE -ne 0) { throw 'Consumer validation setup failed.' }
     $log = Join-Path $runRoot 'Editor.log'
     $bootstrapLog = Join-Path $runRoot 'Bootstrap-Editor.log'
     # Start-Process joins arguments on Windows: quote path arguments explicitly.
     foreach ($path in @($project, $log, $bootstrapLog)) { if ($path.Contains('"')) { throw 'Quote in path is unsupported.' } }
     # SDK initialization creates utility scripts after initial compilation. Finish
-    # that import in a separate Editor process before asking UdonSharp for types.
+    # that import in a separate Editor process before validating T# programs.
     $bootstrapArguments = @('-batchmode', '-quit', '-projectPath', ('"' + $project + '"'),
                             '-logFile', ('"' + $bootstrapLog + '"'))
     $bootstrap = Start-Process -FilePath $UnityPath -ArgumentList $bootstrapArguments -WindowStyle Hidden -PassThru

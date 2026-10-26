@@ -1,6 +1,13 @@
 {
   "name": "VVBC.Toolchain.Editor",
-  "references": ["UdonSharp.Editor", "UdonSharp.Runtime", "VRC.Udon", "VRC.Udon.Editor"],
-  "includePlatforms": ["Editor"],
+  "references": [
+    "TsukimiCode.UdonTools.Editor",
+    "TsukimiCode.UdonTools.Runtime",
+    "VRC.Udon",
+    "VRC.Udon.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
   "autoReferenced": false
 }

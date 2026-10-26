@@ -1,7 +1,3 @@
-# Raw Tsukimi Export output must survive Git checkout without newline conversion.
-/Packages/org.vvbc.core/Runtime/**/*.cs -text
-/Tools/VVBC.Toolchain/Fixtures/Generated/**/*.cs -text
-
 # Preserve Unity serializer output: empty YAML fields and wrapped scalar lines
 # contain native trailing spaces. Code and documentation keep normal checks.
 /Assets/VirtualVenueBaseballComponents/**/*.meta whitespace=-blank-at-eol

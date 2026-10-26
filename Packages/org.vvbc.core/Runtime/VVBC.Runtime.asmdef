@@ -1,6 +1,9 @@
 {
-	"name": "VVBC.Runtime",
-	"references": [
-		"UdonSharp.Runtime"
-	]
+  "name": "VVBC.Runtime",
+  "references": [
+    "TsukimiCode.UdonTools.Runtime",
+    "UdonSharp.Runtime",
+    "VRC.Udon",
+    "Unity.TextMeshPro"
+  ]
 }

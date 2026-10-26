@@ -24,10 +24,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Test export bookkeeping and rollback
+      - name: Test direct T# toolchain
         run: python -m unittest discover -s Tools/VVBC.Toolchain/tests -v
 
-      - name: Validate generated manifest, hashes, and dependency boundaries
+      - name: Validate T# package metadata and dependency boundaries
+        # Actual Unity/T# compilation and UdonProgram validation are required local
+        # gates. Hosted CI does not install or redistribute the proprietary compiler.
         run: python Tools/VVBC.Toolchain/toolchain.py check
 
       - name: Check whitespace errors
@@ -71,6 +73,7 @@ jobs:
             and .unity == "2022.3"
             and .license == "MIT"
             and .vpmDependencies["com.vrchat.worlds"] == "3.10.5"
+            and .vpmDependencies["com.tsukimicode.udon-tools"] == "0.10.1"
           ' Packages/org.vvbc.core/package.json > /dev/null
 
       - name: Validate assembly definitions
