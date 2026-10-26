@@ -34,6 +34,52 @@ class DirectPackageTests(unittest.TestCase):
         self.assertEqual(self.tool.check()['vpmDependencies'], {
             MODULE.TSUKIMI: '0.10.1', 'com.vrchat.worlds': '3.10.5'})
 
+    def test_runtime_baseline_references_pass(self):
+        path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'
+        asmdef = MODULE.read_json(path)
+        asmdef['references'] = [
+            'TsukimiCode.UdonTools.Runtime', 'UdonSharp.Runtime', 'VRC.Udon', 'Unity.TextMeshPro']
+        MODULE.write_json(path, asmdef)
+        self.tool.check()
+
+    def test_additional_runtime_reference_passes(self):
+        path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'
+        asmdef = MODULE.read_json(path)
+        asmdef['references'].append('VRC.SDKBase')
+        MODULE.write_json(path, asmdef)
+        self.tool.check()
+
+    def test_each_missing_runtime_reference_is_rejected(self):
+        path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'
+        asmdef = MODULE.read_json(path)
+        baseline = list(asmdef['references'])
+        for reference in sorted(MODULE.REQUIRED_RUNTIME_REFERENCES):
+            with self.subTest(reference=reference):
+                asmdef['references'] = [r for r in baseline if r != reference]
+                MODULE.write_json(path, asmdef)
+                with self.assertRaisesRegex(ValueError, 'missing required references'):
+                    self.tool.check()
+
+    def test_absent_runtime_references_are_rejected(self):
+        path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'
+        asmdef = MODULE.read_json(path)
+        del asmdef['references']
+        MODULE.write_json(path, asmdef)
+        with self.assertRaisesRegex(ValueError, 'missing required references'):
+            self.tool.check()
+
+    def test_runtime_development_references_are_rejected(self):
+        path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'
+        asmdef = MODULE.read_json(path)
+        baseline = list(asmdef['references'])
+        for reference in ('VVBC.Toolchain.Editor', 'UnityMCP.Editor', 'Unity.MCP.Runtime',
+                          'jp.shiranui-isuzu.unity-mcp'):
+            with self.subTest(reference=reference):
+                asmdef['references'] = baseline + [reference]
+                MODULE.write_json(path, asmdef)
+                with self.assertRaisesRegex(ValueError, 'Development-only reference'):
+                    self.tool.check()
+
     def test_missing_or_wrong_compiler_dependency(self):
         path = self.root / MODULE.CORE / 'package.json'
         for version in (None, '0.10.0'):

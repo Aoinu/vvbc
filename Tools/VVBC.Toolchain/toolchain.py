@@ -11,7 +11,7 @@ CORE = 'Packages/org.vvbc.core'
 RUNTIME = CORE + '/Runtime'
 FIXTURE = 'Tools/VVBC.Toolchain/Fixtures'
 TSUKIMI = 'com.tsukimicode.udon-tools'
-REFERENCES = {'TsukimiCode.UdonTools.Runtime', 'UdonSharp.Runtime', 'VRC.Udon', 'Unity.TextMeshPro'}
+REQUIRED_RUNTIME_REFERENCES = {'TsukimiCode.UdonTools.Runtime', 'UdonSharp.Runtime', 'VRC.Udon', 'Unity.TextMeshPro'}
 
 
 def read_json(path):
@@ -40,8 +40,11 @@ class Toolchain:
         if metadata.get('dependencies'):
             raise ValueError('Core dependencies are resolved through its reviewed VPM declarations')
         asmdef = read_json(self.root / RUNTIME / 'VVBC.Runtime.asmdef')
-        if asmdef['name'] != 'VVBC.Runtime' or set(asmdef['references']) != REFERENCES:
-            raise ValueError('Runtime assembly must use the installed Tsukimi template references')
+        if asmdef['name'] != 'VVBC.Runtime':
+            raise ValueError('Runtime assembly must be named VVBC.Runtime')
+        missing = REQUIRED_RUNTIME_REFERENCES - set(asmdef.get('references', []))
+        if missing:
+            raise ValueError('Runtime assembly is missing required references: ' + ', '.join(sorted(missing)))
         if list((self.root / RUNTIME).rglob('*.UdonSharpAssembly.asset')):
             raise ValueError('T# runtime must not be registered as UdonSharp input')
         if (self.root / RUNTIME / '__ToolchainFixture').exists():

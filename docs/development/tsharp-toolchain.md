@@ -34,9 +34,11 @@ exists yet: do not reserve modules or empty directories. Create the canonical
 Program Asset directory only when needed. Development Editor tooling stays out
 of the distributed package. Never duplicate runtime source in development Assets.
 
-`VVBC.Runtime` uses the four references from installed Tsukimi 0.10.1's
+`VVBC.Runtime` requires the four baseline references from verified Tsukimi 0.10.1's
 `Editor/TsukimiScriptCreator.cs` template: `TsukimiCode.UdonTools.Runtime`,
-`UdonSharp.Runtime`, `VRC.Udon`, `Unity.TextMeshPro`. The compiler shim is in the
+`UdonSharp.Runtime`, `VRC.Udon`, `Unity.TextMeshPro`. Additional runtime references
+are allowed when required by implemented subsystems. Development-only references
+remain forbidden by the package boundary validation. The compiler shim is in the
 same assembly (its original GUID is preserved). The old `VVBC.TSharp` assembly
 is removed. No UdonSharp assembly registration is used: T# is compiled by
 Tsukimi, not by the UdonSharp parser. Do not add dummy code to make empty
