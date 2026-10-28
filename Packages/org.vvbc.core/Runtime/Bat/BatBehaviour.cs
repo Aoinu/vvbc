@@ -1,13 +1,14 @@
 using Tsukimi;
 using UnityEngine;
 using VRC.SDK3.Components;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 using VRC.Udon.Common;
+using VRC.Udon.Common.Interfaces;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public partial class BatBehaviour : TsukimiBehaviour
 {
-    private const int HistoryCapacity = 32;
     private const float PoseEpsilon = 0.0001f;
 
     [Header("Scene References")]
@@ -24,18 +25,17 @@ public partial class BatBehaviour : TsukimiBehaviour
     public float minimumTwoHandSeparation = 0.04f;
 
     [Header("Remote Visual Correction")]
-    [Range(0.1f, 2f)]
-    public float maximumVisualPositionDelta = 1.25f;
-    [Range(15f, 180f)]
-    public float maximumVisualRotationDelta = 120f;
-    [Range(0.05f, 0.5f)]
-    public float maximumVisualTimeGap = 0.35f;
-    [Range(0.05f, 1.5f)]
-    public float maximumHandSampleStep = 0.65f;
-    [Range(15f, 180f)]
-    public float maximumHandSampleRotationStep = 100f;
-    [Range(0.05f, 0.5f)]
-    public float maximumHistorySampleGap = 0.25f;
+    public float maxHandLinearSpeed = 0.05f;
+    public float maxHandAngularSpeed = 15f;
+    public float maxBodyLinearSpeed = 0.05f;
+    public float maxBodyAngularSpeed = 15f;
+    public float calibrationStableDuration = 0.4f;
+    [Range(1, 64)] public int velocitySmoothingSamples = 5;
+    public float maxCalibrationPositionDrift = 0.02f;
+    public float maxCalibrationRotationDrift = 5f;
+    public float visualTransitionDuration = 0.15f;
+    public float transitionCancelLinearSpeed = 0.15f;
+    public float transitionCancelAngularSpeed = 45f;
 
     [Header("Diagnostics")]
     public bool debugGripTransitions;
@@ -69,13 +69,36 @@ public partial class BatBehaviour : TsukimiBehaviour
     private Quaternion _previousDrivenRotation = Quaternion.identity;
     private bool _hasPreviousDrivenPose;
 
-    private readonly float[] _historyTimes = new float[HistoryCapacity];
-    private readonly Vector3[] _historyPositions = new Vector3[HistoryCapacity];
-    private readonly Quaternion[] _historyRotations = new Quaternion[HistoryCapacity];
-    private int _historyNext;
-    private int _historyCount;
-    private int _historyRevision = -1;
-    private int _historyOwnerId = -1;
+    private Collider _bodyCollider;
+    private readonly float[] _handLinearSamples = new float[64];
+    private readonly float[] _handAngularSamples = new float[64];
+    private readonly float[] _bodyLinearSamples = new float[64];
+    private readonly float[] _bodyAngularSamples = new float[64];
+    private int _sampleCount;
+    private int _sampleNext;
+    private int _sampleCapacity;
+    private bool _hasSample;
+    private Vector3 _lastUpperPosition;
+    private bool _hasUpperSample;
+    private Vector3 _lastHandPosition;
+    private Quaternion _lastHandRotation = Quaternion.identity;
+    private Vector3 _lastBodyPosition;
+    private Quaternion _lastBodyRotation = Quaternion.identity;
+    private Vector3 _stableHandPosition;
+    private Quaternion _stableHandRotation = Quaternion.identity;
+    private Vector3 _stableBodyPosition;
+    private Quaternion _stableBodyRotation = Quaternion.identity;
+    private float _stableTime;
+    private bool _calibrated;
+    private Vector3 _remotePositionOffset;
+    private Quaternion _remoteRotationOffset = Quaternion.identity;
+    private int _remoteRevision = -1;
+    private int _remoteOwnerId = -1;
+    private bool _visualCorrected;
+    private bool _transitioning;
+    private float _transitionTime;
+    private Vector3 _transitionPosition;
+    private Quaternion _transitionRotation = Quaternion.identity;
 
     public void Start()
     {
@@ -96,12 +119,14 @@ public partial class BatBehaviour : TsukimiBehaviour
             _gripBCollider = gripB.GetComponent<Collider>();
         }
 
+        _bodyCollider = body.GetComponent<Collider>();
+        ApplyBodyCollider();
         UpdateProxyPresentation(BatGripConstants.ProxyNone, BatGripConstants.ProxyNone);
         ResetVisualRoot();
         if (body != null) ResetVelocityTracking();
 
-        if (IsLocalOwner())
-            SetBodyHeld(gripState != BatGripConstants.GripIdle);
+        if (IsLocalOwner() && gripState != BatGripConstants.GripIdle)
+            SetBodyHeld(true);
     }
 
     public override void InputUse(bool value, UdonInputEventArgs args)
@@ -191,20 +216,14 @@ public partial class BatBehaviour : TsukimiBehaviour
         }
 
         UpdateProxyPresentation(leftProxy, rightProxy);
-        if (gripState == BatGripConstants.GripIdle)
-        {
-            ResetVisualRoot();
-            ResetVisualHistory();
-            return;
-        }
-
+        ApplyBodyCollider();
         UpdateRemoteVisualCorrection();
     }
 
     public override void OnDeserialization()
     {
         ResetVisualHistory();
-        if (gripState == BatGripConstants.GripIdle) ResetVisualRoot();
+        ApplyBodyCollider();
     }
 
     public override void OnOwnershipTransferred(VRCPlayerApi player)
@@ -226,7 +245,6 @@ public partial class BatBehaviour : TsukimiBehaviour
         VRCPlayerApi owner = objectSync != null ? Networking.GetOwner(objectSync.gameObject) : null;
         if (owner == null || owner.playerId != player.playerId) return;
         ResetVisualHistory();
-        ResetVisualRoot();
     }
 
     private int GetHeldProxy(VRCPlayerApi player, int hand)
@@ -333,8 +351,6 @@ public partial class BatBehaviour : TsukimiBehaviour
                 }
                 _hasLockOffset = false;
             }
-            else if (willBeHeld)
-                SetBodyHeld(true);
 
             if (willBeHeld && (promoted || !wasHeld))
             {
@@ -348,7 +364,7 @@ public partial class BatBehaviour : TsukimiBehaviour
             RequestSerialization();
         }
 
-        if (!willBeHeld) ResetVisualRoot();
+        ApplyBodyCollider();
         ResetVisualHistory();
     }
 
@@ -544,6 +560,64 @@ public partial class BatBehaviour : TsukimiBehaviour
         body.useGravity = !held;
     }
 
+    private void ApplyBodyCollider()
+    {
+        if (_bodyCollider == null && body != null) _bodyCollider = body.GetComponent<Collider>();
+        if (_bodyCollider != null) _bodyCollider.enabled = gripState == BatGripConstants.GripIdle;
+    }
+
+    // Bat resolution belongs to the switch; all state and physics changes stay here.
+    public bool Respawn(Vector3 position, Quaternion rotation)
+    {
+        if (!ReferencesReady() || gripState != BatGripConstants.GripIdle || gripA.IsHeld || gripB.IsHeld)
+            return false;
+        if (!IsLocalOwner())
+        {
+            SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RespawnRequest), position, rotation);
+            return false;
+        }
+        return RespawnOwned(position, rotation);
+    }
+
+    [NetworkCallable]
+    public void RespawnRequest(Vector3 position, Quaternion rotation)
+    {
+        RespawnOwned(position, rotation);
+    }
+
+    private bool RespawnOwned(Vector3 position, Quaternion rotation)
+    {
+        if (!ReferencesReady() || !IsLocalOwner() || gripState != BatGripConstants.GripIdle || gripA.IsHeld || gripB.IsHeld)
+            return false;
+        if (!body.isKinematic)
+        {
+            body.velocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+        }
+        objectSync.SetKinematic(true);
+        objectSync.SetGravity(false);
+        body.isKinematic = true;
+        body.useGravity = false;
+        body.transform.SetPositionAndRotation(position, rotation);
+        objectSync.FlagDiscontinuity();
+        ResetVelocityTracking();
+        ResetVisualHistory();
+        ResetVisualRoot();
+        ApplyBodyCollider();
+        Transform lowerProxy = GetProxyTransform(_lowerProxy);
+        Transform upperProxy = GetProxyTransform(_upperProxy);
+        if (lowerProxy != null) lowerProxy.SetPositionAndRotation(lowerGrip.position, lowerGrip.rotation);
+        if (upperProxy != null) upperProxy.SetPositionAndRotation(upperGrip.position, upperGrip.rotation);
+        UpdateProxyPresentation(BatGripConstants.ProxyNone, BatGripConstants.ProxyNone);
+        return true;
+    }
+
+    public Quaternion DefaultSpawnRotation()
+    {
+        // Body has identity local rotation in the Bat prefab; its parent stays fixed under ObjectSync.
+        return transform.rotation;
+    }
+
     private void UpdateProxyPresentation(int leftProxy, int rightProxy)
     {
         bool remoteHeld = gripState != BatGripConstants.GripIdle && !IsLocalOwner();
@@ -597,186 +671,159 @@ public partial class BatBehaviour : TsukimiBehaviour
     private void UpdateRemoteVisualCorrection()
     {
         VRCPlayerApi owner = Networking.GetOwner(objectSync.gameObject);
-        if (owner == null || owner.isLocal)
-        {
-            ResetVisualRoot();
-            ResetVisualHistory();
-            return;
-        }
-
-        if (_historyRevision != stateRevision || _historyOwnerId != owner.playerId)
+        if (owner == null || owner.isLocal || gripState == BatGripConstants.GripIdle)
         {
             ResetVisualHistory();
-            _historyRevision = stateRevision;
-            _historyOwnerId = owner.playerId;
+            SetRemoteVisual(false, body.transform.position, body.transform.rotation, 0f, 0f);
+            return;
         }
-
-        Vector3 currentFramePosition;
-        Quaternion currentFrameRotation;
-        if (!TryBuildRemoteGripFrame(owner, out currentFramePosition, out currentFrameRotation))
+        if (_remoteRevision != stateRevision || _remoteOwnerId != owner.playerId)
         {
-            ResetVisualRoot();
             ResetVisualHistory();
-            return;
+            _remoteRevision = stateRevision;
+            _remoteOwnerId = owner.playerId;
         }
-
-        float sampleTime = Networking.SimulationTime(owner);
-        if (!IsFiniteTime(sampleTime))
+        Vector3 handPosition;
+        Quaternion handRotation;
+        if (!TryGetRemoteHandPose(owner, lowerHand, out handPosition, out handRotation))
         {
-            ResetVisualRoot();
             ResetVisualHistory();
+            SetRemoteVisual(false, body.transform.position, body.transform.rotation, 0f, 0f);
             return;
         }
-        RecordRemoteGripFrame(sampleTime, currentFramePosition, currentFrameRotation);
-
-        float objectTime = Networking.SimulationTime(objectSync.gameObject);
-        Vector3 pastFramePosition;
-        Quaternion pastFrameRotation;
-        if (!TryGetGripFrameAt(objectTime, out pastFramePosition, out pastFrameRotation))
+        float linearSpeed = 0f;
+        float angularSpeed = 0f;
+        if (_hasSample && Time.deltaTime > PoseEpsilon)
         {
-            ResetVisualRoot();
-            return;
+            linearSpeed = Vector3.Distance(handPosition, _lastHandPosition) / Time.deltaTime;
+            angularSpeed = BatVisualCorrection.RotationAngleDegrees(handRotation, _lastHandRotation) / Time.deltaTime;
         }
-
-        Vector3 correctedPosition;
-        Quaternion correctedRotation;
-        bool valid = TryCalculateVisualPose(objectTime, sampleTime,
-            pastFramePosition, pastFrameRotation,
-            currentFramePosition, currentFrameRotation,
-            body.transform.position, body.transform.rotation,
-            out correctedPosition, out correctedRotation);
-        if (!valid)
+        if (gripState == BatGripConstants.GripTwoHandHeld)
         {
-            ResetVisualRoot();
-            ResetVisualHistory();
-            RecordRemoteGripFrame(sampleTime, currentFramePosition, currentFrameRotation);
-            return;
-        }
-
-        visualRoot.position = correctedPosition;
-        visualRoot.rotation = correctedRotation;
-    }
-
-    private bool TryBuildRemoteGripFrame(VRCPlayerApi owner,
-        out Vector3 framePosition, out Quaternion frameRotation)
-    {
-        framePosition = Vector3.zero;
-        frameRotation = Quaternion.identity;
-        Vector3 lowerPosition;
-        Quaternion lowerRotation;
-        if (!TryGetRemoteHandPose(owner, lowerHand, out lowerPosition, out lowerRotation)) return false;
-
-        framePosition = lowerPosition;
-        frameRotation = lowerRotation;
-        if (gripState != BatGripConstants.GripTwoHandHeld || upperHand == BatGripConstants.HandNone) return true;
-
-        Vector3 upperPosition;
-        Quaternion upperRotation;
-        if (!TryGetRemoteHandPose(owner, upperHand, out upperPosition, out upperRotation)) return false;
-        Vector3 axis = upperPosition - lowerPosition;
-        if (axis.sqrMagnitude < minimumTwoHandSeparation * minimumTwoHandSeparation) return true;
-
-        Quaternion baseRotation = lowerRotation * BatPoseSolver.InvertRotation(lowerGrip.localRotation);
-        frameRotation = BatPoseSolver.AlignLocalYToAxis(baseRotation, axis);
-        return true;
-    }
-
-    private void RecordRemoteGripFrame(float time, Vector3 position, Quaternion rotation)
-    {
-        if (_historyCount > 0)
-        {
-            int newest = _historyNext - 1;
-            if (newest < 0) newest += HistoryCapacity;
-            float timeStep = time - _historyTimes[newest];
-            if (timeStep < -PoseEpsilon || timeStep > maximumHistorySampleGap)
-                ResetVisualHistory();
-            else if (Mathf.Abs(timeStep) <= PoseEpsilon)
+            Vector3 upperPosition;
+            Quaternion upperRotation;
+            if (!TryGetRemoteHandPose(owner, upperHand, out upperPosition, out upperRotation) ||
+                (upperPosition - handPosition).sqrMagnitude < minimumTwoHandSeparation * minimumTwoHandSeparation)
             {
-                _historyPositions[newest] = position;
-                _historyRotations[newest] = rotation;
+                ResetVisualHistory();
+                SetRemoteVisual(false, body.transform.position, body.transform.rotation, linearSpeed, angularSpeed);
                 return;
             }
-            else if ((position - _historyPositions[newest]).sqrMagnitude >
-                maximumHandSampleStep * maximumHandSampleStep ||
-                BatVisualCorrection.RotationAngleDegrees(rotation, _historyRotations[newest]) > maximumHandSampleRotationStep)
-            {
-                ResetVisualHistory();
-            }
+            if (_hasUpperSample && Time.deltaTime > PoseEpsilon)
+                linearSpeed = Mathf.Max(linearSpeed, Vector3.Distance(upperPosition, _lastUpperPosition) / Time.deltaTime);
+            _lastUpperPosition = upperPosition;
+            _hasUpperSample = true;
+            Quaternion basis = _visualCorrected ? visualRoot.rotation : body.transform.rotation;
+            BatPose freePose = CalculateFreeVisualPose(handPosition, upperPosition, lowerGrip.localPosition, basis);
+            _lastHandPosition = handPosition;
+            _lastHandRotation = handRotation;
+            _hasSample = true;
+            SetRemoteVisual(true, freePose.position, freePose.rotation, linearSpeed, angularSpeed);
+            return;
         }
-
-        _historyTimes[_historyNext] = time;
-        _historyPositions[_historyNext] = position;
-        _historyRotations[_historyNext] = rotation;
-        _historyNext = (_historyNext + 1) % HistoryCapacity;
-        if (_historyCount < HistoryCapacity) _historyCount++;
+        UpdateCalibration(handPosition, handRotation, body.transform.position, body.transform.rotation, Time.deltaTime);
+        if (_calibrated)
+        {
+            BatPose pose = BatPoseSolver.ApplyLock(handPosition, handRotation, _remotePositionOffset, _remoteRotationOffset);
+            SetRemoteVisual(true, pose.position, pose.rotation, linearSpeed, angularSpeed);
+        }
+        else SetRemoteVisual(false, body.transform.position, body.transform.rotation, linearSpeed, angularSpeed);
     }
 
-    private bool TryGetGripFrameAt(float targetTime, out Vector3 position, out Quaternion rotation)
+    private BatPose CalculateFreeVisualPose(Vector3 lower, Vector3 upper, Vector3 anchor, Quaternion basis)
     {
-        position = Vector3.zero;
-        rotation = Quaternion.identity;
-        if (_historyCount == 0 || !IsFiniteTime(targetTime)) return false;
-
-        int oldest = _historyNext - _historyCount;
-        while (oldest < 0) oldest += HistoryCapacity;
-        int first = oldest;
-        if (_historyCount == 1)
-        {
-            if (Mathf.Abs(targetTime - _historyTimes[first]) > PoseEpsilon) return false;
-            position = _historyPositions[first];
-            rotation = _historyRotations[first];
-            return true;
-        }
-
-        for (int i = 0; i < _historyCount - 1; i++)
-        {
-            int index0 = (oldest + i) % HistoryCapacity;
-            int index1 = (index0 + 1) % HistoryCapacity;
-            float time0 = _historyTimes[index0];
-            float time1 = _historyTimes[index1];
-            if (targetTime < time0 || targetTime > time1) continue;
-            float span = time1 - time0;
-            float blend = span > PoseEpsilon ? (targetTime - time0) / span : 0f;
-            position = Vector3.Lerp(_historyPositions[index0], _historyPositions[index1], blend);
-            rotation = Quaternion.Slerp(_historyRotations[index0], _historyRotations[index1], blend);
-            return true;
-        }
-
-        int newest = _historyNext - 1;
-        if (newest < 0) newest += HistoryCapacity;
-        if (Mathf.Abs(targetTime - _historyTimes[oldest]) <= PoseEpsilon)
-        {
-            position = _historyPositions[oldest];
-            rotation = _historyRotations[oldest];
-            return true;
-        }
-        if (Mathf.Abs(targetTime - _historyTimes[newest]) <= PoseEpsilon)
-        {
-            position = _historyPositions[newest];
-            rotation = _historyRotations[newest];
-            return true;
-        }
-        return false;
+        BatPose result = new BatPose();
+        result.rotation = BatPoseSolver.AlignLocalYToAxis(basis, upper - lower);
+        result.position = lower - result.rotation * anchor;
+        return result;
     }
 
-    private bool TryCalculateVisualPose(float pastTime, float currentTime,
-        Vector3 pastFramePosition, Quaternion pastFrameRotation,
-        Vector3 currentFramePosition, Quaternion currentFrameRotation,
-        Vector3 objectPosition, Quaternion objectRotation,
-        out Vector3 correctedPosition, out Quaternion correctedRotation)
+    private bool ShouldCancelTransition(float linearSpeed, float angularSpeed)
     {
-        BatVisualResult result = BatVisualCorrection.Calculate(pastTime, currentTime,
-            pastFramePosition, pastFrameRotation, currentFramePosition, currentFrameRotation,
-            objectPosition, objectRotation, maximumVisualTimeGap,
-            maximumVisualPositionDelta, maximumVisualRotationDelta);
-        correctedPosition = result.position;
-        correctedRotation = result.rotation;
-        return result.valid;
+        return linearSpeed > transitionCancelLinearSpeed || angularSpeed > transitionCancelAngularSpeed;
     }
 
-    private bool IsFiniteTime(float value)
+    private void UpdateCalibration(Vector3 handPosition, Quaternion handRotation,
+        Vector3 bodyPosition, Quaternion bodyRotation, float dt)
     {
-        return IsFiniteValue(value);
+        if (_calibrated) { _lastHandPosition = handPosition; _lastHandRotation = handRotation; return; }
+        int capacity = Mathf.Clamp(velocitySmoothingSamples, 1, 64);
+        if (!_hasSample || capacity != _sampleCapacity || dt <= PoseEpsilon)
+        {
+            _sampleCapacity = capacity;
+            _sampleCount = 0;
+            _sampleNext = 0;
+            _stableTime = 0f;
+            _stableHandPosition = handPosition;
+            _stableHandRotation = handRotation;
+            _stableBodyPosition = bodyPosition;
+            _stableBodyRotation = bodyRotation;
+            _lastHandPosition = handPosition;
+            _lastHandRotation = handRotation;
+            _lastBodyPosition = bodyPosition;
+            _lastBodyRotation = bodyRotation;
+            _hasSample = true;
+            return;
+        }
+        _handLinearSamples[_sampleNext] = Vector3.Distance(handPosition, _lastHandPosition) / dt;
+        _handAngularSamples[_sampleNext] = BatVisualCorrection.RotationAngleDegrees(handRotation, _lastHandRotation) / dt;
+        _bodyLinearSamples[_sampleNext] = Vector3.Distance(bodyPosition, _lastBodyPosition) / dt;
+        _bodyAngularSamples[_sampleNext] = BatVisualCorrection.RotationAngleDegrees(bodyRotation, _lastBodyRotation) / dt;
+        _sampleNext = (_sampleNext + 1) % capacity;
+        if (_sampleCount < capacity) _sampleCount++;
+        _lastHandPosition = handPosition;
+        _lastHandRotation = handRotation;
+        _lastBodyPosition = bodyPosition;
+        _lastBodyRotation = bodyRotation;
+        float hl = 0f; float ha = 0f; float bl = 0f; float ba = 0f;
+        for (int i = 0; i < _sampleCount; i++)
+        {
+            hl += _handLinearSamples[i]; ha += _handAngularSamples[i];
+            bl += _bodyLinearSamples[i]; ba += _bodyAngularSamples[i];
+        }
+        bool stable = _sampleCount == capacity && hl / _sampleCount <= maxHandLinearSpeed &&
+            ha / _sampleCount <= maxHandAngularSpeed && bl / _sampleCount <= maxBodyLinearSpeed &&
+            ba / _sampleCount <= maxBodyAngularSpeed &&
+            Vector3.Distance(handPosition, _stableHandPosition) <= maxCalibrationPositionDrift &&
+            Vector3.Distance(bodyPosition, _stableBodyPosition) <= maxCalibrationPositionDrift &&
+            BatVisualCorrection.RotationAngleDegrees(handRotation, _stableHandRotation) <= maxCalibrationRotationDrift &&
+            BatVisualCorrection.RotationAngleDegrees(bodyRotation, _stableBodyRotation) <= maxCalibrationRotationDrift;
+        if (!stable)
+        {
+            _stableTime = 0f;
+            _stableHandPosition = handPosition; _stableHandRotation = handRotation;
+            _stableBodyPosition = bodyPosition; _stableBodyRotation = bodyRotation;
+            return;
+        }
+        _stableTime += dt;
+        if (_stableTime < calibrationStableDuration) return;
+        BatPose offset = BatPoseSolver.CaptureLock(handPosition, handRotation, bodyPosition, bodyRotation);
+        _remotePositionOffset = offset.position;
+        _remoteRotationOffset = offset.rotation;
+        _calibrated = true;
+    }
+
+    private void SetRemoteVisual(bool corrected, Vector3 position, Quaternion rotation, float linearSpeed, float angularSpeed)
+    {
+        if (_visualCorrected != corrected)
+        {
+            _visualCorrected = corrected;
+            _transitionPosition = visualRoot.position;
+            _transitionRotation = visualRoot.rotation;
+            _transitionTime = 0f;
+            _transitioning = visualTransitionDuration > 0f;
+        }
+        if (_transitioning && ShouldCancelTransition(linearSpeed, angularSpeed))
+            _transitioning = false;
+        if (_transitioning)
+        {
+            _transitionTime += Time.deltaTime;
+            float t = Mathf.Clamp01(_transitionTime / visualTransitionDuration);
+            visualRoot.SetPositionAndRotation(Vector3.Lerp(_transitionPosition, position, t), Quaternion.Slerp(_transitionRotation, rotation, t));
+            if (t >= 1f) _transitioning = false;
+        }
+        else if (corrected) visualRoot.SetPositionAndRotation(position, rotation);
+        else ResetVisualRoot();
     }
 
     private bool IsFiniteValue(float value)
@@ -786,10 +833,13 @@ public partial class BatBehaviour : TsukimiBehaviour
 
     private void ResetVisualHistory()
     {
-        _historyNext = 0;
-        _historyCount = 0;
-        _historyRevision = stateRevision;
-        _historyOwnerId = -1;
+        _calibrated = false;
+        _hasSample = false;
+        _hasUpperSample = false;
+        _sampleCount = 0;
+        _stableTime = 0f;
+        _remoteRevision = stateRevision;
+        _remoteOwnerId = -1;
     }
 
     private void ResetVisualRoot()
@@ -797,5 +847,7 @@ public partial class BatBehaviour : TsukimiBehaviour
         if (visualRoot == null) return;
         visualRoot.localPosition = Vector3.zero;
         visualRoot.localRotation = Quaternion.identity;
+        _visualCorrected = false;
+        _transitioning = false;
     }
 }

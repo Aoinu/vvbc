@@ -108,7 +108,7 @@ public partial class BatBehaviour
         VRCPlayerApi owner = Mimic.Join();
         VRCPlayerApi remote = Mimic.Join();
         Mimic.Become(remote);
-        _historyCount = 2;
+        _calibrated = true;
         Mimic.Become(owner);
         gripState = BatGripConstants.GripLocked;
         lowerHand = BatGripConstants.HandLeft;
@@ -119,7 +119,7 @@ public partial class BatBehaviour
         Mimic.Become(remote);
         Assert.IsTrue(gripState == BatGripConstants.GripLocked && lowerHand == BatGripConstants.HandLeft &&
             upperHand == BatGripConstants.HandRight && stateRevision == 7);
-        Assert.IsTrue(_historyCount == 0);
+        Assert.IsFalse(_calibrated);
     }
 
     [TsukimiTest]
@@ -162,19 +162,6 @@ public partial class BatBehaviour
     {
         Vector3 linear = BatKinematics.LinearVelocity(Vector3.zero, new Vector3(1f, -2f, 0.5f), 0.5f);
         Assert.IsTrue(Vector3.Distance(linear, new Vector3(2f, -4f, 1f)) < 0.001f);
-    }
-
-    [TsukimiTest]
-    public void VisualHistoryRequiresAValidTimeSample()
-    {
-        Vector3 position;
-        Quaternion rotation;
-        Assert.IsFalse(TryGetGripFrameAt(1f, out position, out rotation));
-        RecordRemoteGripFrame(1f, Vector3.zero, Quaternion.identity);
-        Assert.IsFalse(TryGetGripFrameAt(0.9f, out position, out rotation));
-        Assert.IsTrue(TryGetGripFrameAt(1f, out position, out rotation));
-        Assert.IsTrue(Vector3.Distance(position, Vector3.zero) < 0.001f);
-        Assert.IsFalse(TryGetGripFrameAt(1.2f, out position, out rotation));
     }
 
     [TsukimiTest]
@@ -410,42 +397,67 @@ public partial class BatBehaviour
     }
 
     [TsukimiTest]
-    public void VisualCorrectionAppliesFrameDeltaAndRejectsLargeDelta()
+    public void CalibrationRequiresStableSamplesAndTracksHand()
     {
-        maximumVisualPositionDelta = 1f;
-        maximumVisualRotationDelta = 90f;
-        maximumVisualTimeGap = 0.5f;
-        Vector3 correctedPosition;
-        Quaternion correctedRotation;
-        bool valid = TryCalculateVisualPose(1f, 1.1f,
-            Vector3.zero, Quaternion.identity,
-            new Vector3(0.2f, 0f, 0f), Quaternion.Euler(0f, 20f, 0f),
-            new Vector3(0f, 0f, 0.5f), Quaternion.identity,
-            out correctedPosition, out correctedRotation);
-        Assert.IsTrue(valid);
-        Assert.IsTrue(Vector3.Distance(correctedPosition,
-            new Vector3(0.2f, 0f, 0f) + Quaternion.Euler(0f, 20f, 0f) *
-            new Vector3(0f, 0f, 0.5f)) < 0.001f);
+        velocitySmoothingSamples = 2;
+        calibrationStableDuration = 0.4f;
+        Vector3 hand = Vector3.zero;
+        Vector3 bodyPose = new Vector3(0f, 1f, 0f);
+        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
+        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
+        Assert.IsFalse(_calibrated);
+        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
+        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
+        Assert.IsFalse(_calibrated);
+        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
+        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
+        Assert.IsTrue(_calibrated);
+        BatPose pose = BatPoseSolver.ApplyLock(new Vector3(1f, 0f, 0f), Quaternion.Euler(0f, 0f, 90f), _remotePositionOffset, _remoteRotationOffset);
+        Assert.IsTrue(Vector3.Distance(pose.position, Vector3.zero) < 0.001f);
+        ResetVisualHistory();
+        Assert.IsFalse(_calibrated);
+    }
 
-        valid = TryCalculateVisualPose(1f, 1.1f,
-            Vector3.zero, Quaternion.identity,
-            new Vector3(2f, 0f, 0f), Quaternion.identity,
-            Vector3.zero, Quaternion.identity,
-            out correctedPosition, out correctedRotation);
-        Assert.IsFalse(valid);
+    [TsukimiTest]
+    public void CalibrationRejectsBodyDriftAndMotion()
+    {
+        velocitySmoothingSamples = 1;
+        calibrationStableDuration = 0.4f;
+        UpdateCalibration(Vector3.zero, Quaternion.identity, Vector3.zero, Quaternion.identity, 0.1f);
+        for (int i = 1; i <= 10; i++)
+            UpdateCalibration(Vector3.zero, Quaternion.identity, new Vector3(i * 0.01f, 0f, 0f), Quaternion.identity, 0.1f);
+        Assert.IsFalse(_calibrated);
+    }
+    [TsukimiTest]
+    public void FreeVisualPoseFollowsBothHandPositions()
+    {
+        Vector3 lower = new Vector3(1f, 2f, 3f);
+        Vector3 upper = lower + Vector3.right;
+        Vector3 anchor = new Vector3(0f, 0.1f, 0f);
+        BatPose pose = CalculateFreeVisualPose(lower, upper, anchor, Quaternion.identity);
+        Assert.IsTrue(Vector3.Distance(pose.position + pose.rotation * anchor, lower) < 0.001f);
+        Assert.IsTrue(Vector3.Dot(pose.rotation * Vector3.up, Vector3.right) > 0.999f);
+        BatPose moved = CalculateFreeVisualPose(lower + Vector3.forward, lower + Vector3.forward + Vector3.up, anchor, pose.rotation);
+        Assert.IsTrue(Vector3.Distance(moved.position + moved.rotation * anchor, lower + Vector3.forward) < 0.001f);
+        Assert.IsTrue(Vector3.Dot(moved.rotation * Vector3.up, Vector3.up) > 0.999f);
+    }
 
-        valid = TryCalculateVisualPose(1f, 1.1f,
-            Vector3.zero, Quaternion.identity,
-            Vector3.zero, Quaternion.Euler(0f, 120f, 0f),
-            Vector3.zero, Quaternion.identity,
-            out correctedPosition, out correctedRotation);
-        Assert.IsFalse(valid);
+    [TsukimiTest]
+    public void TransitionCancelsWhenHandStartsMoving()
+    {
+        Assert.IsFalse(ShouldCancelTransition(0.1f, 20f));
+        Assert.IsTrue(ShouldCancelTransition(0.16f, 0f));
+        Assert.IsTrue(ShouldCancelTransition(0f, 46f));
+    }
 
-        valid = TryCalculateVisualPose(1f, 2f,
-            Vector3.zero, Quaternion.identity,
-            Vector3.zero, Quaternion.identity,
-            Vector3.zero, Quaternion.identity,
-            out correctedPosition, out correctedRotation);
-        Assert.IsFalse(valid);
+    [TsukimiTest]
+    public void CalibrationRejectsSlowDriftDespiteLowSpeed()
+    {
+        velocitySmoothingSamples = 1;
+        calibrationStableDuration = 1f;
+        UpdateCalibration(Vector3.zero, Quaternion.identity, Vector3.zero, Quaternion.identity, 0.1f);
+        for (int i = 1; i <= 15; i++)
+            UpdateCalibration(Vector3.zero, Quaternion.identity, new Vector3(i * 0.003f, 0f, 0f), Quaternion.identity, 0.1f);
+        Assert.IsFalse(_calibrated);
     }
 }
