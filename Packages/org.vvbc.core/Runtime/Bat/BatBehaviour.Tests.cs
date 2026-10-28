@@ -1,87 +1,261 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.SDKBase;
 
 public partial class BatBehaviour
 {
+    private float TestRotationDot(Quaternion first, Quaternion second)
+    {
+        return first.x * second.x + first.y * second.y + first.z * second.z + first.w * second.w;
+    }
+
+    [TsukimiTest]
+    public void EitherHeldHandCanToggleLockInBothHandAssignments()
+    {
+        BatGripTransition leftLower = BatGripLogic.ResolveUse(BatGripConstants.GripTwoHandHeld,
+            BatGripConstants.HandLeft, BatGripConstants.HandRight, BatGripConstants.HandRight);
+        Assert.IsTrue(leftLower.changed && leftLower.state == BatGripConstants.GripLocked);
+        BatGripTransition unlockLeft = BatGripLogic.ResolveUse(leftLower.state,
+            leftLower.lowerHand, leftLower.upperHand, BatGripConstants.HandLeft);
+        Assert.IsTrue(unlockLeft.changed && unlockLeft.state == BatGripConstants.GripTwoHandHeld);
+
+        BatGripTransition rightLower = BatGripLogic.ResolveUse(BatGripConstants.GripTwoHandHeld,
+            BatGripConstants.HandRight, BatGripConstants.HandLeft, BatGripConstants.HandLeft);
+        Assert.IsTrue(rightLower.changed && rightLower.state == BatGripConstants.GripLocked);
+        BatGripTransition unlockRight = BatGripLogic.ResolveUse(rightLower.state,
+            rightLower.lowerHand, rightLower.upperHand, BatGripConstants.HandRight);
+        Assert.IsTrue(unlockRight.changed && unlockRight.state == BatGripConstants.GripTwoHandHeld);
+
+        BatGripTransition unlockUpper = BatGripLogic.ResolveUse(BatGripConstants.GripLocked,
+            BatGripConstants.HandLeft, BatGripConstants.HandRight, BatGripConstants.HandRight);
+        Assert.IsTrue(unlockUpper.changed && unlockUpper.state == BatGripConstants.GripTwoHandHeld);
+        BatGripTransition invalid = BatGripLogic.ResolveUse(BatGripConstants.GripLowerHeld,
+            BatGripConstants.HandLeft, BatGripConstants.HandNone, BatGripConstants.HandRight);
+        Assert.IsFalse(invalid.changed);
+        invalid = BatGripLogic.ResolveUse(BatGripConstants.GripIdle,
+            BatGripConstants.HandNone, BatGripConstants.HandNone, BatGripConstants.HandNone);
+        Assert.IsFalse(invalid.changed);
+    }
+
+    [TsukimiTest]
+    public void LowerOnlyCanLockAndUnlockFromEitherHand()
+    {
+        BatGripTransition left = BatGripLogic.ResolveUse(BatGripConstants.GripLowerHeld,
+            BatGripConstants.HandLeft, BatGripConstants.HandNone, BatGripConstants.HandLeft);
+        Assert.IsTrue(left.changed && left.state == BatGripConstants.GripLocked);
+        left = BatGripLogic.ResolveUse(left.state, left.lowerHand, left.upperHand, BatGripConstants.HandLeft);
+        Assert.IsTrue(left.changed && left.state == BatGripConstants.GripLowerHeld);
+        BatGripTransition right = BatGripLogic.ResolveUse(BatGripConstants.GripLowerHeld,
+            BatGripConstants.HandRight, BatGripConstants.HandNone, BatGripConstants.HandRight);
+        Assert.IsTrue(right.changed && right.state == BatGripConstants.GripLocked);
+        right = BatGripLogic.ResolveUse(right.state, right.lowerHand, right.upperHand, BatGripConstants.HandRight);
+        Assert.IsTrue(right.changed && right.state == BatGripConstants.GripLowerHeld);
+    }
+
+    [TsukimiTest]
+    public void UnlockReturnsToCurrentTwoHandPose()
+    {
+        Vector3 lower = new Vector3(0.2f, 1f, -0.4f);
+        Quaternion lowerRotation = Quaternion.Euler(15f, 40f, 5f);
+        Vector3 anchorPosition = new Vector3(0f, 0.1f, 0f);
+        Quaternion anchorRotation = Quaternion.identity;
+        Vector3 upper = lower + new Vector3(0.2f, 0.6f, 0.1f);
+        Quaternion basis = lowerRotation * BatPoseSolver.InvertRotation(anchorRotation);
+        Quaternion beforeRotation = BatPoseSolver.AlignLocalYToAxis(basis, upper - lower);
+        Vector3 beforePosition = lower - beforeRotation * anchorPosition;
+        BatPose offset = BatPoseSolver.CaptureLock(lower, lowerRotation, beforePosition, beforeRotation);
+        BatPose locked = BatPoseSolver.ApplyLock(lower, lowerRotation, offset.position, offset.rotation);
+        Assert.IsTrue(Vector3.Distance(locked.position, beforePosition) < 0.001f);
+        Assert.IsTrue(Mathf.Abs(TestRotationDot(locked.rotation, beforeRotation)) > 0.9999f);
+        Quaternion unlocked = BatPoseSolver.AlignLocalYToAxis(basis, upper - lower);
+        Assert.IsTrue(Mathf.Abs(TestRotationDot(unlocked, locked.rotation)) > 0.9999f);
+        Vector3 movedUpper = lower + new Vector3(-0.5f, 0.3f, 0.4f);
+        Quaternion resumed = BatPoseSolver.AlignLocalYToAxis(basis, movedUpper - lower);
+        Assert.IsTrue(Vector3.Dot(resumed * Vector3.up, (movedUpper - lower).normalized) > 0.999f);
+        Assert.IsTrue(Mathf.Abs(TestRotationDot(resumed, locked.rotation)) < 0.99f);
+    }
+
+    [TsukimiTest]
+    public void LockedPoseStartsAtCapturedBodyAndFollowsOnlyLower()
+    {
+        Vector3 lower = new Vector3(0.3f, 1.2f, -0.4f);
+        Quaternion lowerRotation = Quaternion.Euler(10f, 30f, 20f);
+        Vector3 bodyPosition = new Vector3(0.5f, 1.4f, -0.2f);
+        Quaternion bodyRotation = Quaternion.Euler(25f, 50f, 15f);
+        BatPose offset = BatPoseSolver.CaptureLock(lower, lowerRotation, bodyPosition, bodyRotation);
+        BatPose initial = BatPoseSolver.ApplyLock(lower, lowerRotation, offset.position, offset.rotation);
+        Assert.IsTrue(Vector3.Distance(initial.position, bodyPosition) < 0.001f);
+        Assert.IsTrue(Mathf.Abs(TestRotationDot(initial.rotation, bodyRotation)) > 0.9999f);
+
+        // Moving the upper hand is intentionally absent from the locked calculation.
+        Vector3 upperBefore = new Vector3(1f, 2f, 3f);
+        Vector3 upperAfter = new Vector3(-2f, 4f, -1f);
+        Assert.IsTrue(Vector3.Distance(upperBefore, upperAfter) > 1f);
+        BatPose unchanged = BatPoseSolver.ApplyLock(lower, lowerRotation, offset.position, offset.rotation);
+        Assert.IsTrue(Vector3.Distance(initial.position, unchanged.position) < 0.001f);
+        Assert.IsTrue(Mathf.Abs(TestRotationDot(initial.rotation, unchanged.rotation)) > 0.9999f);
+
+        Vector3 movedLower = new Vector3(-0.2f, 1f, 0.7f);
+        Quaternion movedRotation = Quaternion.Euler(-20f, 80f, 5f);
+        BatPose moved = BatPoseSolver.ApplyLock(movedLower, movedRotation, offset.position, offset.rotation);
+        Assert.IsTrue(Vector3.Distance(moved.position, movedLower + movedRotation * offset.position) < 0.001f);
+        Assert.IsTrue(Mathf.Abs(TestRotationDot(moved.rotation, movedRotation * offset.rotation)) > 0.9999f);
+    }
+
+    [TsukimiTest]
+    public void LockedStateSerializesToRemoteAndResetsVisualHistory()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi remote = Mimic.Join();
+        Mimic.Become(remote);
+        _historyCount = 2;
+        Mimic.Become(owner);
+        gripState = BatGripConstants.GripLocked;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
+        stateRevision = 7;
+        RequestSerialization();
+        Mimic.Deliver();
+        Mimic.Become(remote);
+        Assert.IsTrue(gripState == BatGripConstants.GripLocked && lowerHand == BatGripConstants.HandLeft &&
+            upperHand == BatGripConstants.HandRight && stateRevision == 7);
+        Assert.IsTrue(_historyCount == 0);
+    }
+
+    [TsukimiTest]
+    public void UpperReleaseKeepsOffsetAndLowerPromotionClearsIt()
+    {
+        Mimic.Join();
+        gripState = BatGripConstants.GripLocked;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
+        _hasLockOffset = true;
+        BatGripTransition releasedUpper = BatGripLogic.ResolvePickup(gripState, lowerHand, upperHand,
+            BatGripConstants.HandLeft, BatGripConstants.HandNone);
+        CommitGripState(releasedUpper.state, releasedUpper.lowerHand, releasedUpper.upperHand, releasedUpper.promoted);
+        Assert.IsTrue(gripState == BatGripConstants.GripLocked && _hasLockOffset);
+
+        upperHand = BatGripConstants.HandRight;
+        BatGripTransition promoted = BatGripLogic.ResolvePickup(gripState, lowerHand, upperHand,
+            BatGripConstants.HandNone, BatGripConstants.HandRight);
+        Assert.IsTrue(promoted.promoted && promoted.state == BatGripConstants.GripLowerHeld);
+        SwapProxyRoles();
+        CommitGripState(promoted.state, promoted.lowerHand, promoted.upperHand, promoted.promoted);
+        Assert.IsTrue(gripState == BatGripConstants.GripLowerHeld && lowerHand == BatGripConstants.HandRight);
+        Assert.IsFalse(_hasLockOffset);
+        Assert.IsTrue(_lowerProxy == BatGripConstants.ProxyB && _upperProxy == BatGripConstants.ProxyA);
+    }
+
+    [TsukimiTest]
+    public void GripIdentifiersPreserveNetworkValues()
+    {
+        Assert.IsTrue(BatGripConstants.GripIdle == 0 && BatGripConstants.GripLowerHeld == 1 &&
+            BatGripConstants.GripTwoHandHeld == 2 && BatGripConstants.GripLocked == 3);
+        Assert.IsTrue(BatGripConstants.HandNone == 0 && BatGripConstants.HandLeft == 1 &&
+            BatGripConstants.HandRight == 2);
+        Assert.IsTrue(BatGripConstants.ProxyNone == 0 && BatGripConstants.ProxyA == 1 &&
+            BatGripConstants.ProxyB == 2 && BatGripConstants.ProxyOther == 3);
+    }
+
+    [TsukimiTest]
+    public void DrivenBodyVelocityUsesPoseDifferences()
+    {
+        Vector3 linear = BatKinematics.LinearVelocity(Vector3.zero, new Vector3(1f, -2f, 0.5f), 0.5f);
+        Assert.IsTrue(Vector3.Distance(linear, new Vector3(2f, -4f, 1f)) < 0.001f);
+    }
+
+    [TsukimiTest]
+    public void VisualHistoryRequiresAValidTimeSample()
+    {
+        Vector3 position;
+        Quaternion rotation;
+        Assert.IsFalse(TryGetGripFrameAt(1f, out position, out rotation));
+        RecordRemoteGripFrame(1f, Vector3.zero, Quaternion.identity);
+        Assert.IsFalse(TryGetGripFrameAt(0.9f, out position, out rotation));
+        Assert.IsTrue(TryGetGripFrameAt(1f, out position, out rotation));
+        Assert.IsTrue(Vector3.Distance(position, Vector3.zero) < 0.001f);
+        Assert.IsFalse(TryGetGripFrameAt(1.2f, out position, out rotation));
+    }
+
     [TsukimiTest]
     public void IdleLowerPickupIsReconciledUntilAccepted()
     {
-        gripState = GripIdle;
+        gripState = BatGripConstants.GripIdle;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandLeft, HandNone, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandLeft, BatGripConstants.HandNone, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed);
-        Assert.IsTrue(nextState == GripLowerHeld && nextLower == HandLeft && nextUpper == HandNone);
+        Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld && nextLower == BatGripConstants.HandLeft && nextUpper == BatGripConstants.HandNone);
         Assert.IsFalse(promoted);
-        changed = ResolvePickupState(HandLeft, HandNone, out nextState, out nextLower, out nextUpper, out promoted);
+        changed = ResolvePickupState(BatGripConstants.HandLeft, BatGripConstants.HandNone, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed);
     }
 
     [TsukimiTest]
     public void UpperPickupFromOtherHandEntersTwoHandHeld()
     {
-        gripState = GripLowerHeld;
-        lowerHand = HandRight;
+        gripState = BatGripConstants.GripLowerHeld;
+        lowerHand = BatGripConstants.HandRight;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandRight, HandLeft, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandRight, BatGripConstants.HandLeft, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed);
-        Assert.IsTrue(nextState == GripTwoHandHeld && nextLower == HandRight && nextUpper == HandLeft);
+        Assert.IsTrue(nextState == BatGripConstants.GripTwoHandHeld && nextLower == BatGripConstants.HandRight && nextUpper == BatGripConstants.HandLeft);
         Assert.IsFalse(promoted);
     }
 
     [TsukimiTest]
     public void SameHandCannotHoldBothRoles()
     {
-        gripState = GripLowerHeld;
-        lowerHand = HandLeft;
+        gripState = BatGripConstants.GripLowerHeld;
+        lowerHand = BatGripConstants.HandLeft;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandLeft, HandLeft, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandLeft, BatGripConstants.HandLeft, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsFalse(changed);
-        Assert.IsTrue(nextState == GripLowerHeld && nextUpper == HandNone);
-        Assert.IsTrue(HandHoldingProxy(ProxyA, ProxyOther, ProxyNone) == HandNone);
+        Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld && nextUpper == BatGripConstants.HandNone);
+        Assert.IsTrue(HandHoldingProxy(BatGripConstants.ProxyA, BatGripConstants.ProxyOther, BatGripConstants.ProxyNone) == BatGripConstants.HandNone);
     }
 
     [TsukimiTest]
     public void UpperReleaseKeepsLowerHeld()
     {
-        gripState = GripTwoHandHeld;
-        lowerHand = HandLeft;
-        upperHand = HandRight;
+        gripState = BatGripConstants.GripTwoHandHeld;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandLeft, HandNone, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandLeft, BatGripConstants.HandNone, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed);
-        Assert.IsTrue(nextState == GripLowerHeld && nextLower == HandLeft && nextUpper == HandNone);
+        Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld && nextLower == BatGripConstants.HandLeft && nextUpper == BatGripConstants.HandNone);
         Assert.IsFalse(promoted);
     }
 
     [TsukimiTest]
     public void LowerReleasePromotesUpperAndSwapsProxyRoles()
     {
-        gripState = GripTwoHandHeld;
-        lowerHand = HandLeft;
-        upperHand = HandRight;
-        _lowerProxy = ProxyA;
-        _upperProxy = ProxyB;
+        gripState = BatGripConstants.GripTwoHandHeld;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
+        _lowerProxy = BatGripConstants.ProxyA;
+        _upperProxy = BatGripConstants.ProxyB;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandNone, HandRight, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandNone, BatGripConstants.HandRight, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed && promoted);
-        Assert.IsTrue(nextState == GripLowerHeld && nextLower == HandRight && nextUpper == HandNone);
+        Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld && nextLower == BatGripConstants.HandRight && nextUpper == BatGripConstants.HandNone);
         SwapProxyRoles();
-        Assert.IsTrue(_lowerProxy == ProxyB && _upperProxy == ProxyA);
+        Assert.IsTrue(_lowerProxy == BatGripConstants.ProxyB && _upperProxy == BatGripConstants.ProxyA);
 
         Vector3 proxyPosition = new Vector3(1f, 2f, 3f);
         Quaternion proxyRotation = Quaternion.Euler(15f, 30f, 5f);
@@ -100,52 +274,52 @@ public partial class BatBehaviour
     [TsukimiTest]
     public void LastLowerReleaseReturnsToIdle()
     {
-        gripState = GripLowerHeld;
-        lowerHand = HandRight;
+        gripState = BatGripConstants.GripLowerHeld;
+        lowerHand = BatGripConstants.HandRight;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandNone, HandNone, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandNone, BatGripConstants.HandNone, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed && !promoted);
-        Assert.IsTrue(nextState == GripIdle && nextLower == HandNone && nextUpper == HandNone);
+        Assert.IsTrue(nextState == BatGripConstants.GripIdle && nextLower == BatGripConstants.HandNone && nextUpper == BatGripConstants.HandNone);
     }
 
     [TsukimiTest]
     public void LockedUpperReleasePreservesLockAndLowerReleasePromotes()
     {
-        gripState = GripLocked;
-        lowerHand = HandLeft;
-        upperHand = HandRight;
+        gripState = BatGripConstants.GripLocked;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandLeft, HandNone, out nextState, out nextLower, out nextUpper, out promoted);
+        bool changed = ResolvePickupState(BatGripConstants.HandLeft, BatGripConstants.HandNone, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed && !promoted);
-        Assert.IsTrue(nextState == GripLocked && nextLower == HandLeft && nextUpper == HandNone);
-        changed = ResolvePickupState(HandNone, HandRight, out nextState, out nextLower, out nextUpper, out promoted);
+        Assert.IsTrue(nextState == BatGripConstants.GripLocked && nextLower == BatGripConstants.HandLeft && nextUpper == BatGripConstants.HandNone);
+        changed = ResolvePickupState(BatGripConstants.HandNone, BatGripConstants.HandRight, out nextState, out nextLower, out nextUpper, out promoted);
         Assert.IsTrue(changed && promoted);
-        Assert.IsTrue(nextState == GripLowerHeld && nextLower == HandRight && nextUpper == HandNone);
+        Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld && nextLower == BatGripConstants.HandRight && nextUpper == BatGripConstants.HandNone);
     }
 
     [TsukimiTest]
     public void UnlockAfterUpperReleaseUsesCurrentPickupState()
     {
-        gripState = GripLocked;
-        lowerHand = HandLeft;
-        upperHand = HandRight;
+        gripState = BatGripConstants.GripLocked;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
         int nextState;
         int nextLower;
         int nextUpper;
         bool promoted;
-        bool changed = ResolvePickupState(HandLeft, HandNone, out nextState, out nextLower, out nextUpper, out promoted);
-        Assert.IsTrue(changed && !promoted && nextState == GripLocked && nextUpper == HandNone);
+        bool changed = ResolvePickupState(BatGripConstants.HandLeft, BatGripConstants.HandNone, out nextState, out nextLower, out nextUpper, out promoted);
+        Assert.IsTrue(changed && !promoted && nextState == BatGripConstants.GripLocked && nextUpper == BatGripConstants.HandNone);
         gripState = nextState;
         lowerHand = nextLower;
         upperHand = nextUpper;
-        changed = ResolveUse(HandLeft, out nextState, out nextLower, out nextUpper);
-        Assert.IsTrue(changed && nextState == GripLowerHeld && nextUpper == HandNone);
+        changed = ResolveUse(BatGripConstants.HandLeft, out nextState, out nextLower, out nextUpper);
+        Assert.IsTrue(changed && nextState == BatGripConstants.GripLowerHeld && nextUpper == BatGripConstants.HandNone);
     }
 
     [TsukimiTest]
@@ -153,7 +327,7 @@ public partial class BatBehaviour
     {
         Quaternion baseRotation = Quaternion.Euler(25f, 35f, 10f);
         Vector3 axis = new Vector3(0.3f, 0.8f, -0.4f).normalized;
-        Quaternion result = AlignLocalYToAxis(baseRotation, axis);
+        Quaternion result = BatPoseSolver.AlignLocalYToAxis(baseRotation, axis);
         Vector3 baseRight = baseRotation * Vector3.right;
         Vector3 projectedRight = (baseRight - axis * Vector3.Dot(baseRight, axis)).normalized;
         Vector3 resultRight = result * Vector3.right;
@@ -212,27 +386,27 @@ public partial class BatBehaviour
     [TsukimiTest]
     public void LowerUseLocksAndUnlocksToAvailableGripState()
     {
-        gripState = GripTwoHandHeld;
-        lowerHand = HandLeft;
-        upperHand = HandRight;
+        gripState = BatGripConstants.GripTwoHandHeld;
+        lowerHand = BatGripConstants.HandLeft;
+        upperHand = BatGripConstants.HandRight;
         int nextState;
         int nextLower;
         int nextUpper;
 
-        bool changed = ResolveUse(HandLeft, out nextState, out nextLower, out nextUpper);
+        bool changed = ResolveUse(BatGripConstants.HandLeft, out nextState, out nextLower, out nextUpper);
         Assert.IsTrue(changed);
-        Assert.IsTrue(nextState == GripLocked);
-        Assert.IsTrue(nextUpper == HandRight);
+        Assert.IsTrue(nextState == BatGripConstants.GripLocked);
+        Assert.IsTrue(nextUpper == BatGripConstants.HandRight);
 
-        gripState = GripLocked;
-        changed = ResolveUse(HandLeft, out nextState, out nextLower, out nextUpper);
+        gripState = BatGripConstants.GripLocked;
+        changed = ResolveUse(BatGripConstants.HandLeft, out nextState, out nextLower, out nextUpper);
         Assert.IsTrue(changed);
-        Assert.IsTrue(nextState == GripTwoHandHeld);
+        Assert.IsTrue(nextState == BatGripConstants.GripTwoHandHeld);
 
-        upperHand = HandNone;
-        changed = ResolveUse(HandLeft, out nextState, out nextLower, out nextUpper);
+        upperHand = BatGripConstants.HandNone;
+        changed = ResolveUse(BatGripConstants.HandLeft, out nextState, out nextLower, out nextUpper);
         Assert.IsTrue(changed);
-        Assert.IsTrue(nextState == GripLowerHeld);
+        Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld);
     }
 
     [TsukimiTest]
