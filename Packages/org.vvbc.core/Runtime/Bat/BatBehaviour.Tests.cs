@@ -4,6 +4,171 @@ using VRC.SDKBase;
 
 public partial class BatBehaviour
 {
+    [CallLimit("RequestSerialization", 0)]
+    [CallLimit("SendCustomEventDelayedFrames", 0)]
+    [TsukimiTest]
+    public void RecoveryStopsWithoutSpawnOrBodyAuthority()
+    {
+        Mimic.Join();
+        _pickupRecoveryScheduled = true;
+        isSpawned = false;
+        RecoverPickups();
+        Assert.IsFalse(_pickupRecoveryScheduled);
+        isSpawned = true;
+        RecoverPickups();
+        Assert.IsFalse(_pickupRecoveryScheduled);
+        Assert.AreEqual(BatGripConstants.GripIdle, gripState);
+    }
+
+    [TsukimiTest]
+    public void RapidGripEventsExtendTheSettlementWindow()
+    {
+        Mimic.Join();
+        motion = null;
+        GripChanged(BatGripConstants.ProxyA, BatGripConstants.HandLeft);
+        GripChanged(BatGripConstants.ProxyB, BatGripConstants.HandRight);
+        Assert.IsTrue(_gripSettlementScheduled);
+        Mimic.AdvanceFrames(2);
+        Assert.IsTrue(_gripSettlementScheduled);
+        Mimic.AdvanceFrames(2);
+        Assert.IsFalse(_gripSettlementScheduled);
+    }
+
+    [TsukimiTest]
+    public void MotionModeMatchesSpawnAuthorityAndGrip()
+    {
+        Assert.AreEqual(BatMotionBehaviour.Inactive, SelectMotionMode(false, true, true, BatGripConstants.GripLowerHeld));
+        Assert.AreEqual(BatMotionBehaviour.LocalFree, SelectMotionMode(true, true, true, BatGripConstants.GripIdle));
+        Assert.AreEqual(BatMotionBehaviour.LocalHeld, SelectMotionMode(true, true, true, BatGripConstants.GripLowerHeld));
+        Assert.AreEqual(BatMotionBehaviour.LocalHeld, SelectMotionMode(true, true, true, BatGripConstants.GripLocked));
+        Assert.AreEqual(BatMotionBehaviour.Inactive, SelectMotionMode(true, true, false, BatGripConstants.GripLowerHeld));
+        Assert.AreEqual(BatMotionBehaviour.Inactive, SelectMotionMode(true, false, false, BatGripConstants.GripIdle));
+        Assert.AreEqual(BatMotionBehaviour.RemoteHeld, SelectMotionMode(true, false, false, BatGripConstants.GripTwoHandHeld));
+    }
+
+    [CallLimit("RequestSerialization", 0)]
+    [TsukimiTest]
+    public void GripEventsTrackHandsAndDropWithoutTrustingPickupState()
+    {
+        Mimic.Join();
+        motion = null;
+        isSpawned = false;
+        GripChanged(BatGripConstants.ProxyA, BatGripConstants.HandRight);
+        GripChanged(BatGripConstants.ProxyB, BatGripConstants.HandLeft);
+        Assert.AreEqual(BatGripConstants.ProxyA, _lastRightProxy);
+        Assert.AreEqual(BatGripConstants.ProxyB, _lastLeftProxy);
+        GripChanged(BatGripConstants.ProxyA, BatGripConstants.HandNone);
+        Assert.AreEqual(BatGripConstants.ProxyNone, _lastRightProxy);
+        Assert.AreEqual(BatGripConstants.ProxyB, _lastLeftProxy);
+        GripChanged(BatGripConstants.ProxyA, BatGripConstants.HandRight);
+        GripChanged(BatGripConstants.ProxyB, BatGripConstants.HandNone);
+        Assert.AreEqual(BatGripConstants.ProxyA, _lastRightProxy);
+        Assert.AreEqual(BatGripConstants.ProxyNone, _lastLeftProxy);
+        Assert.AreEqual(BatGripConstants.GripIdle, gripState);
+    }
+
+    [TsukimiTest]
+    public void UseReleaseClearsOnlyItsHand()
+    {
+        _leftUseDown = true;
+        _rightUseDown = true;
+        _lastLeftProxy = BatGripConstants.ProxyA;
+        _lastRightProxy = BatGripConstants.ProxyB;
+        GripUseUp(BatGripConstants.ProxyA);
+        Assert.IsFalse(_leftUseDown);
+        Assert.IsTrue(_rightUseDown);
+        GripUseUp(BatGripConstants.ProxyB);
+        Assert.IsFalse(_rightUseDown);
+    }
+
+    [TsukimiTest]
+    public void PickupRequiresSpawnAndLocalOwnership()
+    {
+        isSpawned = false;
+        Assert.IsFalse(CanPickupProxy(true, BatGripConstants.ProxyA));
+        Assert.IsFalse(CanPickupProxy(false, BatGripConstants.ProxyA));
+        isSpawned = true;
+        Assert.IsFalse(CanPickupProxy(false, BatGripConstants.ProxyA));
+        Assert.IsFalse(CanPickupProxy(false, BatGripConstants.ProxyB));
+        Assert.IsTrue(CanPickupProxy(true, BatGripConstants.ProxyA));
+        Assert.IsFalse(CanPickupProxy(true, BatGripConstants.ProxyB));
+        gripState = BatGripConstants.GripLowerHeld;
+        Assert.IsTrue(CanPickupProxy(true, BatGripConstants.ProxyB));
+        Assert.IsFalse(CanPickupProxy(false, BatGripConstants.ProxyB));
+    }
+
+    [TsukimiTest]
+    public void SpawnStateReachesRemoteAndLateJoiner()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi remote = Mimic.Join();
+        Mimic.Become(owner);
+        Assert.IsFalse(isSpawned);
+        MarkSpawned();
+        Mimic.Deliver();
+        Mimic.Become(remote);
+        Assert.IsTrue(isSpawned);
+        VRCPlayerApi late = Mimic.Join();
+        Mimic.Become(late);
+        Assert.IsTrue(isSpawned);
+    }
+
+    [TsukimiTest]
+    public void ChangedGripStateIsSentByOwner()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi remote = Mimic.Join();
+        Mimic.Become(owner);
+        CommitGripState(BatGripConstants.GripLowerHeld, BatGripConstants.HandLeft, BatGripConstants.HandNone, false);
+        Mimic.Deliver();
+        Mimic.Become(remote);
+        Assert.IsTrue(gripState == BatGripConstants.GripLowerHeld && lowerHand == BatGripConstants.HandLeft && stateRevision == 1);
+    }
+
+    [CallLimit("RequestSerialization", 0)]
+    [TsukimiTest]
+    public void UnchangedGripStateDoesNotSend()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi remote = Mimic.Join();
+        Mimic.Become(owner);
+        stateRevision = 42;
+        CommitGripState(gripState, lowerHand, upperHand, false);
+        Mimic.AdvanceFrames(1);
+        Mimic.Become(remote);
+        Assert.AreEqual(0, stateRevision);
+    }
+
+    [TsukimiTest]
+    public void NonOwnerCannotChangeGripOrSpawnState()
+    {
+        Mimic.Join();
+        VRCPlayerApi remote = Mimic.Join();
+        Mimic.Become(remote);
+        CommitGripState(BatGripConstants.GripLowerHeld, BatGripConstants.HandLeft, BatGripConstants.HandNone, false);
+        MarkSpawned();
+        Assert.AreEqual(BatGripConstants.GripIdle, gripState);
+        Assert.AreEqual(0, stateRevision);
+        Assert.IsFalse(isSpawned);
+    }
+
+    [CallLimit("RequestSerialization", 1)]
+    [TsukimiTest]
+    public void RepeatedSpawnDoesNotSend()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi remote = Mimic.Join();
+        Mimic.Become(owner);
+        MarkSpawned();
+        Mimic.Deliver();
+        stateRevision = 42;
+        MarkSpawned();
+        Mimic.AdvanceFrames(1);
+        Mimic.Become(remote);
+        Assert.IsTrue(isSpawned);
+        Assert.AreEqual(0, stateRevision);
+    }
+
     private float TestRotationDot(Quaternion first, Quaternion second)
     {
         return first.x * second.x + first.y * second.y + first.z * second.z + first.w * second.w;
@@ -107,8 +272,6 @@ public partial class BatBehaviour
     {
         VRCPlayerApi owner = Mimic.Join();
         VRCPlayerApi remote = Mimic.Join();
-        Mimic.Become(remote);
-        _calibrated = true;
         Mimic.Become(owner);
         gripState = BatGripConstants.GripLocked;
         lowerHand = BatGripConstants.HandLeft;
@@ -119,7 +282,6 @@ public partial class BatBehaviour
         Mimic.Become(remote);
         Assert.IsTrue(gripState == BatGripConstants.GripLocked && lowerHand == BatGripConstants.HandLeft &&
             upperHand == BatGripConstants.HandRight && stateRevision == 7);
-        Assert.IsFalse(_calibrated);
     }
 
     [TsukimiTest]
@@ -396,68 +558,4 @@ public partial class BatBehaviour
         Assert.IsTrue(nextState == BatGripConstants.GripLowerHeld);
     }
 
-    [TsukimiTest]
-    public void CalibrationRequiresStableSamplesAndTracksHand()
-    {
-        velocitySmoothingSamples = 2;
-        calibrationStableDuration = 0.4f;
-        Vector3 hand = Vector3.zero;
-        Vector3 bodyPose = new Vector3(0f, 1f, 0f);
-        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
-        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
-        Assert.IsFalse(_calibrated);
-        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
-        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
-        Assert.IsFalse(_calibrated);
-        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
-        UpdateCalibration(hand, Quaternion.identity, bodyPose, Quaternion.identity, 0.1f);
-        Assert.IsTrue(_calibrated);
-        BatPose pose = BatPoseSolver.ApplyLock(new Vector3(1f, 0f, 0f), Quaternion.Euler(0f, 0f, 90f), _remotePositionOffset, _remoteRotationOffset);
-        Assert.IsTrue(Vector3.Distance(pose.position, Vector3.zero) < 0.001f);
-        ResetVisualHistory();
-        Assert.IsFalse(_calibrated);
-    }
-
-    [TsukimiTest]
-    public void CalibrationRejectsBodyDriftAndMotion()
-    {
-        velocitySmoothingSamples = 1;
-        calibrationStableDuration = 0.4f;
-        UpdateCalibration(Vector3.zero, Quaternion.identity, Vector3.zero, Quaternion.identity, 0.1f);
-        for (int i = 1; i <= 10; i++)
-            UpdateCalibration(Vector3.zero, Quaternion.identity, new Vector3(i * 0.01f, 0f, 0f), Quaternion.identity, 0.1f);
-        Assert.IsFalse(_calibrated);
-    }
-    [TsukimiTest]
-    public void FreeVisualPoseFollowsBothHandPositions()
-    {
-        Vector3 lower = new Vector3(1f, 2f, 3f);
-        Vector3 upper = lower + Vector3.right;
-        Vector3 anchor = new Vector3(0f, 0.1f, 0f);
-        BatPose pose = CalculateFreeVisualPose(lower, upper, anchor, Quaternion.identity);
-        Assert.IsTrue(Vector3.Distance(pose.position + pose.rotation * anchor, lower) < 0.001f);
-        Assert.IsTrue(Vector3.Dot(pose.rotation * Vector3.up, Vector3.right) > 0.999f);
-        BatPose moved = CalculateFreeVisualPose(lower + Vector3.forward, lower + Vector3.forward + Vector3.up, anchor, pose.rotation);
-        Assert.IsTrue(Vector3.Distance(moved.position + moved.rotation * anchor, lower + Vector3.forward) < 0.001f);
-        Assert.IsTrue(Vector3.Dot(moved.rotation * Vector3.up, Vector3.up) > 0.999f);
-    }
-
-    [TsukimiTest]
-    public void TransitionCancelsWhenHandStartsMoving()
-    {
-        Assert.IsFalse(ShouldCancelTransition(0.1f, 20f));
-        Assert.IsTrue(ShouldCancelTransition(0.16f, 0f));
-        Assert.IsTrue(ShouldCancelTransition(0f, 46f));
-    }
-
-    [TsukimiTest]
-    public void CalibrationRejectsSlowDriftDespiteLowSpeed()
-    {
-        velocitySmoothingSamples = 1;
-        calibrationStableDuration = 1f;
-        UpdateCalibration(Vector3.zero, Quaternion.identity, Vector3.zero, Quaternion.identity, 0.1f);
-        for (int i = 1; i <= 15; i++)
-            UpdateCalibration(Vector3.zero, Quaternion.identity, new Vector3(i * 0.003f, 0f, 0f), Quaternion.identity, 0.1f);
-        Assert.IsFalse(_calibrated);
-    }
 }
