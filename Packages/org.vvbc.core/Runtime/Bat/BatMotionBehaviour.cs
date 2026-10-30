@@ -96,10 +96,17 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
     // Called only on state/authority changes, after the object is enabled.
     public void Configure(int mode, int state, int lower, int upper, int lowerProxy,
         int upperProxy, int leftProxy, int rightProxy, int revision, VRCPlayerApi owner,
-        bool resetVelocity, bool solveNow, BatBehaviour controller)
+        bool resetVelocity, bool solveNow, bool recaptureLock, BatBehaviour controller)
     {
         bool resetVisual = _mode != mode || _remoteRevision != revision ||
             (_owner != null && owner != null && _owner.playerId != owner.playerId);
+        if (gripState == BatGripConstants.GripLocked && state != BatGripConstants.GripLocked)
+            _hasLockOffset = false;
+        if (_mode == RemoteRelease && mode == RemoteHeld)
+        {
+            _transitioning = false;
+            _visualCorrected = false;
+        }
         _mode = mode;
         gripState = state;
         lowerHand = lower;
@@ -115,6 +122,8 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         if (_gripBTransform == null && gripB != null) _gripBTransform = gripB.transform;
         if (resetVisual) ResetVisualHistory();
         if (mode != RemoteHeld) ResetVisualRoot();
+        if (recaptureLock && mode == LocalHeld && state == BatGripConstants.GripLocked)
+            CaptureLockOffset();
         if (body != null && resetVelocity) ResetVelocityTracking();
         if (solveNow && mode == LocalHeld && SolveOwnerPose() && resetVelocity)
             ResetVelocityTracking();
@@ -126,6 +135,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         _hasPreviousDrivenPose = false;
         _dropVelocity = Vector3.zero;
         _dropAngularVelocity = Vector3.zero;
+        _hasLockOffset = false;
         ResetVisualHistory();
         ResetVisualRoot();
     }
@@ -294,6 +304,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         Transform lowerProxyTransform = GetProxyTransform(_lowerProxy);
         if (lowerProxyTransform == null || body == null)
         {
+            _hasLockOffset = false;
             if (debugGripTransitions) Debug.Log("Bat CaptureLockOffset failed: lower proxy or Body missing");
             return false;
         }

@@ -50,14 +50,4 @@ public partial class BatGripBehaviour : TsukimiBehaviour
         if (bat != null) bat.GripChanged(proxy, BatGripConstants.HandNone);
     }
 
-    public override void OnPickupUseDown()
-    {
-        if (_pickupPending) ResolvePickup();
-        if (bat != null) bat.GripUse(proxy);
-    }
-
-    public override void OnPickupUseUp()
-    {
-        if (bat != null) bat.GripUseUp(proxy);
-    }
 }

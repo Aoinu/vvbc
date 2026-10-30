@@ -25,22 +25,18 @@ MonoBehaviour:
     %SystemInt32, 0\n    __ResolvePickup___t4: %SystemInt32, 0\n    __ResolvePickup___t5:
     %SystemInt32, 0\n    __ResolvePickup_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     __OnDrop___t0: %VRCUdonUdonBehaviour, null\n    __OnDrop___t1: %SystemInt32,
-    0\n    __OnDrop_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnPickupUseDown___t0:
-    %VRCUdonUdonBehaviour, null\n    __OnPickupUseDown___t1: %SystemInt32, 0\n   
-    __OnPickupUseDown_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnPickupUseUp___t0:
-    %VRCUdonUdonBehaviour, null\n    __OnPickupUseUp___t1: %SystemInt32, 0\n    __OnPickupUseUp_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __retaddr_end:
-    %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n    __const_1:
-    %SystemInt32, 0\n    __retaddr_0: %SystemUInt32, 0x00000044\n    __const_2: %SystemBoolean,
-    null\n    __const_3: %VRCSDKBaseVRCPlayerApi, null\n    __const_4: %VRCUdonUdonBehaviour,
-    null\n    __ResolvePickup_intnl_0: %SystemBoolean, null\n    __const_5: %UnityEngineObject,
-    null\n    __ResolvePickup_intnl_1: %SystemBoolean, null\n    __ResolvePickup_intnl_2:
-    %SystemBoolean, null\n    __ResolvePickup_intnl_3: %VRCSDKBaseVRCPlayerApi, null\n   
-    __const_6: %SystemObject, null\n    __ResolvePickup_intnl_4: %SystemBoolean,
-    null\n    __const_7: %VRCSDKBaseVRC_PickupPickupHand, null\n    __ResolvePickup_intnl_5:
-    %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_6: %SystemBoolean,
-    null\n    __const_8: %SystemInt32, 1\n    __const_9: %VRCSDKBaseVRC_PickupPickupHand,
+    0\n    __OnDrop_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray,
+    null\n    __recSp: %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n   
+    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n   
+    __const_1: %SystemInt32, 0\n    __retaddr_0: %SystemUInt32, 0x00000044\n    __const_2:
+    %SystemBoolean, null\n    __const_3: %VRCSDKBaseVRCPlayerApi, null\n    __const_4:
+    %VRCUdonUdonBehaviour, null\n    __ResolvePickup_intnl_0: %SystemBoolean, null\n   
+    __const_5: %UnityEngineObject, null\n    __ResolvePickup_intnl_1: %SystemBoolean,
+    null\n    __ResolvePickup_intnl_2: %SystemBoolean, null\n    __ResolvePickup_intnl_3:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_6: %SystemObject, null\n    __ResolvePickup_intnl_4:
+    %SystemBoolean, null\n    __const_7: %VRCSDKBaseVRC_PickupPickupHand, null\n   
+    __ResolvePickup_intnl_5: %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_6:
+    %SystemBoolean, null\n    __const_8: %SystemInt32, 1\n    __const_9: %VRCSDKBaseVRC_PickupPickupHand,
     null\n    __ResolvePickup_intnl_7: %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_8:
     %SystemBoolean, null\n    __const_10: %SystemInt32, 2\n    __ResolvePickup_intnl_9:
     %SystemBoolean, null\n    __ResolvePickup_intnl_10: %VRCUdonUdonBehaviour, null\n   
@@ -53,14 +49,8 @@ MonoBehaviour:
     %SystemString, \"ResolvePickup\"\n    __const_19: %VRCUdonCommonEnumsEventTiming,
     null\n    __const_20: %SystemString, \"BatGripBehaviour: could not identify the
     pickup hand; retrying on use or ownership change.\"\n    __OnDrop_intnl_0: %SystemBoolean,
-    null\n    __OnDrop_intnl_1: %VRCUdonUdonBehaviour, null\n    __retaddr_1: %SystemUInt32,
-    0x0000128C\n    __OnPickupUseDown_intnl_0: %SystemBoolean, null\n    __OnPickupUseDown_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __const_21: %SystemString, \"__GripUse__SystemInt32_p_0\"\n   
-    __const_22: %SystemString, \"GripUse__SystemInt32\"\n    __OnPickupUseUp_intnl_0:
-    %SystemBoolean, null\n    __OnPickupUseUp_intnl_1: %VRCUdonUdonBehaviour, null\n   
-    __const_23: %SystemString, \"__GripUseUp__SystemInt32_p_0\"\n    __const_24:
-    %SystemString, \"GripUseUp__SystemInt32\"\n.data_end\n.code_start\n    .export
-    _onPickup\n    _onPickup:\n        PUSH, __const_0\n        PUSH, _pickupPending\n       
+    null\n    __OnDrop_intnl_1: %VRCUdonUdonBehaviour, null\n.data_end\n.code_start\n   
+    .export _onPickup\n    _onPickup:\n        PUSH, __const_0\n        PUSH, _pickupPending\n       
     COPY\n        PUSH, __const_1\n        PUSH, _attempts\n        COPY\n       
     PUSH, __retaddr_0\n        PUSH, __ResolvePickup_retjump\n        COPY\n       
     JUMP, __ResolvePickup_body\n        JUMP_INDIRECT, __OnPickup_retjump\n    .export
@@ -305,102 +295,11 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnDrop___t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnDrop_L1:\n       
-    JUMP_INDIRECT, __OnDrop_retjump\n    .export _onPickupUseDown\n    _onPickupUseDown:\n       
-    PUSH, __const_4\n        PUSH, __OnPickupUseDown___t0\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __OnPickupUseDown___t1\n        COPY\n       
-    PUSH, _pickupPending\n        JUMP_IF_FALSE, __OnPickupUseDown_L1\n        PUSH,
-    __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __retaddr_1\n        PUSH, __ResolvePickup_retjump\n        COPY\n       
-    JUMP, __ResolvePickup_body\n        PUSH, __recSp\n        PUSH, __const_8\n       
-    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseDown_L1:\n       
-    PUSH, bat\n        PUSH, __const_5\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __OnPickupUseDown_intnl_0\n        JUMP_IF_FALSE, __OnPickupUseDown_L3\n       
-    PUSH, bat\n        PUSH, __OnPickupUseDown___t0\n        COPY\n        PUSH,
-    proxy\n        PUSH, __OnPickupUseDown___t1\n        COPY\n        PUSH, bat\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        COPY\n        PUSH, __recStack\n       
-    PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, proxy\n        EXTERN,
-    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        PUSH, __const_21\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        PUSH, __const_22\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseDown_L3:\n       
-    JUMP_INDIRECT, __OnPickupUseDown_retjump\n    .export _onPickupUseUp\n    _onPickupUseUp:\n       
-    PUSH, __const_1\n        PUSH, __OnPickupUseUp___t1\n        COPY\n        PUSH,
-    bat\n        PUSH, __const_5\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __OnPickupUseUp_intnl_0\n        JUMP_IF_FALSE, __OnPickupUseUp_L1\n       
-    PUSH, proxy\n        PUSH, __OnPickupUseUp___t1\n        COPY\n        PUSH,
-    bat\n        PUSH, __OnPickupUseUp_intnl_1\n        COPY\n        PUSH, __recStack\n       
-    PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, proxy\n        EXTERN,
-    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        PUSH, __const_23\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseUp_L1:\n       
-    JUMP_INDIRECT, __OnPickupUseUp_retjump\n.code_end\n"
+    JUMP_INDIRECT, __OnDrop_retjump\n.code_end\n"
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 7cc5bf903c4d9214186bd99ae96abb2d, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: b0084f06f3bcae759d9eb10a7e668f9cb6edc17f93e0158f22bac26f68b816a4
+  sourceFingerprint: 6c66fd6992593a1ddcedd254e2412c39933b7a7161c29a0b842f247f481877bc
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -426,22 +325,18 @@ MonoBehaviour:
     %SystemInt32, 0\n    __ResolvePickup___t4: %SystemInt32, 0\n    __ResolvePickup___t5:
     %SystemInt32, 0\n    __ResolvePickup_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     __OnDrop___t0: %VRCUdonUdonBehaviour, null\n    __OnDrop___t1: %SystemInt32,
-    0\n    __OnDrop_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnPickupUseDown___t0:
-    %VRCUdonUdonBehaviour, null\n    __OnPickupUseDown___t1: %SystemInt32, 0\n   
-    __OnPickupUseDown_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnPickupUseUp___t0:
-    %VRCUdonUdonBehaviour, null\n    __OnPickupUseUp___t1: %SystemInt32, 0\n    __OnPickupUseUp_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __retaddr_end:
-    %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n    __const_1:
-    %SystemInt32, 0\n    __retaddr_0: %SystemUInt32, 0x00000044\n    __const_2: %SystemBoolean,
-    null\n    __const_3: %VRCSDKBaseVRCPlayerApi, null\n    __const_4: %VRCUdonUdonBehaviour,
-    null\n    __ResolvePickup_intnl_0: %SystemBoolean, null\n    __const_5: %UnityEngineObject,
-    null\n    __ResolvePickup_intnl_1: %SystemBoolean, null\n    __ResolvePickup_intnl_2:
-    %SystemBoolean, null\n    __ResolvePickup_intnl_3: %VRCSDKBaseVRCPlayerApi, null\n   
-    __const_6: %SystemObject, null\n    __ResolvePickup_intnl_4: %SystemBoolean,
-    null\n    __const_7: %VRCSDKBaseVRC_PickupPickupHand, null\n    __ResolvePickup_intnl_5:
-    %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_6: %SystemBoolean,
-    null\n    __const_8: %SystemInt32, 1\n    __const_9: %VRCSDKBaseVRC_PickupPickupHand,
+    0\n    __OnDrop_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray,
+    null\n    __recSp: %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n   
+    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n   
+    __const_1: %SystemInt32, 0\n    __retaddr_0: %SystemUInt32, 0x00000044\n    __const_2:
+    %SystemBoolean, null\n    __const_3: %VRCSDKBaseVRCPlayerApi, null\n    __const_4:
+    %VRCUdonUdonBehaviour, null\n    __ResolvePickup_intnl_0: %SystemBoolean, null\n   
+    __const_5: %UnityEngineObject, null\n    __ResolvePickup_intnl_1: %SystemBoolean,
+    null\n    __ResolvePickup_intnl_2: %SystemBoolean, null\n    __ResolvePickup_intnl_3:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_6: %SystemObject, null\n    __ResolvePickup_intnl_4:
+    %SystemBoolean, null\n    __const_7: %VRCSDKBaseVRC_PickupPickupHand, null\n   
+    __ResolvePickup_intnl_5: %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_6:
+    %SystemBoolean, null\n    __const_8: %SystemInt32, 1\n    __const_9: %VRCSDKBaseVRC_PickupPickupHand,
     null\n    __ResolvePickup_intnl_7: %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_8:
     %SystemBoolean, null\n    __const_10: %SystemInt32, 2\n    __ResolvePickup_intnl_9:
     %SystemBoolean, null\n    __ResolvePickup_intnl_10: %VRCUdonUdonBehaviour, null\n   
@@ -454,14 +349,8 @@ MonoBehaviour:
     this\n    __const_18: %SystemString, \"ResolvePickup\"\n    __const_19: %VRCUdonCommonEnumsEventTiming,
     null\n    __const_20: %SystemString, \"BatGripBehaviour: could not identify the
     pickup hand; retrying on use or ownership change.\"\n    __OnDrop_intnl_0: %SystemBoolean,
-    null\n    __OnDrop_intnl_1: %VRCUdonUdonBehaviour, null\n    __retaddr_1: %SystemUInt32,
-    0x0000130C\n    __OnPickupUseDown_intnl_0: %SystemBoolean, null\n    __OnPickupUseDown_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __const_21: %SystemString, \"__GripUse__SystemInt32_p_0\"\n   
-    __const_22: %SystemString, \"GripUse__SystemInt32\"\n    __OnPickupUseUp_intnl_0:
-    %SystemBoolean, null\n    __OnPickupUseUp_intnl_1: %VRCUdonUdonBehaviour, null\n   
-    __const_23: %SystemString, \"__GripUseUp__SystemInt32_p_0\"\n    __const_24:
-    %SystemString, \"GripUseUp__SystemInt32\"\n.data_end\n.code_start\n    .export
-    _onPickup\n    _onPickup:\n        PUSH, __const_0\n        PUSH, _pickupPending\n       
+    null\n    __OnDrop_intnl_1: %VRCUdonUdonBehaviour, null\n.data_end\n.code_start\n   
+    .export _onPickup\n    _onPickup:\n        PUSH, __const_0\n        PUSH, _pickupPending\n       
     COPY\n        PUSH, __const_1\n        PUSH, _attempts\n        COPY\n       
     PUSH, __retaddr_0\n        PUSH, __ResolvePickup_retjump\n        COPY\n       
     JUMP, __ResolvePickup_body\n        JUMP_INDIRECT, __OnPickup_retjump\n    .export
@@ -717,103 +606,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnDrop___t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnDrop_L1:\n       
-    JUMP_INDIRECT, __OnDrop_retjump\n    .export _onPickupUseDown\n    _onPickupUseDown:\n       
-    PUSH, __const_4\n        PUSH, __OnPickupUseDown___t0\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __OnPickupUseDown___t1\n        COPY\n       
-    PUSH, _pickupPending\n        JUMP_IF_FALSE, __OnPickupUseDown_L1\n        PUSH,
-    __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __retaddr_1\n        PUSH, __ResolvePickup_retjump\n        COPY\n       
-    JUMP, __ResolvePickup_body\n        PUSH, __recSp\n        PUSH, __const_8\n       
-    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseDown_L1:\n       
-    PUSH, bat\n        PUSH, __const_5\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __OnPickupUseDown_intnl_0\n        JUMP_IF_FALSE, __OnPickupUseDown_L3\n       
-    PUSH, bat\n        PUSH, __OnPickupUseDown___t0\n        COPY\n        PUSH,
-    proxy\n        PUSH, __OnPickupUseDown___t1\n        COPY\n        PUSH, __OnPickupUseDown___t0\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        COPY\n        PUSH, __recStack\n       
-    PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        PUSH, __const_21\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        PUSH, __const_22\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseDown_L3:\n       
-    JUMP_INDIRECT, __OnPickupUseDown_retjump\n    .export _onPickupUseUp\n    _onPickupUseUp:\n       
-    PUSH, __const_4\n        PUSH, __OnPickupUseUp___t0\n        COPY\n        PUSH,
-    __const_1\n        PUSH, __OnPickupUseUp___t1\n        COPY\n        PUSH, bat\n       
-    PUSH, __const_5\n        PUSH, __OnPickupUseUp_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __OnPickupUseUp_intnl_0\n        JUMP_IF_FALSE, __OnPickupUseUp_L1\n       
-    PUSH, bat\n        PUSH, __OnPickupUseUp___t0\n        COPY\n        PUSH, proxy\n       
-    PUSH, __OnPickupUseUp___t1\n        COPY\n        PUSH, __OnPickupUseUp___t0\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        COPY\n        PUSH, __recStack\n       
-    PUSH, __recSp\n        PUSH, __OnPickupUseUp___t0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        PUSH, __const_23\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseUp_L1:\n       
-    JUMP_INDIRECT, __OnPickupUseUp_retjump\n.code_end\n"
+    JUMP_INDIRECT, __OnDrop_retjump\n.code_end\n"
   optAfterUasm: ".data_start\n    bat: %VRCUdonUdonBehaviour, null\n    pickup: %VRCSDK3ComponentsVRCPickup,
     null\n    proxy: %SystemInt32, 0\n    _pickupPending: %SystemBoolean, null\n   
     _attempts: %SystemInt32, 0\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
@@ -825,22 +618,18 @@ MonoBehaviour:
     %SystemInt32, 0\n    __ResolvePickup___t4: %SystemInt32, 0\n    __ResolvePickup___t5:
     %SystemInt32, 0\n    __ResolvePickup_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     __OnDrop___t0: %VRCUdonUdonBehaviour, null\n    __OnDrop___t1: %SystemInt32,
-    0\n    __OnDrop_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnPickupUseDown___t0:
-    %VRCUdonUdonBehaviour, null\n    __OnPickupUseDown___t1: %SystemInt32, 0\n   
-    __OnPickupUseDown_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnPickupUseUp___t0:
-    %VRCUdonUdonBehaviour, null\n    __OnPickupUseUp___t1: %SystemInt32, 0\n    __OnPickupUseUp_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __retaddr_end:
-    %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n    __const_1:
-    %SystemInt32, 0\n    __retaddr_0: %SystemUInt32, 0x00000044\n    __const_2: %SystemBoolean,
-    null\n    __const_3: %VRCSDKBaseVRCPlayerApi, null\n    __const_4: %VRCUdonUdonBehaviour,
-    null\n    __ResolvePickup_intnl_0: %SystemBoolean, null\n    __const_5: %UnityEngineObject,
-    null\n    __ResolvePickup_intnl_1: %SystemBoolean, null\n    __ResolvePickup_intnl_2:
-    %SystemBoolean, null\n    __ResolvePickup_intnl_3: %VRCSDKBaseVRCPlayerApi, null\n   
-    __const_6: %SystemObject, null\n    __ResolvePickup_intnl_4: %SystemBoolean,
-    null\n    __const_7: %VRCSDKBaseVRC_PickupPickupHand, null\n    __ResolvePickup_intnl_5:
-    %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_6: %SystemBoolean,
-    null\n    __const_8: %SystemInt32, 1\n    __const_9: %VRCSDKBaseVRC_PickupPickupHand,
+    0\n    __OnDrop_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray,
+    null\n    __recSp: %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n   
+    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n   
+    __const_1: %SystemInt32, 0\n    __retaddr_0: %SystemUInt32, 0x00000044\n    __const_2:
+    %SystemBoolean, null\n    __const_3: %VRCSDKBaseVRCPlayerApi, null\n    __const_4:
+    %VRCUdonUdonBehaviour, null\n    __ResolvePickup_intnl_0: %SystemBoolean, null\n   
+    __const_5: %UnityEngineObject, null\n    __ResolvePickup_intnl_1: %SystemBoolean,
+    null\n    __ResolvePickup_intnl_2: %SystemBoolean, null\n    __ResolvePickup_intnl_3:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_6: %SystemObject, null\n    __ResolvePickup_intnl_4:
+    %SystemBoolean, null\n    __const_7: %VRCSDKBaseVRC_PickupPickupHand, null\n   
+    __ResolvePickup_intnl_5: %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_6:
+    %SystemBoolean, null\n    __const_8: %SystemInt32, 1\n    __const_9: %VRCSDKBaseVRC_PickupPickupHand,
     null\n    __ResolvePickup_intnl_7: %VRCSDK3ComponentsVRCPickup, null\n    __ResolvePickup_intnl_8:
     %SystemBoolean, null\n    __const_10: %SystemInt32, 2\n    __ResolvePickup_intnl_9:
     %SystemBoolean, null\n    __ResolvePickup_intnl_10: %VRCUdonUdonBehaviour, null\n   
@@ -853,14 +642,8 @@ MonoBehaviour:
     %SystemString, \"ResolvePickup\"\n    __const_19: %VRCUdonCommonEnumsEventTiming,
     null\n    __const_20: %SystemString, \"BatGripBehaviour: could not identify the
     pickup hand; retrying on use or ownership change.\"\n    __OnDrop_intnl_0: %SystemBoolean,
-    null\n    __OnDrop_intnl_1: %VRCUdonUdonBehaviour, null\n    __retaddr_1: %SystemUInt32,
-    0x0000128C\n    __OnPickupUseDown_intnl_0: %SystemBoolean, null\n    __OnPickupUseDown_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __const_21: %SystemString, \"__GripUse__SystemInt32_p_0\"\n   
-    __const_22: %SystemString, \"GripUse__SystemInt32\"\n    __OnPickupUseUp_intnl_0:
-    %SystemBoolean, null\n    __OnPickupUseUp_intnl_1: %VRCUdonUdonBehaviour, null\n   
-    __const_23: %SystemString, \"__GripUseUp__SystemInt32_p_0\"\n    __const_24:
-    %SystemString, \"GripUseUp__SystemInt32\"\n.data_end\n.code_start\n    .export
-    _onPickup\n    _onPickup:\n        PUSH, __const_0\n        PUSH, _pickupPending\n       
+    null\n    __OnDrop_intnl_1: %VRCUdonUdonBehaviour, null\n.data_end\n.code_start\n   
+    .export _onPickup\n    _onPickup:\n        PUSH, __const_0\n        PUSH, _pickupPending\n       
     COPY\n        PUSH, __const_1\n        PUSH, _attempts\n        COPY\n       
     PUSH, __retaddr_0\n        PUSH, __ResolvePickup_retjump\n        COPY\n       
     JUMP, __ResolvePickup_body\n        JUMP_INDIRECT, __OnPickup_retjump\n    .export
@@ -1105,98 +888,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnDrop___t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnDrop_L1:\n       
-    JUMP_INDIRECT, __OnDrop_retjump\n    .export _onPickupUseDown\n    _onPickupUseDown:\n       
-    PUSH, __const_4\n        PUSH, __OnPickupUseDown___t0\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __OnPickupUseDown___t1\n        COPY\n       
-    PUSH, _pickupPending\n        JUMP_IF_FALSE, __OnPickupUseDown_L1\n        PUSH,
-    __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __retaddr_1\n        PUSH, __ResolvePickup_retjump\n        COPY\n       
-    JUMP, __ResolvePickup_body\n        PUSH, __recSp\n        PUSH, __const_8\n       
-    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseDown_L1:\n       
-    PUSH, bat\n        PUSH, __const_5\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __OnPickupUseDown_intnl_0\n        JUMP_IF_FALSE, __OnPickupUseDown_L3\n       
-    PUSH, bat\n        PUSH, __OnPickupUseDown___t0\n        COPY\n        PUSH,
-    proxy\n        PUSH, __OnPickupUseDown___t1\n        COPY\n        PUSH, bat\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        COPY\n        PUSH, __recStack\n       
-    PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, proxy\n        EXTERN,
-    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        PUSH, __const_21\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
-    PUSH, __OnPickupUseDown_intnl_1\n        PUSH, __const_22\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseDown___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseDown_L3:\n       
-    JUMP_INDIRECT, __OnPickupUseDown_retjump\n    .export _onPickupUseUp\n    _onPickupUseUp:\n       
-    PUSH, __const_1\n        PUSH, __OnPickupUseUp___t1\n        COPY\n        PUSH,
-    bat\n        PUSH, __const_5\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __OnPickupUseUp_intnl_0\n        JUMP_IF_FALSE, __OnPickupUseUp_L1\n       
-    PUSH, proxy\n        PUSH, __OnPickupUseUp___t1\n        COPY\n        PUSH,
-    bat\n        PUSH, __OnPickupUseUp_intnl_1\n        COPY\n        PUSH, __recStack\n       
-    PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, proxy\n        EXTERN,
-    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        PUSH, __const_23\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
-    PUSH, __OnPickupUseUp_intnl_1\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp_intnl_0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t1\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_8\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPickupUseUp___t0\n       
-    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPickupUseUp_L1:\n       
-    JUMP_INDIRECT, __OnPickupUseUp_retjump\n.code_end\n"
+    JUMP_INDIRECT, __OnDrop_retjump\n.code_end\n"
   optBeforeInject:
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-9019631457980810548\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-9019631457980810548"
@@ -1216,10 +908,10 @@ MonoBehaviour:
   - "=__const_9\tEnumConst\t=VRCSDKBaseVRC_PickupPickupHand\t0\t\tInt32:=2\t\t\t"
   - "=__const_19\tEnumConst\t=VRCUdonCommonEnumsEventTiming\t0\t\tInt32:=0\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 164
-  optExternAfter: 164
-  optInsnBefore: 824
-  optInsnAfter: 799
-  optBytesBefore: 6412
-  optBytesAfter: 6244
+  optExternBefore: 118
+  optExternAfter: 118
+  optInsnBefore: 600
+  optInsnAfter: 581
+  optBytesBefore: 4664
+  optBytesAfter: 4536
   optStage: ran

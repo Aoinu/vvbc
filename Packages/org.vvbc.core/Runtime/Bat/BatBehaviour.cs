@@ -33,9 +33,6 @@ public partial class BatBehaviour : TsukimiBehaviour
     [UdonSynced]
     private int stateRevision;
 
-    private Vector3 _lockPositionOffset;
-    private Quaternion _lockRotationOffset = Quaternion.identity;
-    private bool _hasLockOffset;
     private int _lowerProxy = BatGripConstants.ProxyA;
     private int _upperProxy = BatGripConstants.ProxyB;
     private int _lastLeftProxy = BatGripConstants.ProxyNone;
@@ -50,10 +47,16 @@ public partial class BatBehaviour : TsukimiBehaviour
     private bool _ownershipMismatchReported;
     private bool _leftUseDown;
     private bool _rightUseDown;
+    private bool _hadBodyControl;
+    private bool _deferMotionUpdates;
+    private bool _deferredResetVelocity;
+    private bool _deferredSolvePose;
+    private bool _deferredDiscontinuity;
     private bool _pickupRecoveryScheduled;
     private bool _gripSettlementScheduled;
     private int _gripEventVersion;
     private int _settlementVersion;
+    private int _recentlyDroppedProxies;
 
     public void Start()
     {
@@ -82,10 +85,11 @@ public partial class BatBehaviour : TsukimiBehaviour
 
 
         CheckBodyOwnership();
-        if (CanControlBody() && gripState != BatGripConstants.GripIdle)
+        _hadBodyControl = CanControlBody();
+        if (_hadBodyControl && gripState != BatGripConstants.GripIdle)
             SetBodyHeld(true);
         RefreshHeldPickups();
-        UpdateMotion(true, false);
+        UpdateMotion(true, false, _hadBodyControl && gripState == BatGripConstants.GripLocked);
     }
 
     public override void InputUse(bool value, UdonInputEventArgs args)
@@ -93,14 +97,9 @@ public partial class BatBehaviour : TsukimiBehaviour
         int hand = ToGripHand(args.handType);
         if (!value) { EndUse(hand); return; }
         if (!isSpawned || !CanControlBody()) return;
+        RefreshHeldPickups();
         int proxy = hand == BatGripConstants.HandLeft ? _lastLeftProxy :
             hand == BatGripConstants.HandRight ? _lastRightProxy : BatGripConstants.ProxyNone;
-        if (proxy == BatGripConstants.ProxyNone)
-        {
-            RefreshHeldPickups();
-            proxy = hand == BatGripConstants.HandLeft ? _lastLeftProxy :
-                hand == BatGripConstants.HandRight ? _lastRightProxy : BatGripConstants.ProxyNone;
-        }
         GripUse(proxy);
     }
 
@@ -110,7 +109,7 @@ public partial class BatBehaviour : TsukimiBehaviour
     {
         ApplySpawnPresentation();
         UpdateProxyPresentation(_lastLeftProxy, _lastRightProxy);
-        UpdateMotion(false, false);
+        UpdateMotion(false, false, false);
     }
 
     public override void OnOwnershipTransferred(VRCPlayerApi player)
@@ -130,6 +129,9 @@ public partial class BatBehaviour : TsukimiBehaviour
     public void GripChanged(int proxy, int hand)
     {
         if (proxy != BatGripConstants.ProxyA && proxy != BatGripConstants.ProxyB) return;
+        int proxyMask = proxy == BatGripConstants.ProxyA ? 1 : 2;
+        if (hand == BatGripConstants.HandNone) _recentlyDroppedProxies |= proxyMask;
+        else _recentlyDroppedProxies &= ~proxyMask;
         _gripEventVersion++;
         if (!_gripSettlementScheduled)
         {
@@ -143,13 +145,14 @@ public partial class BatBehaviour : TsukimiBehaviour
         if (_lastRightProxy == proxy) _lastRightProxy = BatGripConstants.ProxyNone;
         if (hand == BatGripConstants.HandLeft) _lastLeftProxy = proxy;
         else if (hand == BatGripConstants.HandRight) _lastRightProxy = proxy;
+        int previousRevision = stateRevision;
         ReconcilePickups(_lastLeftProxy, _lastRightProxy);
         UpdateProxyPresentation(_lastLeftProxy, _lastRightProxy);
-        UpdateMotion(false, false);
+        if (previousRevision == stateRevision) UpdateMotion(false, false, false);
     }
 
-    // Both input paths may report the same held button. Clear on either use-up.
-    public void GripUse(int proxy)
+    // InputUse is the sole use-input source on both desktop and VR.
+    private void GripUse(int proxy)
     {
         if (!isSpawned || !CanControlBody()) return;
         if (proxy != BatGripConstants.ProxyA && proxy != BatGripConstants.ProxyB) return;
@@ -159,15 +162,11 @@ public partial class BatBehaviour : TsukimiBehaviour
             (hand == BatGripConstants.HandRight && _rightUseDown)) return;
         int nextState; int nextLower; int nextUpper;
         if (!ResolveUse(hand, out nextState, out nextLower, out nextUpper)) return;
-        if (nextState == BatGripConstants.GripLocked && !CaptureLockOffset()) return;
+        if (nextState == BatGripConstants.GripLocked &&
+            (motion == null || !motion.gameObject.activeSelf || !motion.CaptureLock())) return;
         if (hand == BatGripConstants.HandLeft) _leftUseDown = true;
         else _rightUseDown = true;
         CommitGripState(nextState, nextLower, nextUpper, false);
-    }
-
-    public void GripUseUp(int proxy)
-    {
-        EndUse(HandHoldingProxy(proxy, _lastLeftProxy, _lastRightProxy));
     }
 
     private void EndUse(int hand)
@@ -180,30 +179,50 @@ public partial class BatBehaviour : TsukimiBehaviour
     public void BodyOwnershipChanged()
     {
         CheckBodyOwnership();
-        if (CanControlBody())
+        bool canControl = CanControlBody();
+        bool recovered = canControl && !_hadBodyControl;
+        _hadBodyControl = canControl;
+        if (!canControl)
         {
+            _leftUseDown = false;
+            _rightUseDown = false;
+        }
+        if (recovered)
+        {
+            bool wasHeld = gripState != BatGripConstants.GripIdle;
+            _deferMotionUpdates = true;
             RefreshHeldPickups();
-            if (gripState != BatGripConstants.GripIdle) SetBodyHeld(true);
-            UpdateMotion(true, false);
-            if (gripState == BatGripConstants.GripLocked) _hasLockOffset = CaptureLockOffset();
-            else _hasLockOffset = false;
+            _deferMotionUpdates = false;
+            if (wasHeld && gripState != BatGripConstants.GripIdle) SetBodyHeld(true);
         }
         UpdateProxyPresentation(_lastLeftProxy, _lastRightProxy);
-        UpdateMotion(true, false);
+        UpdateMotion(recovered || _deferredResetVelocity, _deferredSolvePose,
+            recovered && gripState == BatGripConstants.GripLocked);
+        if (_deferredDiscontinuity && objectSync != null && canControl) objectSync.FlagDiscontinuity();
+        _deferredResetVelocity = false;
+        _deferredSolvePose = false;
+        _deferredDiscontinuity = false;
     }
 
     // A remote release finishes its existing visual interpolation before stopping.
     public void MotionReleaseFinished()
     {
-        UpdateMotion(false, false);
+        UpdateMotion(false, false, false);
     }
 
     private void RefreshHeldPickups()
     {
         VRCPlayerApi player = Networking.LocalPlayer;
-        int left = GetHeldProxy(player, BatGripConstants.HandLeft);
-        int right = GetHeldProxy(player, BatGripConstants.HandRight);
+        int left = FilterRecentlyDropped(GetHeldProxy(player, BatGripConstants.HandLeft));
+        int right = FilterRecentlyDropped(GetHeldProxy(player, BatGripConstants.HandRight));
         ReconcilePickups(left, right);
+    }
+
+    private int FilterRecentlyDropped(int proxy)
+    {
+        if (proxy == BatGripConstants.ProxyA && (_recentlyDroppedProxies & 1) != 0) return BatGripConstants.ProxyNone;
+        if (proxy == BatGripConstants.ProxyB && (_recentlyDroppedProxies & 2) != 0) return BatGripConstants.ProxyNone;
+        return proxy;
     }
 
     // Recovery for a missed SDK callback; normal Pickup/Drop transitions are immediate.
@@ -224,6 +243,7 @@ public partial class BatBehaviour : TsukimiBehaviour
             return;
         }
         _gripSettlementScheduled = false;
+        _recentlyDroppedProxies = 0;
     }
 
     private void SchedulePickupRecovery()
@@ -233,9 +253,9 @@ public partial class BatBehaviour : TsukimiBehaviour
         SendCustomEventDelayedFrames(nameof(RecoverPickups), 60);
     }
 
-    private int SelectMotionMode(bool spawned, bool localOwner, bool canControl, int state)
+    private int SelectMotionMode(bool spawned, bool localOwner, bool canControl, bool ownersMatch, int state)
     {
-        if (!spawned) return BatMotionBehaviour.Inactive;
+        if (!spawned || !ownersMatch) return BatMotionBehaviour.Inactive;
         if (localOwner)
         {
             if (!canControl) return BatMotionBehaviour.Inactive;
@@ -244,19 +264,23 @@ public partial class BatBehaviour : TsukimiBehaviour
         return state == BatGripConstants.GripIdle ? BatMotionBehaviour.Inactive : BatMotionBehaviour.RemoteHeld;
     }
 
-    private void UpdateMotion(bool resetVelocity, bool solveNow)
+    private void UpdateMotion(bool resetVelocity, bool solveNow, bool recaptureLock)
     {
+        if (_deferMotionUpdates) return;
         SchedulePickupRecovery();
         if (motion == null) return;
         VRCPlayerApi owner = Networking.GetOwner(gameObject);
+        VRCPlayerApi bodyOwner = objectSync != null ? Networking.GetOwner(objectSync.gameObject) : null;
         bool localOwner = owner != null && owner.isLocal;
-        int mode = SelectMotionMode(isSpawned, localOwner, localOwner && CanControlBody(), gripState);
+        bool ownersMatch = owner != null && bodyOwner != null && owner.playerId == bodyOwner.playerId;
+        bool canControl = localOwner && ownersMatch && body != null && objectSync.gameObject == body.gameObject;
+        int mode = SelectMotionMode(isSpawned, localOwner, canControl, ownersMatch, gripState);
         GameObject target = motion.gameObject;
         if (mode == BatMotionBehaviour.Inactive)
         {
             if (target.activeSelf)
             {
-                if (isSpawned && owner != null && !owner.isLocal &&
+                if (isSpawned && ownersMatch && owner != null && !owner.isLocal &&
                     gripState == BatGripConstants.GripIdle && motion.BeginRemoteRelease()) return;
                 motion.StopMotion();
                 target.SetActive(false);
@@ -265,7 +289,7 @@ public partial class BatBehaviour : TsukimiBehaviour
         }
         if (!target.activeSelf) target.SetActive(true);
         motion.Configure(mode, gripState, lowerHand, upperHand, _lowerProxy, _upperProxy,
-            _lastLeftProxy, _lastRightProxy, stateRevision, owner, resetVelocity, solveNow, this);
+            _lastLeftProxy, _lastRightProxy, stateRevision, owner, resetVelocity, solveNow, recaptureLock, this);
     }
 
     private int GetHeldProxy(VRCPlayerApi player, int hand)
@@ -298,6 +322,10 @@ public partial class BatBehaviour : TsukimiBehaviour
             Debug.Log("Bat pickups: left=" + ProxyName(leftProxy) + " right=" + ProxyName(rightProxy) +
                 " state=" + gripState + " lowerProxy=" + ProxyName(_lowerProxy) + " upperProxy=" + ProxyName(_upperProxy) +
                 " localOwner=" + IsLocalOwner());
+        if ((_lastLeftProxy == BatGripConstants.ProxyA || _lastLeftProxy == BatGripConstants.ProxyB) &&
+            leftProxy != _lastLeftProxy) EndUse(BatGripConstants.HandLeft);
+        if ((_lastRightProxy == BatGripConstants.ProxyA || _lastRightProxy == BatGripConstants.ProxyB) &&
+            rightProxy != _lastRightProxy) EndUse(BatGripConstants.HandRight);
         _lastLeftProxy = leftProxy;
         _lastRightProxy = rightProxy;
 
@@ -311,7 +339,6 @@ public partial class BatBehaviour : TsukimiBehaviour
                 out nextState, out nextLower, out nextUpper, out promoted)) return;
         if (!isSpawned || !CanControlBody()) return;
 
-        if (promoted) SwapProxyRoles();
         CommitGripState(nextState, nextLower, nextUpper, promoted);
     }
 
@@ -325,13 +352,18 @@ public partial class BatBehaviour : TsukimiBehaviour
     private void CommitGripState(int nextState, int nextLower,
         int nextUpper, bool promoted)
     {
-        if (!IsLocalOwner()) return;
+        if (!CanControlBody()) return;
+        CommitAuthorizedGripState(nextState, nextLower, nextUpper, promoted);
+    }
+
+    private void CommitAuthorizedGripState(int nextState, int nextLower,
+        int nextUpper, bool promoted)
+    {
         bool wasHeld = gripState != BatGripConstants.GripIdle;
         bool willBeHeld = nextState != BatGripConstants.GripIdle;
         if (gripState == nextState && lowerHand == nextLower && upperHand == nextUpper) return;
 
-        if (gripState == BatGripConstants.GripLocked && nextState != BatGripConstants.GripLocked)
-            _hasLockOffset = false;
+        if (promoted) SwapProxyRoles();
         gripState = nextState;
         lowerHand = nextLower;
         upperHand = nextUpper;
@@ -345,7 +377,6 @@ public partial class BatBehaviour : TsukimiBehaviour
             if (!wasHeld && willBeHeld)
             {
                 SetBodyHeld(true);
-                UpdateMotion(true, false);
             }
             else if (wasHeld && !willBeHeld)
             {
@@ -354,23 +385,26 @@ public partial class BatBehaviour : TsukimiBehaviour
                 {
                     if (motion != null && motion.gameObject.activeSelf) motion.ReleaseVelocity();
                 }
-                _hasLockOffset = false;
             }
-
-            if (willBeHeld && (promoted || !wasHeld))
-            {
-                UpdateMotion(true, true);
-                if (promoted && objectSync != null) objectSync.FlagDiscontinuity();
-            }
-            else if (willBeHeld && gripState == BatGripConstants.GripLocked)
-                UpdateMotion(false, true);
         }
 
         RequestSerialization();
 
         ApplyBodyCollider();
         UpdateProxyPresentation(_lastLeftProxy, _lastRightProxy);
-        UpdateMotion(false, false);
+        bool resetVelocity = willBeHeld && (promoted || !wasHeld);
+        bool solveNow = resetVelocity || (willBeHeld && gripState == BatGripConstants.GripLocked);
+        if (_deferMotionUpdates)
+        {
+            _deferredResetVelocity = _deferredResetVelocity || resetVelocity;
+            _deferredSolvePose = _deferredSolvePose || solveNow;
+            _deferredDiscontinuity = _deferredDiscontinuity || promoted;
+        }
+        else
+        {
+            UpdateMotion(resetVelocity, solveNow, false);
+            if (promoted && objectSync != null && CanControlBody()) objectSync.FlagDiscontinuity();
+        }
     }
 
     private bool ResolvePickupState(int lowerHeldHand, int upperHeldHand,
@@ -444,52 +478,6 @@ public partial class BatBehaviour : TsukimiBehaviour
         return null;
     }
 
-    private void CalculateLowerPose(Vector3 handPosition, Quaternion handRotation,
-        Vector3 anchorLocalPosition, Quaternion anchorLocalRotation,
-        out Vector3 rootPosition, out Quaternion rootRotation)
-    {
-        BatPose pose = BatPoseSolver.Lower(handPosition, handRotation, anchorLocalPosition, anchorLocalRotation);
-        rootPosition = pose.position;
-        rootRotation = pose.rotation;
-    }
-
-    private bool CaptureLockOffset()
-    {
-        Transform lowerProxyTransform = GetProxyTransform(_lowerProxy);
-        if (lowerProxyTransform == null || body == null)
-        {
-            if (debugGripTransitions) Debug.Log("Bat CaptureLockOffset failed: lower proxy or Body missing");
-            return false;
-        }
-        Vector3 handPosition = lowerProxyTransform.position;
-        Quaternion handRotation = lowerProxyTransform.rotation;
-
-        CaptureLockPose(handPosition, handRotation, body.transform.position, body.transform.rotation,
-            out _lockPositionOffset, out _lockRotationOffset);
-        _hasLockOffset = motion != null && motion.gameObject.activeSelf && motion.CaptureLock();
-        if (!_hasLockOffset) return false;
-        if (debugGripTransitions) Debug.Log("Bat CaptureLockOffset succeeded: lowerProxy=" + ProxyName(_lowerProxy));
-        return true;
-    }
-
-    private void CaptureLockPose(Vector3 handPosition, Quaternion handRotation,
-        Vector3 rootPosition, Quaternion rootRotation,
-        out Vector3 positionOffset, out Quaternion rotationOffset)
-    {
-        BatPose pose = BatPoseSolver.CaptureLock(handPosition, handRotation, rootPosition, rootRotation);
-        positionOffset = pose.position;
-        rotationOffset = pose.rotation;
-    }
-
-    private void ApplyLockOffset(Vector3 handPosition, Quaternion handRotation,
-        Vector3 positionOffset, Quaternion rotationOffset,
-        out Vector3 rootPosition, out Quaternion rootRotation)
-    {
-        BatPose pose = BatPoseSolver.ApplyLock(handPosition, handRotation, positionOffset, rotationOffset);
-        rootPosition = pose.position;
-        rootRotation = pose.rotation;
-    }
-
     private void SetBodyHeld(bool held)
     {
         if (!CanControlBody()) return;
@@ -550,7 +538,7 @@ public partial class BatBehaviour : TsukimiBehaviour
         objectSync.FlagDiscontinuity();
         MarkSpawned();
         ApplySpawnPresentation();
-        UpdateMotion(true, false);
+        UpdateMotion(true, false, false);
         ApplyBodyCollider();
         Transform lowerProxy = GetProxyTransform(_lowerProxy);
         Transform upperProxy = GetProxyTransform(_upperProxy);

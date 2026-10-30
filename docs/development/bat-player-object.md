@@ -24,3 +24,15 @@ the held pickups once every 60 frames; it avoids checking within two frames of
 a Grip event. Ownership changes and Use input provide additional reconciliation
 points. Real-client forced-drop and multi-client ownership ordering still
 require testing.
+
+Use input is handled only by Bat's `InputUse`, which covers desktop and VR.
+The Pickup Use callbacks are deliberately not used as a second input source;
+on desktop those callbacks depend on Auto Hold. Both Bat and Body ownership
+must match before the local player can commit a grip change or drive the Body.
+Each UseDown refreshes the actual pickups before applying the use. A proxy
+reported by OnDrop is excluded during the short event-settlement window, since
+the SDK may still report it as held; a subsequent OnPickup clears that exclusion.
+PlayerObject guarantees fixed ownership for objects with synced UdonBehaviours,
+but the Body has a no-sync relay and a VRCObjectSync. The SDK documentation does
+not explicitly extend that guarantee to this combination, so Body ownership
+checks and its ownership-change relay remain in place.

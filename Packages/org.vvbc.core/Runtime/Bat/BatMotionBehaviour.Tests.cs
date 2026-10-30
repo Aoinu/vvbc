@@ -4,6 +4,50 @@ using UnityEngine;
 public partial class BatMotionBehaviour
 {
     [TsukimiTest]
+    public void MissingReferencesRejectLockAndClearOldOffset()
+    {
+        body = null;
+        _hasLockOffset = true;
+        Assert.IsFalse(CaptureLock());
+        Assert.IsFalse(_hasLockOffset);
+    }
+
+    [TsukimiTest]
+    public void RemoteRegripDiscardsReleaseTransitionButPreservesUnchangedRevision()
+    {
+        _mode = RemoteRelease;
+        _transitioning = true;
+        _visualCorrected = false;
+        _calibrated = true;
+        _remoteRevision = 7;
+        Configure(RemoteHeld, BatGripConstants.GripLowerHeld, BatGripConstants.HandLeft,
+            BatGripConstants.HandNone, BatGripConstants.ProxyA, BatGripConstants.ProxyB,
+            BatGripConstants.ProxyNone, BatGripConstants.ProxyNone, 8, null, false, false, false, null);
+        Assert.AreEqual(RemoteHeld, _mode);
+        Assert.IsFalse(_transitioning);
+        Assert.IsFalse(_calibrated);
+        _calibrated = true;
+        Configure(RemoteHeld, BatGripConstants.GripLowerHeld, BatGripConstants.HandLeft,
+            BatGripConstants.HandNone, BatGripConstants.ProxyA, BatGripConstants.ProxyB,
+            BatGripConstants.ProxyNone, BatGripConstants.ProxyNone, 8, null, false, false, false, null);
+        Assert.IsTrue(_calibrated);
+    }
+
+    [TsukimiTest]
+    public void LockOffsetIsDiscardedOnPromotionAndStop()
+    {
+        _mode = LocalHeld;
+        gripState = BatGripConstants.GripLocked;
+        _hasLockOffset = true;
+        Configure(LocalHeld, BatGripConstants.GripLowerHeld, BatGripConstants.HandRight,
+            BatGripConstants.HandNone, BatGripConstants.ProxyB, BatGripConstants.ProxyA,
+            BatGripConstants.ProxyNone, BatGripConstants.ProxyB, 1, null, false, false, false, null);
+        Assert.IsFalse(_hasLockOffset);
+        _hasLockOffset = true;
+        StopMotion();
+        Assert.IsFalse(_hasLockOffset);
+    }
+    [TsukimiTest]
     public void RemoteReleaseKeepsOnlyAnOutstandingVisualTransition()
     {
         Assert.IsTrue(NeedsRemoteRelease(RemoteHeld, true, false, 0.15f));
@@ -47,11 +91,11 @@ public partial class BatMotionBehaviour
         _calibrated = true;
         Configure(RemoteHeld, BatGripConstants.GripLowerHeld, BatGripConstants.HandLeft,
             BatGripConstants.HandNone, BatGripConstants.ProxyA, BatGripConstants.ProxyB,
-            BatGripConstants.ProxyNone, BatGripConstants.ProxyNone, 7, null, false, false, null);
+            BatGripConstants.ProxyNone, BatGripConstants.ProxyNone, 7, null, false, false, false, null);
         Assert.IsTrue(_calibrated);
         Configure(RemoteHeld, BatGripConstants.GripLowerHeld, BatGripConstants.HandLeft,
             BatGripConstants.HandNone, BatGripConstants.ProxyA, BatGripConstants.ProxyB,
-            BatGripConstants.ProxyNone, BatGripConstants.ProxyNone, 8, null, false, false, null);
+            BatGripConstants.ProxyNone, BatGripConstants.ProxyNone, 8, null, false, false, false, null);
         Assert.IsFalse(_calibrated);
     }
     [TsukimiTest]
