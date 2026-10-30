@@ -162,4 +162,64 @@ public partial class BatMotionBehaviour
             UpdateCalibration(Vector3.zero, Quaternion.identity, new Vector3(i * 0.003f, 0f, 0f), Quaternion.identity, 0.1f);
         Assert.IsFalse(_calibrated);
     }
+    [TsukimiTest]
+    public void UncalibratedVisualUsesBodyRotationAndBodyRelativeGrip()
+    {
+        Vector3 bodyPosition = new Vector3(4f, 2f, -3f);
+        Quaternion bodyRotation = Quaternion.Euler(0f, 0f, 90f);
+        Vector3 gripInBody = new Vector3(0f, 0.2f, 0f);
+        Vector3 gripPosition = bodyPosition + bodyRotation * gripInBody;
+        Vector3 hand = new Vector3(1f, 3f, 5f);
+        _remotePositionOffset = new Vector3(100f, 100f, 100f);
+        BatPose pose = CalculateUncalibratedVisualPose(hand, bodyPosition, bodyRotation, gripPosition);
+        Assert.IsTrue(Vector3.Distance(pose.position + pose.rotation * gripInBody, hand) < 0.001f);
+        Assert.IsTrue(BatVisualCorrection.RotationAngleDegrees(pose.rotation, bodyRotation) < 0.01f);
+    }
+
+    [TsukimiTest]
+    public void CalibrationAndInvalidationTransitionBetweenCorrectionModes()
+    {
+        visualTransitionDuration = 0.15f;
+        Vector3 firstPosition = new Vector3(1f, 2f, 3f);
+        BeginVisualTransition(1, firstPosition, Quaternion.identity);
+        Assert.IsTrue(_visualCorrected);
+        Assert.AreEqual(1, _visualCorrectionMode);
+        Assert.IsTrue(_transitioning);
+        Assert.AreEqual(firstPosition, _transitionPosition);
+        Vector3 beforeFull = new Vector3(2f, 2f, 3f);
+        BeginVisualTransition(2, beforeFull, Quaternion.identity);
+        Assert.AreEqual(2, _visualCorrectionMode);
+        Assert.IsTrue(_transitioning);
+        Assert.AreEqual(beforeFull, _transitionPosition);
+        ResetRemoteCalibration();
+        Vector3 beforeInvalidation = new Vector3(3f, 2f, 3f);
+        BeginVisualTransition(1, beforeInvalidation, Quaternion.identity);
+        Assert.IsFalse(_calibrated);
+        Assert.AreEqual(1, _visualCorrectionMode);
+        Assert.IsTrue(_transitioning);
+        Assert.AreEqual(beforeInvalidation, _transitionPosition);
+        BeginVisualTransition(0, beforeInvalidation, Quaternion.identity);
+        Assert.AreEqual(0, _visualCorrectionMode);
+        Assert.IsTrue(_transitioning);
+        Assert.IsFalse(_visualCorrected);
+    }
+
+    [TsukimiTest]
+    public void CalibrationCapturesBodyPoseIndependentlyOfVisualPose()
+    {
+        visualRoot = transform;
+        transform.position = new Vector3(20f, 30f, 40f);
+        velocitySmoothingSamples = 1;
+        calibrationStableDuration = 0.1f;
+        Vector3 hand = new Vector3(1f, 2f, 3f);
+        Vector3 bodyPosition = new Vector3(2f, 4f, 6f);
+        Quaternion bodyRotation = Quaternion.Euler(0f, 30f, 0f);
+        UpdateCalibration(hand, Quaternion.identity, bodyPosition, bodyRotation, 0.1f);
+        UpdateCalibration(hand, Quaternion.identity, bodyPosition, bodyRotation, 0.1f);
+        Assert.IsTrue(_calibrated);
+        BatPose pose = BatPoseSolver.ApplyLock(hand, Quaternion.identity, _remotePositionOffset, _remoteRotationOffset);
+        Assert.IsTrue(Vector3.Distance(pose.position, bodyPosition) < 0.001f);
+        Assert.IsTrue(BatVisualCorrection.RotationAngleDegrees(pose.rotation, bodyRotation) < 0.01f);
+    }
+
 }

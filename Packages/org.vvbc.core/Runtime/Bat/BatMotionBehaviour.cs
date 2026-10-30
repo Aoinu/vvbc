@@ -87,6 +87,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
     private int _remoteRevision = -1;
     private int _remoteOwnerId = -1;
     private bool _visualCorrected;
+    private int _visualCorrectionMode;
     private bool _transitioning;
     private float _transitionTime;
     private Vector3 _transitionPosition;
@@ -106,6 +107,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         {
             _transitioning = false;
             _visualCorrected = false;
+            _visualCorrectionMode = 0;
         }
         _mode = mode;
         gripState = state;
@@ -424,7 +426,24 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
             BatPose pose = BatPoseSolver.ApplyLock(handPosition, handRotation, _remotePositionOffset, _remoteRotationOffset);
             SetRemoteVisual(true, pose.position, pose.rotation, linearSpeed, angularSpeed);
         }
+        else if (lowerGrip != null)
+        {
+            BatPose pose = CalculateUncalibratedVisualPose(handPosition, body.transform.position,
+                body.transform.rotation, lowerGrip.position);
+            SetRemoteVisualMode(1, pose.position, pose.rotation, linearSpeed, angularSpeed);
+        }
         else SetRemoteVisual(false, body.transform.position, body.transform.rotation, linearSpeed, angularSpeed);
+    }
+
+    // LowerGrip is a Body child, not a Visual child: its world position is unaffected
+    // by visual correction and includes the parent transforms and scale.
+    private BatPose CalculateUncalibratedVisualPose(Vector3 handPosition, Vector3 bodyPosition,
+        Quaternion bodyRotation, Vector3 gripPosition)
+    {
+        BatPose result = new BatPose();
+        result.position = handPosition - (gripPosition - bodyPosition);
+        result.rotation = bodyRotation;
+        return result;
     }
 
     private BatPose CalculateFreeVisualPose(Vector3 lower, Vector3 upper, Vector3 anchor, Quaternion basis)
@@ -502,14 +521,14 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
 
     private void SetRemoteVisual(bool corrected, Vector3 position, Quaternion rotation, float linearSpeed, float angularSpeed)
     {
-        if (_visualCorrected != corrected)
-        {
-            _visualCorrected = corrected;
-            _transitionPosition = visualRoot.position;
-            _transitionRotation = visualRoot.rotation;
-            _transitionTime = 0f;
-            _transitioning = visualTransitionDuration > 0f;
-        }
+        SetRemoteVisualMode(corrected ? 2 : 0, position, rotation, linearSpeed, angularSpeed);
+    }
+
+    private void SetRemoteVisualMode(int correctionMode, Vector3 position, Quaternion rotation, float linearSpeed, float angularSpeed)
+    {
+        bool corrected = correctionMode != 0;
+        if (_visualCorrectionMode != correctionMode)
+            BeginVisualTransition(correctionMode, visualRoot.position, visualRoot.rotation);
         if (_transitioning && ShouldCancelTransition(linearSpeed, angularSpeed))
             _transitioning = false;
         if (_transitioning)
@@ -521,6 +540,16 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         }
         else if (corrected) visualRoot.SetPositionAndRotation(position, rotation);
         else ResetVisualRoot();
+    }
+
+    private void BeginVisualTransition(int correctionMode, Vector3 currentPosition, Quaternion currentRotation)
+    {
+        _visualCorrectionMode = correctionMode;
+        _visualCorrected = correctionMode != 0;
+        _transitionPosition = currentPosition;
+        _transitionRotation = currentRotation;
+        _transitionTime = 0f;
+        _transitioning = visualTransitionDuration > 0f;
     }
 
     private bool IsFiniteValue(float value)
@@ -545,6 +574,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         visualRoot.localPosition = Vector3.zero;
         visualRoot.localRotation = Quaternion.identity;
         _visualCorrected = false;
+        _visualCorrectionMode = 0;
         _transitioning = false;
     }
 }
