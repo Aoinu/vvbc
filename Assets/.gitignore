@@ -1,4 +1,14 @@
-UdonSharp/
-UdonSharp.meta
-SerializedUdonPrograms/
-SerializedUdonPrograms.meta
+# Assets is a sandbox. Add content only through explicit allow rules.
+/*
+
+# Keep the whitelist and the existing placeholder.
+!/.gitignore
+!/.gitkeep
+
+# TsukimiCode development tools.
+!/TsukimiCode/
+!/TsukimiCode.meta
+
+# VVBC development tools and assets.
+!/VirtualVenueBaseballComponents/
+!/VirtualVenueBaseballComponents.meta
