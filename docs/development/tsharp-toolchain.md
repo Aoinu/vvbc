@@ -29,9 +29,9 @@ Assets/VirtualVenueBaseballComponents/Editor/
   VVBC.Toolchain.Editor.asmdef
 ```
 
-`<Module>` is defined by the relevant subsystem design. No production Behaviour
-exists yet: do not reserve modules or empty directories. Create the canonical
-Program Asset directory only when needed. Development Editor tooling stays out
+`<Module>` is defined by the relevant subsystem design. Production Bat Behaviours
+and their Program Assets are present; do not reserve empty modules or directories.
+Development Editor tooling stays out
 of the distributed package. Never duplicate runtime source in development Assets.
 
 `VVBC.Runtime` requires the four baseline references from verified Tsukimi 0.10.1's
@@ -148,11 +148,11 @@ publishing; do not report a local file reference as successful VPM resolution.
 Unity runs twice: initial SDK import creates utility scripts, then a second
 batch process invokes `VVBC.Toolchain.ToolchainValidation.Run`. Both must exit
 successfully. The validator checks registered package versions and forbids
-UnityMCP/development Assets. `package` validates actual core with zero Behaviour
-entries until production implementation exists; `fixture` adds the canonical T#
+UnityMCP/development Assets. `package` validates actual core Behaviours;
+`fixture` adds the canonical T#
 fixture **inside the consumer's core snapshot** and must generate at least one
 real UdonProgram. Both scopes are required; fixture success does not substitute
-for production source validation. Future production entries are discovered
+for production source validation. Production entries are discovered
 automatically, without an Export manifest.
 
 Reports, VPM logs and both Unity logs are retained in ignored `.state/consumer/`.

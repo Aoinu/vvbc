@@ -1,5 +1,7 @@
 # Bat PlayerObject validation
 
+For the implementation and state transitions, see the [Bat system design](bat-system.md).
+
 The Bat prefab is used as a child of `VVBCPlayerObjectTemplate`. Bat owns the
 Manual Sync state; Body retains its `VRCObjectSync`. Motion and the Pickup
 event relays have no synced variables.

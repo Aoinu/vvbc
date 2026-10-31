@@ -7,6 +7,10 @@
 - Runtime work requires successful Unity compilation, clean T# inspect, green relevant tests, successful T# Program compilation/UdonProgram generation, and clean consumer validation.
 - Before implementing a subsystem, read its applicable design document and any nested `AGENTS.md`.
 - Do not invent or silently change subsystem behavior or architecture not defined by the applicable design.
+- Separate state authority, input, physics and client-local visual correction by responsibility and lifecycle; avoid duplicated authoritative state and keep cross-Behaviour APIs minimal. Do not add abstractions or defensive states without a concrete need.
+- Minimize continuously running Udon work: start high-frequency Behaviours only while needed, avoid redundant calculations and network polling, and give periodic reconciliation an explicit recovery purpose. See [Bat design](docs/development/bat-system.md) for the Motion example.
+- Keep synchronized physics transforms separate from observer-specific visual correction and tracking. Verify ownership guarantees against the SDK and actual clients; account for missing or reordered pickup and input events.
+- Preserve behavior when optimizing. Distinguish Udon instruction counts and event frequency from measured CPU time, and validate with Unity, ClientSim and multiple clients as appropriate.
 - Do not create placeholder modules or directories for future systems.
 - Keep toolchain fixtures separate from production runtime code; clean temporary deployments before committing.
 - Do not modify `Packages/org.vvbc.assets` unless the task explicitly requires it.
