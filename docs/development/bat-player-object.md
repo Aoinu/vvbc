@@ -11,8 +11,9 @@ can omit an initially inactive Motion object from the scene descriptor's Network
 ID collection even though it later enumerates that object's UdonBehaviour.
 When adding the template to another scene, verify that the scene descriptor's
 Network ID collection includes Motion as well as Bat, Body and both grips.
-Add the missing entry without regenerating existing IDs. The local Sandbox has
-been configured this way.
+Add the missing entry without regenerating existing IDs. A development-local
+Sandbox was configured this way for validation; it is not tracked or provided
+by a new clone, so each scene must be checked independently.
 
 The local owner's free Bat keeps Motion active so the pickup proxy follows a
 Body that may be moved or woken again. A remote release keeps Motion active only

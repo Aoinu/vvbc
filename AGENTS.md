@@ -13,6 +13,7 @@
 - Preserve behavior when optimizing. Distinguish Udon instruction counts and event frequency from measured CPU time, and validate with Unity, ClientSim and multiple clients as appropriate.
 - Do not create placeholder modules or directories for future systems.
 - Keep toolchain fixtures separate from production runtime code; clean temporary deployments before committing.
+- Treat `Assets` as a local sandbox: track only explicitly allowlisted paths, and do not depend on local Sandbox scenes for packages, tests or builds.
 - Do not modify `Packages/org.vvbc.assets` unless the task explicitly requires it.
 - Keep TsukimiCode-generated AI/MCP/skill configuration local and untracked.
 - Do not create releases, commit, or push unless requested.
