@@ -5,5 +5,7 @@
 /Assets/VirtualVenueBaseballComponents/**/*.asset whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.meta whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.asset whitespace=-blank-at-eol
+/Packages/org.vvbc.core/Runtime/**/*.prefab whitespace=-blank-at-eol
+/Packages/org.vvbc.core/Runtime/**/*.mat whitespace=-blank-at-eol
 /Tools/VVBC.Toolchain/Fixtures/**/*.meta whitespace=-blank-at-eol
 /Tools/VVBC.Toolchain/Fixtures/**/*.asset whitespace=-blank-at-eol
