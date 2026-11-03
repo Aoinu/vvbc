@@ -1,4 +1,5 @@
 using Tsukimi;
+using UnityEngine;
 
 public partial class BattingPitcherBehaviour
 {
@@ -62,5 +63,21 @@ public partial class BattingPitcherBehaviour
         Assert.AreEqual(0, CountCourses(0));
         Assert.AreEqual(4, SelectCourse(0, 0));
         Assert.AreEqual(0, CountCourses(1 << 12));
+    }
+
+    [TsukimiTest]
+    public void CourseTargetsUseBatterViewAndFollowTheCenter()
+    {
+        strikeZoneWidth = 0.45f;
+        strikeZoneHeight = 0.6f;
+        Vector3 center = new Vector3(2f, 1f, 18f);
+        Vector3 leftHigh = CourseTarget(center, Vector3.right, 0, 0);
+        Vector3 rightLow = CourseTarget(center, Vector3.right, 2, 2);
+        Assert.IsTrue(Vector3.Distance(leftHigh, center + new Vector3(0.15f, 0.2f, 0f)) < 0.0001f);
+        Assert.IsTrue(Vector3.Distance(rightLow, center + new Vector3(-0.15f, -0.2f, 0f)) < 0.0001f);
+        Assert.IsTrue(Vector3.Distance(CourseTarget(center, Vector3.right, 1, 1), center) < 0.0001f);
+        Vector3 shifted = center + new Vector3(4f, 0.3f, -1f);
+        Assert.IsTrue(Vector3.Distance(CourseTarget(shifted, Vector3.right, 0, 0), leftHigh + shifted - center) < 0.0001f);
+        Assert.IsTrue(Vector3.Distance(CourseTarget(center, Vector3.back, 0, 1), center + Vector3.back * 0.15f) < 0.0001f);
     }
 }

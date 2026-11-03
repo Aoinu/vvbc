@@ -10,11 +10,16 @@ On `HumanoidVisual`, configure the `BattingPitcherBehaviour` Udon component:
 
 - `speedKmh`, `spinRpm`, and `resetSeconds` set the next cycle. Reset time is
   measured from release, not from the start of the animation.
-- `courseColumn` is 0, 1, 2 from left to right along `StrikeZoneCenter.right`;
-  `courseRow` is 0, 1, 2 from high to low. Width and height are in metres.
+- The 3-by-3 course buttons are arranged from the batter's view: columns run
+  from batter-left to batter-right and rows run from high to low. Width and
+  height are in metres. `courseColumn` and `courseRow` show the course chosen
+  for the current cycle; the next course is selected from `courseMask`.
 - `ReleasePoint` is a fixed child of the prefab root, independent of the
-  Animator. Place `StrikeZoneCenter` on the desired vertical plate plane;
-  its forward and right axes define the plane and its horizontal direction.
+  Animator. Assign the `strikeZoneCenter` Transform on the pitcher Udon
+  component and move it in the Scene to the desired center of the strike zone
+  on the front-edge plane of home plate. Point its forward axis from the pitcher
+  toward the batter; its right axis defines the horizontal plane direction.
+  The existing `StrikeZoneCenter` child can be selected and adjusted directly.
 
 The solver captures the settings and transforms before each motion. Changes
 made during a cycle take effect on the next one. If the solver cannot converge,

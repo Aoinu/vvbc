@@ -71,68 +71,71 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PrepareNextPitch___t25: %UnityEngineVector3,
     null\n    __PrepareNextPitch___t26: %SystemSingle, 0\n    __PrepareNextPitch___t27:
     %SystemSingle, 0\n    __PrepareNextPitch___inl0__mask: %SystemInt32, 0\n    __PrepareNextPitch___inl0__count:
-    %SystemInt32, 0\n    __PrepareNextPitch___inl0__i: %SystemInt32, 0\n    __PrepareNextPitch_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __Update___t0: %VRCUdonUdonBehaviour, null\n   
-    __Update___t1: %SystemBoolean, null\n    __Update___t2: %VRCUdonUdonBehaviour,
-    null\n    __Update___t3: %SystemBoolean, null\n    __Update___t4: %VRCUdonUdonBehaviour,
-    null\n    __Update___t5: %SystemBoolean, null\n    __Update___t6: %VRCUdonUdonBehaviour,
-    null\n    __Update___t7: %UnityEngineVector3, null\n    __Update___t8: %VRCUdonUdonBehaviour,
-    null\n    __Update___t9: %UnityEngineVector3, null\n    __Update___t10: %VRCUdonUdonBehaviour,
-    null\n    __Update___t11: %SystemBoolean, null\n    __Update___t12: %VRCUdonUdonBehaviour,
-    null\n    __Update___t13: %SystemSingle, 0\n    __Update_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    ___OnPitchRelease___t0: %SystemBoolean, null\n    ___OnPitchRelease___t1:
-    %SystemBoolean, null\n    ___OnPitchRelease_state: %UnityEngineAnimatorStateInfo,
-    null\n    ___OnPitchRelease___t2: %VRCUdonUdonBehaviour, null\n    ___OnPitchRelease___t3:
-    %UnityEngineVector3, null\n    ___OnPitchRelease___t4: %UnityEngineVector3, null\n   
-    ___OnPitchRelease___t5: %UnityEngineVector3, null\n    ___OnPitchRelease___t6:
-    %UnityEngineRenderer, null\n    ___OnPitchRelease___t7: %UnityEngineCollider,
-    null\n    ___OnPitchRelease___inl_t0: %SystemBoolean, null\n    ___OnPitchRelease___inl2__now:
-    %SystemSingle, 0\n    ___OnPitchRelease___inl2__normalizedTime: %SystemSingle,
-    0\n    ___OnPitchRelease___inl2____t0: %SystemBoolean, null\n    ___OnPitchRelease___inl2____t1:
-    %SystemBoolean, null\n    ___OnPitchRelease___inl2____t2: %SystemBoolean, null\n   
-    ___OnPitchRelease_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ResetDue__SystemSingle_p_0:
-    %SystemSingle, 0\n    __ResetDue__SystemSingle___t0: %SystemBoolean, null\n   
-    __ResetDue__SystemSingle___t1: %SystemBoolean, null\n    __ResetDue__SystemSingle_ret:
-    %SystemBoolean, null\n    __ResetDue__SystemSingle_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __SelectCourse__SystemInt32_SystemInt32_p_0: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_p_1:
-    %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_i: %SystemInt32,
-    0\n    __SelectCourse__SystemInt32_SystemInt32_ret: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __const_0:
-    %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2:
-    %UnityEngineRigidbody, null\n    __const_3: %SystemInt32, 0\n    __const_4: %UnityEngineObject,
-    null\n    __Start_intnl_0: %SystemBoolean, null\n    __Start_intnl_1: %SystemBoolean,
-    null\n    __const_5: %SystemString, \"body\"\n    __Start_intnl_2: %SystemObject,
-    null\n    __Start_intnl_3: %UnityEngineRigidbody, null\n    __Start_intnl_4:
-    %SystemBoolean, null\n    __Start_intnl_5: %SystemBoolean, null\n    __Start_intnl_6:
-    %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean, null\n    __Start_intnl_8:
-    %SystemBoolean, null\n    __const_6: %SystemString, \"BattingPitcher: required
-    reference is missing\"\n    __const_7: %VRCUdonUdonBehaviour, this\n    __const_8:
-    %SystemObject, null\n    __Start_intnl_9: %SystemBoolean, null\n    __Start_intnl_10:
-    %SystemInt32, 0\n    __const_9: %SystemInt32, 7\n    __Start_intnl_11: %SystemBoolean,
-    null\n    __const_10: %SystemString, \"BattingPitcher: bind a valid seven-pitch
-    preset asset in the Editor\"\n    __Start_intnl_12: %SystemBoolean, null\n   
-    __Start_intnl_13: %UnityEngineVector3, null\n    __Start_intnl_14: %SystemSingle,
-    0\n    __const_11: %SystemSingle, 0.000001\n    __Start_intnl_15: %SystemBoolean,
-    null\n    __const_12: %SystemString, \"BattingPitcher: a baked pitch axis is
-    zero\"\n    __const_13: %SystemInt32, 1\n    __Start_intnl_16: %SystemInt32,
-    0\n    __Start_intnl_17: %UnityEngineTransform, null\n    __Start_intnl_18: %UnityEngineVector3,
-    null\n    __Start_intnl_19: %UnityEngineTransform, null\n    __Start_intnl_20:
-    %UnityEngineQuaternion, null\n    __retaddr_0: %SystemUInt32, 0x00000E0C\n   
-    __const_14: %UnityEngineVector3, null\n    __const_15: %UnityEngineRenderer,
-    null\n    __const_16: %UnityEngineCollider, null\n    __const_17: %UnityEngineTransform,
-    null\n    __const_18: %SystemSingle, 0\n    __PrepareNextPitch_intnl_0: %SystemInt32,
-    0\n    __PrepareNextPitch_intnl_1: %UnityEngineVector3, null\n    __const_19:
-    %SystemSingle, 1\n    __PrepareNextPitch_intnl_2: %SystemSingle, 0\n    __const_20:
-    %SystemSingle, 3.6\n    __PrepareNextPitch_intnl_3: %SystemSingle, 0\n    __const_21:
-    %SystemSingle, 0.1\n    __PrepareNextPitch_intnl_4: %SystemSingle, 0\n    __const_22:
-    %SystemInt32, 9\n    __PrepareNextPitch_intnl_5: %SystemBoolean, null\n    __PrepareNextPitch_intnl_6:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_7: %SystemInt32, 0\n    __PrepareNextPitch_intnl_8:
-    %SystemBoolean, null\n    __PrepareNextPitch_intnl_9: %SystemInt32, 0\n    __PrepareNextPitch_intnl_10:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_11: %SystemBoolean, null\n    __PrepareNextPitch_intnl_12:
-    %SystemInt32, 0\n    __retaddr_1: %SystemUInt32, 0x00002898\n    __PrepareNextPitch_intnl_13:
-    %SystemInt32, 0\n    __const_23: %SystemInt32, 3\n    __PrepareNextPitch_intnl_14:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_15: %SystemInt32, 0\n    __PrepareNextPitch_intnl_16:
+    %SystemInt32, 0\n    __PrepareNextPitch___inl0__i: %SystemInt32, 0\n    __PrepareNextPitch___inl2__center:
+    %UnityEngineVector3, null\n    __PrepareNextPitch___inl2__planeRight: %UnityEngineVector3,
+    null\n    __PrepareNextPitch___inl2__column: %SystemInt32, 0\n    __PrepareNextPitch___inl2__row:
+    %SystemInt32, 0\n    __PrepareNextPitch_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Update___t0: %VRCUdonUdonBehaviour, null\n    __Update___t1: %SystemBoolean,
+    null\n    __Update___t2: %VRCUdonUdonBehaviour, null\n    __Update___t3: %SystemBoolean,
+    null\n    __Update___t4: %VRCUdonUdonBehaviour, null\n    __Update___t5: %SystemBoolean,
+    null\n    __Update___t6: %VRCUdonUdonBehaviour, null\n    __Update___t7: %UnityEngineVector3,
+    null\n    __Update___t8: %VRCUdonUdonBehaviour, null\n    __Update___t9: %UnityEngineVector3,
+    null\n    __Update___t10: %VRCUdonUdonBehaviour, null\n    __Update___t11: %SystemBoolean,
+    null\n    __Update___t12: %VRCUdonUdonBehaviour, null\n    __Update___t13: %SystemSingle,
+    0\n    __Update_retjump: %SystemUInt32, 0xFFFFFFFC\n    ___OnPitchRelease___t0:
+    %SystemBoolean, null\n    ___OnPitchRelease___t1: %SystemBoolean, null\n    ___OnPitchRelease_state:
+    %UnityEngineAnimatorStateInfo, null\n    ___OnPitchRelease___t2: %VRCUdonUdonBehaviour,
+    null\n    ___OnPitchRelease___t3: %UnityEngineVector3, null\n    ___OnPitchRelease___t4:
+    %UnityEngineVector3, null\n    ___OnPitchRelease___t5: %UnityEngineVector3, null\n   
+    ___OnPitchRelease___t6: %UnityEngineRenderer, null\n    ___OnPitchRelease___t7:
+    %UnityEngineCollider, null\n    ___OnPitchRelease___inl_t0: %SystemBoolean, null\n   
+    ___OnPitchRelease___inl3__now: %SystemSingle, 0\n    ___OnPitchRelease___inl3__normalizedTime:
+    %SystemSingle, 0\n    ___OnPitchRelease___inl3____t0: %SystemBoolean, null\n   
+    ___OnPitchRelease___inl3____t1: %SystemBoolean, null\n    ___OnPitchRelease___inl3____t2:
+    %SystemBoolean, null\n    ___OnPitchRelease_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __ResetDue__SystemSingle_p_0: %SystemSingle, 0\n    __ResetDue__SystemSingle___t0:
+    %SystemBoolean, null\n    __ResetDue__SystemSingle___t1: %SystemBoolean, null\n   
+    __ResetDue__SystemSingle_ret: %SystemBoolean, null\n    __ResetDue__SystemSingle_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __SelectCourse__SystemInt32_SystemInt32_p_0: %SystemInt32,
+    0\n    __SelectCourse__SystemInt32_SystemInt32_p_1: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_i:
+    %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_ret: %SystemInt32,
+    0\n    __SelectCourse__SystemInt32_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __recStack: %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __recRetStack:
+    %SystemObjectArray, null\n    __const_0: %SystemBoolean, null\n    __const_1:
+    %VRCUdonUdonBehaviour, null\n    __const_2: %UnityEngineRigidbody, null\n   
+    __const_3: %SystemInt32, 0\n    __const_4: %UnityEngineObject, null\n    __Start_intnl_0:
+    %SystemBoolean, null\n    __Start_intnl_1: %SystemBoolean, null\n    __const_5:
+    %SystemString, \"body\"\n    __Start_intnl_2: %SystemObject, null\n    __Start_intnl_3:
+    %UnityEngineRigidbody, null\n    __Start_intnl_4: %SystemBoolean, null\n    __Start_intnl_5:
+    %SystemBoolean, null\n    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7:
+    %SystemBoolean, null\n    __Start_intnl_8: %SystemBoolean, null\n    __const_6:
+    %SystemString, \"BattingPitcher: required reference is missing\"\n    __const_7:
+    %VRCUdonUdonBehaviour, this\n    __const_8: %SystemObject, null\n    __Start_intnl_9:
+    %SystemBoolean, null\n    __Start_intnl_10: %SystemInt32, 0\n    __const_9: %SystemInt32,
+    7\n    __Start_intnl_11: %SystemBoolean, null\n    __const_10: %SystemString,
+    \"BattingPitcher: bind a valid seven-pitch preset asset in the Editor\"\n   
+    __Start_intnl_12: %SystemBoolean, null\n    __Start_intnl_13: %UnityEngineVector3,
+    null\n    __Start_intnl_14: %SystemSingle, 0\n    __const_11: %SystemSingle,
+    0.000001\n    __Start_intnl_15: %SystemBoolean, null\n    __const_12: %SystemString,
+    \"BattingPitcher: a baked pitch axis is zero\"\n    __const_13: %SystemInt32,
+    1\n    __Start_intnl_16: %SystemInt32, 0\n    __Start_intnl_17: %UnityEngineTransform,
+    null\n    __Start_intnl_18: %UnityEngineVector3, null\n    __Start_intnl_19:
+    %UnityEngineTransform, null\n    __Start_intnl_20: %UnityEngineQuaternion, null\n   
+    __retaddr_0: %SystemUInt32, 0x00000E0C\n    __const_14: %UnityEngineVector3,
+    null\n    __const_15: %UnityEngineRenderer, null\n    __const_16: %UnityEngineCollider,
+    null\n    __const_17: %UnityEngineTransform, null\n    __const_18: %SystemSingle,
+    0\n    __PrepareNextPitch_intnl_0: %SystemInt32, 0\n    __PrepareNextPitch_intnl_1:
+    %UnityEngineVector3, null\n    __const_19: %SystemSingle, 1\n    __PrepareNextPitch_intnl_2:
+    %SystemSingle, 0\n    __const_20: %SystemSingle, 3.6\n    __PrepareNextPitch_intnl_3:
+    %SystemSingle, 0\n    __const_21: %SystemSingle, 0.1\n    __PrepareNextPitch_intnl_4:
+    %SystemSingle, 0\n    __const_22: %SystemInt32, 9\n    __PrepareNextPitch_intnl_5:
+    %SystemBoolean, null\n    __PrepareNextPitch_intnl_6: %SystemInt32, 0\n    __PrepareNextPitch_intnl_7:
+    %SystemInt32, 0\n    __PrepareNextPitch_intnl_8: %SystemBoolean, null\n    __PrepareNextPitch_intnl_9:
+    %SystemInt32, 0\n    __PrepareNextPitch_intnl_10: %SystemInt32, 0\n    __PrepareNextPitch_intnl_11:
+    %SystemBoolean, null\n    __PrepareNextPitch_intnl_12: %SystemInt32, 0\n    __retaddr_1:
+    %SystemUInt32, 0x000029E8\n    __PrepareNextPitch_intnl_13: %SystemInt32, 0\n   
+    __const_23: %SystemInt32, 3\n    __PrepareNextPitch_intnl_14: %SystemInt32, 0\n   
+    __PrepareNextPitch_intnl_15: %SystemInt32, 0\n    __PrepareNextPitch_intnl_16:
     %UnityEngineVector3, null\n    __PrepareNextPitch_intnl_17: %UnityEngineVector3,
     null\n    __PrepareNextPitch_intnl_18: %SystemInt32, 0\n    __PrepareNextPitch_intnl_19:
     %SystemSingle, 0\n    __PrepareNextPitch_intnl_20: %SystemSingle, 0\n    __const_24:
@@ -182,8 +185,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __const_48: %SystemString, \"errorMeters\"\n    __Update_intnl_14:
     %SystemObject, null\n    __Update_intnl_15: %SystemSingle, 0\n    __const_49:
     %SystemString, \"Pitching\"\n    __Update_intnl_16: %SystemSingle, 0\n    __retaddr_2:
-    %SystemUInt32, 0x0000F30C\n    __Update_intnl_17: %SystemBoolean, null\n    __retaddr_3:
-    %SystemUInt32, 0x0001030C\n    __const_50: %UnityEngineAnimatorStateInfo, null\n   
+    %SystemUInt32, 0x0000FDAC\n    __Update_intnl_17: %SystemBoolean, null\n    __retaddr_3:
+    %SystemUInt32, 0x00010DAC\n    __const_50: %UnityEngineAnimatorStateInfo, null\n   
     ___OnPitchRelease_intnl_0: %SystemBoolean, null\n    ___OnPitchRelease_intnl_1:
     %SystemBoolean, null\n    ___OnPitchRelease_intnl_2: %SystemBoolean, null\n   
     ___OnPitchRelease_intnl_3: %UnityEngineAnimatorStateInfo, null\n    ___OnPitchRelease_intnl_4:
@@ -530,7 +533,11 @@ MonoBehaviour:
     PUSH, __PrepareNextPitch___t24\n        COPY\n        PUSH, __const_14\n       
     PUSH, __PrepareNextPitch___t25\n        COPY\n        PUSH, __const_18\n       
     PUSH, __PrepareNextPitch___t26\n        COPY\n        PUSH, __const_18\n       
-    PUSH, __PrepareNextPitch___t27\n        COPY\n        PUSH, pitchSequence\n       
+    PUSH, __PrepareNextPitch___t27\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __PrepareNextPitch___inl2__center\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __PrepareNextPitch___inl2__planeRight\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PrepareNextPitch___inl2__column\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PrepareNextPitch___inl2__row\n        COPY\n        PUSH, pitchSequence\n       
     PUSH, __PrepareNextPitch___t0\n        COPY\n        PUSH, pitchSequence\n       
     PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_0\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_0\n        PUSH, pitchSequence\n        COPY\n       
@@ -726,6 +733,22 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
@@ -827,6 +850,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -952,10 +987,14 @@ MonoBehaviour:
     COPY\n        PUSH, __PrepareNextPitch_intnl_15\n        PUSH, courseRow\n       
     COPY\n        PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_16\n       
     EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
-    PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_17\n        EXTERN,
-    \"UnityEngineTransform.__get_right__UnityEngineVector3\"\n        PUSH, __PrepareNextPitch_intnl_14\n       
-    PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_18\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PrepareNextPitch_intnl_16\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    COPY\n        PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_17\n       
+    EXTERN, \"UnityEngineTransform.__get_right__UnityEngineVector3\"\n        PUSH,
+    __PrepareNextPitch_intnl_17\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    COPY\n        PUSH, __PrepareNextPitch_intnl_14\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    COPY\n        PUSH, __PrepareNextPitch_intnl_15\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    COPY\n        PUSH, __PrepareNextPitch_intnl_14\n        PUSH, __const_13\n       
+    PUSH, __PrepareNextPitch_intnl_18\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_18\n        PUSH, __PrepareNextPitch_intnl_19\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
     __PrepareNextPitch_intnl_19\n        PUSH, strikeZoneWidth\n        PUSH, __PrepareNextPitch_intnl_20\n       
@@ -965,7 +1004,7 @@ MonoBehaviour:
     PUSH, __PrepareNextPitch_intnl_17\n        PUSH, __PrepareNextPitch_intnl_21\n       
     PUSH, __PrepareNextPitch_intnl_22\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __PrepareNextPitch_intnl_16\n        PUSH, __PrepareNextPitch_intnl_22\n       
-    PUSH, __PrepareNextPitch_intnl_23\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __PrepareNextPitch_intnl_23\n        EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PrepareNextPitch_intnl_24\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
     PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_15\n        PUSH, __PrepareNextPitch_intnl_25\n       
     EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1142,6 +1181,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_16\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_17\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_14\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_15\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1423,6 +1478,18 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1679,6 +1746,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1958,6 +2041,18 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -2221,6 +2316,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -2512,6 +2623,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -2808,6 +2931,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -3188,6 +3327,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -3941,11 +4092,11 @@ MonoBehaviour:
     PUSH, __const_15\n        PUSH, ___OnPitchRelease___t6\n        COPY\n       
     PUSH, __const_16\n        PUSH, ___OnPitchRelease___t7\n        COPY\n       
     PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl_t0\n        COPY\n       
-    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl2__now\n        COPY\n       
-    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t0\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl3__now\n        COPY\n       
+    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     COPY\n        PUSH, animator\n        PUSH, __const_4\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, ___OnPitchRelease_intnl_0\n        PUSH, ___OnPitchRelease___t1\n       
@@ -3970,34 +4121,34 @@ MonoBehaviour:
     JUMP, ___OnPitchRelease_L7\n    ___OnPitchRelease_L6:\n        JUMP_INDIRECT,
     ___OnPitchRelease_retjump\n    ___OnPitchRelease_L7:\n        PUSH, ___OnPitchRelease_intnl_5\n       
     EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, ___OnPitchRelease_intnl_5\n       
-    PUSH, ___OnPitchRelease___inl2__now\n        COPY\n        PUSH, ___OnPitchRelease_state\n       
+    PUSH, ___OnPitchRelease___inl3__now\n        COPY\n        PUSH, ___OnPitchRelease_state\n       
     PUSH, ___OnPitchRelease_intnl_6\n        EXTERN, \"UnityEngineAnimatorStateInfo.__get_normalizedTime__SystemSingle\"\n       
-    PUSH, ___OnPitchRelease_intnl_6\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, ___OnPitchRelease_intnl_6\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     COPY\n        PUSH, phase\n        PUSH, __const_13\n        PUSH, ___OnPitchRelease_intnl_7\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_7\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, ___OnPitchRelease_intnl_7\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     COPY\n        PUSH, ___OnPitchRelease_intnl_7\n        JUMP_IF_FALSE, ___OnPitchRelease_L8\n       
     JUMP, ___OnPitchRelease_L9\n    ___OnPitchRelease_L8:\n        PUSH, _released\n       
-    PUSH, ___OnPitchRelease___inl2____t2\n        COPY\n    ___OnPitchRelease_L9:\n       
-    PUSH, ___OnPitchRelease___inl2____t2\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n        PUSH, ___OnPitchRelease___inl2____t2\n        JUMP_IF_FALSE, ___OnPitchRelease_L10\n       
+    PUSH, ___OnPitchRelease___inl3____t2\n        COPY\n    ___OnPitchRelease_L9:\n       
+    PUSH, ___OnPitchRelease___inl3____t2\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n        PUSH, ___OnPitchRelease___inl3____t2\n        JUMP_IF_FALSE, ___OnPitchRelease_L10\n       
     JUMP, ___OnPitchRelease_L11\n    ___OnPitchRelease_L10:\n        PUSH, _solvingSequence\n       
     PUSH, pitchSequence\n        PUSH, ___OnPitchRelease_intnl_8\n        EXTERN,
     \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_8\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n    ___OnPitchRelease_L11:\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    PUSH, ___OnPitchRelease___inl2____t0\n        COPY\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, ___OnPitchRelease_intnl_8\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n    ___OnPitchRelease_L11:\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    PUSH, ___OnPitchRelease___inl3____t0\n        COPY\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     JUMP_IF_FALSE, ___OnPitchRelease_L12\n        JUMP, ___OnPitchRelease_L13\n   
-    ___OnPitchRelease_L12:\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    ___OnPitchRelease_L12:\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     PUSH, minimumReleaseNormalizedTime\n        PUSH, ___OnPitchRelease_intnl_9\n       
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_9\n        PUSH, ___OnPitchRelease___inl2____t0\n       
-    COPY\n    ___OnPitchRelease_L13:\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, ___OnPitchRelease_intnl_9\n        PUSH, ___OnPitchRelease___inl3____t0\n       
+    COPY\n    ___OnPitchRelease_L13:\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     JUMP_IF_FALSE, ___OnPitchRelease_L14\n        PUSH, __const_0\n        PUSH,
     ___OnPitchRelease___inl_t0\n        COPY\n        JUMP, ___OnPitchRelease_L15\n   
     ___OnPitchRelease_L14:\n        PUSH, __const_29\n        PUSH, _released\n       
     COPY\n        PUSH, __const_51\n        PUSH, phase\n        COPY\n        PUSH,
-    ___OnPitchRelease___inl2__now\n        PUSH, _resetSnapshot\n        PUSH, ___OnPitchRelease_intnl_10\n       
+    ___OnPitchRelease___inl3__now\n        PUSH, _resetSnapshot\n        PUSH, ___OnPitchRelease_intnl_10\n       
     EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, ___OnPitchRelease_intnl_10\n        PUSH, _resetAt\n        COPY\n       
     PUSH, __const_29\n        PUSH, ___OnPitchRelease___inl_t0\n        COPY\n   
@@ -4048,23 +4199,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4160,19 +4311,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -4247,23 +4398,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4361,19 +4512,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -4446,23 +4597,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4560,19 +4711,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -4656,13 +4807,22 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 6fd286d2a131ec749b6ef65fd7571a42, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: a5e7caf956c212f9d3abdfe31e31a35aee3415c5497962e214bbe9a506ab397a
+  sourceFingerprint: 325c29e8bad1593161d7b5b49bdf30b0d08111f004f128b2dbccab2db4193780
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
   generatedGpuMaterials: []
   declaredBehaviourSyncMode: 0
   fieldLabels:
+  - symbol: strikeZoneCenter
+    header: 
+    tooltip: Center of the strike zone. Point its forward axis from pitcher toward
+      batter; move it to adjust the target plane.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
   - symbol: presetAssetGuid
     header: 
     tooltip: 
@@ -4782,68 +4942,71 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PrepareNextPitch___t25: %UnityEngineVector3,
     null\n    __PrepareNextPitch___t26: %SystemSingle, 0\n    __PrepareNextPitch___t27:
     %SystemSingle, 0\n    __PrepareNextPitch___inl0__mask: %SystemInt32, 0\n    __PrepareNextPitch___inl0__count:
-    %SystemInt32, 0\n    __PrepareNextPitch___inl0__i: %SystemInt32, 0\n    __PrepareNextPitch_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __Update___t0: %VRCUdonUdonBehaviour, null\n   
-    __Update___t1: %SystemBoolean, null\n    __Update___t2: %VRCUdonUdonBehaviour,
-    null\n    __Update___t3: %SystemBoolean, null\n    __Update___t4: %VRCUdonUdonBehaviour,
-    null\n    __Update___t5: %SystemBoolean, null\n    __Update___t6: %VRCUdonUdonBehaviour,
-    null\n    __Update___t7: %UnityEngineVector3, null\n    __Update___t8: %VRCUdonUdonBehaviour,
-    null\n    __Update___t9: %UnityEngineVector3, null\n    __Update___t10: %VRCUdonUdonBehaviour,
-    null\n    __Update___t11: %SystemBoolean, null\n    __Update___t12: %VRCUdonUdonBehaviour,
-    null\n    __Update___t13: %SystemSingle, 0\n    __Update_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    ___OnPitchRelease___t0: %SystemBoolean, null\n    ___OnPitchRelease___t1:
-    %SystemBoolean, null\n    ___OnPitchRelease_state: %UnityEngineAnimatorStateInfo,
-    null\n    ___OnPitchRelease___t2: %VRCUdonUdonBehaviour, null\n    ___OnPitchRelease___t3:
-    %UnityEngineVector3, null\n    ___OnPitchRelease___t4: %UnityEngineVector3, null\n   
-    ___OnPitchRelease___t5: %UnityEngineVector3, null\n    ___OnPitchRelease___t6:
-    %UnityEngineRenderer, null\n    ___OnPitchRelease___t7: %UnityEngineCollider,
-    null\n    ___OnPitchRelease___inl_t0: %SystemBoolean, null\n    ___OnPitchRelease___inl2__now:
-    %SystemSingle, 0\n    ___OnPitchRelease___inl2__normalizedTime: %SystemSingle,
-    0\n    ___OnPitchRelease___inl2____t0: %SystemBoolean, null\n    ___OnPitchRelease___inl2____t1:
-    %SystemBoolean, null\n    ___OnPitchRelease___inl2____t2: %SystemBoolean, null\n   
-    ___OnPitchRelease_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ResetDue__SystemSingle_p_0:
-    %SystemSingle, 0\n    __ResetDue__SystemSingle___t0: %SystemBoolean, null\n   
-    __ResetDue__SystemSingle___t1: %SystemBoolean, null\n    __ResetDue__SystemSingle_ret:
-    %SystemBoolean, null\n    __ResetDue__SystemSingle_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __SelectCourse__SystemInt32_SystemInt32_p_0: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_p_1:
-    %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_i: %SystemInt32,
-    0\n    __SelectCourse__SystemInt32_SystemInt32_ret: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __const_0:
-    %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2:
-    %UnityEngineRigidbody, null\n    __const_3: %SystemInt32, 0\n    __const_4: %UnityEngineObject,
-    null\n    __Start_intnl_0: %SystemBoolean, null\n    __Start_intnl_1: %SystemBoolean,
-    null\n    __const_5: %SystemString, \"body\"\n    __Start_intnl_2: %SystemObject,
-    null\n    __Start_intnl_3: %UnityEngineRigidbody, null\n    __Start_intnl_4:
-    %SystemBoolean, null\n    __Start_intnl_5: %SystemBoolean, null\n    __Start_intnl_6:
-    %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean, null\n    __Start_intnl_8:
-    %SystemBoolean, null\n    __const_6: %SystemString, \"BattingPitcher: required
-    reference is missing\"\n    __const_7: %VRCUdonUdonBehaviour, this\n    __const_8:
-    %SystemObject, null\n    __Start_intnl_9: %SystemBoolean, null\n    __Start_intnl_10:
-    %SystemInt32, 0\n    __const_9: %SystemInt32, 7\n    __Start_intnl_11: %SystemBoolean,
-    null\n    __const_10: %SystemString, \"BattingPitcher: bind a valid seven-pitch
-    preset asset in the Editor\"\n    __Start_intnl_12: %SystemBoolean, null\n   
-    __Start_intnl_13: %UnityEngineVector3, null\n    __Start_intnl_14: %SystemSingle,
-    0\n    __const_11: %SystemSingle, 0.000001\n    __Start_intnl_15: %SystemBoolean,
-    null\n    __const_12: %SystemString, \"BattingPitcher: a baked pitch axis is
-    zero\"\n    __const_13: %SystemInt32, 1\n    __Start_intnl_16: %SystemInt32,
-    0\n    __Start_intnl_17: %UnityEngineTransform, null\n    __Start_intnl_18: %UnityEngineVector3,
-    null\n    __Start_intnl_19: %UnityEngineTransform, null\n    __Start_intnl_20:
-    %UnityEngineQuaternion, null\n    __retaddr_0: %SystemUInt32, 0x00000E28\n   
-    __const_14: %UnityEngineVector3, null\n    __const_15: %UnityEngineRenderer,
-    null\n    __const_16: %UnityEngineCollider, null\n    __const_17: %UnityEngineTransform,
-    null\n    __const_18: %SystemSingle, 0\n    __PrepareNextPitch_intnl_0: %SystemInt32,
-    0\n    __PrepareNextPitch_intnl_1: %UnityEngineVector3, null\n    __const_19:
-    %SystemSingle, 1\n    __PrepareNextPitch_intnl_2: %SystemSingle, 0\n    __const_20:
-    %SystemSingle, 3.6\n    __PrepareNextPitch_intnl_3: %SystemSingle, 0\n    __const_21:
-    %SystemSingle, 0.1\n    __PrepareNextPitch_intnl_4: %SystemSingle, 0\n    __const_22:
-    %SystemInt32, 9\n    __PrepareNextPitch_intnl_5: %SystemBoolean, null\n    __PrepareNextPitch_intnl_6:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_7: %SystemInt32, 0\n    __PrepareNextPitch_intnl_8:
-    %SystemBoolean, null\n    __PrepareNextPitch_intnl_9: %SystemInt32, 0\n    __PrepareNextPitch_intnl_10:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_11: %SystemBoolean, null\n    __PrepareNextPitch_intnl_12:
-    %SystemInt32, 0\n    __retaddr_1: %SystemUInt32, 0x0000290C\n    __PrepareNextPitch_intnl_13:
-    %SystemInt32, 0\n    __const_23: %SystemInt32, 3\n    __PrepareNextPitch_intnl_14:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_15: %SystemInt32, 0\n    __PrepareNextPitch_intnl_16:
+    %SystemInt32, 0\n    __PrepareNextPitch___inl0__i: %SystemInt32, 0\n    __PrepareNextPitch___inl2__center:
+    %UnityEngineVector3, null\n    __PrepareNextPitch___inl2__planeRight: %UnityEngineVector3,
+    null\n    __PrepareNextPitch___inl2__column: %SystemInt32, 0\n    __PrepareNextPitch___inl2__row:
+    %SystemInt32, 0\n    __PrepareNextPitch_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Update___t0: %VRCUdonUdonBehaviour, null\n    __Update___t1: %SystemBoolean,
+    null\n    __Update___t2: %VRCUdonUdonBehaviour, null\n    __Update___t3: %SystemBoolean,
+    null\n    __Update___t4: %VRCUdonUdonBehaviour, null\n    __Update___t5: %SystemBoolean,
+    null\n    __Update___t6: %VRCUdonUdonBehaviour, null\n    __Update___t7: %UnityEngineVector3,
+    null\n    __Update___t8: %VRCUdonUdonBehaviour, null\n    __Update___t9: %UnityEngineVector3,
+    null\n    __Update___t10: %VRCUdonUdonBehaviour, null\n    __Update___t11: %SystemBoolean,
+    null\n    __Update___t12: %VRCUdonUdonBehaviour, null\n    __Update___t13: %SystemSingle,
+    0\n    __Update_retjump: %SystemUInt32, 0xFFFFFFFC\n    ___OnPitchRelease___t0:
+    %SystemBoolean, null\n    ___OnPitchRelease___t1: %SystemBoolean, null\n    ___OnPitchRelease_state:
+    %UnityEngineAnimatorStateInfo, null\n    ___OnPitchRelease___t2: %VRCUdonUdonBehaviour,
+    null\n    ___OnPitchRelease___t3: %UnityEngineVector3, null\n    ___OnPitchRelease___t4:
+    %UnityEngineVector3, null\n    ___OnPitchRelease___t5: %UnityEngineVector3, null\n   
+    ___OnPitchRelease___t6: %UnityEngineRenderer, null\n    ___OnPitchRelease___t7:
+    %UnityEngineCollider, null\n    ___OnPitchRelease___inl_t0: %SystemBoolean, null\n   
+    ___OnPitchRelease___inl3__now: %SystemSingle, 0\n    ___OnPitchRelease___inl3__normalizedTime:
+    %SystemSingle, 0\n    ___OnPitchRelease___inl3____t0: %SystemBoolean, null\n   
+    ___OnPitchRelease___inl3____t1: %SystemBoolean, null\n    ___OnPitchRelease___inl3____t2:
+    %SystemBoolean, null\n    ___OnPitchRelease_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __ResetDue__SystemSingle_p_0: %SystemSingle, 0\n    __ResetDue__SystemSingle___t0:
+    %SystemBoolean, null\n    __ResetDue__SystemSingle___t1: %SystemBoolean, null\n   
+    __ResetDue__SystemSingle_ret: %SystemBoolean, null\n    __ResetDue__SystemSingle_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __SelectCourse__SystemInt32_SystemInt32_p_0: %SystemInt32,
+    0\n    __SelectCourse__SystemInt32_SystemInt32_p_1: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_i:
+    %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_ret: %SystemInt32,
+    0\n    __SelectCourse__SystemInt32_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __recStack: %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __recRetStack:
+    %SystemObjectArray, null\n    __const_0: %SystemBoolean, null\n    __const_1:
+    %VRCUdonUdonBehaviour, null\n    __const_2: %UnityEngineRigidbody, null\n   
+    __const_3: %SystemInt32, 0\n    __const_4: %UnityEngineObject, null\n    __Start_intnl_0:
+    %SystemBoolean, null\n    __Start_intnl_1: %SystemBoolean, null\n    __const_5:
+    %SystemString, \"body\"\n    __Start_intnl_2: %SystemObject, null\n    __Start_intnl_3:
+    %UnityEngineRigidbody, null\n    __Start_intnl_4: %SystemBoolean, null\n    __Start_intnl_5:
+    %SystemBoolean, null\n    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7:
+    %SystemBoolean, null\n    __Start_intnl_8: %SystemBoolean, null\n    __const_6:
+    %SystemString, \"BattingPitcher: required reference is missing\"\n    __const_7:
+    %VRCUdonUdonBehaviour, this\n    __const_8: %SystemObject, null\n    __Start_intnl_9:
+    %SystemBoolean, null\n    __Start_intnl_10: %SystemInt32, 0\n    __const_9: %SystemInt32,
+    7\n    __Start_intnl_11: %SystemBoolean, null\n    __const_10: %SystemString,
+    \"BattingPitcher: bind a valid seven-pitch preset asset in the Editor\"\n   
+    __Start_intnl_12: %SystemBoolean, null\n    __Start_intnl_13: %UnityEngineVector3,
+    null\n    __Start_intnl_14: %SystemSingle, 0\n    __const_11: %SystemSingle,
+    0.000001\n    __Start_intnl_15: %SystemBoolean, null\n    __const_12: %SystemString,
+    \"BattingPitcher: a baked pitch axis is zero\"\n    __const_13: %SystemInt32,
+    1\n    __Start_intnl_16: %SystemInt32, 0\n    __Start_intnl_17: %UnityEngineTransform,
+    null\n    __Start_intnl_18: %UnityEngineVector3, null\n    __Start_intnl_19:
+    %UnityEngineTransform, null\n    __Start_intnl_20: %UnityEngineQuaternion, null\n   
+    __retaddr_0: %SystemUInt32, 0x00000E28\n    __const_14: %UnityEngineVector3,
+    null\n    __const_15: %UnityEngineRenderer, null\n    __const_16: %UnityEngineCollider,
+    null\n    __const_17: %UnityEngineTransform, null\n    __const_18: %SystemSingle,
+    0\n    __PrepareNextPitch_intnl_0: %SystemInt32, 0\n    __PrepareNextPitch_intnl_1:
+    %UnityEngineVector3, null\n    __const_19: %SystemSingle, 1\n    __PrepareNextPitch_intnl_2:
+    %SystemSingle, 0\n    __const_20: %SystemSingle, 3.6\n    __PrepareNextPitch_intnl_3:
+    %SystemSingle, 0\n    __const_21: %SystemSingle, 0.1\n    __PrepareNextPitch_intnl_4:
+    %SystemSingle, 0\n    __const_22: %SystemInt32, 9\n    __PrepareNextPitch_intnl_5:
+    %SystemBoolean, null\n    __PrepareNextPitch_intnl_6: %SystemInt32, 0\n    __PrepareNextPitch_intnl_7:
+    %SystemInt32, 0\n    __PrepareNextPitch_intnl_8: %SystemBoolean, null\n    __PrepareNextPitch_intnl_9:
+    %SystemInt32, 0\n    __PrepareNextPitch_intnl_10: %SystemInt32, 0\n    __PrepareNextPitch_intnl_11:
+    %SystemBoolean, null\n    __PrepareNextPitch_intnl_12: %SystemInt32, 0\n    __retaddr_1:
+    %SystemUInt32, 0x00002A5C\n    __PrepareNextPitch_intnl_13: %SystemInt32, 0\n   
+    __const_23: %SystemInt32, 3\n    __PrepareNextPitch_intnl_14: %SystemInt32, 0\n   
+    __PrepareNextPitch_intnl_15: %SystemInt32, 0\n    __PrepareNextPitch_intnl_16:
     %UnityEngineVector3, null\n    __PrepareNextPitch_intnl_17: %UnityEngineVector3,
     null\n    __PrepareNextPitch_intnl_18: %SystemInt32, 0\n    __PrepareNextPitch_intnl_19:
     %SystemSingle, 0\n    __PrepareNextPitch_intnl_20: %SystemSingle, 0\n    __const_24:
@@ -4893,8 +5056,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __const_48: %SystemString, \"errorMeters\"\n    __Update_intnl_14:
     %SystemObject, null\n    __Update_intnl_15: %SystemSingle, 0\n    __const_49:
     %SystemString, \"Pitching\"\n    __Update_intnl_16: %SystemSingle, 0\n    __retaddr_2:
-    %SystemUInt32, 0x0000F394\n    __Update_intnl_17: %SystemBoolean, null\n    __retaddr_3:
-    %SystemUInt32, 0x00010394\n    __const_50: %UnityEngineAnimatorStateInfo, null\n   
+    %SystemUInt32, 0x0000FE34\n    __Update_intnl_17: %SystemBoolean, null\n    __retaddr_3:
+    %SystemUInt32, 0x00010E34\n    __const_50: %UnityEngineAnimatorStateInfo, null\n   
     ___OnPitchRelease_intnl_0: %SystemBoolean, null\n    ___OnPitchRelease_intnl_1:
     %SystemBoolean, null\n    ___OnPitchRelease_intnl_2: %SystemBoolean, null\n   
     ___OnPitchRelease_intnl_3: %UnityEngineAnimatorStateInfo, null\n    ___OnPitchRelease_intnl_4:
@@ -5249,7 +5412,11 @@ MonoBehaviour:
     PUSH, __PrepareNextPitch___t27\n        COPY\n        PUSH, __const_3\n       
     PUSH, __PrepareNextPitch___inl0__mask\n        COPY\n        PUSH, __const_3\n       
     PUSH, __PrepareNextPitch___inl0__count\n        COPY\n        PUSH, __const_3\n       
-    PUSH, __PrepareNextPitch___inl0__i\n        COPY\n        PUSH, pitchSequence\n       
+    PUSH, __PrepareNextPitch___inl0__i\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __PrepareNextPitch___inl2__center\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __PrepareNextPitch___inl2__planeRight\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PrepareNextPitch___inl2__column\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PrepareNextPitch___inl2__row\n        COPY\n        PUSH, pitchSequence\n       
     PUSH, __PrepareNextPitch___t0\n        COPY\n        PUSH, __PrepareNextPitch___t0\n       
     PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_0\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_0\n        PUSH, pitchSequence\n        COPY\n       
@@ -5446,6 +5613,22 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
@@ -5547,6 +5730,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -5671,23 +5866,27 @@ MonoBehaviour:
     COPY\n        PUSH, __PrepareNextPitch_row\n        PUSH, courseRow\n       
     COPY\n        PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_16\n       
     EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
-    PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_17\n        EXTERN,
-    \"UnityEngineTransform.__get_right__UnityEngineVector3\"\n        PUSH, __PrepareNextPitch_column\n       
-    PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_18\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PrepareNextPitch_intnl_16\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    COPY\n        PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_17\n       
+    EXTERN, \"UnityEngineTransform.__get_right__UnityEngineVector3\"\n        PUSH,
+    __PrepareNextPitch_intnl_17\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    COPY\n        PUSH, __PrepareNextPitch_column\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    COPY\n        PUSH, __PrepareNextPitch_row\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    COPY\n        PUSH, __PrepareNextPitch___inl2__column\n        PUSH, __const_13\n       
+    PUSH, __PrepareNextPitch_intnl_18\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_18\n        PUSH, __PrepareNextPitch_intnl_19\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
     __PrepareNextPitch_intnl_19\n        PUSH, strikeZoneWidth\n        PUSH, __PrepareNextPitch_intnl_20\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __PrepareNextPitch_intnl_20\n        PUSH, __const_24\n        PUSH, __PrepareNextPitch_intnl_21\n       
     EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __PrepareNextPitch_intnl_17\n        PUSH, __PrepareNextPitch_intnl_21\n       
+    PUSH, __PrepareNextPitch___inl2__planeRight\n        PUSH, __PrepareNextPitch_intnl_21\n       
     PUSH, __PrepareNextPitch_intnl_22\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __PrepareNextPitch_intnl_16\n        PUSH, __PrepareNextPitch_intnl_22\n       
-    PUSH, __PrepareNextPitch_intnl_23\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __PrepareNextPitch___inl2__center\n        PUSH, __PrepareNextPitch_intnl_22\n       
+    PUSH, __PrepareNextPitch_intnl_23\n        EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PrepareNextPitch_intnl_24\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
-    PUSH, __const_13\n        PUSH, __PrepareNextPitch_row\n        PUSH, __PrepareNextPitch_intnl_25\n       
-    EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __const_13\n        PUSH, __PrepareNextPitch___inl2__row\n        PUSH,
+    __PrepareNextPitch_intnl_25\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_25\n        PUSH, __PrepareNextPitch_intnl_26\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
     __PrepareNextPitch_intnl_26\n        PUSH, strikeZoneHeight\n        PUSH, __PrepareNextPitch_intnl_27\n       
@@ -5862,6 +6061,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -6144,6 +6359,18 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -6400,6 +6627,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -6679,6 +6922,18 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -6942,6 +7197,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -7233,6 +7504,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -7530,6 +7813,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -7910,6 +8209,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -8665,11 +8976,11 @@ MonoBehaviour:
     PUSH, __const_15\n        PUSH, ___OnPitchRelease___t6\n        COPY\n       
     PUSH, __const_16\n        PUSH, ___OnPitchRelease___t7\n        COPY\n       
     PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl_t0\n        COPY\n       
-    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl2__now\n        COPY\n       
-    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t0\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl3__now\n        COPY\n       
+    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     COPY\n        PUSH, animator\n        PUSH, __const_4\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, ___OnPitchRelease_intnl_0\n        PUSH, ___OnPitchRelease___t1\n       
@@ -8694,34 +9005,34 @@ MonoBehaviour:
     JUMP, ___OnPitchRelease_L7\n    ___OnPitchRelease_L6:\n        JUMP_INDIRECT,
     ___OnPitchRelease_retjump\n    ___OnPitchRelease_L7:\n        PUSH, ___OnPitchRelease_intnl_5\n       
     EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, ___OnPitchRelease_intnl_5\n       
-    PUSH, ___OnPitchRelease___inl2__now\n        COPY\n        PUSH, ___OnPitchRelease_state\n       
+    PUSH, ___OnPitchRelease___inl3__now\n        COPY\n        PUSH, ___OnPitchRelease_state\n       
     PUSH, ___OnPitchRelease_intnl_6\n        EXTERN, \"UnityEngineAnimatorStateInfo.__get_normalizedTime__SystemSingle\"\n       
-    PUSH, ___OnPitchRelease_intnl_6\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, ___OnPitchRelease_intnl_6\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     COPY\n        PUSH, phase\n        PUSH, __const_13\n        PUSH, ___OnPitchRelease_intnl_7\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_7\n        PUSH, ___OnPitchRelease___inl2____t2\n       
-    COPY\n        PUSH, ___OnPitchRelease___inl2____t2\n        JUMP_IF_FALSE, ___OnPitchRelease_L8\n       
+    PUSH, ___OnPitchRelease_intnl_7\n        PUSH, ___OnPitchRelease___inl3____t2\n       
+    COPY\n        PUSH, ___OnPitchRelease___inl3____t2\n        JUMP_IF_FALSE, ___OnPitchRelease_L8\n       
     JUMP, ___OnPitchRelease_L9\n    ___OnPitchRelease_L8:\n        PUSH, _released\n       
-    PUSH, ___OnPitchRelease___inl2____t2\n        COPY\n    ___OnPitchRelease_L9:\n       
-    PUSH, ___OnPitchRelease___inl2____t2\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n        PUSH, ___OnPitchRelease___inl2____t1\n        JUMP_IF_FALSE, ___OnPitchRelease_L10\n       
+    PUSH, ___OnPitchRelease___inl3____t2\n        COPY\n    ___OnPitchRelease_L9:\n       
+    PUSH, ___OnPitchRelease___inl3____t2\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n        PUSH, ___OnPitchRelease___inl3____t1\n        JUMP_IF_FALSE, ___OnPitchRelease_L10\n       
     JUMP, ___OnPitchRelease_L11\n    ___OnPitchRelease_L10:\n        PUSH, _solvingSequence\n       
     PUSH, pitchSequence\n        PUSH, ___OnPitchRelease_intnl_8\n        EXTERN,
     \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_8\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n    ___OnPitchRelease_L11:\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    PUSH, ___OnPitchRelease___inl2____t0\n        COPY\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, ___OnPitchRelease_intnl_8\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n    ___OnPitchRelease_L11:\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    PUSH, ___OnPitchRelease___inl3____t0\n        COPY\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     JUMP_IF_FALSE, ___OnPitchRelease_L12\n        JUMP, ___OnPitchRelease_L13\n   
-    ___OnPitchRelease_L12:\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    ___OnPitchRelease_L12:\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     PUSH, minimumReleaseNormalizedTime\n        PUSH, ___OnPitchRelease_intnl_9\n       
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_9\n        PUSH, ___OnPitchRelease___inl2____t0\n       
-    COPY\n    ___OnPitchRelease_L13:\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, ___OnPitchRelease_intnl_9\n        PUSH, ___OnPitchRelease___inl3____t0\n       
+    COPY\n    ___OnPitchRelease_L13:\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     JUMP_IF_FALSE, ___OnPitchRelease_L14\n        PUSH, __const_0\n        PUSH,
     ___OnPitchRelease___inl_t0\n        COPY\n        JUMP, ___OnPitchRelease_L15\n   
     ___OnPitchRelease_L14:\n        PUSH, __const_29\n        PUSH, _released\n       
     COPY\n        PUSH, __const_51\n        PUSH, phase\n        COPY\n        PUSH,
-    ___OnPitchRelease___inl2__now\n        PUSH, _resetSnapshot\n        PUSH, ___OnPitchRelease_intnl_10\n       
+    ___OnPitchRelease___inl3__now\n        PUSH, _resetSnapshot\n        PUSH, ___OnPitchRelease_intnl_10\n       
     EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, ___OnPitchRelease_intnl_10\n        PUSH, _resetAt\n        COPY\n       
     PUSH, __const_29\n        PUSH, ___OnPitchRelease___inl_t0\n        COPY\n   
@@ -8773,23 +9084,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -8886,19 +9197,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -8973,23 +9284,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -9087,19 +9398,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -9172,23 +9483,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -9286,19 +9597,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -9443,68 +9754,71 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PrepareNextPitch___t25: %UnityEngineVector3,
     null\n    __PrepareNextPitch___t26: %SystemSingle, 0\n    __PrepareNextPitch___t27:
     %SystemSingle, 0\n    __PrepareNextPitch___inl0__mask: %SystemInt32, 0\n    __PrepareNextPitch___inl0__count:
-    %SystemInt32, 0\n    __PrepareNextPitch___inl0__i: %SystemInt32, 0\n    __PrepareNextPitch_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __Update___t0: %VRCUdonUdonBehaviour, null\n   
-    __Update___t1: %SystemBoolean, null\n    __Update___t2: %VRCUdonUdonBehaviour,
-    null\n    __Update___t3: %SystemBoolean, null\n    __Update___t4: %VRCUdonUdonBehaviour,
-    null\n    __Update___t5: %SystemBoolean, null\n    __Update___t6: %VRCUdonUdonBehaviour,
-    null\n    __Update___t7: %UnityEngineVector3, null\n    __Update___t8: %VRCUdonUdonBehaviour,
-    null\n    __Update___t9: %UnityEngineVector3, null\n    __Update___t10: %VRCUdonUdonBehaviour,
-    null\n    __Update___t11: %SystemBoolean, null\n    __Update___t12: %VRCUdonUdonBehaviour,
-    null\n    __Update___t13: %SystemSingle, 0\n    __Update_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    ___OnPitchRelease___t0: %SystemBoolean, null\n    ___OnPitchRelease___t1:
-    %SystemBoolean, null\n    ___OnPitchRelease_state: %UnityEngineAnimatorStateInfo,
-    null\n    ___OnPitchRelease___t2: %VRCUdonUdonBehaviour, null\n    ___OnPitchRelease___t3:
-    %UnityEngineVector3, null\n    ___OnPitchRelease___t4: %UnityEngineVector3, null\n   
-    ___OnPitchRelease___t5: %UnityEngineVector3, null\n    ___OnPitchRelease___t6:
-    %UnityEngineRenderer, null\n    ___OnPitchRelease___t7: %UnityEngineCollider,
-    null\n    ___OnPitchRelease___inl_t0: %SystemBoolean, null\n    ___OnPitchRelease___inl2__now:
-    %SystemSingle, 0\n    ___OnPitchRelease___inl2__normalizedTime: %SystemSingle,
-    0\n    ___OnPitchRelease___inl2____t0: %SystemBoolean, null\n    ___OnPitchRelease___inl2____t1:
-    %SystemBoolean, null\n    ___OnPitchRelease___inl2____t2: %SystemBoolean, null\n   
-    ___OnPitchRelease_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ResetDue__SystemSingle_p_0:
-    %SystemSingle, 0\n    __ResetDue__SystemSingle___t0: %SystemBoolean, null\n   
-    __ResetDue__SystemSingle___t1: %SystemBoolean, null\n    __ResetDue__SystemSingle_ret:
-    %SystemBoolean, null\n    __ResetDue__SystemSingle_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __SelectCourse__SystemInt32_SystemInt32_p_0: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_p_1:
-    %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_i: %SystemInt32,
-    0\n    __SelectCourse__SystemInt32_SystemInt32_ret: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __const_0:
-    %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2:
-    %UnityEngineRigidbody, null\n    __const_3: %SystemInt32, 0\n    __const_4: %UnityEngineObject,
-    null\n    __Start_intnl_0: %SystemBoolean, null\n    __Start_intnl_1: %SystemBoolean,
-    null\n    __const_5: %SystemString, \"body\"\n    __Start_intnl_2: %SystemObject,
-    null\n    __Start_intnl_3: %UnityEngineRigidbody, null\n    __Start_intnl_4:
-    %SystemBoolean, null\n    __Start_intnl_5: %SystemBoolean, null\n    __Start_intnl_6:
-    %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean, null\n    __Start_intnl_8:
-    %SystemBoolean, null\n    __const_6: %SystemString, \"BattingPitcher: required
-    reference is missing\"\n    __const_7: %VRCUdonUdonBehaviour, this\n    __const_8:
-    %SystemObject, null\n    __Start_intnl_9: %SystemBoolean, null\n    __Start_intnl_10:
-    %SystemInt32, 0\n    __const_9: %SystemInt32, 7\n    __Start_intnl_11: %SystemBoolean,
-    null\n    __const_10: %SystemString, \"BattingPitcher: bind a valid seven-pitch
-    preset asset in the Editor\"\n    __Start_intnl_12: %SystemBoolean, null\n   
-    __Start_intnl_13: %UnityEngineVector3, null\n    __Start_intnl_14: %SystemSingle,
-    0\n    __const_11: %SystemSingle, 0.000001\n    __Start_intnl_15: %SystemBoolean,
-    null\n    __const_12: %SystemString, \"BattingPitcher: a baked pitch axis is
-    zero\"\n    __const_13: %SystemInt32, 1\n    __Start_intnl_16: %SystemInt32,
-    0\n    __Start_intnl_17: %UnityEngineTransform, null\n    __Start_intnl_18: %UnityEngineVector3,
-    null\n    __Start_intnl_19: %UnityEngineTransform, null\n    __Start_intnl_20:
-    %UnityEngineQuaternion, null\n    __retaddr_0: %SystemUInt32, 0x00000E0C\n   
-    __const_14: %UnityEngineVector3, null\n    __const_15: %UnityEngineRenderer,
-    null\n    __const_16: %UnityEngineCollider, null\n    __const_17: %UnityEngineTransform,
-    null\n    __const_18: %SystemSingle, 0\n    __PrepareNextPitch_intnl_0: %SystemInt32,
-    0\n    __PrepareNextPitch_intnl_1: %UnityEngineVector3, null\n    __const_19:
-    %SystemSingle, 1\n    __PrepareNextPitch_intnl_2: %SystemSingle, 0\n    __const_20:
-    %SystemSingle, 3.6\n    __PrepareNextPitch_intnl_3: %SystemSingle, 0\n    __const_21:
-    %SystemSingle, 0.1\n    __PrepareNextPitch_intnl_4: %SystemSingle, 0\n    __const_22:
-    %SystemInt32, 9\n    __PrepareNextPitch_intnl_5: %SystemBoolean, null\n    __PrepareNextPitch_intnl_6:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_7: %SystemInt32, 0\n    __PrepareNextPitch_intnl_8:
-    %SystemBoolean, null\n    __PrepareNextPitch_intnl_9: %SystemInt32, 0\n    __PrepareNextPitch_intnl_10:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_11: %SystemBoolean, null\n    __PrepareNextPitch_intnl_12:
-    %SystemInt32, 0\n    __retaddr_1: %SystemUInt32, 0x00002898\n    __PrepareNextPitch_intnl_13:
-    %SystemInt32, 0\n    __const_23: %SystemInt32, 3\n    __PrepareNextPitch_intnl_14:
-    %SystemInt32, 0\n    __PrepareNextPitch_intnl_15: %SystemInt32, 0\n    __PrepareNextPitch_intnl_16:
+    %SystemInt32, 0\n    __PrepareNextPitch___inl0__i: %SystemInt32, 0\n    __PrepareNextPitch___inl2__center:
+    %UnityEngineVector3, null\n    __PrepareNextPitch___inl2__planeRight: %UnityEngineVector3,
+    null\n    __PrepareNextPitch___inl2__column: %SystemInt32, 0\n    __PrepareNextPitch___inl2__row:
+    %SystemInt32, 0\n    __PrepareNextPitch_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Update___t0: %VRCUdonUdonBehaviour, null\n    __Update___t1: %SystemBoolean,
+    null\n    __Update___t2: %VRCUdonUdonBehaviour, null\n    __Update___t3: %SystemBoolean,
+    null\n    __Update___t4: %VRCUdonUdonBehaviour, null\n    __Update___t5: %SystemBoolean,
+    null\n    __Update___t6: %VRCUdonUdonBehaviour, null\n    __Update___t7: %UnityEngineVector3,
+    null\n    __Update___t8: %VRCUdonUdonBehaviour, null\n    __Update___t9: %UnityEngineVector3,
+    null\n    __Update___t10: %VRCUdonUdonBehaviour, null\n    __Update___t11: %SystemBoolean,
+    null\n    __Update___t12: %VRCUdonUdonBehaviour, null\n    __Update___t13: %SystemSingle,
+    0\n    __Update_retjump: %SystemUInt32, 0xFFFFFFFC\n    ___OnPitchRelease___t0:
+    %SystemBoolean, null\n    ___OnPitchRelease___t1: %SystemBoolean, null\n    ___OnPitchRelease_state:
+    %UnityEngineAnimatorStateInfo, null\n    ___OnPitchRelease___t2: %VRCUdonUdonBehaviour,
+    null\n    ___OnPitchRelease___t3: %UnityEngineVector3, null\n    ___OnPitchRelease___t4:
+    %UnityEngineVector3, null\n    ___OnPitchRelease___t5: %UnityEngineVector3, null\n   
+    ___OnPitchRelease___t6: %UnityEngineRenderer, null\n    ___OnPitchRelease___t7:
+    %UnityEngineCollider, null\n    ___OnPitchRelease___inl_t0: %SystemBoolean, null\n   
+    ___OnPitchRelease___inl3__now: %SystemSingle, 0\n    ___OnPitchRelease___inl3__normalizedTime:
+    %SystemSingle, 0\n    ___OnPitchRelease___inl3____t0: %SystemBoolean, null\n   
+    ___OnPitchRelease___inl3____t1: %SystemBoolean, null\n    ___OnPitchRelease___inl3____t2:
+    %SystemBoolean, null\n    ___OnPitchRelease_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __ResetDue__SystemSingle_p_0: %SystemSingle, 0\n    __ResetDue__SystemSingle___t0:
+    %SystemBoolean, null\n    __ResetDue__SystemSingle___t1: %SystemBoolean, null\n   
+    __ResetDue__SystemSingle_ret: %SystemBoolean, null\n    __ResetDue__SystemSingle_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __SelectCourse__SystemInt32_SystemInt32_p_0: %SystemInt32,
+    0\n    __SelectCourse__SystemInt32_SystemInt32_p_1: %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_i:
+    %SystemInt32, 0\n    __SelectCourse__SystemInt32_SystemInt32_ret: %SystemInt32,
+    0\n    __SelectCourse__SystemInt32_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __recStack: %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __recRetStack:
+    %SystemObjectArray, null\n    __const_0: %SystemBoolean, null\n    __const_1:
+    %VRCUdonUdonBehaviour, null\n    __const_2: %UnityEngineRigidbody, null\n   
+    __const_3: %SystemInt32, 0\n    __const_4: %UnityEngineObject, null\n    __Start_intnl_0:
+    %SystemBoolean, null\n    __Start_intnl_1: %SystemBoolean, null\n    __const_5:
+    %SystemString, \"body\"\n    __Start_intnl_2: %SystemObject, null\n    __Start_intnl_3:
+    %UnityEngineRigidbody, null\n    __Start_intnl_4: %SystemBoolean, null\n    __Start_intnl_5:
+    %SystemBoolean, null\n    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7:
+    %SystemBoolean, null\n    __Start_intnl_8: %SystemBoolean, null\n    __const_6:
+    %SystemString, \"BattingPitcher: required reference is missing\"\n    __const_7:
+    %VRCUdonUdonBehaviour, this\n    __const_8: %SystemObject, null\n    __Start_intnl_9:
+    %SystemBoolean, null\n    __Start_intnl_10: %SystemInt32, 0\n    __const_9: %SystemInt32,
+    7\n    __Start_intnl_11: %SystemBoolean, null\n    __const_10: %SystemString,
+    \"BattingPitcher: bind a valid seven-pitch preset asset in the Editor\"\n   
+    __Start_intnl_12: %SystemBoolean, null\n    __Start_intnl_13: %UnityEngineVector3,
+    null\n    __Start_intnl_14: %SystemSingle, 0\n    __const_11: %SystemSingle,
+    0.000001\n    __Start_intnl_15: %SystemBoolean, null\n    __const_12: %SystemString,
+    \"BattingPitcher: a baked pitch axis is zero\"\n    __const_13: %SystemInt32,
+    1\n    __Start_intnl_16: %SystemInt32, 0\n    __Start_intnl_17: %UnityEngineTransform,
+    null\n    __Start_intnl_18: %UnityEngineVector3, null\n    __Start_intnl_19:
+    %UnityEngineTransform, null\n    __Start_intnl_20: %UnityEngineQuaternion, null\n   
+    __retaddr_0: %SystemUInt32, 0x00000E0C\n    __const_14: %UnityEngineVector3,
+    null\n    __const_15: %UnityEngineRenderer, null\n    __const_16: %UnityEngineCollider,
+    null\n    __const_17: %UnityEngineTransform, null\n    __const_18: %SystemSingle,
+    0\n    __PrepareNextPitch_intnl_0: %SystemInt32, 0\n    __PrepareNextPitch_intnl_1:
+    %UnityEngineVector3, null\n    __const_19: %SystemSingle, 1\n    __PrepareNextPitch_intnl_2:
+    %SystemSingle, 0\n    __const_20: %SystemSingle, 3.6\n    __PrepareNextPitch_intnl_3:
+    %SystemSingle, 0\n    __const_21: %SystemSingle, 0.1\n    __PrepareNextPitch_intnl_4:
+    %SystemSingle, 0\n    __const_22: %SystemInt32, 9\n    __PrepareNextPitch_intnl_5:
+    %SystemBoolean, null\n    __PrepareNextPitch_intnl_6: %SystemInt32, 0\n    __PrepareNextPitch_intnl_7:
+    %SystemInt32, 0\n    __PrepareNextPitch_intnl_8: %SystemBoolean, null\n    __PrepareNextPitch_intnl_9:
+    %SystemInt32, 0\n    __PrepareNextPitch_intnl_10: %SystemInt32, 0\n    __PrepareNextPitch_intnl_11:
+    %SystemBoolean, null\n    __PrepareNextPitch_intnl_12: %SystemInt32, 0\n    __retaddr_1:
+    %SystemUInt32, 0x000029E8\n    __PrepareNextPitch_intnl_13: %SystemInt32, 0\n   
+    __const_23: %SystemInt32, 3\n    __PrepareNextPitch_intnl_14: %SystemInt32, 0\n   
+    __PrepareNextPitch_intnl_15: %SystemInt32, 0\n    __PrepareNextPitch_intnl_16:
     %UnityEngineVector3, null\n    __PrepareNextPitch_intnl_17: %UnityEngineVector3,
     null\n    __PrepareNextPitch_intnl_18: %SystemInt32, 0\n    __PrepareNextPitch_intnl_19:
     %SystemSingle, 0\n    __PrepareNextPitch_intnl_20: %SystemSingle, 0\n    __const_24:
@@ -9554,8 +9868,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __const_48: %SystemString, \"errorMeters\"\n    __Update_intnl_14:
     %SystemObject, null\n    __Update_intnl_15: %SystemSingle, 0\n    __const_49:
     %SystemString, \"Pitching\"\n    __Update_intnl_16: %SystemSingle, 0\n    __retaddr_2:
-    %SystemUInt32, 0x0000F30C\n    __Update_intnl_17: %SystemBoolean, null\n    __retaddr_3:
-    %SystemUInt32, 0x0001030C\n    __const_50: %UnityEngineAnimatorStateInfo, null\n   
+    %SystemUInt32, 0x0000FDAC\n    __Update_intnl_17: %SystemBoolean, null\n    __retaddr_3:
+    %SystemUInt32, 0x00010DAC\n    __const_50: %UnityEngineAnimatorStateInfo, null\n   
     ___OnPitchRelease_intnl_0: %SystemBoolean, null\n    ___OnPitchRelease_intnl_1:
     %SystemBoolean, null\n    ___OnPitchRelease_intnl_2: %SystemBoolean, null\n   
     ___OnPitchRelease_intnl_3: %UnityEngineAnimatorStateInfo, null\n    ___OnPitchRelease_intnl_4:
@@ -9902,7 +10216,11 @@ MonoBehaviour:
     PUSH, __PrepareNextPitch___t24\n        COPY\n        PUSH, __const_14\n       
     PUSH, __PrepareNextPitch___t25\n        COPY\n        PUSH, __const_18\n       
     PUSH, __PrepareNextPitch___t26\n        COPY\n        PUSH, __const_18\n       
-    PUSH, __PrepareNextPitch___t27\n        COPY\n        PUSH, pitchSequence\n       
+    PUSH, __PrepareNextPitch___t27\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __PrepareNextPitch___inl2__center\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __PrepareNextPitch___inl2__planeRight\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PrepareNextPitch___inl2__column\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PrepareNextPitch___inl2__row\n        COPY\n        PUSH, pitchSequence\n       
     PUSH, __PrepareNextPitch___t0\n        COPY\n        PUSH, pitchSequence\n       
     PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_0\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_0\n        PUSH, pitchSequence\n        COPY\n       
@@ -10098,6 +10416,22 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
@@ -10199,6 +10533,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -10324,10 +10670,14 @@ MonoBehaviour:
     COPY\n        PUSH, __PrepareNextPitch_intnl_15\n        PUSH, courseRow\n       
     COPY\n        PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_16\n       
     EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
-    PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_17\n        EXTERN,
-    \"UnityEngineTransform.__get_right__UnityEngineVector3\"\n        PUSH, __PrepareNextPitch_intnl_14\n       
-    PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_18\n        EXTERN,
-    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PrepareNextPitch_intnl_16\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    COPY\n        PUSH, strikeZoneCenter\n        PUSH, __PrepareNextPitch_intnl_17\n       
+    EXTERN, \"UnityEngineTransform.__get_right__UnityEngineVector3\"\n        PUSH,
+    __PrepareNextPitch_intnl_17\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    COPY\n        PUSH, __PrepareNextPitch_intnl_14\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    COPY\n        PUSH, __PrepareNextPitch_intnl_15\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    COPY\n        PUSH, __PrepareNextPitch_intnl_14\n        PUSH, __const_13\n       
+    PUSH, __PrepareNextPitch_intnl_18\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __PrepareNextPitch_intnl_18\n        PUSH, __PrepareNextPitch_intnl_19\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
     __PrepareNextPitch_intnl_19\n        PUSH, strikeZoneWidth\n        PUSH, __PrepareNextPitch_intnl_20\n       
@@ -10337,7 +10687,7 @@ MonoBehaviour:
     PUSH, __PrepareNextPitch_intnl_17\n        PUSH, __PrepareNextPitch_intnl_21\n       
     PUSH, __PrepareNextPitch_intnl_22\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __PrepareNextPitch_intnl_16\n        PUSH, __PrepareNextPitch_intnl_22\n       
-    PUSH, __PrepareNextPitch_intnl_23\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __PrepareNextPitch_intnl_23\n        EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PrepareNextPitch_intnl_24\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
     PUSH, __const_13\n        PUSH, __PrepareNextPitch_intnl_15\n        PUSH, __PrepareNextPitch_intnl_25\n       
     EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -10514,6 +10864,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_16\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_17\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_14\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_intnl_15\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -10795,6 +11161,18 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -11051,6 +11429,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -11330,6 +11724,18 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -11593,6 +11999,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -11884,6 +12306,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -12180,6 +12614,22 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -12560,6 +13010,18 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch_retjump\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__row\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__column\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__planeRight\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl2__center\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __PrepareNextPitch___inl0__i\n       
@@ -13313,11 +13775,11 @@ MonoBehaviour:
     PUSH, __const_15\n        PUSH, ___OnPitchRelease___t6\n        COPY\n       
     PUSH, __const_16\n        PUSH, ___OnPitchRelease___t7\n        COPY\n       
     PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl_t0\n        COPY\n       
-    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl2__now\n        COPY\n       
-    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t0\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl3__now\n        COPY\n       
+    PUSH, __const_18\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     COPY\n        PUSH, animator\n        PUSH, __const_4\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, ___OnPitchRelease_intnl_0\n        PUSH, ___OnPitchRelease___t1\n       
@@ -13342,34 +13804,34 @@ MonoBehaviour:
     JUMP, ___OnPitchRelease_L7\n    ___OnPitchRelease_L6:\n        JUMP_INDIRECT,
     ___OnPitchRelease_retjump\n    ___OnPitchRelease_L7:\n        PUSH, ___OnPitchRelease_intnl_5\n       
     EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, ___OnPitchRelease_intnl_5\n       
-    PUSH, ___OnPitchRelease___inl2__now\n        COPY\n        PUSH, ___OnPitchRelease_state\n       
+    PUSH, ___OnPitchRelease___inl3__now\n        COPY\n        PUSH, ___OnPitchRelease_state\n       
     PUSH, ___OnPitchRelease_intnl_6\n        EXTERN, \"UnityEngineAnimatorStateInfo.__get_normalizedTime__SystemSingle\"\n       
-    PUSH, ___OnPitchRelease_intnl_6\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, ___OnPitchRelease_intnl_6\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     COPY\n        PUSH, phase\n        PUSH, __const_13\n        PUSH, ___OnPitchRelease_intnl_7\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_7\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, ___OnPitchRelease_intnl_7\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     COPY\n        PUSH, ___OnPitchRelease_intnl_7\n        JUMP_IF_FALSE, ___OnPitchRelease_L8\n       
     JUMP, ___OnPitchRelease_L9\n    ___OnPitchRelease_L8:\n        PUSH, _released\n       
-    PUSH, ___OnPitchRelease___inl2____t2\n        COPY\n    ___OnPitchRelease_L9:\n       
-    PUSH, ___OnPitchRelease___inl2____t2\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n        PUSH, ___OnPitchRelease___inl2____t2\n        JUMP_IF_FALSE, ___OnPitchRelease_L10\n       
+    PUSH, ___OnPitchRelease___inl3____t2\n        COPY\n    ___OnPitchRelease_L9:\n       
+    PUSH, ___OnPitchRelease___inl3____t2\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n        PUSH, ___OnPitchRelease___inl3____t2\n        JUMP_IF_FALSE, ___OnPitchRelease_L10\n       
     JUMP, ___OnPitchRelease_L11\n    ___OnPitchRelease_L10:\n        PUSH, _solvingSequence\n       
     PUSH, pitchSequence\n        PUSH, ___OnPitchRelease_intnl_8\n        EXTERN,
     \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_8\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    COPY\n    ___OnPitchRelease_L11:\n        PUSH, ___OnPitchRelease___inl2____t1\n       
-    PUSH, ___OnPitchRelease___inl2____t0\n        COPY\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, ___OnPitchRelease_intnl_8\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    COPY\n    ___OnPitchRelease_L11:\n        PUSH, ___OnPitchRelease___inl3____t1\n       
+    PUSH, ___OnPitchRelease___inl3____t0\n        COPY\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     JUMP_IF_FALSE, ___OnPitchRelease_L12\n        JUMP, ___OnPitchRelease_L13\n   
-    ___OnPitchRelease_L12:\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    ___OnPitchRelease_L12:\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     PUSH, minimumReleaseNormalizedTime\n        PUSH, ___OnPitchRelease_intnl_9\n       
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, ___OnPitchRelease_intnl_9\n        PUSH, ___OnPitchRelease___inl2____t0\n       
-    COPY\n    ___OnPitchRelease_L13:\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, ___OnPitchRelease_intnl_9\n        PUSH, ___OnPitchRelease___inl3____t0\n       
+    COPY\n    ___OnPitchRelease_L13:\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     JUMP_IF_FALSE, ___OnPitchRelease_L14\n        PUSH, __const_0\n        PUSH,
     ___OnPitchRelease___inl_t0\n        COPY\n        JUMP, ___OnPitchRelease_L15\n   
     ___OnPitchRelease_L14:\n        PUSH, __const_29\n        PUSH, _released\n       
     COPY\n        PUSH, __const_51\n        PUSH, phase\n        COPY\n        PUSH,
-    ___OnPitchRelease___inl2__now\n        PUSH, _resetSnapshot\n        PUSH, ___OnPitchRelease_intnl_10\n       
+    ___OnPitchRelease___inl3__now\n        PUSH, _resetSnapshot\n        PUSH, ___OnPitchRelease_intnl_10\n       
     EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, ___OnPitchRelease_intnl_10\n        PUSH, _resetAt\n        COPY\n       
     PUSH, __const_29\n        PUSH, ___OnPitchRelease___inl_t0\n        COPY\n   
@@ -13420,23 +13882,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -13532,19 +13994,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -13619,23 +14081,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -13733,19 +14195,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -13818,23 +14280,23 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -13932,19 +14394,19 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t2\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t2\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t1\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2____t0\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3____t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__normalizedTime\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__normalizedTime\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl2__now\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl3__now\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_13\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___OnPitchRelease___inl_t0\n       
@@ -14042,10 +14504,10 @@ MonoBehaviour:
   - "=__const_14\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
   - "=__const_29\tBoolTrue\t\t0\t\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 2386
-  optExternAfter: 2386
-  optInsnBefore: 10298
-  optInsnAfter: 10256
-  optBytesBefore: 81480
-  optBytesAfter: 81196
+  optExternBefore: 2466
+  optExternAfter: 2466
+  optInsnBefore: 10642
+  optInsnAfter: 10600
+  optBytesBefore: 84200
+  optBytesAfter: 83916
   optStage: ran

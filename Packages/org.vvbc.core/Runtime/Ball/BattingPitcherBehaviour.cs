@@ -9,6 +9,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public BallFlightBehaviour ball;
     public BallAimSolverBehaviour solver;
     public Transform releasePoint;
+    [Tooltip("Center of the strike zone. Point its forward axis from pitcher toward batter; move it to adjust the target plane.")]
     public Transform strikeZoneCenter;
     public GameObject animationBall;
     public Renderer physicalBallRenderer;
@@ -92,8 +93,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         int row = selectedCourse / 3;
         courseColumn = column;
         courseRow = row;
-        Vector3 target = strikeZoneCenter.position + strikeZoneCenter.right * ((column - 1) * strikeZoneWidth / 3f)
-            + Vector3.up * ((1 - row) * strikeZoneHeight / 3f);
+        Vector3 target = CourseTarget(strikeZoneCenter.position, strikeZoneCenter.right, column, row);
         selectedPitchType = Mathf.Clamp(pitchType, 0, 6);
         Vector3 axis = pitchSpinAxes[selectedPitchType];
         Vector3 localSpin = axis.normalized * (Mathf.Max(0f, spinRpm) * (2f * Mathf.PI / 60f));
@@ -159,6 +159,13 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         int count = 0;
         for (int i = 0; i < 9; i++) if ((mask & (1 << i)) != 0) count++;
         return count;
+    }
+
+    // The plane faces along the pitch, so its right is the batter's left.
+    private Vector3 CourseTarget(Vector3 center, Vector3 planeRight, int column, int row)
+    {
+        return center - planeRight * ((column - 1) * strikeZoneWidth / 3f)
+            + Vector3.up * ((1 - row) * strikeZoneHeight / 3f);
     }
 
     private int SelectCourse(int mask, int choice)
