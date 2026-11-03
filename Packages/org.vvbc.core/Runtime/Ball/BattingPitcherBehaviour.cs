@@ -18,6 +18,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public float spinRpm = 2500f;
     public int courseColumn = 1;
     public int courseRow = 1;
+    public int courseMask = 16;
+    public int pitchType;
+    // Baked from the editor preset asset; no ScriptableObject is read at runtime.
+    public Vector3[] pitchSpinAxes = new Vector3[0];
+    [HideInInspector] public string presetAssetGuid = "";
     public float strikeZoneWidth = 0.43f;
     public float strikeZoneHeight = 0.6f;
     public float resetSeconds = 3f;
@@ -29,6 +34,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public int phase;
     public float lastAimError;
     public bool lastAimConverged;
+    public int selectedCourse;
+    public int selectedPitchType;
     private const int Preparing = 0;
     private const int PitchMotion = 1;
     private const int FollowThrough = 2;
@@ -52,6 +59,19 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             enabled = false;
             return;
         }
+        if (pitchSpinAxes == null || pitchSpinAxes.Length != 7)
+        {
+            Debug.LogError("BattingPitcher: bind a valid seven-pitch preset asset in the Editor");
+            enabled = false;
+            return;
+        }
+        for (int i = 0; i < 7; i++)
+        {
+            if (pitchSpinAxes[i].sqrMagnitude >= 0.000001f) continue;
+            Debug.LogError("BattingPitcher: a baked pitch axis is zero");
+            enabled = false;
+            return;
+        }
         _visualStartPosition = animator.transform.localPosition;
         _visualStartRotation = animator.transform.localRotation;
         PrepareNextPitch();
@@ -66,13 +86,17 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _releaseSnapshot = releasePoint.position;
         _speedSnapshot = Mathf.Max(1f, speedKmh) / 3.6f;
         _resetSnapshot = Mathf.Max(0.1f, resetSeconds);
-        int column = Mathf.Clamp(courseColumn, 0, 2);
-        int row = Mathf.Clamp(courseRow, 0, 2);
+        int count = CountCourses(courseMask);
+        selectedCourse = SelectCourse(courseMask, count == 0 ? 0 : Random.Range(0, count));
+        int column = selectedCourse % 3;
+        int row = selectedCourse / 3;
+        courseColumn = column;
+        courseRow = row;
         Vector3 target = strikeZoneCenter.position + strikeZoneCenter.right * ((column - 1) * strikeZoneWidth / 3f)
             + Vector3.up * ((1 - row) * strikeZoneHeight / 3f);
-        Vector3 forward = strikeZoneCenter.position - _releaseSnapshot;
-        forward.y = 0f;
-        _spinSnapshot = Vector3.Cross(forward.normalized, Vector3.up) * (spinRpm * (2f * Mathf.PI / 60f));
+        selectedPitchType = Mathf.Clamp(pitchType, 0, 6);
+        Vector3 axis = pitchSpinAxes[selectedPitchType];
+        Vector3 localSpin = axis.normalized * (Mathf.Max(0f, spinRpm) * (2f * Mathf.PI / 60f));
         ball.Stage(_releaseSnapshot);
         physicalBallRenderer.enabled = false;
         if (physicalBallCollider != null) physicalBallCollider.enabled = false;
@@ -82,8 +106,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         animator.transform.localPosition = _visualStartPosition;
         animator.transform.localRotation = _visualStartRotation;
         animator.Play("Pitch Idle", 0, 0f);
-        solver.BeginSolve(_releaseSnapshot, target, strikeZoneCenter.forward, _speedSnapshot,
-            _spinSnapshot, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
+        solver.BeginSolveRelativeSpin(_releaseSnapshot, target, strikeZoneCenter.forward, _speedSnapshot,
+            localSpin, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
     }
 
     private void Update()
@@ -93,6 +117,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             if (solver.solving) solver.Advance();
             if (solver.solving || _solvingSequence != pitchSequence) return;
             _velocitySnapshot = solver.launchDirection * _speedSnapshot;
+            _spinSnapshot = solver.launchSpin;
             lastAimConverged = solver.converged;
             lastAimError = solver.errorMeters;
             phase = PitchMotion;
@@ -127,5 +152,23 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private bool ResetDue(float now)
     {
         return phase == FollowThrough && _released && now >= _resetAt;
+    }
+
+    private int CountCourses(int mask)
+    {
+        int count = 0;
+        for (int i = 0; i < 9; i++) if ((mask & (1 << i)) != 0) count++;
+        return count;
+    }
+
+    private int SelectCourse(int mask, int choice)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if ((mask & (1 << i)) == 0) continue;
+            if (choice == 0) return i;
+            choice--;
+        }
+        return 4;
     }
 }

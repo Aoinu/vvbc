@@ -4,6 +4,7 @@
     "TsukimiCode.UdonTools.Runtime",
     "UdonSharp.Runtime",
     "VRC.Udon",
+    "UnityEngine.UI",
     "Unity.TextMeshPro"
   ]
 }

@@ -14,11 +14,14 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
     public bool solving;
     public bool converged;
     public Vector3 launchDirection;
+    public Vector3 launchSpin;
     public Vector3 predictedCrossing;
     public float errorMeters;
     public int iterations;
 
     private Vector3 _release, _target, _normal, _right, _spin, _gravity;
+    private Vector3 _localSpin, _trialSpin;
+    private bool _relativeSpin;
     private float _speed, _drag, _magnus, _dt, _yaw, _pitch;
     private float _bestError, _bestYaw, _bestPitch;
     private Vector3 _bestCrossing, _position, _velocity;
@@ -30,6 +33,7 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
     public void BeginSolve(Vector3 release, Vector3 target, Vector3 planeNormal,
         float speed, Vector3 spin, Vector3 gravity, float drag, float magnus, float stepSeconds)
     {
+        _relativeSpin = false;
         solving = false;
         converged = false;
         iterations = 0;
@@ -43,6 +47,7 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         _yaw = Mathf.Atan2(horizontal.x, horizontal.z);
         _pitch = Mathf.Atan2(offset.y, distance);
         launchDirection = Direction(_yaw, _pitch);
+        launchSpin = spin;
         predictedCrossing = release;
         errorMeters = float.PositiveInfinity;
         if (speed <= 0f || stepSeconds <= 0f || distance < 0.0001f || _normal.sqrMagnitude < 0.5f) return;
@@ -63,6 +68,18 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         StartTrial();
     }
 
+    // The spin components are relative to every trial direction, so the final
+    // launch has exactly the same spin conditions used by the predictor.
+    public void BeginSolveRelativeSpin(Vector3 release, Vector3 target, Vector3 planeNormal,
+        float speed, Vector3 localSpin, Vector3 gravity, float drag, float magnus, float stepSeconds)
+    {
+        BeginSolve(release, target, planeNormal, speed, Vector3.zero, gravity, drag, magnus, stepSeconds);
+        _relativeSpin = true;
+        _localSpin = localSpin;
+        launchSpin = PitchSpin.ToWorld(localSpin, launchDirection);
+        if (solving) StartTrial();
+    }
+
     private Vector3 Direction(float yaw, float pitch)
     {
         float c = Mathf.Cos(pitch);
@@ -75,7 +92,9 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         float yaw = _yaw + (_trial == 1 ? delta : 0f);
         float pitch = _pitch + (_trial == 2 ? delta : 0f);
         _position = _release;
-        _velocity = Direction(yaw, pitch) * _speed;
+        Vector3 direction = Direction(yaw, pitch);
+        _velocity = direction * _speed;
+        _trialSpin = _relativeSpin ? PitchSpin.ToWorld(_localSpin, direction) : _spin;
         _step = 0;
     }
 
@@ -85,7 +104,7 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         for (int i = 0; i < budget && solving; i++)
         {
             Vector3 previous = _position;
-            _velocity += (_gravity + BallAerodynamics.Acceleration(_velocity, _spin, _drag, _magnus)) * _dt;
+            _velocity += (_gravity + BallAerodynamics.Acceleration(_velocity, _trialSpin, _drag, _magnus)) * _dt;
             _position += _velocity * _dt;
             _step++;
             float previousSide = Vector3.Dot(previous - _target, _normal);
@@ -138,6 +157,7 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
     {
         solving = false;
         launchDirection = Direction(_bestYaw, _bestPitch);
+        launchSpin = _relativeSpin ? PitchSpin.ToWorld(_localSpin, launchDirection) : _spin;
         predictedCrossing = _bestCrossing;
         errorMeters = _bestError;
         converged = _bestError <= tolerance;

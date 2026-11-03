@@ -1,7 +1,9 @@
 {
 	"name": "VVBC.Editor",
 	"references": [
-		"VVBC.Runtime"
+		"VVBC.Runtime",
+		"VRC.Udon",
+		"VRC.SDKBase.Editor.BuildPipeline"
 	],
 	"includePlatforms": [
 		"Editor"

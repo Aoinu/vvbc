@@ -50,4 +50,17 @@ public partial class BattingPitcherBehaviour
         phase = FollowThrough;
         Assert.IsFalse(ResetDue(100f));
     }
+
+    [TsukimiTest]
+    public void CourseMaskSelectsOnlyEnabledEntriesAndEmptyMeansCenter()
+    {
+        int mask = (1 << 0) | (1 << 3) | (1 << 8);
+        Assert.AreEqual(3, CountCourses(mask));
+        Assert.AreEqual(0, SelectCourse(mask, 0));
+        Assert.AreEqual(3, SelectCourse(mask, 1));
+        Assert.AreEqual(8, SelectCourse(mask, 2));
+        Assert.AreEqual(0, CountCourses(0));
+        Assert.AreEqual(4, SelectCourse(0, 0));
+        Assert.AreEqual(0, CountCourses(1 << 12));
+    }
 }
