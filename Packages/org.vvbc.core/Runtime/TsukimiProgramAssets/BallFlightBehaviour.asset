@@ -1,0 +1,1068 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Name: BallFlightBehaviour
+  m_EditorClassIdentifier: 
+  serializedUdonProgramAsset: {fileID: 11400000, guid: cf53b3c5b8fa3624ca542154a5039fd0,
+    type: 2}
+  udonAssembly: ".data_start\n    body: %UnityEngineRigidbody, null\n    .export
+    body\n    dragCoefficient: %SystemSingle, 0.00622\n    .export dragCoefficient\n   
+    magnusCoefficient: %SystemSingle, 0.00063\n    .export magnusCoefficient\n   
+    flying: %SystemBoolean, null\n    .export flying\n    HistoryCapacity: %SystemInt32,
+    64\n    _times: %SystemSingleArray, null\n    _positions: %UnityEngineVector3Array,
+    null\n    _velocities: %UnityEngineVector3Array, null\n    _angularVelocities:
+    %UnityEngineVector3Array, null\n    _nextSample: %SystemInt32, 0\n    _sampleCount:
+    %SystemInt32, 0\n    sampledPosition: %UnityEngineVector3, null\n    .export
+    sampledPosition\n    sampledVelocity: %UnityEngineVector3, null\n    .export
+    sampledVelocity\n    sampledAngularVelocity: %UnityEngineVector3, null\n    .export
+    sampledAngularVelocity\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"BallFlightBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __ConfigureBody___t0: %UnityEngineRigidbody, null\n    __ConfigureBody___t1:
+    %UnityEngineRigidbody, null\n    __ConfigureBody___t2: %UnityEngineRigidbody,
+    null\n    __ConfigureBody___t3: %UnityEngineRigidbody, null\n    __ConfigureBody_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __Stage__UnityEngineVector3_p_0: %UnityEngineVector3,
+    null\n    __Stage__UnityEngineVector3___t0: %UnityEngineRigidbody, null\n   
+    __Stage__UnityEngineVector3___t1: %UnityEngineRigidbody, null\n    __Stage__UnityEngineVector3___t2:
+    %UnityEngineRigidbody, null\n    __Stage__UnityEngineVector3___t3: %UnityEngineRigidbody,
+    null\n    __Stage__UnityEngineVector3_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_0: %UnityEngineVector3,
+    null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_1:
+    %UnityEngineVector3, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2:
+    %UnityEngineVector3, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t0:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t1:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t2:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t3:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t4:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FixedUpdate___t0: %SystemBoolean, null\n   
+    __FixedUpdate___t1: %SystemBoolean, null\n    __FixedUpdate___inl0__time: %SystemSingle,
+    0\n    __FixedUpdate___inl0__position: %UnityEngineVector3, null\n    __FixedUpdate___inl0__velocity:
+    %UnityEngineVector3, null\n    __FixedUpdate___inl0__angularVelocity: %UnityEngineVector3,
+    null\n    __FixedUpdate___inl0____t0: %SystemSingleArray, null\n    __FixedUpdate___inl0____t1:
+    %SystemInt32, 0\n    __FixedUpdate___inl0____t2: %UnityEngineVector3Array, null\n   
+    __FixedUpdate___inl0____t3: %SystemInt32, 0\n    __FixedUpdate___inl0____t4:
+    %UnityEngineVector3Array, null\n    __FixedUpdate___inl0____t5: %SystemInt32,
+    0\n    __FixedUpdate___inl0____t6: %UnityEngineVector3Array, null\n    __FixedUpdate___inl0____t7:
+    %SystemInt32, 0\n    __FixedUpdate___inl0____t8: %SystemInt32, 0\n    __FixedUpdate___inl_t0:
+    %UnityEngineRigidbody, null\n    __FixedUpdate___inl_t1: %UnityEngineVector3,
+    null\n    __FixedUpdate___inl1__velocity: %UnityEngineVector3, null\n    __FixedUpdate___inl1__angularVelocity:
+    %UnityEngineVector3, null\n    __FixedUpdate___inl1__drag: %SystemSingle, 0\n   
+    __FixedUpdate___inl1__magnus: %SystemSingle, 0\n    __FixedUpdate_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __TrySampleMotion__SystemSingle_p_0: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_first:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_i: %SystemInt32, 0\n   
+    __TrySampleMotion__SystemSingle_current: %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_previous:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle___t0: %SystemInt32, 0\n   
+    __TrySampleMotion__SystemSingle_span: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_fraction:
+    %SystemSingle, 0\n    __TrySampleMotion__SystemSingle___t1: %SystemSingle, 0\n   
+    __TrySampleMotion__SystemSingle_ret: %SystemBoolean, null\n    .export __TrySampleMotion__SystemSingle_ret\n   
+    __TrySampleMotion__SystemSingle_retjump: %SystemUInt32, 0xFFFFFFFC\n    __returnValue:
+    %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0:
+    %UnityEngineRigidbody, null\n    __const_1: %UnityEngineObject, null\n    __ConfigureBody_intnl_0:
+    %SystemBoolean, null\n    __const_2: %SystemBoolean, null\n    __const_3: %SystemSingle,
+    0\n    __const_4: %SystemSingle, 400\n    __const_5: %SystemBoolean, null\n   
+    __const_6: %SystemInt32, 0\n    __Stage__UnityEngineVector3_intnl_2: %UnityEngineVector3,
+    null\n    __retaddr_0: %SystemUInt32, 0x00000234\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1:
+    %SystemSingle, 0\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2:
+    %SystemSingle, 0\n    __const_7: %SystemSingle, 1\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3:
+    %SystemSingle, 0\n    __const_8: %UnityEngineVector3, null\n    __const_9: %SystemSingleArray,
+    null\n    __const_10: %UnityEngineVector3Array, null\n    __const_11: %SystemInt32,
+    1\n    __FixedUpdate_intnl_7: %SystemInt32, 0\n    __const_12: %SystemInt32,
+    64\n    __FixedUpdate_intnl_17: %UnityEngineVector3, null\n    __FixedUpdate_intnl_18:
+    %UnityEngineVector3, null\n    __const_13: %UnityEngineForceMode, null\n    __TrySampleMotion__SystemSingle_intnl_2:
+    %SystemInt32, 0\n.data_end\n.code_start\n    .export ConfigureBody\n    ConfigureBody:\n       
+    PUSH, __retaddr_end\n        PUSH, __ConfigureBody_retjump\n        COPY\n   
+    __ConfigureBody_body:\n        PUSH, body\n        PUSH, __const_1\n        PUSH,
+    __ConfigureBody_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __ConfigureBody_L1\n       
+    JUMP_INDIRECT, __ConfigureBody_retjump\n    __ConfigureBody_L1:\n        PUSH,
+    body\n        PUSH, __const_2\n        EXTERN, \"UnityEngineRigidbody.__set_useGravity__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_3\n        EXTERN, \"UnityEngineRigidbody.__set_drag__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_3\n        EXTERN, \"UnityEngineRigidbody.__set_angularDrag__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_4\n        EXTERN, \"UnityEngineRigidbody.__set_maxAngularVelocity__SystemSingle__SystemVoid\"\n       
+    JUMP_INDIRECT, __ConfigureBody_retjump\n    .export Stage__UnityEngineVector3\n   
+    Stage__UnityEngineVector3:\n        PUSH, __const_5\n        PUSH, flying\n       
+    COPY\n        PUSH, __const_6\n        PUSH, _nextSample\n        COPY\n       
+    PUSH, __const_6\n        PUSH, _sampleCount\n        COPY\n        PUSH, body\n       
+    PUSH, __const_1\n        PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __Stage__UnityEngineVector3_L1\n       
+    JUMP_INDIRECT, __Stage__UnityEngineVector3_retjump\n    __Stage__UnityEngineVector3_L1:\n       
+    PUSH, body\n        PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"UnityEngineRigidbody.__get_isKinematic__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __Stage__UnityEngineVector3_L2\n       
+    JUMP, __Stage__UnityEngineVector3_L3\n    __Stage__UnityEngineVector3_L2:\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3.__get_zero__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN,
+    \"UnityEngineRigidbody.__set_velocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3.__get_zero__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN,
+    \"UnityEngineRigidbody.__set_angularVelocity__UnityEngineVector3__SystemVoid\"\n   
+    __Stage__UnityEngineVector3_L3:\n        PUSH, body\n        PUSH, __const_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_isKinematic__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_p_0\n        EXTERN, \"UnityEngineRigidbody.__set_position__UnityEngineVector3__SystemVoid\"\n       
+    JUMP_INDIRECT, __Stage__UnityEngineVector3_retjump\n    .export Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3\n   
+    Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3:\n        PUSH,
+    body\n        PUSH, __const_1\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_L1\n       
+    JUMP_INDIRECT, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_L1:\n       
+    PUSH, __retaddr_0\n        PUSH, __ConfigureBody_retjump\n        COPY\n       
+    JUMP, __ConfigureBody_body\n        PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"UnityEngineRigidbody.__get_maxAngularVelocity__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __const_7\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_maxAngularVelocity__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_0\n       
+    EXTERN, \"UnityEngineRigidbody.__set_position__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_5\n        EXTERN, \"UnityEngineRigidbody.__set_isKinematic__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_1\n       
+    EXTERN, \"UnityEngineRigidbody.__set_velocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_angularVelocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, __const_6\n        PUSH, _nextSample\n        COPY\n        PUSH, __const_6\n       
+    PUSH, _sampleCount\n        COPY\n        PUSH, __const_2\n        PUSH, flying\n       
+    COPY\n        JUMP_INDIRECT, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    .export _fixedUpdate\n    _fixedUpdate:\n        PUSH, __const_5\n        PUSH,
+    __FixedUpdate___t0\n        COPY\n        PUSH, __const_3\n        PUSH, __FixedUpdate___inl0__time\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__position\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__velocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__angularVelocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl_t1\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl1__angularVelocity\n       
+    COPY\n        PUSH, flying\n        PUSH, __FixedUpdate___t1\n        EXTERN,
+    \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        PUSH,
+    __FixedUpdate___t1\n        JUMP_IF_FALSE, __FixedUpdate_L0\n        JUMP, __FixedUpdate_L1\n   
+    __FixedUpdate_L0:\n        PUSH, body\n        PUSH, __const_1\n        PUSH,
+    __FixedUpdate___t1\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
+    __FixedUpdate_L1:\n        PUSH, __FixedUpdate___t1\n        PUSH, __FixedUpdate___t0\n       
+    COPY\n        PUSH, __FixedUpdate___t1\n        JUMP_IF_FALSE, __FixedUpdate_L2\n       
+    JUMP, __FixedUpdate_L3\n    __FixedUpdate_L2:\n        PUSH, body\n        PUSH,
+    __FixedUpdate___t0\n        EXTERN, \"UnityEngineRigidbody.__get_isKinematic__SystemBoolean\"\n   
+    __FixedUpdate_L3:\n        PUSH, __FixedUpdate___t0\n        JUMP_IF_FALSE, __FixedUpdate_L5\n       
+    JUMP_INDIRECT, __FixedUpdate_retjump\n    __FixedUpdate_L5:\n        PUSH, __FixedUpdate___inl0__time\n       
+    EXTERN, \"UnityEngineTime.__get_fixedTime__SystemSingle\"\n        PUSH, body\n       
+    PUSH, __FixedUpdate___inl0__position\n        EXTERN, \"UnityEngineRigidbody.__get_position__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl0__velocity\n        EXTERN, \"UnityEngineRigidbody.__get_velocity__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl0__angularVelocity\n        EXTERN,
+    \"UnityEngineRigidbody.__get_angularVelocity__UnityEngineVector3\"\n        PUSH,
+    _times\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__time\n       
+    EXTERN, \"SystemSingleArray.__Set__SystemInt32_SystemSingle__SystemVoid\"\n       
+    PUSH, _positions\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__position\n       
+    EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _velocities\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__velocity\n       
+    EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _angularVelocities\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__angularVelocity\n       
+    EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _nextSample\n        PUSH, __const_11\n        PUSH, __FixedUpdate_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, _nextSample\n       
+    EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, _sampleCount\n        PUSH, __const_12\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __FixedUpdate_L7\n       
+    PUSH, _sampleCount\n        PUSH, __const_11\n        PUSH, _sampleCount\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n   
+    __FixedUpdate_L7:\n        PUSH, body\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    EXTERN, \"UnityEngineRigidbody.__get_velocity__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl1__angularVelocity\n        EXTERN,
+    \"UnityEngineRigidbody.__get_angularVelocity__UnityEngineVector3\"\n        PUSH,
+    dragCoefficient\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
+    PUSH, __FixedUpdate___inl1__velocity\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    PUSH, __FixedUpdate___inl1__velocity\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate___inl1__angularVelocity\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, magnusCoefficient\n        PUSH, __FixedUpdate_intnl_17\n        PUSH,
+    __FixedUpdate_intnl_18\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_18\n       
+    PUSH, __FixedUpdate___inl_t1\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl_t1\n        PUSH, __const_13\n       
+    EXTERN, \"UnityEngineRigidbody.__AddForce__UnityEngineVector3_UnityEngineForceMode__SystemVoid\"\n       
+    JUMP_INDIRECT, __FixedUpdate_retjump\n    .export TrySampleMotion__SystemSingle\n   
+    TrySampleMotion__SystemSingle:\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_first\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle_span\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n        PUSH, _sampleCount\n        PUSH, __const_6\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L1\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_5\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L1:\n       
+    PUSH, _nextSample\n        PUSH, _sampleCount\n        PUSH, __FixedUpdate_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __TrySampleMotion__SystemSingle_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_2\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_first\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_first\n        PUSH,
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __TrySampleMotion__SystemSingle_p_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L3\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_5\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L3:\n       
+    PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_i\n        COPY\n   
+    __TrySampleMotion__SystemSingle_L4:\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    PUSH, _sampleCount\n        PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L5\n       
+    PUSH, __TrySampleMotion__SystemSingle_first\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    PUSH, __FixedUpdate_intnl_7\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __TrySampleMotion__SystemSingle_p_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L7\n       
+    JUMP, __TrySampleMotion__SystemSingle_L8\n    __TrySampleMotion__SystemSingle_L7:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, __const_6\n        PUSH,
+    __ConfigureBody_intnl_0\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L9\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n        JUMP, __TrySampleMotion__SystemSingle_L10\n    __TrySampleMotion__SystemSingle_L9:\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __const_11\n       
+    PUSH, __FixedUpdate_intnl_7\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __TrySampleMotion__SystemSingle_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_2\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle___t0\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n   
+    __TrySampleMotion__SystemSingle_L10:\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    PUSH, __TrySampleMotion__SystemSingle_previous\n        COPY\n        PUSH, _times\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    _times\n        PUSH, __TrySampleMotion__SystemSingle___t0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __TrySampleMotion__SystemSingle_span\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_span\n        PUSH, __const_3\n       
+    PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L11\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __TrySampleMotion__SystemSingle_p_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __TrySampleMotion__SystemSingle_span\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
+    JUMP, __TrySampleMotion__SystemSingle_L12\n    __TrySampleMotion__SystemSingle_L11:\n       
+    PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n    __TrySampleMotion__SystemSingle_L12:\n        PUSH, _positions\n       
+    PUSH, __TrySampleMotion__SystemSingle_previous\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _positions\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __TrySampleMotion__SystemSingle___t1\n        PUSH, sampledPosition\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, _velocities\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _velocities\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __TrySampleMotion__SystemSingle___t1\n        PUSH, sampledVelocity\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, _angularVelocities\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _angularVelocities\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __TrySampleMotion__SystemSingle___t1\n        PUSH, sampledAngularVelocity\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __const_2\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_2\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L8:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, __const_11\n        PUSH,
+    __TrySampleMotion__SystemSingle_i\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    JUMP, __TrySampleMotion__SystemSingle_L4\n    __TrySampleMotion__SystemSingle_L5:\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_5\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n        JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n.code_end\n"
+  assemblyError: 
+  sourceCsScript: {fileID: 11500000, guid: 1f96da6856035b14cac5e1daf704aba0, type: 3}
+  unresolvedCompileErrors: []
+  sourceFingerprint: f19337aa8c6888f2fe7595d064085048f7f0bef97ee10703877698bf0de0afc5
+  compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
+  generatedGpuAssets: []
+  gpuLoadSourceFields: []
+  generatedGpuMaterials: []
+  declaredBehaviourSyncMode: 0
+  fieldLabels: []
+  inspectorFields:
+  - body
+  - dragCoefficient
+  - magnusCoefficient
+  - flying
+  - sampledPosition
+  - sampledVelocity
+  - sampledAngularVelocity
+  inspectorPaths:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  optBeforeUasm: ".data_start\n    body: %UnityEngineRigidbody, null\n    .export
+    body\n    dragCoefficient: %SystemSingle, 0.00622\n    .export dragCoefficient\n   
+    magnusCoefficient: %SystemSingle, 0.00063\n    .export magnusCoefficient\n   
+    flying: %SystemBoolean, null\n    .export flying\n    HistoryCapacity: %SystemInt32,
+    64\n    _times: %SystemSingleArray, null\n    _positions: %UnityEngineVector3Array,
+    null\n    _velocities: %UnityEngineVector3Array, null\n    _angularVelocities:
+    %UnityEngineVector3Array, null\n    _nextSample: %SystemInt32, 0\n    _sampleCount:
+    %SystemInt32, 0\n    sampledPosition: %UnityEngineVector3, null\n    .export
+    sampledPosition\n    sampledVelocity: %UnityEngineVector3, null\n    .export
+    sampledVelocity\n    sampledAngularVelocity: %UnityEngineVector3, null\n    .export
+    sampledAngularVelocity\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"BallFlightBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __ConfigureBody___t0: %UnityEngineRigidbody, null\n    __ConfigureBody___t1:
+    %UnityEngineRigidbody, null\n    __ConfigureBody___t2: %UnityEngineRigidbody,
+    null\n    __ConfigureBody___t3: %UnityEngineRigidbody, null\n    __ConfigureBody_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __Stage__UnityEngineVector3_p_0: %UnityEngineVector3,
+    null\n    __Stage__UnityEngineVector3___t0: %UnityEngineRigidbody, null\n   
+    __Stage__UnityEngineVector3___t1: %UnityEngineRigidbody, null\n    __Stage__UnityEngineVector3___t2:
+    %UnityEngineRigidbody, null\n    __Stage__UnityEngineVector3___t3: %UnityEngineRigidbody,
+    null\n    __Stage__UnityEngineVector3_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_0: %UnityEngineVector3,
+    null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_1:
+    %UnityEngineVector3, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2:
+    %UnityEngineVector3, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t0:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t1:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t2:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t3:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t4:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FixedUpdate___t0: %SystemBoolean, null\n   
+    __FixedUpdate___t1: %SystemBoolean, null\n    __FixedUpdate___inl0__time: %SystemSingle,
+    0\n    __FixedUpdate___inl0__position: %UnityEngineVector3, null\n    __FixedUpdate___inl0__velocity:
+    %UnityEngineVector3, null\n    __FixedUpdate___inl0__angularVelocity: %UnityEngineVector3,
+    null\n    __FixedUpdate___inl0____t0: %SystemSingleArray, null\n    __FixedUpdate___inl0____t1:
+    %SystemInt32, 0\n    __FixedUpdate___inl0____t2: %UnityEngineVector3Array, null\n   
+    __FixedUpdate___inl0____t3: %SystemInt32, 0\n    __FixedUpdate___inl0____t4:
+    %UnityEngineVector3Array, null\n    __FixedUpdate___inl0____t5: %SystemInt32,
+    0\n    __FixedUpdate___inl0____t6: %UnityEngineVector3Array, null\n    __FixedUpdate___inl0____t7:
+    %SystemInt32, 0\n    __FixedUpdate___inl0____t8: %SystemInt32, 0\n    __FixedUpdate___inl_t0:
+    %UnityEngineRigidbody, null\n    __FixedUpdate___inl_t1: %UnityEngineVector3,
+    null\n    __FixedUpdate___inl1__velocity: %UnityEngineVector3, null\n    __FixedUpdate___inl1__angularVelocity:
+    %UnityEngineVector3, null\n    __FixedUpdate___inl1__drag: %SystemSingle, 0\n   
+    __FixedUpdate___inl1__magnus: %SystemSingle, 0\n    __FixedUpdate_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __TrySampleMotion__SystemSingle_p_0: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_first:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_i: %SystemInt32, 0\n   
+    __TrySampleMotion__SystemSingle_current: %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_previous:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle___t0: %SystemInt32, 0\n   
+    __TrySampleMotion__SystemSingle_span: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_fraction:
+    %SystemSingle, 0\n    __TrySampleMotion__SystemSingle___t1: %SystemSingle, 0\n   
+    __TrySampleMotion__SystemSingle_ret: %SystemBoolean, null\n    .export __TrySampleMotion__SystemSingle_ret\n   
+    __TrySampleMotion__SystemSingle_retjump: %SystemUInt32, 0xFFFFFFFC\n    __returnValue:
+    %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0:
+    %UnityEngineRigidbody, null\n    __const_1: %UnityEngineObject, null\n    __ConfigureBody_intnl_0:
+    %SystemBoolean, null\n    __const_2: %SystemBoolean, null\n    __const_3: %SystemSingle,
+    0\n    __const_4: %SystemSingle, 400\n    __const_5: %SystemBoolean, null\n   
+    __const_6: %SystemInt32, 0\n    __Stage__UnityEngineVector3_intnl_0: %SystemBoolean,
+    null\n    __Stage__UnityEngineVector3_intnl_1: %SystemBoolean, null\n    __Stage__UnityEngineVector3_intnl_2:
+    %UnityEngineVector3, null\n    __Stage__UnityEngineVector3_intnl_3: %UnityEngineVector3,
+    null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_0:
+    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x000003E0\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1:
+    %SystemSingle, 0\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2:
+    %SystemSingle, 0\n    __const_7: %SystemSingle, 1\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3:
+    %SystemSingle, 0\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_4:
+    %SystemSingle, 0\n    __const_8: %UnityEngineVector3, null\n    __const_9: %SystemSingleArray,
+    null\n    __const_10: %UnityEngineVector3Array, null\n    __FixedUpdate_intnl_0:
+    %SystemBoolean, null\n    __FixedUpdate_intnl_1: %SystemBoolean, null\n    __FixedUpdate_intnl_2:
+    %SystemBoolean, null\n    __FixedUpdate_intnl_3: %SystemSingle, 0\n    __FixedUpdate_intnl_4:
+    %UnityEngineVector3, null\n    __FixedUpdate_intnl_5: %UnityEngineVector3, null\n   
+    __FixedUpdate_intnl_6: %UnityEngineVector3, null\n    __const_11: %SystemInt32,
+    1\n    __FixedUpdate_intnl_7: %SystemInt32, 0\n    __const_12: %SystemInt32,
+    64\n    __FixedUpdate_intnl_8: %SystemInt32, 0\n    __FixedUpdate_intnl_9: %SystemBoolean,
+    null\n    __FixedUpdate_intnl_10: %SystemInt32, 0\n    __FixedUpdate_intnl_11:
+    %UnityEngineVector3, null\n    __FixedUpdate_intnl_12: %UnityEngineVector3, null\n   
+    __FixedUpdate_intnl_13: %SystemSingle, 0\n    __FixedUpdate_intnl_14: %SystemSingle,
+    0\n    __FixedUpdate_intnl_15: %SystemSingle, 0\n    __FixedUpdate_intnl_16:
+    %UnityEngineVector3, null\n    __FixedUpdate_intnl_17: %UnityEngineVector3, null\n   
+    __FixedUpdate_intnl_18: %UnityEngineVector3, null\n    __FixedUpdate_intnl_19:
+    %UnityEngineVector3, null\n    __const_13: %UnityEngineForceMode, null\n    __TrySampleMotion__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __TrySampleMotion__SystemSingle_intnl_1: %SystemInt32,
+    0\n    __TrySampleMotion__SystemSingle_intnl_2: %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_intnl_3:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_intnl_4: %SystemSingle,
+    0\n    __TrySampleMotion__SystemSingle_intnl_5: %SystemBoolean, null\n    __TrySampleMotion__SystemSingle_intnl_6:
+    %SystemBoolean, null\n    __TrySampleMotion__SystemSingle_intnl_7: %SystemInt32,
+    0\n    __TrySampleMotion__SystemSingle_intnl_8: %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_intnl_9:
+    %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_intnl_10: %SystemBoolean,
+    null\n    __TrySampleMotion__SystemSingle_intnl_11: %SystemBoolean, null\n   
+    __TrySampleMotion__SystemSingle_intnl_12: %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_intnl_13:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_intnl_14: %SystemInt32,
+    0\n    __TrySampleMotion__SystemSingle_intnl_15: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_intnl_16:
+    %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_intnl_17: %SystemSingle,
+    0\n    __TrySampleMotion__SystemSingle_intnl_18: %SystemBoolean, null\n    __TrySampleMotion__SystemSingle_intnl_19:
+    %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_intnl_20: %SystemSingle,
+    0\n    __TrySampleMotion__SystemSingle_intnl_21: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_intnl_22:
+    %UnityEngineVector3, null\n    __TrySampleMotion__SystemSingle_intnl_23: %UnityEngineVector3,
+    null\n    __TrySampleMotion__SystemSingle_intnl_24: %UnityEngineVector3, null\n   
+    __TrySampleMotion__SystemSingle_intnl_25: %UnityEngineVector3, null\n    __TrySampleMotion__SystemSingle_intnl_26:
+    %UnityEngineVector3, null\n    __TrySampleMotion__SystemSingle_intnl_27: %UnityEngineVector3,
+    null\n    __TrySampleMotion__SystemSingle_intnl_28: %UnityEngineVector3, null\n   
+    __TrySampleMotion__SystemSingle_intnl_29: %UnityEngineVector3, null\n    __TrySampleMotion__SystemSingle_intnl_30:
+    %UnityEngineVector3, null\n    __TrySampleMotion__SystemSingle_intnl_31: %SystemInt32,
+    0\n.data_end\n.code_start\n    .export ConfigureBody\n    ConfigureBody:\n       
+    PUSH, __retaddr_end\n        PUSH, __ConfigureBody_retjump\n        COPY\n       
+    JUMP, __ConfigureBody_body\n    __ConfigureBody_body:\n        PUSH, __const_0\n       
+    PUSH, __ConfigureBody___t0\n        COPY\n        PUSH, __const_0\n        PUSH,
+    __ConfigureBody___t1\n        COPY\n        PUSH, __const_0\n        PUSH, __ConfigureBody___t2\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __ConfigureBody___t3\n        COPY\n       
+    PUSH, body\n        PUSH, __const_1\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __ConfigureBody_L1\n       
+    JUMP_INDIRECT, __ConfigureBody_retjump\n    __ConfigureBody_L1:\n        PUSH,
+    body\n        PUSH, __ConfigureBody___t0\n        COPY\n        PUSH, __ConfigureBody___t0\n       
+    PUSH, __const_2\n        EXTERN, \"UnityEngineRigidbody.__set_useGravity__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __ConfigureBody___t1\n        COPY\n        PUSH, __ConfigureBody___t1\n       
+    PUSH, __const_3\n        EXTERN, \"UnityEngineRigidbody.__set_drag__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __ConfigureBody___t2\n        COPY\n        PUSH, __ConfigureBody___t2\n       
+    PUSH, __const_3\n        EXTERN, \"UnityEngineRigidbody.__set_angularDrag__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __ConfigureBody___t3\n        COPY\n        PUSH, __ConfigureBody___t3\n       
+    PUSH, __const_4\n        EXTERN, \"UnityEngineRigidbody.__set_maxAngularVelocity__SystemSingle__SystemVoid\"\n       
+    JUMP_INDIRECT, __ConfigureBody_retjump\n    .export Stage__UnityEngineVector3\n   
+    Stage__UnityEngineVector3:\n        PUSH, __const_0\n        PUSH, __Stage__UnityEngineVector3___t0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Stage__UnityEngineVector3___t1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Stage__UnityEngineVector3___t2\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Stage__UnityEngineVector3___t3\n       
+    COPY\n        PUSH, __const_5\n        PUSH, flying\n        COPY\n        PUSH,
+    __const_6\n        PUSH, _nextSample\n        COPY\n        PUSH, __const_6\n       
+    PUSH, _sampleCount\n        COPY\n        PUSH, body\n        PUSH, __const_1\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_0\n        JUMP_IF_FALSE, __Stage__UnityEngineVector3_L1\n       
+    JUMP_INDIRECT, __Stage__UnityEngineVector3_retjump\n    __Stage__UnityEngineVector3_L1:\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_intnl_1\n        EXTERN,
+    \"UnityEngineRigidbody.__get_isKinematic__SystemBoolean\"\n        PUSH, __Stage__UnityEngineVector3_intnl_1\n       
+    JUMP_IF_FALSE, __Stage__UnityEngineVector3_L2\n        JUMP, __Stage__UnityEngineVector3_L3\n   
+    __Stage__UnityEngineVector3_L2:\n        PUSH, body\n        PUSH, __Stage__UnityEngineVector3___t0\n       
+    COPY\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3.__get_zero__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3___t0\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_velocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3___t1\n        COPY\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_3\n        EXTERN, \"UnityEngineVector3.__get_zero__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3___t1\n        PUSH, __Stage__UnityEngineVector3_intnl_3\n       
+    EXTERN, \"UnityEngineRigidbody.__set_angularVelocity__UnityEngineVector3__SystemVoid\"\n   
+    __Stage__UnityEngineVector3_L3:\n        PUSH, body\n        PUSH, __Stage__UnityEngineVector3___t2\n       
+    COPY\n        PUSH, __Stage__UnityEngineVector3___t2\n        PUSH, __const_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_isKinematic__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3___t3\n        COPY\n       
+    PUSH, __Stage__UnityEngineVector3___t3\n        PUSH, __Stage__UnityEngineVector3_p_0\n       
+    EXTERN, \"UnityEngineRigidbody.__set_position__UnityEngineVector3__SystemVoid\"\n       
+    JUMP_INDIRECT, __Stage__UnityEngineVector3_retjump\n    .export Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3\n   
+    Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3:\n        PUSH,
+    __const_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t2\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t3\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t4\n       
+    COPY\n        PUSH, body\n        PUSH, __const_1\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_0\n       
+    JUMP_IF_FALSE, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_L1\n       
+    JUMP_INDIRECT, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_L1:\n       
+    PUSH, __retaddr_0\n        PUSH, __ConfigureBody_retjump\n        COPY\n       
+    JUMP, __ConfigureBody_body\n        PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t0\n       
+    COPY\n        PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"UnityEngineRigidbody.__get_maxAngularVelocity__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __const_7\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_4\n       
+    EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t0\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_4\n       
+    EXTERN, \"UnityEngineRigidbody.__set_maxAngularVelocity__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t1\n       
+    COPY\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_0\n       
+    EXTERN, \"UnityEngineRigidbody.__set_position__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t2\n       
+    COPY\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t2\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineRigidbody.__set_isKinematic__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t3\n       
+    COPY\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t3\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_1\n       
+    EXTERN, \"UnityEngineRigidbody.__set_velocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t4\n       
+    COPY\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t4\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_angularVelocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, __const_6\n        PUSH, _nextSample\n        COPY\n        PUSH, __const_6\n       
+    PUSH, _sampleCount\n        COPY\n        PUSH, __const_2\n        PUSH, flying\n       
+    COPY\n        JUMP_INDIRECT, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    .export _fixedUpdate\n    _fixedUpdate:\n        PUSH, __const_5\n        PUSH,
+    __FixedUpdate___t0\n        COPY\n        PUSH, __const_5\n        PUSH, __FixedUpdate___t1\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __FixedUpdate___inl0__time\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__position\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__velocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__angularVelocity\n       
+    COPY\n        PUSH, __const_9\n        PUSH, __FixedUpdate___inl0____t0\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __FixedUpdate___inl0____t1\n       
+    COPY\n        PUSH, __const_10\n        PUSH, __FixedUpdate___inl0____t2\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __FixedUpdate___inl0____t3\n       
+    COPY\n        PUSH, __const_10\n        PUSH, __FixedUpdate___inl0____t4\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __FixedUpdate___inl0____t5\n       
+    COPY\n        PUSH, __const_10\n        PUSH, __FixedUpdate___inl0____t6\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __FixedUpdate___inl0____t7\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __FixedUpdate___inl0____t8\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FixedUpdate___inl_t0\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl_t1\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl1__angularVelocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __FixedUpdate___inl1__drag\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __FixedUpdate___inl1__magnus\n       
+    COPY\n        PUSH, flying\n        PUSH, __FixedUpdate_intnl_0\n        EXTERN,
+    \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        PUSH,
+    __FixedUpdate_intnl_0\n        PUSH, __FixedUpdate___t1\n        COPY\n       
+    PUSH, __FixedUpdate___t1\n        JUMP_IF_FALSE, __FixedUpdate_L0\n        JUMP,
+    __FixedUpdate_L1\n    __FixedUpdate_L0:\n        PUSH, body\n        PUSH, __const_1\n       
+    PUSH, __FixedUpdate_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __FixedUpdate_intnl_1\n        PUSH, __FixedUpdate___t1\n        COPY\n   
+    __FixedUpdate_L1:\n        PUSH, __FixedUpdate___t1\n        PUSH, __FixedUpdate___t0\n       
+    COPY\n        PUSH, __FixedUpdate___t0\n        JUMP_IF_FALSE, __FixedUpdate_L2\n       
+    JUMP, __FixedUpdate_L3\n    __FixedUpdate_L2:\n        PUSH, body\n        PUSH,
+    __FixedUpdate_intnl_2\n        EXTERN, \"UnityEngineRigidbody.__get_isKinematic__SystemBoolean\"\n       
+    PUSH, __FixedUpdate_intnl_2\n        PUSH, __FixedUpdate___t0\n        COPY\n   
+    __FixedUpdate_L3:\n        PUSH, __FixedUpdate___t0\n        JUMP_IF_FALSE, __FixedUpdate_L5\n       
+    JUMP_INDIRECT, __FixedUpdate_retjump\n    __FixedUpdate_L5:\n        PUSH, __FixedUpdate_intnl_3\n       
+    EXTERN, \"UnityEngineTime.__get_fixedTime__SystemSingle\"\n        PUSH, __FixedUpdate_intnl_3\n       
+    PUSH, __FixedUpdate___inl0__time\n        COPY\n        PUSH, body\n        PUSH,
+    __FixedUpdate_intnl_4\n        EXTERN, \"UnityEngineRigidbody.__get_position__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate_intnl_4\n        PUSH, __FixedUpdate___inl0__position\n       
+    COPY\n        PUSH, body\n        PUSH, __FixedUpdate_intnl_5\n        EXTERN,
+    \"UnityEngineRigidbody.__get_velocity__UnityEngineVector3\"\n        PUSH, __FixedUpdate_intnl_5\n       
+    PUSH, __FixedUpdate___inl0__velocity\n        COPY\n        PUSH, body\n       
+    PUSH, __FixedUpdate_intnl_6\n        EXTERN, \"UnityEngineRigidbody.__get_angularVelocity__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate_intnl_6\n        PUSH, __FixedUpdate___inl0__angularVelocity\n       
+    COPY\n        PUSH, _times\n        PUSH, __FixedUpdate___inl0____t0\n       
+    COPY\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0____t1\n       
+    COPY\n        PUSH, __FixedUpdate___inl0____t0\n        PUSH, __FixedUpdate___inl0____t1\n       
+    PUSH, __FixedUpdate___inl0__time\n        EXTERN, \"SystemSingleArray.__Set__SystemInt32_SystemSingle__SystemVoid\"\n       
+    PUSH, _positions\n        PUSH, __FixedUpdate___inl0____t2\n        COPY\n       
+    PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0____t3\n        COPY\n       
+    PUSH, __FixedUpdate___inl0____t2\n        PUSH, __FixedUpdate___inl0____t3\n       
+    PUSH, __FixedUpdate___inl0__position\n        EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _velocities\n        PUSH, __FixedUpdate___inl0____t4\n        COPY\n       
+    PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0____t5\n        COPY\n       
+    PUSH, __FixedUpdate___inl0____t4\n        PUSH, __FixedUpdate___inl0____t5\n       
+    PUSH, __FixedUpdate___inl0__velocity\n        EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _angularVelocities\n        PUSH, __FixedUpdate___inl0____t6\n        COPY\n       
+    PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0____t7\n        COPY\n       
+    PUSH, __FixedUpdate___inl0____t6\n        PUSH, __FixedUpdate___inl0____t7\n       
+    PUSH, __FixedUpdate___inl0__angularVelocity\n        EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _nextSample\n        PUSH, __const_11\n        PUSH, __FixedUpdate_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __FixedUpdate_intnl_8\n       
+    EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_8\n        PUSH, _nextSample\n        COPY\n       
+    PUSH, _sampleCount\n        PUSH, __const_12\n        PUSH, __FixedUpdate_intnl_9\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __FixedUpdate_intnl_9\n        JUMP_IF_FALSE, __FixedUpdate_L7\n       
+    PUSH, _sampleCount\n        PUSH, __FixedUpdate___inl0____t8\n        COPY\n       
+    PUSH, __FixedUpdate___inl0____t8\n        PUSH, __const_11\n        PUSH, __FixedUpdate_intnl_10\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_10\n        PUSH, _sampleCount\n        COPY\n    __FixedUpdate_L7:\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl_t0\n        COPY\n        PUSH,
+    body\n        PUSH, __FixedUpdate_intnl_11\n        EXTERN, \"UnityEngineRigidbody.__get_velocity__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate_intnl_11\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    COPY\n        PUSH, body\n        PUSH, __FixedUpdate_intnl_12\n        EXTERN,
+    \"UnityEngineRigidbody.__get_angularVelocity__UnityEngineVector3\"\n        PUSH,
+    __FixedUpdate_intnl_12\n        PUSH, __FixedUpdate___inl1__angularVelocity\n       
+    COPY\n        PUSH, dragCoefficient\n        PUSH, __FixedUpdate___inl1__drag\n       
+    COPY\n        PUSH, magnusCoefficient\n        PUSH, __FixedUpdate___inl1__magnus\n       
+    COPY\n        PUSH, __FixedUpdate___inl1__drag\n        PUSH, __FixedUpdate_intnl_13\n       
+    EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
+    PUSH, __FixedUpdate___inl1__velocity\n        PUSH, __FixedUpdate_intnl_14\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __FixedUpdate_intnl_13\n       
+    PUSH, __FixedUpdate_intnl_14\n        PUSH, __FixedUpdate_intnl_15\n        EXTERN,
+    \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __FixedUpdate_intnl_15\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    PUSH, __FixedUpdate_intnl_16\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate___inl1__angularVelocity\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate___inl1__magnus\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __FixedUpdate_intnl_18\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate_intnl_16\n        PUSH, __FixedUpdate_intnl_18\n        PUSH,
+    __FixedUpdate_intnl_19\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate_intnl_19\n        PUSH, __FixedUpdate___inl_t1\n        COPY\n       
+    PUSH, __FixedUpdate___inl_t0\n        PUSH, __FixedUpdate___inl_t1\n        PUSH,
+    __const_13\n        EXTERN, \"UnityEngineRigidbody.__AddForce__UnityEngineVector3_UnityEngineForceMode__SystemVoid\"\n       
+    JUMP_INDIRECT, __FixedUpdate_retjump\n    .export TrySampleMotion__SystemSingle\n   
+    TrySampleMotion__SystemSingle:\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_first\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle_span\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle_fraction\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n        PUSH, _sampleCount\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_intnl_0\n       
+    EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L1\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __TrySampleMotion__SystemSingle_ret\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L1:\n       
+    PUSH, _nextSample\n        PUSH, _sampleCount\n        PUSH, __TrySampleMotion__SystemSingle_intnl_1\n       
+    EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_1\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_2\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_2\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_3\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_3\n        PUSH, __TrySampleMotion__SystemSingle_first\n       
+    COPY\n        PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_first\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_4\n        EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_p_0\n        PUSH, __TrySampleMotion__SystemSingle_intnl_4\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_5\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_5\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L3\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __TrySampleMotion__SystemSingle_ret\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L3:\n       
+    PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_i\n        COPY\n       
+    ANNOTATION, \"@tsukimi loop trip=unknown no-computed-jump\"\n    __TrySampleMotion__SystemSingle_L4:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, _sampleCount\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_6\n        EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_6\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L5\n       
+    PUSH, __TrySampleMotion__SystemSingle_first\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_7\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_7\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_8\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_8\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    COPY\n        PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_9\n        EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_p_0\n        PUSH, __TrySampleMotion__SystemSingle_intnl_9\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_10\n        EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_10\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L7\n       
+    JUMP, __TrySampleMotion__SystemSingle_L8\n    __TrySampleMotion__SystemSingle_L7:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, __const_6\n        PUSH,
+    __TrySampleMotion__SystemSingle_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_11\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L9\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n        JUMP, __TrySampleMotion__SystemSingle_L10\n    __TrySampleMotion__SystemSingle_L9:\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __const_11\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_12\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_12\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_13\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_13\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_14\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_14\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n    __TrySampleMotion__SystemSingle_L10:\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    PUSH, __TrySampleMotion__SystemSingle_previous\n        COPY\n        PUSH, _times\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __TrySampleMotion__SystemSingle_intnl_15\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    _times\n        PUSH, __TrySampleMotion__SystemSingle_previous\n        PUSH,
+    __TrySampleMotion__SystemSingle_intnl_16\n        EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_15\n        PUSH, __TrySampleMotion__SystemSingle_intnl_16\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_17\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_17\n        PUSH, __TrySampleMotion__SystemSingle_span\n       
+    COPY\n        PUSH, __TrySampleMotion__SystemSingle_span\n        PUSH, __const_3\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_18\n        EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_18\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L11\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_19\n        EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_p_0\n        PUSH, __TrySampleMotion__SystemSingle_intnl_19\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_20\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_20\n        PUSH, __TrySampleMotion__SystemSingle_span\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_21\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_21\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n        JUMP, __TrySampleMotion__SystemSingle_L12\n    __TrySampleMotion__SystemSingle_L11:\n       
+    PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n    __TrySampleMotion__SystemSingle_L12:\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    PUSH, __TrySampleMotion__SystemSingle_fraction\n        COPY\n        PUSH, _positions\n       
+    PUSH, __TrySampleMotion__SystemSingle_previous\n        PUSH, __TrySampleMotion__SystemSingle_intnl_22\n       
+    EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _positions\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_23\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_22\n        PUSH, __TrySampleMotion__SystemSingle_intnl_23\n       
+    PUSH, __TrySampleMotion__SystemSingle_fraction\n        PUSH, __TrySampleMotion__SystemSingle_intnl_24\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_24\n        PUSH, sampledPosition\n       
+    COPY\n        PUSH, _velocities\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_25\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _velocities\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_26\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_25\n        PUSH, __TrySampleMotion__SystemSingle_intnl_26\n       
+    PUSH, __TrySampleMotion__SystemSingle_fraction\n        PUSH, __TrySampleMotion__SystemSingle_intnl_27\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_27\n        PUSH, sampledVelocity\n       
+    COPY\n        PUSH, _angularVelocities\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_28\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _angularVelocities\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_29\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_28\n        PUSH, __TrySampleMotion__SystemSingle_intnl_29\n       
+    PUSH, __TrySampleMotion__SystemSingle_fraction\n        PUSH, __TrySampleMotion__SystemSingle_intnl_30\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_30\n        PUSH, sampledAngularVelocity\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __TrySampleMotion__SystemSingle_ret\n       
+    COPY\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L8:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, __const_11\n        PUSH,
+    __TrySampleMotion__SystemSingle_intnl_31\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_31\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    COPY\n        JUMP, __TrySampleMotion__SystemSingle_L4\n    __TrySampleMotion__SystemSingle_L5:\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __TrySampleMotion__SystemSingle_ret\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n       
+    JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n.code_end\n"
+  optAfterUasm: ".data_start\n    body: %UnityEngineRigidbody, null\n    .export
+    body\n    dragCoefficient: %SystemSingle, 0.00622\n    .export dragCoefficient\n   
+    magnusCoefficient: %SystemSingle, 0.00063\n    .export magnusCoefficient\n   
+    flying: %SystemBoolean, null\n    .export flying\n    HistoryCapacity: %SystemInt32,
+    64\n    _times: %SystemSingleArray, null\n    _positions: %UnityEngineVector3Array,
+    null\n    _velocities: %UnityEngineVector3Array, null\n    _angularVelocities:
+    %UnityEngineVector3Array, null\n    _nextSample: %SystemInt32, 0\n    _sampleCount:
+    %SystemInt32, 0\n    sampledPosition: %UnityEngineVector3, null\n    .export
+    sampledPosition\n    sampledVelocity: %UnityEngineVector3, null\n    .export
+    sampledVelocity\n    sampledAngularVelocity: %UnityEngineVector3, null\n    .export
+    sampledAngularVelocity\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"BallFlightBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __ConfigureBody___t0: %UnityEngineRigidbody, null\n    __ConfigureBody___t1:
+    %UnityEngineRigidbody, null\n    __ConfigureBody___t2: %UnityEngineRigidbody,
+    null\n    __ConfigureBody___t3: %UnityEngineRigidbody, null\n    __ConfigureBody_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __Stage__UnityEngineVector3_p_0: %UnityEngineVector3,
+    null\n    __Stage__UnityEngineVector3___t0: %UnityEngineRigidbody, null\n   
+    __Stage__UnityEngineVector3___t1: %UnityEngineRigidbody, null\n    __Stage__UnityEngineVector3___t2:
+    %UnityEngineRigidbody, null\n    __Stage__UnityEngineVector3___t3: %UnityEngineRigidbody,
+    null\n    __Stage__UnityEngineVector3_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_0: %UnityEngineVector3,
+    null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_1:
+    %UnityEngineVector3, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2:
+    %UnityEngineVector3, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t0:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t1:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t2:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t3:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3___t4:
+    %UnityEngineRigidbody, null\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FixedUpdate___t0: %SystemBoolean, null\n   
+    __FixedUpdate___t1: %SystemBoolean, null\n    __FixedUpdate___inl0__time: %SystemSingle,
+    0\n    __FixedUpdate___inl0__position: %UnityEngineVector3, null\n    __FixedUpdate___inl0__velocity:
+    %UnityEngineVector3, null\n    __FixedUpdate___inl0__angularVelocity: %UnityEngineVector3,
+    null\n    __FixedUpdate___inl0____t0: %SystemSingleArray, null\n    __FixedUpdate___inl0____t1:
+    %SystemInt32, 0\n    __FixedUpdate___inl0____t2: %UnityEngineVector3Array, null\n   
+    __FixedUpdate___inl0____t3: %SystemInt32, 0\n    __FixedUpdate___inl0____t4:
+    %UnityEngineVector3Array, null\n    __FixedUpdate___inl0____t5: %SystemInt32,
+    0\n    __FixedUpdate___inl0____t6: %UnityEngineVector3Array, null\n    __FixedUpdate___inl0____t7:
+    %SystemInt32, 0\n    __FixedUpdate___inl0____t8: %SystemInt32, 0\n    __FixedUpdate___inl_t0:
+    %UnityEngineRigidbody, null\n    __FixedUpdate___inl_t1: %UnityEngineVector3,
+    null\n    __FixedUpdate___inl1__velocity: %UnityEngineVector3, null\n    __FixedUpdate___inl1__angularVelocity:
+    %UnityEngineVector3, null\n    __FixedUpdate___inl1__drag: %SystemSingle, 0\n   
+    __FixedUpdate___inl1__magnus: %SystemSingle, 0\n    __FixedUpdate_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __TrySampleMotion__SystemSingle_p_0: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_first:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_i: %SystemInt32, 0\n   
+    __TrySampleMotion__SystemSingle_current: %SystemInt32, 0\n    __TrySampleMotion__SystemSingle_previous:
+    %SystemInt32, 0\n    __TrySampleMotion__SystemSingle___t0: %SystemInt32, 0\n   
+    __TrySampleMotion__SystemSingle_span: %SystemSingle, 0\n    __TrySampleMotion__SystemSingle_fraction:
+    %SystemSingle, 0\n    __TrySampleMotion__SystemSingle___t1: %SystemSingle, 0\n   
+    __TrySampleMotion__SystemSingle_ret: %SystemBoolean, null\n    .export __TrySampleMotion__SystemSingle_ret\n   
+    __TrySampleMotion__SystemSingle_retjump: %SystemUInt32, 0xFFFFFFFC\n    __returnValue:
+    %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0:
+    %UnityEngineRigidbody, null\n    __const_1: %UnityEngineObject, null\n    __ConfigureBody_intnl_0:
+    %SystemBoolean, null\n    __const_2: %SystemBoolean, null\n    __const_3: %SystemSingle,
+    0\n    __const_4: %SystemSingle, 400\n    __const_5: %SystemBoolean, null\n   
+    __const_6: %SystemInt32, 0\n    __Stage__UnityEngineVector3_intnl_2: %UnityEngineVector3,
+    null\n    __retaddr_0: %SystemUInt32, 0x00000234\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1:
+    %SystemSingle, 0\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2:
+    %SystemSingle, 0\n    __const_7: %SystemSingle, 1\n    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3:
+    %SystemSingle, 0\n    __const_8: %UnityEngineVector3, null\n    __const_9: %SystemSingleArray,
+    null\n    __const_10: %UnityEngineVector3Array, null\n    __const_11: %SystemInt32,
+    1\n    __FixedUpdate_intnl_7: %SystemInt32, 0\n    __const_12: %SystemInt32,
+    64\n    __FixedUpdate_intnl_17: %UnityEngineVector3, null\n    __FixedUpdate_intnl_18:
+    %UnityEngineVector3, null\n    __const_13: %UnityEngineForceMode, null\n    __TrySampleMotion__SystemSingle_intnl_2:
+    %SystemInt32, 0\n.data_end\n.code_start\n    .export ConfigureBody\n    ConfigureBody:\n       
+    PUSH, __retaddr_end\n        PUSH, __ConfigureBody_retjump\n        COPY\n   
+    __ConfigureBody_body:\n        PUSH, body\n        PUSH, __const_1\n        PUSH,
+    __ConfigureBody_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __ConfigureBody_L1\n       
+    JUMP_INDIRECT, __ConfigureBody_retjump\n    __ConfigureBody_L1:\n        PUSH,
+    body\n        PUSH, __const_2\n        EXTERN, \"UnityEngineRigidbody.__set_useGravity__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_3\n        EXTERN, \"UnityEngineRigidbody.__set_drag__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_3\n        EXTERN, \"UnityEngineRigidbody.__set_angularDrag__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_4\n        EXTERN, \"UnityEngineRigidbody.__set_maxAngularVelocity__SystemSingle__SystemVoid\"\n       
+    JUMP_INDIRECT, __ConfigureBody_retjump\n    .export Stage__UnityEngineVector3\n   
+    Stage__UnityEngineVector3:\n        PUSH, __const_5\n        PUSH, flying\n       
+    COPY\n        PUSH, __const_6\n        PUSH, _nextSample\n        COPY\n       
+    PUSH, __const_6\n        PUSH, _sampleCount\n        COPY\n        PUSH, body\n       
+    PUSH, __const_1\n        PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __Stage__UnityEngineVector3_L1\n       
+    JUMP_INDIRECT, __Stage__UnityEngineVector3_retjump\n    __Stage__UnityEngineVector3_L1:\n       
+    PUSH, body\n        PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"UnityEngineRigidbody.__get_isKinematic__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __Stage__UnityEngineVector3_L2\n       
+    JUMP, __Stage__UnityEngineVector3_L3\n    __Stage__UnityEngineVector3_L2:\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3.__get_zero__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN,
+    \"UnityEngineRigidbody.__set_velocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3.__get_zero__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN,
+    \"UnityEngineRigidbody.__set_angularVelocity__UnityEngineVector3__SystemVoid\"\n   
+    __Stage__UnityEngineVector3_L3:\n        PUSH, body\n        PUSH, __const_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_isKinematic__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Stage__UnityEngineVector3_p_0\n        EXTERN, \"UnityEngineRigidbody.__set_position__UnityEngineVector3__SystemVoid\"\n       
+    JUMP_INDIRECT, __Stage__UnityEngineVector3_retjump\n    .export Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3\n   
+    Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3:\n        PUSH,
+    body\n        PUSH, __const_1\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_L1\n       
+    JUMP_INDIRECT, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_L1:\n       
+    PUSH, __retaddr_0\n        PUSH, __ConfigureBody_retjump\n        COPY\n       
+    JUMP, __ConfigureBody_body\n        PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"UnityEngineRigidbody.__get_maxAngularVelocity__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __const_7\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_maxAngularVelocity__SystemSingle__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_0\n       
+    EXTERN, \"UnityEngineRigidbody.__set_position__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __const_5\n        EXTERN, \"UnityEngineRigidbody.__set_isKinematic__SystemBoolean__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_1\n       
+    EXTERN, \"UnityEngineRigidbody.__set_velocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, body\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_p_2\n       
+    EXTERN, \"UnityEngineRigidbody.__set_angularVelocity__UnityEngineVector3__SystemVoid\"\n       
+    PUSH, __const_6\n        PUSH, _nextSample\n        COPY\n        PUSH, __const_6\n       
+    PUSH, _sampleCount\n        COPY\n        PUSH, __const_2\n        PUSH, flying\n       
+    COPY\n        JUMP_INDIRECT, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    .export _fixedUpdate\n    _fixedUpdate:\n        PUSH, __const_5\n        PUSH,
+    __FixedUpdate___t0\n        COPY\n        PUSH, __const_3\n        PUSH, __FixedUpdate___inl0__time\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__position\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__velocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl0__angularVelocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl_t1\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    COPY\n        PUSH, __const_8\n        PUSH, __FixedUpdate___inl1__angularVelocity\n       
+    COPY\n        PUSH, flying\n        PUSH, __FixedUpdate___t1\n        EXTERN,
+    \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        PUSH,
+    __FixedUpdate___t1\n        JUMP_IF_FALSE, __FixedUpdate_L0\n        JUMP, __FixedUpdate_L1\n   
+    __FixedUpdate_L0:\n        PUSH, body\n        PUSH, __const_1\n        PUSH,
+    __FixedUpdate___t1\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
+    __FixedUpdate_L1:\n        PUSH, __FixedUpdate___t1\n        PUSH, __FixedUpdate___t0\n       
+    COPY\n        PUSH, __FixedUpdate___t1\n        JUMP_IF_FALSE, __FixedUpdate_L2\n       
+    JUMP, __FixedUpdate_L3\n    __FixedUpdate_L2:\n        PUSH, body\n        PUSH,
+    __FixedUpdate___t0\n        EXTERN, \"UnityEngineRigidbody.__get_isKinematic__SystemBoolean\"\n   
+    __FixedUpdate_L3:\n        PUSH, __FixedUpdate___t0\n        JUMP_IF_FALSE, __FixedUpdate_L5\n       
+    JUMP_INDIRECT, __FixedUpdate_retjump\n    __FixedUpdate_L5:\n        PUSH, __FixedUpdate___inl0__time\n       
+    EXTERN, \"UnityEngineTime.__get_fixedTime__SystemSingle\"\n        PUSH, body\n       
+    PUSH, __FixedUpdate___inl0__position\n        EXTERN, \"UnityEngineRigidbody.__get_position__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl0__velocity\n        EXTERN, \"UnityEngineRigidbody.__get_velocity__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl0__angularVelocity\n        EXTERN,
+    \"UnityEngineRigidbody.__get_angularVelocity__UnityEngineVector3\"\n        PUSH,
+    _times\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__time\n       
+    EXTERN, \"SystemSingleArray.__Set__SystemInt32_SystemSingle__SystemVoid\"\n       
+    PUSH, _positions\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__position\n       
+    EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _velocities\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__velocity\n       
+    EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _angularVelocities\n        PUSH, _nextSample\n        PUSH, __FixedUpdate___inl0__angularVelocity\n       
+    EXTERN, \"UnityEngineVector3Array.__Set__SystemInt32_UnityEngineVector3__SystemVoid\"\n       
+    PUSH, _nextSample\n        PUSH, __const_11\n        PUSH, __FixedUpdate_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, _nextSample\n       
+    EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, _sampleCount\n        PUSH, __const_12\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __FixedUpdate_L7\n       
+    PUSH, _sampleCount\n        PUSH, __const_11\n        PUSH, _sampleCount\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n   
+    __FixedUpdate_L7:\n        PUSH, body\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    EXTERN, \"UnityEngineRigidbody.__get_velocity__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl1__angularVelocity\n        EXTERN,
+    \"UnityEngineRigidbody.__get_angularVelocity__UnityEngineVector3\"\n        PUSH,
+    dragCoefficient\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
+    PUSH, __FixedUpdate___inl1__velocity\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_3\n       
+    PUSH, __FixedUpdate___inl1__velocity\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __FixedUpdate___inl1__angularVelocity\n        PUSH, __FixedUpdate___inl1__velocity\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, magnusCoefficient\n        PUSH, __FixedUpdate_intnl_17\n        PUSH,
+    __FixedUpdate_intnl_18\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_18\n       
+    PUSH, __FixedUpdate___inl_t1\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, body\n        PUSH, __FixedUpdate___inl_t1\n        PUSH, __const_13\n       
+    EXTERN, \"UnityEngineRigidbody.__AddForce__UnityEngineVector3_UnityEngineForceMode__SystemVoid\"\n       
+    JUMP_INDIRECT, __FixedUpdate_retjump\n    .export TrySampleMotion__SystemSingle\n   
+    TrySampleMotion__SystemSingle:\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_first\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    COPY\n        PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle_span\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n        PUSH, _sampleCount\n        PUSH, __const_6\n        PUSH, __ConfigureBody_intnl_0\n       
+    EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L1\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_5\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L1:\n       
+    PUSH, _nextSample\n        PUSH, _sampleCount\n        PUSH, __FixedUpdate_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __TrySampleMotion__SystemSingle_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_2\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle_first\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_first\n        PUSH,
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __TrySampleMotion__SystemSingle_p_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L3\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_5\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L3:\n       
+    PUSH, __const_6\n        PUSH, __TrySampleMotion__SystemSingle_i\n        COPY\n   
+    __TrySampleMotion__SystemSingle_L4:\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    PUSH, _sampleCount\n        PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L5\n       
+    PUSH, __TrySampleMotion__SystemSingle_first\n        PUSH, __TrySampleMotion__SystemSingle_i\n       
+    PUSH, __FixedUpdate_intnl_7\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __TrySampleMotion__SystemSingle_p_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L7\n       
+    JUMP, __TrySampleMotion__SystemSingle_L8\n    __TrySampleMotion__SystemSingle_L7:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, __const_6\n        PUSH,
+    __ConfigureBody_intnl_0\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L9\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    COPY\n        JUMP, __TrySampleMotion__SystemSingle_L10\n    __TrySampleMotion__SystemSingle_L9:\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __const_11\n       
+    PUSH, __FixedUpdate_intnl_7\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __FixedUpdate_intnl_7\n        PUSH, __const_12\n        PUSH, __TrySampleMotion__SystemSingle_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_intnl_2\n        PUSH, __const_12\n       
+    PUSH, __TrySampleMotion__SystemSingle___t0\n        EXTERN, \"SystemInt32.__op_Remainder__SystemInt32_SystemInt32__SystemInt32\"\n   
+    __TrySampleMotion__SystemSingle_L10:\n        PUSH, __TrySampleMotion__SystemSingle___t0\n       
+    PUSH, __TrySampleMotion__SystemSingle_previous\n        COPY\n        PUSH, _times\n       
+    PUSH, __TrySampleMotion__SystemSingle_current\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    _times\n        PUSH, __TrySampleMotion__SystemSingle___t0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __TrySampleMotion__SystemSingle_span\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __TrySampleMotion__SystemSingle_span\n        PUSH, __const_3\n       
+    PUSH, __ConfigureBody_intnl_0\n        EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ConfigureBody_intnl_0\n        JUMP_IF_FALSE, __TrySampleMotion__SystemSingle_L11\n       
+    PUSH, _times\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    EXTERN, \"SystemSingleArray.__Get__SystemInt32__SystemSingle\"\n        PUSH,
+    __TrySampleMotion__SystemSingle_p_0\n        PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_1\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Launch__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_intnl_2\n       
+    PUSH, __TrySampleMotion__SystemSingle_span\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
+    JUMP, __TrySampleMotion__SystemSingle_L12\n    __TrySampleMotion__SystemSingle_L11:\n       
+    PUSH, __const_3\n        PUSH, __TrySampleMotion__SystemSingle___t1\n       
+    COPY\n    __TrySampleMotion__SystemSingle_L12:\n        PUSH, _positions\n       
+    PUSH, __TrySampleMotion__SystemSingle_previous\n        PUSH, __Stage__UnityEngineVector3_intnl_2\n       
+    EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _positions\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __TrySampleMotion__SystemSingle___t1\n        PUSH, sampledPosition\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, _velocities\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _velocities\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __TrySampleMotion__SystemSingle___t1\n        PUSH, sampledVelocity\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, _angularVelocities\n        PUSH, __TrySampleMotion__SystemSingle_previous\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, _angularVelocities\n        PUSH, __TrySampleMotion__SystemSingle_current\n       
+    PUSH, __FixedUpdate_intnl_17\n        EXTERN, \"UnityEngineVector3Array.__Get__SystemInt32__UnityEngineVector3\"\n       
+    PUSH, __Stage__UnityEngineVector3_intnl_2\n        PUSH, __FixedUpdate_intnl_17\n       
+    PUSH, __TrySampleMotion__SystemSingle___t1\n        PUSH, sampledAngularVelocity\n       
+    EXTERN, \"UnityEngineVector3.__Lerp__UnityEngineVector3_UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __const_2\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_2\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n    __TrySampleMotion__SystemSingle_L8:\n       
+    PUSH, __TrySampleMotion__SystemSingle_i\n        PUSH, __const_11\n        PUSH,
+    __TrySampleMotion__SystemSingle_i\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    JUMP, __TrySampleMotion__SystemSingle_L4\n    __TrySampleMotion__SystemSingle_L5:\n       
+    PUSH, __const_5\n        PUSH, __TrySampleMotion__SystemSingle_ret\n        COPY\n       
+    PUSH, __const_5\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __TrySampleMotion__SystemSingle_retjump\n        JUMP_INDIRECT, __TrySampleMotion__SystemSingle_retjump\n.code_end\n"
+  optBeforeInject:
+  - "=_times\tArrayAlloc\t=SystemSingleArray\t64\t\t\t\t\t"
+  - "=_positions\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
+  - "=_velocities\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
+  - "=_angularVelocities\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=8244894019313685523\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=8244894019313685523"
+  - "=__const_2\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__const_8\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
+  - "=__const_13\tEnumConst\t=UnityEngineForceMode\t0\t\tInt32:=5\t\t\t"
+  optAfterInject:
+  - "=_times\tArrayAlloc\t=SystemSingleArray\t64\t\t\t\t\t"
+  - "=_positions\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
+  - "=_velocities\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
+  - "=_angularVelocities\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=8244894019313685523\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=8244894019313685523"
+  - "=__const_2\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__const_8\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
+  - "=__const_13\tEnumConst\t=UnityEngineForceMode\t0\t\tInt32:=5\t\t\t"
+  networkCallableSlots: []
+  optExternBefore: 80
+  optExternAfter: 80
+  optInsnBefore: 673
+  optInsnAfter: 449
+  optBytesBefore: 4944
+  optBytesAfter: 3448
+  optStage: ran
