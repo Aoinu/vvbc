@@ -26,6 +26,15 @@ made during a cycle take effect on the next one. If the solver cannot converge,
 the pitcher still uses its best direction. The Rigidbody is a sibling of the
 animated Humanoid; only the display ball follows its hand.
 
+`BallFlightVisual` is an optional visual prefab under `PhysicalBall`. Bind its
+`Sampler` Udon component to the ball Rigidbody, and assign that component to
+the pitcher's `flightVisual` field. Its white speed trail is shown only at or
+above 80 km/h. Its width starts at approximately the ball diameter and tapers
+linearly to zero over 0.2 seconds. The blue path records the ball's actual
+flight and is cleared on reset. Adjust the speed threshold, path sampling
+distance, and maximum point count on `Sampler`; the `SpeedTrail` component
+controls its duration and width. The sampler is inactive while waiting.
+
 The Humanoid Animator uses Apply Root Motion so the pitching motion retains its
 translation and rotation. At the start of the next preparation the Behaviour
 restores the Humanoid's local position and rotation captured at startup. This

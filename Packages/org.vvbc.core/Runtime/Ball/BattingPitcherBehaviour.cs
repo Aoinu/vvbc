@@ -7,6 +7,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 {
     public Animator animator;
     public BallFlightBehaviour ball;
+    public BallFlightVisualBehaviour flightVisual;
     public BallAimSolverBehaviour solver;
     public Transform releasePoint;
     [Tooltip("Center of the strike zone. Point its forward axis from pitcher toward batter; move it to adjust the target plane.")]
@@ -80,6 +81,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void PrepareNextPitch()
     {
+        if (flightVisual != null)
+        {
+            if (flightVisual.gameObject.activeSelf) flightVisual.EndFlight();
+            flightVisual.gameObject.SetActive(false);
+        }
         pitchSequence++;
         _solvingSequence = pitchSequence;
         phase = Preparing;
@@ -134,6 +140,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         if (!state.IsName("Pitching")) return;
         if (!AcceptRelease(Time.time, state.normalizedTime)) return;
         ball.Launch(_releaseSnapshot, _velocitySnapshot, _spinSnapshot);
+        if (flightVisual != null)
+        {
+            flightVisual.gameObject.SetActive(true);
+            flightVisual.BeginFlight();
+        }
         if (animationBall != null) animationBall.SetActive(false);
         physicalBallRenderer.enabled = true;
         if (physicalBallCollider != null) physicalBallCollider.enabled = true;
