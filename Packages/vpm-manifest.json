@@ -5,6 +5,9 @@
     },
     "com.tsukimicode.udon-tools": {
       "version": "0.10.1"
+    },
+    "jp.lilxyzw.liltoon": {
+      "version": "2.4.1"
     }
   },
   "locked": {
@@ -27,6 +30,10 @@
       "dependencies": {
         "com.vrchat.worlds": ">=3.10.4"
       }
+    },
+    "jp.lilxyzw.liltoon": {
+      "version": "2.4.1",
+      "dependencies": {}
     }
   }
 }
