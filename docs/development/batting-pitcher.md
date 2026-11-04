@@ -51,5 +51,38 @@ event needs to be on the same GameObject as the Animator and pitcher Udon
 component. The minimum time rejects events arriving before the current motion
 reaches the release portion; the clip is played without overlapping transitions.
 
-Network ownership/synchronization and Bat Contact/Result are outside this
+## Strike result and phantom
+
+`StrikeZoneAndPhantom` is a reusable core prefab. Place its root at the rear
+tip of home plate, with forward pointing toward the pitcher. The root's
+`StrikeZoneBehaviour` provides plate depth, width, and the bottom and top
+heights above the plate surface. Heights can be changed during play; the
+crossing component copies the dimensions and pose when a pitch is released.
+The front edge is at `plateDepth`, and the judgment plane is at half that
+distance. Height is measured in the world's vertical direction.
+
+The prefab's `Ball Phantom` MeshFilter is intentionally unassigned so core
+does not depend on a development model. Supply a ball mesh and set the phantom
+behaviour's `meshDiameter` to the mesh's unscaled diameter. Its renderer uses
+the separate transparent `BallPhantom` material; the three colours, including
+alpha, are adjustable on the behaviour. The ball's SphereCollider supplies
+the displayed diameter and geometric radius, including its world scale.
+
+Bind the ball flight behaviour's `ballCollider` and `motionObserver` to the
+SphereCollider and `Pitch Crossing` Udon component. Bind the crossing component's
+`flight` to the ball flight behaviour. Configure `groundLayers` to include
+ground and mound colliders but exclude the bat and backstop. In the local
+Sandbox the ground plane uses Environment; the backstop remains on Default.
+The Sandbox assigns the mesh from `org.vvbc.assets` on the prefab instance.
+
+`BallFlightBehaviour.Launch` snapshots and starts the observer, sends it the
+same fixed-time samples used by flight history, and reports ground contacts.
+The observer records the front crossing separately from the geometric result;
+it displays the previous phantom until a new result is available. A future
+contact source can call `NotifyContact` with the pre-contact time, position,
+velocity and angular velocity, or `NotifySwing` to change the display colour
+without changing the geometric result. No contact or swing detection is
+included in this setup.
+
+Network ownership/synchronization and Bat Contact detection remain outside this
 local setup. Do not treat its ball as a shared multiplayer-authoritative ball.

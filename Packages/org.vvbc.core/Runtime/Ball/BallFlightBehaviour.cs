@@ -6,6 +6,9 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public Rigidbody body;
     public float dragCoefficient = 0.00622f;
     public float magnusCoefficient = 0.00063f;
+    public SphereCollider ballCollider;
+    public PitchCrossingBehaviour motionObserver;
+    public LayerMask groundLayers;
 
     // The owner of the Ball lifecycle turns flight on only for a free ball.
     public bool flying;
@@ -35,6 +38,7 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public void Stage(Vector3 position)
     {
         flying = false;
+        if (motionObserver != null) motionObserver.CancelPitch();
         _nextSample = 0;
         _sampleCount = 0;
         if (body == null) return;
@@ -59,14 +63,45 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         _nextSample = 0;
         _sampleCount = 0;
         flying = true;
+        RecordMotion(Time.fixedTime, position, velocity, angularVelocity);
+        if (motionObserver != null && ballCollider != null)
+        {
+            Vector3 scale = ballCollider.transform.lossyScale;
+            float largestScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Max(Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+            motionObserver.BeginPitch(Time.fixedTime, position, velocity, ballCollider.radius * largestScale);
+        }
     }
 
     public void FixedUpdate()
     {
         if (!flying || body == null || body.isKinematic) return;
         RecordMotion(Time.fixedTime, body.position, body.velocity, body.angularVelocity);
+        if (motionObserver != null) motionObserver.AcceptSample(Time.fixedTime, body.position, body.velocity);
         body.AddForce(BallAerodynamics.Acceleration(body.velocity, body.angularVelocity,
             dragCoefficient, magnusCoefficient), ForceMode.Acceleration);
+    }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (!flying || body == null || ballCollider == null || motionObserver == null ||
+            collision == null || collision.contactCount == 0 || _sampleCount == 0) return;
+        if ((groundLayers.value & (1 << collision.gameObject.layer)) == 0) return;
+        int last = (_nextSample - 1 + HistoryCapacity) % HistoryCapacity;
+        Vector3 velocity = _velocities[last];
+        Vector3 spin = _angularVelocities[last];
+        Vector3 scale = ballCollider.transform.lossyScale;
+        float radius = ballCollider.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Max(Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
+        ContactPoint contact = collision.GetContact(0);
+        Vector3 normal = contact.normal;
+        if (Vector3.Dot(body.position - contact.point, normal) < 0f) normal = -normal;
+        Vector3 contactCenter = contact.point + normal * radius;
+        float speedSquared = velocity.sqrMagnitude;
+        float elapsed = speedSquared > 0.000001f
+            ? Mathf.Clamp(Vector3.Dot(contactCenter - _positions[last], velocity) / speedSquared, 0f, Time.fixedDeltaTime)
+            : 0f;
+        velocity += (Physics.gravity + BallAerodynamics.Acceleration(velocity, spin,
+            dragCoefficient, magnusCoefficient)) * elapsed;
+        motionObserver.NotifyGroundContact(_times[last] + elapsed, contactCenter, velocity, spin);
     }
 
     private void RecordMotion(float time, Vector3 position, Vector3 velocity, Vector3 angularVelocity)
