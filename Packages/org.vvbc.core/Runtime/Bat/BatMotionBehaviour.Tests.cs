@@ -4,6 +4,73 @@ using UnityEngine;
 public partial class BatMotionBehaviour
 {
     [TsukimiTest]
+    public void ContactHistoryRejectsMissingSamplesAndDoesNotExtrapolateBeyondLimit()
+    {
+        Assert.IsFalse(TrySampleContactPose(1f, 0.025f));
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.02f;
+        _contactPositions[0] = Vector3.zero; _contactPositions[1] = Vector3.right;
+        _contactRotations[0] = Quaternion.identity; _contactRotations[1] = Quaternion.identity;
+        _contactVelocities[0] = Vector3.right; _contactVelocities[1] = Vector3.right;
+        Assert.IsTrue(TrySampleContactPose(1.04f, 0.025f));
+        Assert.IsTrue(Mathf.Abs(contactSamplePosition.x - 1.02f) < 0.0001f);
+        Assert.IsFalse(TrySampleContactPose(1.06f, 0.1f));
+        ResetContactHistory();
+        Assert.IsFalse(TrySampleContactPose(1.02f, 0.025f));
+    }
+
+    [TsukimiTest]
+    public void ContactHistoryFindsEachLaterSampleBoundary()
+    {
+        _contactCount = 3; _contactNext = 3;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.01f; _contactTimes[2] = 1.02f;
+        Assert.IsTrue(Mathf.Abs(NextContactSampleTime(1.005f, 2f) - 1.01f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NextContactSampleTime(1.01f, 2f) - 1.02f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NextContactSampleTime(1.02f, 1.025f) - 1.025f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void HandPowerCapLimitsClearOneHandAndPreservesNormalSlowMotion()
+    {
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.2f;
+        _contactHandsValid[0] = true; _contactHandsValid[1] = true;
+        _contactLeftRotations[0] = Quaternion.identity; _contactLeftRotations[1] = Quaternion.identity;
+        _contactRightRotations[0] = Quaternion.identity; _contactRightRotations[1] = Quaternion.identity;
+        _contactLeftPositions[1] = Vector3.right * 0.2f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.4f) < 0.0001f);
+        _contactRightPositions[1] = Vector3.right * 0.2f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.2f) - 1f) < 0.0001f);
+        _contactHandsValid[0] = false;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 1f) < 0.0001f);
+    }
+
+    [TsukimiTest]
+    public void HandPowerCapUsesStrictestPushWristAndSpikeCaps()
+    {
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.2f;
+        _contactHandsValid[0] = true; _contactHandsValid[1] = true;
+        _contactLeftRotations[0] = Quaternion.identity; _contactLeftRotations[1] = Quaternion.identity;
+        _contactRightRotations[0] = Quaternion.identity; _contactRightRotations[1] = Quaternion.identity;
+        _contactRotations[0] = Quaternion.identity; _contactRotations[1] = Quaternion.identity;
+        _contactLeftPositions[1] = Vector3.forward * 0.2f;
+        _contactRightPositions[1] = Vector3.forward * 0.2f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.35f) < 0.0001f);
+        _contactRotations[1] = new Quaternion(0f, 0.258819f, 0f, 0.965926f);
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 1f) < 0.0001f);
+        _contactRotations[1] = Quaternion.identity;
+        _contactLeftPositions[1] = Vector3.zero;
+        _contactRightPositions[1] = Vector3.zero;
+        _contactLeftRotations[1] = new Quaternion(0f, 0.258819f, 0f, 0.965926f);
+        _contactRightRotations[1] = _contactLeftRotations[1];
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.3f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.2f) - 1f) < 0.0001f);
+        _contactLeftPositions[1] = Vector3.right * 6f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.2f) < 0.0001f);
+    }
+
+    [TsukimiTest]
     public void MissingReferencesRejectLockAndClearOldOffset()
     {
         body = null;

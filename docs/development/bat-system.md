@@ -211,9 +211,7 @@ Real-client release dynamics, forced drops, multiple-client ownership ordering,
 and tracking-loss and avatar variation need further validation; do not infer
 their success from static compilation or simulated tests.
 
-For a future Ball subsystem, Body's world Transform, Rigidbody, collider and the
-internally calculated release velocities are the existing physical facts. There
-is currently no dedicated public contact, swing velocity, power or hit-result
-API, and no guarantee that the private release samples are a suitable contact
-measurement. Any Ball/Contact integration and its authority and timing must be
-specified and validated separately; do not treat visual correction as physics.
+The optional local Ball integration records a separate driven-pose history
+after the held Bat pose update. Contact uses that physical Body history rather
+than remote visual correction or the Rigidbody's held velocity. Its setup,
+limits and validation steps are in [bat contact](bat-contact.md).

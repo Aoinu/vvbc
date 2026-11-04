@@ -1,0 +1,299 @@
+using Tsukimi;
+using UnityEngine;
+using VRC.SDKBase;
+using VRC.Udon;
+
+// Local contact evaluator. Bat Motion invokes this after it records the pose.
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
+public partial class BatContactBehaviour : TsukimiBehaviour
+{
+    public BallFlightBehaviour flight;
+    public BatMotionBehaviour motion;
+    public Transform contactZone;
+    public Vector3 zoneHalfSize = new Vector3(1.5f, 1.5f, 1.5f);
+    public Vector3 centerDirection = Vector3.forward;
+    public float maxExtrapolation = 0.025f;
+    public float minContactX = 0.10f;
+    public float maxContactX = 0.855f;
+    public float sweetSpotX = 0.68f;
+    public float widthAtGrip = 0.045f;
+    public float widthAtBarrel = 0.070f;
+    public float minimumQuality = 0.25f;
+    public float timingYawDegrees = 30f;
+    public float sprayScale = 1f;
+    public float launchScale = 1f;
+
+    private int _sequence = -1;
+    private int _collisionSequence = -1;
+    private int _collisionRevision = -1;
+    private int _historyRevision = -1;
+    private float _scannedUntil;
+    private bool _enteredZone;
+    private bool _opportunityEnded;
+    private Vector3 _previousY;
+    private bool _hasPreviousY;
+    private Vector3 _ballPosition, _ballVelocity, _ballSpin;
+    private Vector3 _core, _coreVelocity, _batOmega, _axis, _y, _normal, _referenceVelocity;
+    private Quaternion _rotation;
+    private float _planeValue;
+    public float contactTime;
+    public Vector3 contactPosition;
+    public Vector3 resultVelocity;
+    public Vector3 resultSpin;
+    public float contactQuality;
+    public float finalBatPower;
+    public int contactPitchSequence;
+    public int contactSequence;
+    public bool contactValid;
+    public bool ballSampleExtrapolated;
+    public bool batSampleExtrapolated;
+    public Vector3 snapshotBatCorePosition;
+    public Quaternion snapshotBatRotation;
+    public Vector3 snapshotBatCoreVelocity;
+    public Vector3 snapshotBatAngularVelocity;
+    public Vector3 snapshotX, snapshotY, snapshotN;
+    public float snapshotPlaneX, snapshotPlaneY, snapshotNormalizedY;
+    public Vector3 snapshotIncomingVelocity, snapshotIncomingSpin;
+
+    public void Start()
+    {
+        BindMotion();
+    }
+
+    public void BindMotion()
+    {
+        if (motion == null)
+        {
+            VRCPlayerApi player = Networking.LocalPlayer;
+            if (player != null)
+            {
+                GameObject[] objects = Networking.GetPlayerObjects(player);
+                if (objects != null)
+                {
+                    for (int i = 0; i < objects.Length; i++)
+                    {
+                        if (objects[i] == null) continue;
+                        BatMotionBehaviour candidate = objects[i].GetComponentInChildren<BatMotionBehaviour>(true);
+                        if (candidate == null) continue;
+                        if (motion != null) { motion = null; break; }
+                        motion = candidate;
+                    }
+                }
+            }
+        }
+        if (motion != null) motion.SetContactListener(GetComponent<UdonBehaviour>());
+        else SendCustomEventDelayedFrames(nameof(BindMotion), 60);
+    }
+
+    public void OnBatContactPose()
+    {
+        if (flight == null || motion == null || contactZone == null || !flight.flying || flight.contactConsumed) return;
+        if (_collisionSequence != flight.flightSequence || _collisionRevision != motion.contactRevision)
+        {
+            motion.IgnoreBallCollision(flight.ballCollider);
+            _collisionSequence = flight.flightSequence;
+            _collisionRevision = motion.contactRevision;
+        }
+        if (_sequence != flight.flightSequence)
+        {
+            _sequence = flight.flightSequence;
+            contactValid = false;
+            _scannedUntil = motion.contactPreviousTime;
+            _enteredZone = false;
+            _opportunityEnded = false;
+            _hasPreviousY = false;
+            _historyRevision = motion.contactHistoryRevision;
+        }
+        if (_opportunityEnded) return;
+        if (_historyRevision != motion.contactHistoryRevision)
+        {
+            _historyRevision = motion.contactHistoryRevision;
+            _scannedUntil = motion.contactOldestTime;
+            _hasPreviousY = false;
+        }
+        float start = Mathf.Max(_scannedUntil, Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime));
+        float end = Mathf.Min(motion.contactLatestTime, flight.latestMotionTime + Mathf.Clamp(maxExtrapolation, 0f, 0.03f));
+        while (end > start)
+        {
+            float boundary = motion.NextContactSampleTime(start, end);
+            boundary = flight.NextMotionSampleTime(start, boundary);
+            if (boundary <= start) return;
+            if (ScanInterval(start, boundary)) return;
+            _scannedUntil = boundary;
+            start = boundary;
+        }
+    }
+
+    // Each interval lies within one Bat and one Ball history segment, or the
+    // permitted extrapolated tail. Evaluate roots in chronological order.
+    private bool ScanInterval(float start, float end)
+    {
+        float left = start;
+        if (!Evaluate(left)) return false;
+        bool startsInside = InsideZone(_ballPosition);
+        if (startsInside) _enteredZone = true;
+        else if (_enteredZone) { _opportunityEnded = true; return true; }
+        float leftValue = _planeValue;
+        for (int i = 1; i <= 4; i++)
+        {
+            float right = Mathf.Lerp(start, end, i / 4f);
+            if (!Evaluate(right)) return false;
+            float rightValue = _planeValue;
+            bool rightInside = InsideZone(_ballPosition);
+            if ((leftValue < 0f && rightValue >= 0f) || (leftValue > 0f && rightValue <= 0f) ||
+                (leftValue == 0f && rightValue != 0f))
+            {
+                float a = left; float b = right; float fa = leftValue;
+                for (int j = 0; j < 8; j++)
+                {
+                    float mid = (a + b) * 0.5f;
+                    if (!Evaluate(mid)) return false;
+                    if ((fa < 0f && _planeValue < 0f) || (fa > 0f && _planeValue > 0f))
+                    { a = mid; fa = _planeValue; }
+                    else b = mid;
+                }
+                float candidateTime = (a + b) * 0.5f;
+                if (Evaluate(candidateTime) && AcceptCandidate(candidateTime)) return true;
+            }
+            if (rightInside) _enteredZone = true;
+            else if (_enteredZone) { _opportunityEnded = true; return true; }
+            left = right;
+            leftValue = rightValue;
+        }
+        if (Evaluate(end))
+        {
+            _previousY = _y;
+            _hasPreviousY = true;
+        }
+        return false;
+    }
+
+    private bool Evaluate(float time)
+    {
+        if (!flight.TrySampleContactMotion(time, maxExtrapolation) || !motion.TrySampleContactPose(time, maxExtrapolation)) return false;
+        _ballPosition = flight.sampledPosition;
+        _ballVelocity = flight.sampledVelocity;
+        _ballSpin = flight.sampledAngularVelocity;
+        _core = motion.contactSamplePosition;
+        _rotation = motion.contactSampleRotation;
+        _coreVelocity = motion.contactSampleVelocity;
+        _batOmega = motion.contactSampleAngularVelocity;
+        _referenceVelocity = motion.contactSampleReferenceVelocity;
+        if (!BuildPlane(_rotation * Vector3.up, _ballVelocity, centerDirection)) return false;
+        _planeValue = Vector3.Dot(_ballPosition - _core, _normal);
+        return !float.IsNaN(_planeValue) && _planeValue <= float.MaxValue && _planeValue >= -float.MaxValue;
+    }
+
+    private bool BuildPlane(Vector3 axis, Vector3 velocity, Vector3 centerDirectionValue)
+    {
+        _axis = axis;
+        if (!FiniteVector(_axis) || !FiniteVector(velocity) || !FiniteVector(centerDirectionValue) ||
+            _axis.sqrMagnitude < 0.0000000001f || centerDirectionValue.sqrMagnitude < 0.00000001f) return false;
+        _axis = _axis.normalized;
+        Vector3 incoming = velocity.magnitude < 0.1f ? -centerDirectionValue.normalized : velocity.normalized;
+        _y = Vector3.Cross(incoming, _axis);
+        if (_y.sqrMagnitude < 0.000001f)
+        {
+            _y = _hasPreviousY ? _previousY - Vector3.Dot(_previousY, _axis) * _axis : Vector3.zero;
+            if (_y.sqrMagnitude < 0.000001f) _y = Vector3.Cross(-centerDirectionValue.normalized, _axis);
+            if (_y.sqrMagnitude < 0.000001f) _y = Vector3.Cross(Vector3.up, _axis);
+            if (_y.sqrMagnitude < 0.000001f) _y = Vector3.Cross(Vector3.Cross(Vector3.up, centerDirectionValue.normalized), _axis);
+        }
+        if (_y.sqrMagnitude < 0.000001f) return false;
+        _y = _y.normalized;
+        _normal = Vector3.Cross(_axis, _y).normalized;
+        return true;
+    }
+
+    private bool FiniteVector(Vector3 v)
+    {
+        return !float.IsNaN(v.x) && !float.IsNaN(v.y) && !float.IsNaN(v.z) &&
+            v.x <= float.MaxValue && v.x >= -float.MaxValue &&
+            v.y <= float.MaxValue && v.y >= -float.MaxValue && v.z <= float.MaxValue && v.z >= -float.MaxValue;
+    }
+
+    private bool InsideZone(Vector3 position)
+    {
+        Vector3 p = contactZone.InverseTransformPoint(position);
+        return Mathf.Abs(p.x) <= zoneHalfSize.x && Mathf.Abs(p.y) <= zoneHalfSize.y && Mathf.Abs(p.z) <= zoneHalfSize.z;
+    }
+
+    private bool AcceptCandidate(float time)
+    {
+        if (!InsideZone(_ballPosition)) return false;
+        if (!ValidTiming(_axis, centerDirection)) return false;
+        Vector3 center = centerDirection - Vector3.Dot(centerDirection, Vector3.up) * Vector3.up;
+        Vector3 delta = _ballPosition - _core;
+        float px = Vector3.Dot(delta, _axis);
+        float py = Vector3.Dot(delta, _y);
+        float width = ContactWidth(px);
+        if (px < minContactX || px > maxContactX || width <= 0.00001f || Mathf.Abs(py) > width) return false;
+        BallResultSnapshot snapshot = new BallResultSnapshot();
+        snapshot.contactPosition = _ballPosition;
+        snapshot.batCorePosition = _core;
+        snapshot.batCoreVelocity = _coreVelocity;
+        snapshot.batAngularVelocity = _batOmega;
+        snapshot.incomingVelocity = _ballVelocity;
+        snapshot.axisX = _axis;
+        snapshot.axisY = _y;
+        snapshot.normal = _normal;
+        snapshot.centerDirection = center.normalized;
+        snapshot.worldUp = Vector3.up;
+        snapshot.normalizedY = Mathf.Clamp(py / width, -1f, 1f);
+        snapshot.quality = Quality(px);
+        float rawPower = BallResultMath.RawPower(_referenceVelocity.magnitude);
+        snapshot.power = Mathf.Min(rawPower, motion.ContactPowerCap(time, center.normalized, rawPower));
+        snapshot.sprayScale = sprayScale;
+        snapshot.launchScale = launchScale;
+        BallResult result = BallResultMath.Calculate(snapshot);
+        bool ballExtrapolated = time > flight.latestMotionTime;
+        bool batExtrapolated = time > motion.contactLatestTime;
+        if (!result.valid || !flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
+            result.linearVelocity, result.angularVelocity)) return false;
+        contactTime = time;
+        contactPitchSequence = _sequence;
+        contactSequence++;
+        contactValid = true;
+        ballSampleExtrapolated = ballExtrapolated;
+        batSampleExtrapolated = batExtrapolated;
+        contactPosition = snapshot.contactPosition;
+        snapshotBatCorePosition = snapshot.batCorePosition;
+        snapshotBatRotation = _rotation;
+        snapshotBatCoreVelocity = snapshot.batCoreVelocity;
+        snapshotBatAngularVelocity = snapshot.batAngularVelocity;
+        snapshotX = snapshot.axisX; snapshotY = snapshot.axisY; snapshotN = snapshot.normal;
+        snapshotPlaneX = px; snapshotPlaneY = py; snapshotNormalizedY = snapshot.normalizedY;
+        snapshotIncomingVelocity = snapshot.incomingVelocity;
+        snapshotIncomingSpin = _ballSpin;
+        contactQuality = snapshot.quality;
+        finalBatPower = snapshot.power;
+        resultVelocity = result.linearVelocity;
+        resultSpin = result.angularVelocity;
+        _previousY = _y;
+        _hasPreviousY = true;
+        _opportunityEnded = true;
+        return true;
+    }
+
+    private bool ValidTiming(Vector3 axis, Vector3 centerDirectionValue)
+    {
+        Vector3 horizontal = axis - Vector3.Dot(axis, Vector3.up) * Vector3.up;
+        Vector3 center = centerDirectionValue - Vector3.Dot(centerDirectionValue, Vector3.up) * Vector3.up;
+        if (horizontal.sqrMagnitude < 0.000001f || center.sqrMagnitude < 0.000001f) return false;
+        return Mathf.Abs(Vector3.Dot(horizontal.normalized, center.normalized)) <= Mathf.Sin(timingYawDegrees * Mathf.Deg2Rad);
+    }
+
+    private float ContactWidth(float x)
+    {
+        float span = maxContactX - minContactX;
+        if (span <= 0f) return 0f;
+        return Mathf.Lerp(widthAtGrip, widthAtBarrel, Mathf.Clamp01((x - minContactX) / span));
+    }
+
+    private float Quality(float x)
+    {
+        float span = x < sweetSpotX ? sweetSpotX - minContactX : maxContactX - sweetSpotX;
+        if (span <= 0f) return Mathf.Clamp01(minimumQuality);
+        return Mathf.Lerp(1f, Mathf.Clamp01(minimumQuality), Mathf.Clamp01(Mathf.Abs(x - sweetSpotX) / span));
+    }
+}

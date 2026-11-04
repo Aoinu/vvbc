@@ -13,6 +13,14 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     // The owner of the Ball lifecycle turns flight on only for a free ball.
     public bool flying;
 
+    // Local generation and contact state. This is not a network authority token.
+    [HideInInspector] public int flightSequence;
+    [HideInInspector] public bool contactConsumed;
+    private bool _contactPending;
+    private int _pendingSequence;
+    private float _pendingTime;
+    private Vector3 _pendingPosition, _pendingVelocity, _pendingSpin;
+
     // Local fixed-time history; a contact consumer must copy the returned values
     // when it accepts a candidate, before waiting for an ownership transfer.
     private const int HistoryCapacity = 64;
@@ -25,6 +33,8 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public Vector3 sampledPosition;
     public Vector3 sampledVelocity;
     public Vector3 sampledAngularVelocity;
+    [HideInInspector] public float oldestMotionTime;
+    [HideInInspector] public float latestMotionTime;
 
     public void ConfigureBody()
     {
@@ -38,6 +48,9 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public void Stage(Vector3 position)
     {
         flying = false;
+        flightSequence++;
+        contactConsumed = false;
+        _contactPending = false;
         if (motionObserver != null) motionObserver.CancelPitch();
         _nextSample = 0;
         _sampleCount = 0;
@@ -54,6 +67,9 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public void Launch(Vector3 position, Vector3 velocity, Vector3 angularVelocity)
     {
         if (body == null) return;
+        flightSequence++;
+        contactConsumed = false;
+        _contactPending = false;
         ConfigureBody();
         body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, angularVelocity.magnitude + 1f);
         body.position = position;
@@ -75,14 +91,17 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public void FixedUpdate()
     {
         if (!flying || body == null || body.isKinematic) return;
+        if (_contactPending && _pendingSequence == flightSequence && Time.fixedTime >= _pendingTime)
+            ApplyPendingContact(Time.fixedTime);
         RecordMotion(Time.fixedTime, body.position, body.velocity, body.angularVelocity);
-        if (motionObserver != null) motionObserver.AcceptSample(Time.fixedTime, body.position, body.velocity);
+        if (!contactConsumed && motionObserver != null) motionObserver.AcceptSample(Time.fixedTime, body.position, body.velocity);
         body.AddForce(BallAerodynamics.Acceleration(body.velocity, body.angularVelocity,
             dragCoefficient, magnusCoefficient), ForceMode.Acceleration);
     }
 
     public void OnCollisionEnter(Collision collision)
     {
+        if (contactConsumed) return;
         if (!flying || body == null || ballCollider == null || motionObserver == null ||
             collision == null || collision.contactCount == 0 || _sampleCount == 0) return;
         if ((groundLayers.value & (1 << collision.gameObject.layer)) == 0) return;
@@ -104,14 +123,83 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         motionObserver.NotifyGroundContact(_times[last] + elapsed, contactCenter, velocity, spin);
     }
 
+    // Called after the result has been computed from a frozen contact snapshot.
+    // The incoming values are preserved for the strike observer; Launch is not
+    // used because it would start a new pitch and overwrite the strike state.
+    public bool ApplyContactResult(int sequence, float time, Vector3 position,
+        Vector3 incomingVelocity, Vector3 incomingSpin, Vector3 velocity, Vector3 spin)
+    {
+        if (!flying || body == null || body.isKinematic || contactConsumed || sequence != flightSequence ||
+            !Finite(time) || !FiniteVector(position) || !FiniteVector(incomingVelocity) ||
+            !FiniteVector(incomingSpin) || !FiniteVector(velocity) || !FiniteVector(spin)) return false;
+        if (_sampleCount == 0) return false;
+        int oldest = (_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity;
+        int latest = (_nextSample - 1 + HistoryCapacity) % HistoryCapacity;
+        if (time < _times[oldest] || time > _times[latest] + 0.03f) return false;
+        contactConsumed = true;
+        _contactPending = true;
+        _pendingSequence = sequence;
+        _pendingTime = time;
+        _pendingPosition = position;
+        _pendingVelocity = velocity;
+        _pendingSpin = spin;
+        if (motionObserver != null) motionObserver.NotifyContact(time, position, incomingVelocity, incomingSpin);
+        if (Time.fixedTime >= time) ApplyPendingContact(Time.fixedTime);
+        return true;
+    }
+
+    private void ApplyPendingContact(float physicsTime)
+    {
+        if (!_contactPending || _pendingSequence != flightSequence || body == null || physicsTime < _pendingTime) return;
+        BallFlightState state = new BallFlightState();
+        state.position = _pendingPosition;
+        state.velocity = _pendingVelocity;
+        float remaining = physicsTime - _pendingTime;
+        float step = Time.fixedDeltaTime;
+        if (step <= 0f) return;
+        state = BallAerodynamics.Advance(state, _pendingSpin, Physics.gravity,
+            dragCoefficient, magnusCoefficient, remaining, step);
+        body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, _pendingSpin.magnitude + 1f);
+        body.position = state.position;
+        body.velocity = state.velocity;
+        body.angularVelocity = _pendingSpin;
+        _nextSample = 0;
+        _sampleCount = 0;
+        RecordMotion(physicsTime, state.position, state.velocity, _pendingSpin);
+        _contactPending = false;
+    }
+
+    private bool Finite(float value)
+    {
+        return !float.IsNaN(value) && value <= float.MaxValue && value >= -float.MaxValue;
+    }
+
+    private bool FiniteVector(Vector3 value)
+    {
+        return Finite(value.x) && Finite(value.y) && Finite(value.z);
+    }
+
     private void RecordMotion(float time, Vector3 position, Vector3 velocity, Vector3 angularVelocity)
     {
+        if (_sampleCount > 0)
+        {
+            int last = (_nextSample - 1 + HistoryCapacity) % HistoryCapacity;
+            if (time == _times[last])
+            {
+                _positions[last] = position;
+                _velocities[last] = velocity;
+                _angularVelocities[last] = angularVelocity;
+                return;
+            }
+        }
         _times[_nextSample] = time;
         _positions[_nextSample] = position;
         _velocities[_nextSample] = velocity;
         _angularVelocities[_nextSample] = angularVelocity;
         _nextSample = (_nextSample + 1) % HistoryCapacity;
         if (_sampleCount < HistoryCapacity) _sampleCount++;
+        oldestMotionTime = _times[(_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity];
+        latestMotionTime = time;
     }
 
     // Returns false outside the recorded interval; launch and reset clear it.
@@ -133,5 +221,71 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
             return true;
         }
         return false;
+    }
+
+    // Contact reconstruction uses the derivative of the same Hermite curve as
+    // the returned position. Extrapolated values never enter the fixed history.
+    public float NextMotionSampleTime(float time, float limit)
+    {
+        int first = (_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity;
+        float next = limit;
+        for (int i = _sampleCount - 1; i >= 0; i--)
+        {
+            float candidate = _times[(first + i) % HistoryCapacity];
+            if (candidate <= time) break;
+            next = Mathf.Min(candidate, next);
+        }
+        return next;
+    }
+
+    public bool TrySampleContactMotion(float time, float maxExtrapolation)
+    {
+        return SampleContactMotion(time, maxExtrapolation, Physics.gravity, Time.fixedDeltaTime);
+    }
+
+    private bool SampleContactMotion(float time, float maxExtrapolation, Vector3 gravity, float fixedStep)
+    {
+        if (_sampleCount == 0 || !Finite(time) || !Finite(maxExtrapolation)) return false;
+        int first = (_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity;
+        if (time < _times[first]) return false;
+        for (int i = _sampleCount - 1; i >= 0; i--)
+        {
+            int current = (first + i) % HistoryCapacity;
+            if (time > _times[current]) continue;
+            int previous = i == 0 ? current : (current - 1 + HistoryCapacity) % HistoryCapacity;
+            if (time < _times[previous]) continue;
+            float dt = _times[current] - _times[previous];
+            if (dt <= 0f)
+            {
+                sampledPosition = _positions[current];
+                sampledVelocity = _velocities[current];
+                sampledAngularVelocity = _angularVelocities[current];
+                return true;
+            }
+            float u = (time - _times[previous]) / dt;
+            float u2 = u * u;
+            float u3 = u2 * u;
+            sampledPosition = (2f * u3 - 3f * u2 + 1f) * _positions[previous] +
+                (u3 - 2f * u2 + u) * dt * _velocities[previous] +
+                (-2f * u3 + 3f * u2) * _positions[current] + (u3 - u2) * dt * _velocities[current];
+            sampledVelocity = ((6f * u2 - 6f * u) * _positions[previous] +
+                (3f * u2 - 4f * u + 1f) * dt * _velocities[previous] +
+                (-6f * u2 + 6f * u) * _positions[current] +
+                (3f * u2 - 2f * u) * dt * _velocities[current]) / dt;
+            sampledAngularVelocity = Vector3.Lerp(_angularVelocities[previous], _angularVelocities[current], u);
+            return true;
+        }
+        int last = (_nextSample - 1 + HistoryCapacity) % HistoryCapacity;
+        float elapsed = time - _times[last];
+        if (elapsed < 0f || elapsed > Mathf.Min(Mathf.Max(0f, maxExtrapolation), 0.03f) || fixedStep <= 0f) return false;
+        sampledAngularVelocity = _angularVelocities[last];
+        BallFlightState state = new BallFlightState();
+        state.position = _positions[last];
+        state.velocity = _velocities[last];
+        state = BallAerodynamics.Advance(state, sampledAngularVelocity, gravity,
+            dragCoefficient, magnusCoefficient, elapsed, fixedStep);
+        sampledPosition = state.position;
+        sampledVelocity = state.velocity;
+        return FiniteVector(sampledPosition) && FiniteVector(sampledVelocity) && FiniteVector(sampledAngularVelocity);
     }
 }

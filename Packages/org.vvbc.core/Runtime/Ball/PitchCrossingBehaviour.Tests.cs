@@ -4,6 +4,20 @@ using UnityEngine;
 public partial class PitchCrossingBehaviour
 {
     [TsukimiTest]
+    public void ContactAfterStrikeResultDoesNotChangeItsGeometry()
+    {
+        tracking = true;
+        hasResult = true;
+        isStrike = true;
+        resultTime = 3f;
+        resultCrossing = new Vector3(0.1f, 1f, 0.2f);
+        NotifyContact(2f, Vector3.zero, Vector3.forward * 10f, Vector3.up * 100f);
+        Assert.IsTrue(hasResult && isStrike);
+        Assert.AreEqual(3f, resultTime);
+        Assert.AreEqual(new Vector3(0.1f, 1f, 0.2f), resultCrossing);
+    }
+
+    [TsukimiTest]
     public void HermiteUsesVelocityAndFindsPitcherToCatcherCrossing()
     {
         Vector3 p0 = new Vector3(0f, 1f, 1f);

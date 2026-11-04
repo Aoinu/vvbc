@@ -81,8 +81,10 @@ The observer records the front crossing separately from the geometric result;
 it displays the previous phantom until a new result is available. A future
 contact source can call `NotifyContact` with the pre-contact time, position,
 velocity and angular velocity, or `NotifySwing` to change the display colour
-without changing the geometric result. No contact or swing detection is
-included in this setup.
+without changing the geometric result. Contact detection is provided by the
+separate optional component described below.
 
-Network ownership/synchronization and Bat Contact detection remain outside this
-local setup. Do not treat its ball as a shared multiplayer-authoritative ball.
+The optional local Bat Contact connection and its setup, tuning and validation
+are described in [bat contact](bat-contact.md). Network synchronization of the
+ball remains outside this local setup; do not treat it as a shared
+multiplayer-authoritative ball.
