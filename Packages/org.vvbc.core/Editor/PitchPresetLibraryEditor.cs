@@ -13,7 +13,7 @@ public class PitchPresetLibraryEditor : Editor
     private double lastTime;
     private float previewPhase;
     private float previewRpm = 120f;
-    private Vector2 orbit = new Vector2(18f, 35f);
+    private Quaternion viewRotation = Quaternion.Euler(18f, 35f, 0f);
     private PreviewRenderUtility preview;
     private GameObject bindingTarget;
     private Mesh previewMesh;
@@ -147,7 +147,13 @@ public class PitchPresetLibraryEditor : Editor
     private void DrawPreview(Rect rect, Vector3 axis, Vector3 seamEuler, float phase)
     {
         Event e = Event.current;
-        if (e.type == EventType.MouseDrag && rect.Contains(e.mousePosition) && e.button == 0) { orbit += e.delta * 0.5f; e.Use(); Repaint(); }
+        if (e.type == EventType.MouseDrag && rect.Contains(e.mousePosition) && e.button == 0)
+        {
+            viewRotation = Quaternion.AngleAxis(-e.delta.x * 0.5f, Vector3.up) *
+                Quaternion.AngleAxis(-e.delta.y * 0.5f, Vector3.right) * viewRotation;
+            e.Use();
+            Repaint();
+        }
         if (e.type != EventType.Repaint) return;
         if (preview == null) { preview = new PreviewRenderUtility(); preview.cameraFieldOfView = 30f; }
         if (previewMesh == null || previewMaterial == null) { EditorGUI.HelpBox(rect, "VVBC Assets ball model and material are required for preview.", MessageType.Info); return; }
@@ -157,7 +163,7 @@ public class PitchPresetLibraryEditor : Editor
         preview.camera.nearClipPlane = 0.01f; preview.camera.farClipPlane = 20f;
         preview.lights[0].intensity = 1.2f; preview.lights[0].transform.rotation = Quaternion.Euler(30f, 40f, 0f);
         preview.lights[1].intensity = 0.6f;
-        Quaternion view = Quaternion.Euler(orbit.x, orbit.y, 0f);
+        Quaternion view = viewRotation;
         Vector3 unit = axis.sqrMagnitude < 0.000001f ? Vector3.left : axis.normalized;
         Quaternion rotation = view * Quaternion.AngleAxis(phase + previewPhase, unit) * Quaternion.Euler(seamEuler);
         float scale = 1.5f / Mathf.Max(previewMesh.bounds.size.x, Mathf.Max(previewMesh.bounds.size.y, previewMesh.bounds.size.z));
