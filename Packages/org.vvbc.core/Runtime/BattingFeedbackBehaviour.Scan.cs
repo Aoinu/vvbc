@@ -155,7 +155,7 @@ public partial class BattingFeedbackBehaviour
         if (_ballRotationValid) _ballRotation = flight.sampledRotation;
         _speed = motion.contactSampleReferenceVelocity.magnitude;
         _angular = motion.contactSampleAngularVelocity.magnitude * Mathf.Rad2Deg;
-        _rawPower = BallResultMath.RawPower(_speed);
+        _rawPower = contact.EvaluateRawPower(_speed);
         _powerCap = motion.ContactPowerCap(time, contact.centerDirection, _rawPower);
         _capReason = motion.contactPowerCapReason;
         _power = Mathf.Min(_rawPower, _powerCap);

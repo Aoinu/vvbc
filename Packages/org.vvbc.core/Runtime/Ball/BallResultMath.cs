@@ -40,14 +40,6 @@ public static class BallResultMath
         return Finite(value.x) && Finite(value.y) && Finite(value.z);
     }
 
-    public static float RawPower(float speed)
-    {
-        if (!Finite(speed) || speed <= 0f) return 0f;
-        if (speed < 20f) return 0.55f * (speed / 20f) * (speed / 20f);
-        if (speed >= 37f) return 1f;
-        return 0.55f + 0.45f * Mathf.Log(1f + 0.1f * (speed - 20f)) / Mathf.Log(2.7f);
-    }
-
     private static Vector3 Rotate(Vector3 value, Vector3 axis, float degrees)
     {
         float radians = degrees * Mathf.Deg2Rad;

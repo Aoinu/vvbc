@@ -93,6 +93,18 @@ try
     contact.OnBatContactPose();
     check(contact.contactSequence == count && flight.contactConsumed, "duplicate contact");
     check(contact.contactPosition == frozenPosition && contact.resultVelocity == frozenVelocity, "snapshot stays frozen");
+    var defaultPowerCurve = contact.powerCurve;
+    check(UnityEngine.Mathf.Abs(contact.snapshotRawPower - 0.75f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(contact.snapshotRawPower, contact.snapshotPowerCap)) < 0.0001f,
+        "default raw power and final cap are applied to contact");
+    contact.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
+    seed(0.35f, 0.75f, 107);
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotRawPower - 0.5f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(contact.snapshotRawPower, contact.snapshotPowerCap)) < 0.0001f &&
+        contact.resultVelocity.magnitude < frozenVelocity.magnitude,
+        "edited curve changes actual contact power and result");
+    contact.powerCurve = defaultPowerCurve;
     seed(0.35f, 0.75f, 105);
     var incomingSpin = new UnityEngine.Vector3[64];
     incomingSpin[0] = UnityEngine.Vector3.up * 300f; incomingSpin[1] = incomingSpin[0];
@@ -308,6 +320,7 @@ try
     set(motion, "_contactRotations", mr); set(motion, "_contactReferenceVelocities", mref);
     set(motion, "_contactCount", 2); set(motion, "_contactNext", 2);
     contact.centerDirection = UnityEngine.Vector3.forward;
+    contact.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
     var sampleCandidate = feedbackType.GetMethod("SampleCandidate", flags);
     var consider = feedbackType.GetMethod("ConsiderScannedPoint", flags);
     foreach (float t in new[] { 5.02f, 5.045f, 5.075f })
@@ -318,6 +331,8 @@ try
     check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_time", flags).GetValue(feedback) - 5.05f) < 0.002f &&
         UnityEngine.Mathf.Abs(((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback)).z) < 0.04f,
         "miss refinement and display use the same closest snapshot");
+    check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_rawPower", flags).GetValue(feedback) - 0.26f) < 0.0001f,
+        "miss feedback uses the edited contact power curve");
     feedbackType.GetMethod("FinalizeMiss", flags).Invoke(feedback, new object[] { 6f });
     check((bool)feedbackType.GetField("_hasResult", flags).GetValue(feedback) &&
         !(bool)feedbackType.GetField("_isContact", flags).GetValue(feedback), "miss is distinct from contact");
@@ -335,6 +350,49 @@ try
         UnityEngine.Mathf.Abs((float)feedbackType.GetField("_peakAngular", flags).GetValue(feedback) - 240f) < 0.001f &&
         UnityEngine.Mathf.Abs((float)feedbackType.GetField("_speed", flags).GetValue(feedback) - 8f) < 0.001f,
         "entry-minus-0.3 and exit-plus-0.1 bound measured peaks independently from closest speed");
+
+    // Hold both hands in place while rotating their tracking poses enough for
+    // the existing wrist rule; only the new raw curve crosses its 0.55 gate.
+    mt[0] = start - 0.2f; mt[1] = start - 0.01f; mt[2] = end;
+    for (int i = 0; i < 3; i++) { mp[i] = core; mv[i] = UnityEngine.Vector3.zero; mr[i] = rotation; }
+    var handValid = new bool[32]; handValid[0] = handValid[1] = handValid[2] = true;
+    var handRotations = new UnityEngine.Quaternion[32];
+    handRotations[0] = UnityEngine.Quaternion.identity;
+    handRotations[1] = handRotations[2] = UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.up);
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactVelocities", mv);
+    set(motion, "_contactRotations", mr); set(motion, "_contactAngularVelocities", new UnityEngine.Vector3[32]);
+    set(motion, "_contactHandsValid", handValid);
+    set(motion, "_contactLeftPositions", new UnityEngine.Vector3[32]);
+    set(motion, "_contactRightPositions", new UnityEngine.Vector3[32]);
+    set(motion, "_contactLeftRotations", handRotations); set(motion, "_contactRightRotations", handRotations);
+    set(motion, "_contactCount", 3); set(motion, "_contactNext", 3);
+    motion.contactOldestTime = mt[0]; motion.contactPreviousTime = mt[1]; motion.contactLatestTime = mt[2];
+    contact.centerDirection = UnityEngine.Vector3.back;
+    contact.powerCurve = defaultPowerCurve;
+    for (int pass = 0; pass < 2; pass++)
+    {
+        float speed = pass == 0 ? 10f : 20f;
+        for (int i = 0; i < 3; i++) mref[i] = UnityEngine.Vector3.back * speed;
+        set(motion, "_contactReferenceVelocities", mref);
+        bt[0] = start; bt[1] = end;
+        bp[0] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.1f;
+        bp[1] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.forward * 0.1f;
+        bv[0] = bv[1] = UnityEngine.Vector3.forward * 10f;
+        set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+        set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+        set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+        flight.oldestMotionTime = start; flight.latestMotionTime = end; flight.flightSequence = 200 + pass;
+        flight.contactConsumed = false; flight.flying = true;
+        body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+        set(contact, "_sequence", -1);
+        contact.OnBatContactPose();
+        float expectedRaw = pass == 0 ? 0.5f : 0.75f;
+        float expectedCap = pass == 0 ? 1f : 0.3f;
+        check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotRawPower - expectedRaw) < 0.0001f &&
+            UnityEngine.Mathf.Abs(contact.snapshotPowerCap - expectedCap) < 0.0001f &&
+            UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(expectedRaw, expectedCap)) < 0.0001f &&
+            contact.snapshotPowerCapReason == (pass == 0 ? 0 : 2), "raw power crosses unchanged wrist cap gate");
+    }
     return "PASS contact integration: time, roots, snapshot, flight, extrapolation, reset, strike, collision and discontinuity";
 }
 finally

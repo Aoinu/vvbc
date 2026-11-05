@@ -123,6 +123,11 @@ public partial class BatMotionBehaviour
         _contactRightRotations[1] = _contactLeftRotations[1];
         Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.3f) < 0.0001f);
         Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.2f) - 1f) < 0.0001f);
+        // The new curve gives 0.50 at 10 m/s and 0.75 at 20 m/s. The
+        // existing 0.55 wrist threshold must still classify them differently.
+        Assert.AreEqual(1f, ContactPowerCap(1.2f, Vector3.forward, 0.50f));
+        Assert.AreEqual(0.3f, ContactPowerCap(1.2f, Vector3.forward, 0.75f));
+        Assert.AreEqual(2, contactPowerCapReason);
         _contactLeftPositions[1] = Vector3.right * 6f;
         Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.2f) < 0.0001f);
     }

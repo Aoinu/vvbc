@@ -4,6 +4,16 @@ using UnityEngine;
 public partial class BatContactBehaviour
 {
     [TsukimiTest]
+    public void InvalidPowerSpeedsReturnZeroBeforeReadingCurve()
+    {
+        Assert.AreEqual(0f, EvaluateRawPower(0f));
+        Assert.AreEqual(0f, EvaluateRawPower(-1f));
+        Assert.AreEqual(0f, EvaluateRawPower(float.NaN));
+        Assert.AreEqual(0f, EvaluateRawPower(float.PositiveInfinity));
+        Assert.AreEqual(0f, EvaluateRawPower(float.NegativeInfinity));
+    }
+
+    [TsukimiTest]
     public void ContactPlaneUsesIncomingVelocityAndIsOrthonormal()
     {
         Vector3 x = new Vector3(1f, 0.4f, 0.2f).normalized;

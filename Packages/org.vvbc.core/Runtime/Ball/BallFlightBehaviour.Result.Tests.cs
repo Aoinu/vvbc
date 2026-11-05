@@ -24,14 +24,6 @@ public partial class BallFlightBehaviour
     }
 
     [TsukimiTest]
-    public void ResultPowerCurveUsesSpecifiedReferencePoints()
-    {
-        Assert.IsTrue(Mathf.Abs(BallResultMath.RawPower(10f) - 0.1375f) < 0.00001f);
-        Assert.IsTrue(Mathf.Abs(BallResultMath.RawPower(20f) - 0.55f) < 0.00001f);
-        Assert.IsTrue(Mathf.Abs(BallResultMath.RawPower(37f) - 1f) < 0.00001f);
-    }
-
-    [TsukimiTest]
     public void ResultAxisReversalPreservesPhysicalOutput()
     {
         BallResultSnapshot s = ResultExample();
@@ -183,12 +175,10 @@ public partial class BallFlightBehaviour
     {
         BallResultSnapshot snapshot = ResultExample();
         BallResult before = BallResultMath.Calculate(snapshot);
-        float power = BallResultMath.RawPower(20f);
         snapshot.contactPosition += Vector3.right * 0.3f;
         BallResult changedPosition = BallResultMath.Calculate(snapshot);
         Assert.IsTrue(before.valid && changedPosition.valid);
         Assert.IsTrue(Mathf.Abs(before.linearVelocity.magnitude - changedPosition.linearVelocity.magnitude) < 0.0001f);
-        Assert.IsTrue(Mathf.Abs(power - 0.55f) < 0.0001f);
         Assert.IsTrue(Mathf.Abs(before.linearVelocity.magnitude - (8f + 37f * 0.7f * 0.8f)) < 0.0001f);
     }
 

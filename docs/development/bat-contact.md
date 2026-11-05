@@ -34,11 +34,30 @@ The provisional zone is a local-space box with 1.5 m half extents. Adjust these
 values to the actual model, lane and play testing; scene instances can override
 the prefab. The Power reference is local Y = 0.71 m, 0.15 m inside the model tip.
 
+`BatContact` exposes `powerCurve` on its UdonBehaviour in the Inspector. Its
+horizontal axis is reference-point speed in m/s and its vertical axis is raw
+power. Edit keys and tangents directly on the prefab or a prefab instance. The
+initial curve passes through 0 at 2.5 m/s, 0.5 at 10 m/s, 0.75 at 20 m/s and
+1 at 40 m/s. Speeds outside the key range use the endpoint values regardless
+of the curve's wrap mode; output is clamped to 0–1. An explicitly empty curve
+produces zero. An older instance with no saved curve builds the same default on
+first use. Both contact and miss feedback use this curve.
+An existing instance that overrides the whole Udon variable table may not
+inherit the new prefab value; copy the curve from the prefab into that instance
+to make the default visible and editable in its Inspector. A missing value
+uses the runtime default, but a saved empty curve intentionally produces zero.
+
+The curve does not change the Power Cap thresholds. In particular, the wrist
+flick test still requires raw power of at least 0.55, so its speed threshold
+depends on the configured curve. Final power remains the lesser of raw power
+and the existing cap.
+
 The scene-independent integration fixture creates and disposes a Unity preview
 scene; it does not require the local development pitcher or Sandbox scene:
 
 ```powershell
 isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/ContactIntegration.cs.txt
+isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/PowerCurveIntegration.cs.txt
 ```
 
 It exercises the C# implementation with synthetic histories. Run the adjacent

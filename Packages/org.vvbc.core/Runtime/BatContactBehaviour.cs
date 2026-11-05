@@ -23,6 +23,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public float timingYawDegrees = 30f;
     public float sprayScale = 1f;
     public float launchScale = 1f;
+    public AnimationCurve powerCurve;
 
     private int _sequence = -1;
     private int _collisionSequence = -1;
@@ -68,6 +69,38 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (flight != null && flight.network != null)
             flight.network.contactListener = GetComponent<UdonBehaviour>();
         BindMotion();
+    }
+
+    // A missing value can occur on existing instances whose Udon variable table
+    // predates powerCurve. An explicitly empty curve remains editable and empty.
+    public float EvaluateRawPower(float speed)
+    {
+        if (float.IsNaN(speed) || speed <= 0f || speed > float.MaxValue) return 0f;
+        if (powerCurve == null) powerCurve = CreateDefaultPowerCurve();
+        if (powerCurve.length == 0) return 0f;
+        // Do not extrapolate even if a user selects a looping wrap mode.
+        powerCurve.preWrapMode = WrapMode.ClampForever;
+        powerCurve.postWrapMode = WrapMode.ClampForever;
+        float power = powerCurve.Evaluate(speed);
+        return float.IsNaN(power) ? 0f : Mathf.Clamp01(power);
+    }
+
+    private AnimationCurve CreateDefaultPowerCurve()
+    {
+        AnimationCurve curve = AnimationCurve.Linear(0f, 0f, 2.5f, 0f);
+        curve.AddKey(2.75f, 0.03437588f);
+        curve.AddKey(3f, 0.0657586f);
+        curve.AddKey(3.5f, 0.1214268f);
+        curve.AddKey(4f, 0.16951798f);
+        curve.AddKey(5f, 0.25f);
+        curve.AddKey(7.5f, 0.3962406f);
+        curve.AddKey(10f, 0.5f);
+        curve.AddKey(15f, 0.6462406f);
+        curve.AddKey(20f, 0.75f);
+        curve.AddKey(30f, 0.8962406f);
+        curve.AddKey(40f, 1f);
+        for (int i = 0; i < curve.length; i++) curve.SmoothTangents(i, i == 1 ? 1f : 0f);
+        return curve;
     }
 
     // Physics.IgnoreCollision is local. Apply it to every player's Bat on each
@@ -275,7 +308,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshot.worldUp = Vector3.up;
         snapshot.normalizedY = Mathf.Clamp(py / width, -1f, 1f);
         snapshot.quality = Quality(px);
-        float rawPower = BallResultMath.RawPower(_referenceVelocity.magnitude);
+        float rawPower = EvaluateRawPower(_referenceVelocity.magnitude);
         float powerCap = motion.ContactPowerCap(time, center.normalized, rawPower);
         int capReason = motion.contactPowerCapReason;
         snapshot.power = Mathf.Min(rawPower, powerCap);
