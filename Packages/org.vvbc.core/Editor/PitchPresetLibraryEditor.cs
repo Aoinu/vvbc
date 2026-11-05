@@ -20,6 +20,7 @@ public class PitchPresetLibraryEditor : Editor
     private Material previewMaterial;
     private Mesh arrowMesh;
     private Material arrowMaterial;
+    private Material flightArrowMaterial;
 
     private void OnEnable()
     {
@@ -42,6 +43,7 @@ public class PitchPresetLibraryEditor : Editor
         if (preview != null) preview.Cleanup();
         if (arrowMesh != null) DestroyImmediate(arrowMesh);
         if (arrowMaterial != null) DestroyImmediate(arrowMaterial);
+        if (flightArrowMaterial != null) DestroyImmediate(flightArrowMaterial);
     }
     private void Tick()
     {
@@ -80,7 +82,7 @@ public class PitchPresetLibraryEditor : Editor
         if (serializedObject.ApplyModifiedProperties()) PitchPresetSynchronizer.Queue((PitchPresetLibrary)target);
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("3D preview", EditorStyles.boldLabel);
-        EditorGUILayout.HelpBox("Drag to rotate the view. The arrow is the spin axis; the seam orientation and phase rotate the mesh relative to it.", MessageType.None);
+        EditorGUILayout.HelpBox("Drag to rotate the view. Orange: spin axis. Blue: flight direction toward the batter. The seam orientation and phase rotate the ball.", MessageType.None);
         Rect rect = GUILayoutUtility.GetRect(250f, 250f, GUILayout.ExpandWidth(true));
         DrawPreview(rect, value, seam.vector3Value, phase.floatValue);
         using (new EditorGUILayout.HorizontalScope())
@@ -137,6 +139,9 @@ public class PitchPresetLibraryEditor : Editor
         arrowMesh = new Mesh { name = "Pitch spin axis", hideFlags = HideFlags.HideAndDontSave, vertices = vertices, triangles = triangles };
         arrowMesh.RecalculateNormals();
         arrowMaterial = new Material(Shader.Find("Standard")) { hideFlags = HideFlags.HideAndDontSave, color = new Color(1f, 0.3f, 0.15f) };
+        flightArrowMaterial = new Material(Shader.Find("Hidden/Internal-Colored")) { hideFlags = HideFlags.HideAndDontSave, color = new Color(0.05f, 0.4f, 1f) };
+        flightArrowMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+        flightArrowMaterial.SetInt("_ZWrite", 1);
     }
 
     private void DrawPreview(Rect rect, Vector3 axis, Vector3 seamEuler, float phase)
@@ -147,7 +152,7 @@ public class PitchPresetLibraryEditor : Editor
         if (preview == null) { preview = new PreviewRenderUtility(); preview.cameraFieldOfView = 30f; }
         if (previewMesh == null || previewMaterial == null) { EditorGUI.HelpBox(rect, "VVBC Assets ball model and material are required for preview.", MessageType.Info); return; }
         preview.BeginPreview(rect, GUIStyle.none);
-        preview.camera.transform.position = new Vector3(0f, 0f, -5.2f);
+        preview.camera.transform.position = new Vector3(0f, 0f, -6.2f);
         preview.camera.transform.rotation = Quaternion.identity;
         preview.camera.nearClipPlane = 0.01f; preview.camera.farClipPlane = 20f;
         preview.lights[0].intensity = 1.2f; preview.lights[0].transform.rotation = Quaternion.Euler(30f, 40f, 0f);
@@ -160,6 +165,10 @@ public class PitchPresetLibraryEditor : Editor
         preview.DrawMesh(previewMesh, matrix, previewMaterial, 0);
         if (arrowMesh == null) CreateArrow();
         preview.DrawMesh(arrowMesh, Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.up, view * unit)), arrowMaterial, 0);
+        // Place the flight arrow above the ball so it remains visible when forward points away from the camera.
+        Matrix4x4 flightArrow = Matrix4x4.TRS(view * Vector3.up * 1.35f,
+            view * Quaternion.FromToRotation(Vector3.up, Vector3.forward), new Vector3(1f, 0.52f, 1f));
+        preview.DrawMesh(arrowMesh, flightArrow, flightArrowMaterial, 0);
         preview.camera.Render();
         GUI.DrawTexture(rect, preview.EndPreview(), ScaleMode.StretchToFill, false);
         GUI.Label(new Rect(rect.x + 8f, rect.y + 8f, rect.width - 16f, 20f), "Axis: " + unit.ToString("F2"));
