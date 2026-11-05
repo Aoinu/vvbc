@@ -1,6 +1,6 @@
 # Batting pitcher development setup
 
-The initial pitcher is local-only. The Sandbox integration uses
+The initial pitcher also supports a local-only setup. The Sandbox integration uses
 `Assets/Development/Prefabs/VVBC Batting Pitcher.prefab`; this development asset
 references the existing local Shinano avatar, copied pitching animation and
 controller, and the assets package ball model. It is ignored by Git and is not
@@ -85,6 +85,5 @@ without changing the geometric result. Contact detection is provided by the
 separate optional component described below.
 
 The optional local Bat Contact connection and its setup, tuning and validation
-are described in [bat contact](bat-contact.md). Network synchronization of the
-ball remains outside this local setup; do not treat it as a shared
-multiplayer-authoritative ball.
+are described in [bat contact](bat-contact.md). To share the ball between
+players, configure the separate [network prototype](ball-network-prototype.md).

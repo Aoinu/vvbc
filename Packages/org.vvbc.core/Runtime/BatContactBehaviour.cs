@@ -65,7 +65,30 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 
     public void Start()
     {
+        if (flight != null && flight.network != null)
+            flight.network.contactListener = GetComponent<UdonBehaviour>();
         BindMotion();
+    }
+
+    // Physics.IgnoreCollision is local. Apply it to every player's Bat on each
+    // launch, after the ball collider has been enabled on this client.
+    public void IgnorePlayerBatCollisions()
+    {
+        if (flight == null || flight.ballCollider == null) return;
+        VRCPlayerApi[] players = new VRCPlayerApi[VRCPlayerApi.GetPlayerCount()];
+        VRCPlayerApi.GetPlayers(players);
+        for (int i = 0; i < players.Length; i++)
+        {
+            if (players[i] == null) continue;
+            GameObject[] objects = Networking.GetPlayerObjects(players[i]);
+            if (objects == null) continue;
+            for (int j = 0; j < objects.Length; j++)
+            {
+                if (objects[j] == null) continue;
+                BatMotionBehaviour candidate = objects[j].GetComponentInChildren<BatMotionBehaviour>(true);
+                if (candidate != null) candidate.IgnoreBallCollision(flight.ballCollider);
+            }
+        }
     }
 
     public void BindMotion()

@@ -1,8 +1,10 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.SDKBase;
 
-// Local-only initial pitcher. This behaviour lives on the Animator object so
+// This behaviour lives on the Animator object so
 // the clip can deliver its Animation Event through Udon's SendCustomEvent.
+[UdonBehaviourSyncMode(BehaviourSyncMode.NoVariableSync)]
 public partial class BattingPitcherBehaviour : TsukimiBehaviour
 {
     public Animator animator;
@@ -43,6 +45,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private const int FollowThrough = 2;
     private int _solvingSequence;
     private bool _released;
+    private bool _controllerStarted;
+    private bool _isPitchController;
     private float _speedSnapshot;
     private float _resetSnapshot;
     private float _resetAt;
@@ -76,12 +80,30 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         }
         _visualStartPosition = animator.transform.localPosition;
         _visualStartRotation = animator.transform.localRotation;
-        PrepareNextPitch();
+        _isPitchController = ball.network == null || IsPitchController();
+        if (_isPitchController)
+        {
+            _controllerStarted = true;
+            PrepareNextPitch();
+        }
+    }
+
+    private bool IsPitchController()
+    {
+        VRCPlayerApi player = Networking.LocalPlayer;
+        return player != null && Networking.IsOwner(player, gameObject);
+    }
+
+    public override void OnOwnershipTransferred(VRCPlayerApi player)
+    {
+        if (ball == null || ball.network == null) return;
+        _isPitchController = player != null && player.isLocal && IsPitchController();
+        if (!_isPitchController) _controllerStarted = false;
     }
 
     private void PrepareNextPitch()
     {
-        if (flightVisual != null)
+        if (ball.network == null && flightVisual != null)
         {
             if (flightVisual.gameObject.activeSelf) flightVisual.EndFlight();
             flightVisual.gameObject.SetActive(false);
@@ -103,10 +125,15 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         selectedPitchType = Mathf.Clamp(pitchType, 0, 6);
         Vector3 axis = pitchSpinAxes[selectedPitchType];
         Vector3 localSpin = axis.normalized * (Mathf.Max(0f, spinRpm) * (2f * Mathf.PI / 60f));
-        ball.Stage(_releaseSnapshot);
-        physicalBallRenderer.enabled = false;
-        if (physicalBallCollider != null) physicalBallCollider.enabled = false;
-        if (animationBall != null) animationBall.SetActive(true);
+        if (ball.network != null)
+            ball.network.QueueState(1, _releaseSnapshot, Vector3.zero, Vector3.zero, Networking.GetServerTimeInSeconds());
+        else
+        {
+            ball.Stage(_releaseSnapshot);
+            physicalBallRenderer.enabled = false;
+            if (physicalBallCollider != null) physicalBallCollider.enabled = false;
+            if (animationBall != null) animationBall.SetActive(true);
+        }
         // Retain root motion during the pitch, but never carry its displacement
         // into the next cycle. Local coordinates preserve the placed parent pose.
         animator.transform.localPosition = _visualStartPosition;
@@ -118,10 +145,22 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void Update()
     {
+        if (!_isPitchController) return;
+        if (!_controllerStarted)
+        {
+            _controllerStarted = true;
+            PrepareNextPitch();
+        }
         if (phase == Preparing)
         {
             if (solver.solving) solver.Advance();
             if (solver.solving || _solvingSequence != pitchSequence) return;
+            if (ball.network != null && !ball.network.ReadyForPitch())
+            {
+                if (!ball.network.AwaitingStage())
+                    ball.network.QueueState(1, _releaseSnapshot, Vector3.zero, Vector3.zero, Networking.GetServerTimeInSeconds());
+                return;
+            }
             _velocitySnapshot = solver.launchDirection * _speedSnapshot;
             _spinSnapshot = solver.launchSpin;
             lastAimConverged = solver.converged;
@@ -136,9 +175,15 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public void _OnPitchRelease()
     {
         if (animator == null || ball == null || physicalBallRenderer == null) return;
+        if (ball.network != null && !IsPitchController()) return;
         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
         if (!state.IsName("Pitching")) return;
         if (!AcceptRelease(Time.time, state.normalizedTime)) return;
+        if (ball.network != null)
+        {
+            ball.network.QueueState(2, _releaseSnapshot, _velocitySnapshot, _spinSnapshot, Networking.GetServerTimeInSeconds());
+            return;
+        }
         ball.Launch(_releaseSnapshot, _velocitySnapshot, _spinSnapshot);
         if (flightVisual != null)
         {

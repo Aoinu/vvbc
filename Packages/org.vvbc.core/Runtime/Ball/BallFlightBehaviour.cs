@@ -9,6 +9,7 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public float magnusCoefficient = 0.00063f;
     public SphereCollider ballCollider;
     public PitchCrossingBehaviour motionObserver;
+    public BallNetworkBehaviour network;
     public UdonBehaviour feedbackListener;
     public LayerMask groundLayers;
 
@@ -75,9 +76,20 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
 
     public void Launch(Vector3 position, Vector3 velocity, Vector3 angularVelocity)
     {
+        StartFlight(position, velocity, angularVelocity, true);
+    }
+
+    // A remote hit replaces the physical trajectory without starting another pitch.
+    public void ApplyRemoteHit(Vector3 position, Vector3 velocity, Vector3 angularVelocity)
+    {
+        StartFlight(position, velocity, angularVelocity, false);
+    }
+
+    private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
+    {
         if (body == null) return;
         flightSequence++;
-        contactConsumed = false;
+        contactConsumed = !pitch;
         _contactPending = false;
         ConfigureBody();
         body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, angularVelocity.magnitude + 1f);
@@ -89,13 +101,14 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         _sampleCount = 0;
         flying = true;
         RecordMotion(Time.fixedTime, position, velocity, angularVelocity);
-        if (motionObserver != null && ballCollider != null)
+        if (pitch && motionObserver != null && ballCollider != null)
         {
             Vector3 scale = ballCollider.transform.lossyScale;
             float largestScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Max(Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
             motionObserver.BeginPitch(Time.fixedTime, position, velocity, ballCollider.radius * largestScale);
         }
-        if (feedbackListener != null)
+        if (!pitch && motionObserver != null) motionObserver.CancelPitch();
+        if (pitch && feedbackListener != null)
         {
             feedbackListener.enabled = true;
             feedbackListener.SendCustomEvent("OnFlightStarted");
@@ -159,6 +172,11 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         _pendingSpin = spin;
         if (motionObserver != null) motionObserver.NotifyContact(time, position, incomingVelocity, incomingSpin);
         if (Time.fixedTime >= time) ApplyPendingContact(Time.fixedTime);
+        if (network != null)
+        {
+            double eventTime = VRC.SDKBase.Networking.GetServerTimeInSeconds() - (Time.time - time);
+            network.QueueState(3, position, velocity, spin, eventTime);
+        }
         return true;
     }
 
@@ -177,6 +195,7 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         body.position = state.position;
         body.velocity = state.velocity;
         body.angularVelocity = _pendingSpin;
+        if (network != null) network.OnLocalHitApplied();
         _nextSample = 0;
         _sampleCount = 0;
         RecordMotion(physicsTime, state.position, state.velocity, _pendingSpin);

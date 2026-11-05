@@ -1,7 +1,9 @@
 # Local bat contact and ball result
 
 `BatContact` connects the local player's Bat to one locally simulated Ball.
-It does not synchronize contact or arbitrate between clients. Place one contact
+It does not itself synchronize contact or arbitrate between clients. For the
+optional shared Ball setup see [ball network prototype](ball-network-prototype.md).
+Place one contact
 prefab per local batting lane, assign its `flight` to the ball's
 `BallFlightBehaviour`, and position `contactZone` around the intended hitting
 area. The prefab's own Transform is the default zone; its `zoneHalfSize` is in
@@ -82,5 +84,5 @@ starting values, not validated anti-cheat thresholds.
    extrapolation boundaries for false contacts or speed spikes.
 5. Inspect the transition from pitch to batted flight for visible jumps and
    test ground/wall contact close to the hit. Repeat with multiple clients to
-   characterize the existing Bat sync and visual correction; the local Ball is
-   intentionally not a shared authoritative ball.
+   characterize the existing Bat sync and visual correction. Without the
+   optional Ball network component, the Ball remains local to each client.

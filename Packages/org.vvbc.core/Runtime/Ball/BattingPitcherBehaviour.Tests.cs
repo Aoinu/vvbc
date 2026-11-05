@@ -1,8 +1,24 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.SDKBase;
 
 public partial class BattingPitcherBehaviour
 {
+    [TsukimiTest]
+    public void PitchControllerFollowsOwnershipTransfer()
+    {
+        VRCPlayerApi first = Mimic.Join();
+        VRCPlayerApi second = Mimic.Join();
+        Mimic.Become(first);
+        _isPitchController = true;
+        _controllerStarted = true;
+        Networking.SetOwner(second, gameObject);
+        Assert.IsFalse(_isPitchController);
+        Assert.IsFalse(_controllerStarted);
+        Mimic.Become(second);
+        Assert.IsTrue(_isPitchController);
+    }
+
     [TsukimiTest]
     public void ReleaseIsAcceptedOnceAndResetDeadlineUsesSnapshot()
     {
