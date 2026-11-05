@@ -12,13 +12,18 @@ world-space direction from home plate toward center field. The Bat is resolved
 from the local player's PlayerObject; the contact listener runs after the local
 held Bat's `PostLateUpdate` pose. A missing or ambiguous PlayerObject is retried.
 
-Configure the ball and Bat collision layers so they do not physically collide.
-The local development setup uses a user layer for the physical Ball and excludes
-the packaged Bat's Pickup layer while retaining collisions with the ground.
-Layer numbers and collision matrices are project settings, not package assets:
-choose and verify an available user layer in each consumer world. The runtime
-also requests per-collider ignores for the bound Bat, but that does not replace
-the matrix: collider disable/enable and activation can reset pairwise ignores.
+Put the Ball SphereCollider on the VRChat Pickup layer (13), set its Exclude
+Layers to Pickup, and assign the Core Baseball Physic Material. This keeps the
+Ball from physically contacting Bat colliders and other Pickup-layer objects
+without changing the collision matrix or using a dedicated layer. Set the
+Ball Rigidbody to Continuous collision detection with zero linear and angular
+drag. The standard VRChat Pickup layer also does not collide with players;
+keep ground and wall colliders on layers that collide with Pickup. A competing
+layer override on another collider with a higher priority can change that
+decision and must be checked in each consumer world. The runtime also requests
+per-collider ignores for available Bats; collider disable/enable and activation
+can reset those pairwise ignores. Bat Contact itself evaluates sampled histories
+geometrically, independently of physics contacts and trigger events.
 Keep `groundLayers` on Ball Flight configured for ground and mound surfaces,
 and bind the existing strike observer as described in
 [batting pitcher setup](batting-pitcher.md).
