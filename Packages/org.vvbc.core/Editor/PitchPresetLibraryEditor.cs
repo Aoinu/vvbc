@@ -8,6 +8,7 @@ public class PitchPresetLibraryEditor : Editor
 {
     private static readonly string[] Names = { "Four-Seam FB", "Curve", "Slider", "Sweeper", "Split", "Screw", "Sinker" };
     private int selected;
+    private string selectionKey;
     private bool playing;
     private double lastTime;
     private float previewPhase;
@@ -22,6 +23,9 @@ public class PitchPresetLibraryEditor : Editor
 
     private void OnEnable()
     {
+        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(target));
+        selectionKey = "VVBC.PitchPresetSelection." + (string.IsNullOrEmpty(guid) ? target.GetInstanceID().ToString() : guid);
+        selected = Mathf.Clamp(SessionState.GetInt(selectionKey, 0), 0, Names.Length - 1);
         PitchPresetSynchronizer.Observe((PitchPresetLibrary)target);
         EditorApplication.update += Tick;
         string ballPath = AssetDatabase.FindAssets("Ball t:Model").Select(AssetDatabase.GUIDToAssetPath)
@@ -51,7 +55,12 @@ public class PitchPresetLibraryEditor : Editor
         serializedObject.Update();
         var entries = serializedObject.FindProperty("presets");
         if (entries == null || entries.arraySize != 7) { EditorGUILayout.HelpBox("Exactly seven pitch presets are required.", MessageType.Error); return; }
-        selected = GUILayout.SelectionGrid(selected, Names, 4);
+        int nextSelected = GUILayout.SelectionGrid(selected, Names, 4);
+        if (nextSelected != selected)
+        {
+            selected = nextSelected;
+            SessionState.SetInt(selectionKey, selected);
+        }
         var entry = entries.GetArrayElementAtIndex(selected);
         var axis = entry.FindPropertyRelative("spinAxis");
         var seam = entry.FindPropertyRelative("seamEuler");
