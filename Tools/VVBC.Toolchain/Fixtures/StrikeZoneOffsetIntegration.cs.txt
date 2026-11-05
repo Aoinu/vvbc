@@ -1,0 +1,26 @@
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+try {
+    var go = new GameObject("Zone test");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go, scene);
+    var zone = go.AddComponent<StrikeZoneBehaviour>();
+    zone.plateOrigin = go.transform;
+    go.transform.position = new Vector3(5f, 2f, 3f);
+    go.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+    zone.zoneCenterOffset = new Vector2(0.4f, 0.3f);
+    zone.Snapshot();
+    var expectedOrigin = go.transform.position + Vector3.back * 0.4f;
+    if (Vector3.Distance(zone.snapshotOrigin, expectedOrigin) > 0.0001f || Mathf.Abs(zone.snapshotBottom - 1f) > 0.0001f || Mathf.Abs(zone.snapshotTop - 1.6f) > 0.0001f) throw new Exception("snapshot offset");
+    if (!zone.ContainsBall(expectedOrigin + Vector3.up * 1.3f, 0f)) throw new Exception("offset center missing");
+    zone.zoneCenterOffset = new Vector2(-4f, -4f);
+    if (!zone.ContainsBall(expectedOrigin + Vector3.up * 1.3f, 0f)) throw new Exception("snapshot changed after edit");
+    zone.Snapshot();
+    if (zone.ContainsBall(expectedOrigin + Vector3.up * 1.3f, 0f)) throw new Exception("new snapshot ignored");
+    var contact = go.AddComponent<BatContactBehaviour>();
+    contact.contactZone = go.transform; contact.zoneHalfSize = new Vector3(1f, 2f, 3f);
+    go.transform.localScale = new Vector3(2f, 0.5f, 1.5f);
+    var inside = typeof(BatContactBehaviour).GetMethod("InsideZone", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+    System.Func<Vector3, bool> contains = p => (bool)inside.Invoke(contact, new object[] { go.transform.TransformPoint(p) });
+    if (!contains(new Vector3(0.99f, 1.99f, 2.99f)) || contains(new Vector3(1.01f, 0f, 0f)) ||
+        contains(new Vector3(0f, 2.01f, 0f)) || contains(new Vector3(0f, 0f, 3.01f))) throw new Exception("transformed contact box");
+    return "PASS rotated offset, bounds, snapshot isolation, transformed contact box";
+} finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene); }

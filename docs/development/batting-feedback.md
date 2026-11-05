@@ -14,9 +14,14 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    local listeners at Start; use one feedback instance per contact evaluator
    and Ball Flight. It sleeps between pitches and wakes on launch.
 3. Position and orient the World Space `Metrics Display` for the batting lane.
-   The packaged Bat phantom uses a simple cylinder; its root follows the recorded
-   Bat core pose. Replace its mesh in the scene if a model matching the actual
-   Bat is available. Set the Ball phantom scale to the actual Ball diameter.
+   The packaged Bat phantoms use simple cylinders; their roots follow the recorded
+   Bat model origin and rotation. Replace the seven meshes in the scene with a
+   matching Bat model as needed. Set the Ball phantom scale to the actual Ball diameter.
+   `phantomCount` defaults to seven and is limited by the assigned `batPhantoms`
+   and `batRenderers` arrays. To use more, add matching visual-only roots and
+   renderers to both arrays. With one phantom the selected contact or closest
+   approach time is used. The old single-phantom fields remain a one-object
+   fallback for existing scene instances.
    Keep the phantom and marker objects free of colliders. The phantom materials
    should support transparency. Inspector colors include their alpha values.
    Place the feedback root outside Collider and Rigidbody hierarchies: movable
@@ -45,7 +50,10 @@ The delay defaults to one second and the marker diameter to 0.03 m. Measurements
 are taken in world units. Bat peak history holds 128 frame differences and is
 accumulated while the window is active; sampling and history reset on a grip or
 tracking discontinuity. The Ball and Bat snapshot transforms are reconstructed
-at the selected time. The timing color uses only horizontal Bat-axis yaw.
+at the selected time. The Bat trail spans the pitch's entry and exit times,
+using an incoming-flight prediction after a hit. Its pose samples are retained
+while the pitch passes through the zone; a gap in the recorded history hides
+only the affected phantom. Each timing color uses only horizontal Bat-axis yaw.
 
 ## Client checks
 
@@ -67,3 +75,18 @@ at the selected time. The timing color uses only horizontal Bat-axis yaw.
 Automated T# tests and an Editor preview-scene fixture do not replace ClientSim
 or VRChat client testing. The temporary audio files and local scenes stay out of
 Git and must not become dependencies of package assets.
+
+## Scene View zone adjustment
+
+The Contact Zone box, Strike Judgment Plane and Ball Phantom Plane are drawn in
+the Scene View. Select the object carrying the Strike Zone UdonBehaviour to drag
+its center handle left/right and up/down. The handle changes `zoneCenterOffset`;
+`plateDepth` remains the only front/back adjustment. The next pitch snapshots
+these settings, so editing them during a pitch does not change that pitch.
+
+For a manual Editor check, select the zone, drag the square handle in both axes,
+then use Undo and Redo. Confirm both rectangles follow together, the Inspector
+values change and restore, and no depth movement occurs. Rotate the plate and
+repeat; compare a pitch at the rectangle edge with its strike result and front
+phantom. Deselect the object to check that all three gizmos remain visible and
+check the Game View with gizmos enabled to ensure none appear there.

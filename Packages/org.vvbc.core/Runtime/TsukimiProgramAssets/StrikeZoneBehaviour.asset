@@ -17,7 +17,8 @@ MonoBehaviour:
   udonAssembly: ".data_start\n    plateOrigin: %UnityEngineTransform, null\n    .export
     plateOrigin\n    plateDepth: %SystemSingle, 0.4318\n    .export plateDepth\n   
     width: %SystemSingle, 0.4318\n    .export width\n    bottom: %SystemSingle, 0.7\n   
-    .export bottom\n    top: %SystemSingle, 1.3\n    .export top\n    snapshotOrigin:
+    .export bottom\n    top: %SystemSingle, 1.3\n    .export top\n    zoneCenterOffset:
+    %UnityEngineVector2, null\n    .export zoneCenterOffset\n    snapshotOrigin:
     %UnityEngineVector3, null\n    .export snapshotOrigin\n    snapshotForward: %UnityEngineVector3,
     null\n    .export snapshotForward\n    snapshotRight: %UnityEngineVector3, null\n   
     .export snapshotRight\n    snapshotDepth: %SystemSingle, 0\n    .export snapshotDepth\n   
@@ -44,26 +45,37 @@ MonoBehaviour:
     __X18zStrikeZoneGeometry__m__ContainsBall_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     __returnValue: %SystemObject, null\n    __const_0: %UnityEngineVector3, null\n   
     __const_1: %UnityEngineObject, null\n    __Snapshot_intnl_0: %SystemBoolean,
-    null\n    __const_2: %SystemSingle, 0\n    __Snapshot_intnl_4: %UnityEngineVector3,
-    null\n    __retaddr_0: %SystemUInt32, 0x000001DC\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3:
-    %SystemSingle, 0\n    __const_3: %SystemSingle, 0.5\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4:
-    %SystemSingle, 0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5: %SystemSingle,
-    0\n.data_end\n.code_start\n    .export Snapshot\n    Snapshot:\n        PUSH,
-    __const_0\n        PUSH, __Snapshot_forward\n        COPY\n        PUSH, plateOrigin\n       
-    PUSH, __const_1\n        PUSH, __Snapshot_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    null\n    __const_2: %SystemSingle, 0\n    __Snapshot_intnl_3: %UnityEngineVector3,
+    null\n    __Snapshot_intnl_6: %SystemSingle, 0\n    __Snapshot_intnl_7: %UnityEngineVector3,
+    null\n    __retaddr_0: %SystemUInt32, 0x0000027C\n    __const_3: %SystemSingle,
+    0.5\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4: %SystemSingle, 0\n   
+    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5: %SystemSingle, 0\n.data_end\n.code_start\n   
+    .export Snapshot\n    Snapshot:\n        PUSH, __const_0\n        PUSH, __Snapshot_forward\n       
+    COPY\n        PUSH, plateOrigin\n        PUSH, __const_1\n        PUSH, __Snapshot_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __Snapshot_intnl_0\n        JUMP_IF_FALSE, __Snapshot_L1\n        JUMP_INDIRECT,
     __Snapshot_retjump\n    __Snapshot_L1:\n        PUSH, plateOrigin\n        PUSH,
-    snapshotOrigin\n        EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
-    PUSH, plateOrigin\n        PUSH, __Snapshot_forward\n        EXTERN, \"UnityEngineTransform.__get_forward__UnityEngineVector3\"\n       
+    __Snapshot_forward\n        EXTERN, \"UnityEngineTransform.__get_forward__UnityEngineVector3\"\n       
     PUSH, __Snapshot_forward\n        PUSH, __const_2\n        EXTERN, \"UnityEngineVector3.__set_y__SystemSingle\"\n       
     PUSH, __Snapshot_forward\n        PUSH, snapshotForward\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_4\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_4\n        PUSH, snapshotForward\n        PUSH, snapshotRight\n       
+    PUSH, __Snapshot_intnl_3\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_3\n        PUSH, snapshotForward\n        PUSH, snapshotRight\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, plateOrigin\n        PUSH, __Snapshot_intnl_3\n        EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
+    PUSH, zoneCenterOffset\n        PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_x__SystemSingle\"\n       
+    PUSH, snapshotRight\n        PUSH, __Snapshot_intnl_6\n        PUSH, __Snapshot_intnl_7\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_3\n        PUSH, __Snapshot_intnl_7\n        PUSH, snapshotOrigin\n       
+    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, plateDepth\n        PUSH, snapshotDepth\n        COPY\n        PUSH, width\n       
-    PUSH, snapshotWidth\n        COPY\n        PUSH, bottom\n        PUSH, snapshotBottom\n       
-    COPY\n        PUSH, top\n        PUSH, snapshotTop\n        COPY\n        JUMP_INDIRECT,
-    __Snapshot_retjump\n    .export ContainsBall__UnityEngineVector3_SystemSingle\n   
+    PUSH, snapshotWidth\n        COPY\n        PUSH, zoneCenterOffset\n        PUSH,
+    __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_y__SystemSingle\"\n       
+    PUSH, bottom\n        PUSH, __Snapshot_intnl_6\n        PUSH, snapshotBottom\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, zoneCenterOffset\n        PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_y__SystemSingle\"\n       
+    PUSH, top\n        PUSH, __Snapshot_intnl_6\n        PUSH, snapshotTop\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    JUMP_INDIRECT, __Snapshot_retjump\n    .export ContainsBall__UnityEngineVector3_SystemSingle\n   
     ContainsBall__UnityEngineVector3_SystemSingle:\n        PUSH, __ContainsBall__UnityEngineVector3_SystemSingle_p_0\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_0\n        COPY\n        PUSH,
     __ContainsBall__UnityEngineVector3_SystemSingle_p_1\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_1\n       
@@ -84,37 +96,37 @@ MonoBehaviour:
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_x\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_offset\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_y\n       
     EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_x\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_4\n        PUSH, __const_3\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
+    PUSH, __Snapshot_intnl_6\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __const_2\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dx\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_5\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_y\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_y\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_6\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
+    PUSH, __Snapshot_intnl_6\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __const_2\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dy\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dx\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dx\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dy\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dy\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
+    PUSH, __Snapshot_intnl_6\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_1\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_1\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __Snapshot_intnl_6\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_ret\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     JUMP_INDIRECT, __X18zStrikeZoneGeometry__m__ContainsBall_retjump\n        JUMP_INDIRECT,
     __X18zStrikeZoneGeometry__m__ContainsBall_retjump\n.code_end\n"
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: ccf58e03faa0da345a448b1518348420, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 80d6e217f310a3ca189824d482d6399cbe11407627703968299bb5b92c69a6a6
+  sourceFingerprint: ecadde9db832ea9564c66b7abd82ce3eb8c5d9846d6f4c6ad2f637928099178e
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -127,6 +139,7 @@ MonoBehaviour:
   - width
   - bottom
   - top
+  - zoneCenterOffset
   - snapshotOrigin
   - snapshotForward
   - snapshotRight
@@ -147,10 +160,12 @@ MonoBehaviour:
   - 
   - 
   - 
+  - 
   optBeforeUasm: ".data_start\n    plateOrigin: %UnityEngineTransform, null\n   
     .export plateOrigin\n    plateDepth: %SystemSingle, 0.4318\n    .export plateDepth\n   
     width: %SystemSingle, 0.4318\n    .export width\n    bottom: %SystemSingle, 0.7\n   
-    .export bottom\n    top: %SystemSingle, 1.3\n    .export top\n    snapshotOrigin:
+    .export bottom\n    top: %SystemSingle, 1.3\n    .export top\n    zoneCenterOffset:
+    %UnityEngineVector2, null\n    .export zoneCenterOffset\n    snapshotOrigin:
     %UnityEngineVector3, null\n    .export snapshotOrigin\n    snapshotForward: %UnityEngineVector3,
     null\n    .export snapshotForward\n    snapshotRight: %UnityEngineVector3, null\n   
     .export snapshotRight\n    snapshotDepth: %SystemSingle, 0\n    .export snapshotDepth\n   
@@ -177,15 +192,19 @@ MonoBehaviour:
     __X18zStrikeZoneGeometry__m__ContainsBall_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     __returnValue: %SystemObject, null\n    __const_0: %UnityEngineVector3, null\n   
     __const_1: %UnityEngineObject, null\n    __Snapshot_intnl_0: %SystemBoolean,
-    null\n    __Snapshot_intnl_1: %UnityEngineVector3, null\n    __Snapshot_intnl_2:
-    %UnityEngineVector3, null\n    __const_2: %SystemSingle, 0\n    __Snapshot_intnl_3:
+    null\n    __Snapshot_intnl_1: %UnityEngineVector3, null\n    __const_2: %SystemSingle,
+    0\n    __Snapshot_intnl_2: %UnityEngineVector3, null\n    __Snapshot_intnl_3:
     %UnityEngineVector3, null\n    __Snapshot_intnl_4: %UnityEngineVector3, null\n   
-    __Snapshot_intnl_5: %UnityEngineVector3, null\n    __retaddr_0: %SystemUInt32,
-    0x0000022C\n    __ContainsBall__UnityEngineVector3_SystemSingle_intnl_0: %SystemBoolean,
-    null\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_0: %UnityEngineVector3,
-    null\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_1: %SystemSingle, 0\n   
-    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_2: %SystemSingle, 0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3:
-    %SystemSingle, 0\n    __const_3: %SystemSingle, 0.5\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4:
+    __Snapshot_intnl_5: %UnityEngineVector3, null\n    __Snapshot_intnl_6: %SystemSingle,
+    0\n    __Snapshot_intnl_7: %UnityEngineVector3, null\n    __Snapshot_intnl_8:
+    %UnityEngineVector3, null\n    __Snapshot_intnl_9: %SystemSingle, 0\n    __Snapshot_intnl_10:
+    %SystemSingle, 0\n    __Snapshot_intnl_11: %SystemSingle, 0\n    __Snapshot_intnl_12:
+    %SystemSingle, 0\n    __retaddr_0: %SystemUInt32, 0x000002F4\n    __ContainsBall__UnityEngineVector3_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_0:
+    %UnityEngineVector3, null\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_1:
+    %SystemSingle, 0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_2: %SystemSingle,
+    0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3: %SystemSingle, 0\n   
+    __const_3: %SystemSingle, 0.5\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4:
     %SystemSingle, 0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5: %SystemSingle,
     0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_6: %SystemSingle, 0\n   
     __X18zStrikeZoneGeometry__m__ContainsBall_intnl_7: %SystemSingle, 0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_8:
@@ -200,20 +219,32 @@ MonoBehaviour:
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __Snapshot_intnl_0\n        JUMP_IF_FALSE, __Snapshot_L1\n        JUMP_INDIRECT,
     __Snapshot_retjump\n    __Snapshot_L1:\n        PUSH, plateOrigin\n        PUSH,
-    __Snapshot_intnl_1\n        EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_1\n        PUSH, snapshotOrigin\n        COPY\n       
-    PUSH, plateOrigin\n        PUSH, __Snapshot_intnl_2\n        EXTERN, \"UnityEngineTransform.__get_forward__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_2\n        PUSH, __Snapshot_forward\n        COPY\n       
+    __Snapshot_intnl_1\n        EXTERN, \"UnityEngineTransform.__get_forward__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_1\n        PUSH, __Snapshot_forward\n        COPY\n       
     PUSH, __Snapshot_forward\n        PUSH, __const_2\n        EXTERN, \"UnityEngineVector3.__set_y__SystemSingle\"\n       
-    PUSH, __Snapshot_forward\n        PUSH, __Snapshot_intnl_3\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_3\n        PUSH, snapshotForward\n        COPY\n       
-    PUSH, __Snapshot_intnl_4\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_4\n        PUSH, snapshotForward\n        PUSH, __Snapshot_intnl_5\n       
+    PUSH, __Snapshot_forward\n        PUSH, __Snapshot_intnl_2\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_2\n        PUSH, snapshotForward\n        COPY\n       
+    PUSH, __Snapshot_intnl_3\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_3\n        PUSH, snapshotForward\n        PUSH, __Snapshot_intnl_4\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_5\n        PUSH, snapshotRight\n        COPY\n       
+    PUSH, __Snapshot_intnl_4\n        PUSH, snapshotRight\n        COPY\n       
+    PUSH, plateOrigin\n        PUSH, __Snapshot_intnl_5\n        EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
+    PUSH, zoneCenterOffset\n        PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_x__SystemSingle\"\n       
+    PUSH, snapshotRight\n        PUSH, __Snapshot_intnl_6\n        PUSH, __Snapshot_intnl_7\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_5\n        PUSH, __Snapshot_intnl_7\n        PUSH, __Snapshot_intnl_8\n       
+    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_8\n        PUSH, snapshotOrigin\n        COPY\n       
     PUSH, plateDepth\n        PUSH, snapshotDepth\n        COPY\n        PUSH, width\n       
-    PUSH, snapshotWidth\n        COPY\n        PUSH, bottom\n        PUSH, snapshotBottom\n       
-    COPY\n        PUSH, top\n        PUSH, snapshotTop\n        COPY\n        JUMP_INDIRECT,
+    PUSH, snapshotWidth\n        COPY\n        PUSH, zoneCenterOffset\n        PUSH,
+    __Snapshot_intnl_9\n        EXTERN, \"UnityEngineVector2.__get_y__SystemSingle\"\n       
+    PUSH, bottom\n        PUSH, __Snapshot_intnl_9\n        PUSH, __Snapshot_intnl_10\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_10\n        PUSH, snapshotBottom\n        COPY\n       
+    PUSH, zoneCenterOffset\n        PUSH, __Snapshot_intnl_11\n        EXTERN, \"UnityEngineVector2.__get_y__SystemSingle\"\n       
+    PUSH, top\n        PUSH, __Snapshot_intnl_11\n        PUSH, __Snapshot_intnl_12\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_12\n        PUSH, snapshotTop\n        COPY\n        JUMP_INDIRECT,
     __Snapshot_retjump\n    .export ContainsBall__UnityEngineVector3_SystemSingle\n   
     ContainsBall__UnityEngineVector3_SystemSingle:\n        PUSH, __ContainsBall__UnityEngineVector3_SystemSingle_p_0\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_0\n        COPY\n        PUSH,
@@ -283,7 +314,8 @@ MonoBehaviour:
   optAfterUasm: ".data_start\n    plateOrigin: %UnityEngineTransform, null\n    .export
     plateOrigin\n    plateDepth: %SystemSingle, 0.4318\n    .export plateDepth\n   
     width: %SystemSingle, 0.4318\n    .export width\n    bottom: %SystemSingle, 0.7\n   
-    .export bottom\n    top: %SystemSingle, 1.3\n    .export top\n    snapshotOrigin:
+    .export bottom\n    top: %SystemSingle, 1.3\n    .export top\n    zoneCenterOffset:
+    %UnityEngineVector2, null\n    .export zoneCenterOffset\n    snapshotOrigin:
     %UnityEngineVector3, null\n    .export snapshotOrigin\n    snapshotForward: %UnityEngineVector3,
     null\n    .export snapshotForward\n    snapshotRight: %UnityEngineVector3, null\n   
     .export snapshotRight\n    snapshotDepth: %SystemSingle, 0\n    .export snapshotDepth\n   
@@ -310,26 +342,37 @@ MonoBehaviour:
     __X18zStrikeZoneGeometry__m__ContainsBall_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     __returnValue: %SystemObject, null\n    __const_0: %UnityEngineVector3, null\n   
     __const_1: %UnityEngineObject, null\n    __Snapshot_intnl_0: %SystemBoolean,
-    null\n    __const_2: %SystemSingle, 0\n    __Snapshot_intnl_4: %UnityEngineVector3,
-    null\n    __retaddr_0: %SystemUInt32, 0x000001DC\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3:
-    %SystemSingle, 0\n    __const_3: %SystemSingle, 0.5\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4:
-    %SystemSingle, 0\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5: %SystemSingle,
-    0\n.data_end\n.code_start\n    .export Snapshot\n    Snapshot:\n        PUSH,
-    __const_0\n        PUSH, __Snapshot_forward\n        COPY\n        PUSH, plateOrigin\n       
-    PUSH, __const_1\n        PUSH, __Snapshot_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    null\n    __const_2: %SystemSingle, 0\n    __Snapshot_intnl_3: %UnityEngineVector3,
+    null\n    __Snapshot_intnl_6: %SystemSingle, 0\n    __Snapshot_intnl_7: %UnityEngineVector3,
+    null\n    __retaddr_0: %SystemUInt32, 0x0000027C\n    __const_3: %SystemSingle,
+    0.5\n    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4: %SystemSingle, 0\n   
+    __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5: %SystemSingle, 0\n.data_end\n.code_start\n   
+    .export Snapshot\n    Snapshot:\n        PUSH, __const_0\n        PUSH, __Snapshot_forward\n       
+    COPY\n        PUSH, plateOrigin\n        PUSH, __const_1\n        PUSH, __Snapshot_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __Snapshot_intnl_0\n        JUMP_IF_FALSE, __Snapshot_L1\n        JUMP_INDIRECT,
     __Snapshot_retjump\n    __Snapshot_L1:\n        PUSH, plateOrigin\n        PUSH,
-    snapshotOrigin\n        EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
-    PUSH, plateOrigin\n        PUSH, __Snapshot_forward\n        EXTERN, \"UnityEngineTransform.__get_forward__UnityEngineVector3\"\n       
+    __Snapshot_forward\n        EXTERN, \"UnityEngineTransform.__get_forward__UnityEngineVector3\"\n       
     PUSH, __Snapshot_forward\n        PUSH, __const_2\n        EXTERN, \"UnityEngineVector3.__set_y__SystemSingle\"\n       
     PUSH, __Snapshot_forward\n        PUSH, snapshotForward\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_4\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
-    PUSH, __Snapshot_intnl_4\n        PUSH, snapshotForward\n        PUSH, snapshotRight\n       
+    PUSH, __Snapshot_intnl_3\n        EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_3\n        PUSH, snapshotForward\n        PUSH, snapshotRight\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, plateOrigin\n        PUSH, __Snapshot_intnl_3\n        EXTERN, \"UnityEngineTransform.__get_position__UnityEngineVector3\"\n       
+    PUSH, zoneCenterOffset\n        PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_x__SystemSingle\"\n       
+    PUSH, snapshotRight\n        PUSH, __Snapshot_intnl_6\n        PUSH, __Snapshot_intnl_7\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __Snapshot_intnl_3\n        PUSH, __Snapshot_intnl_7\n        PUSH, snapshotOrigin\n       
+    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, plateDepth\n        PUSH, snapshotDepth\n        COPY\n        PUSH, width\n       
-    PUSH, snapshotWidth\n        COPY\n        PUSH, bottom\n        PUSH, snapshotBottom\n       
-    COPY\n        PUSH, top\n        PUSH, snapshotTop\n        COPY\n        JUMP_INDIRECT,
-    __Snapshot_retjump\n    .export ContainsBall__UnityEngineVector3_SystemSingle\n   
+    PUSH, snapshotWidth\n        COPY\n        PUSH, zoneCenterOffset\n        PUSH,
+    __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_y__SystemSingle\"\n       
+    PUSH, bottom\n        PUSH, __Snapshot_intnl_6\n        PUSH, snapshotBottom\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, zoneCenterOffset\n        PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineVector2.__get_y__SystemSingle\"\n       
+    PUSH, top\n        PUSH, __Snapshot_intnl_6\n        PUSH, snapshotTop\n       
+    EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    JUMP_INDIRECT, __Snapshot_retjump\n    .export ContainsBall__UnityEngineVector3_SystemSingle\n   
     ContainsBall__UnityEngineVector3_SystemSingle:\n        PUSH, __ContainsBall__UnityEngineVector3_SystemSingle_p_0\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_0\n        COPY\n        PUSH,
     __ContainsBall__UnityEngineVector3_SystemSingle_p_1\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_1\n       
@@ -350,30 +393,30 @@ MonoBehaviour:
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_x\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_offset\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_y\n       
     EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_x\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_4\n        PUSH, __const_3\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
+    PUSH, __Snapshot_intnl_6\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __const_2\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dx\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_5\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_y\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_y\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_6\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
+    PUSH, __Snapshot_intnl_6\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __const_2\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dy\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dx\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dx\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dy\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_dy\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
+    PUSH, __Snapshot_intnl_6\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_4\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_1\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_p_1\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_3\n       
+    PUSH, __Snapshot_intnl_6\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_intnl_5\n        PUSH, __Snapshot_intnl_6\n       
     PUSH, __X18zStrikeZoneGeometry__m__ContainsBall_ret\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     JUMP_INDIRECT, __X18zStrikeZoneGeometry__m__ContainsBall_retjump\n        JUMP_INDIRECT,
     __X18zStrikeZoneGeometry__m__ContainsBall_retjump\n.code_end\n"
@@ -386,10 +429,10 @@ MonoBehaviour:
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=5450232953428419062"
   - "=__const_0\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
   networkCallableSlots: []
-  optExternBefore: 23
-  optExternAfter: 23
-  optInsnBefore: 186
-  optInsnAfter: 138
-  optBytesBefore: 1364
-  optBytesAfter: 1044
+  optExternBefore: 30
+  optExternAfter: 30
+  optInsnBefore: 211
+  optInsnAfter: 157
+  optBytesBefore: 1564
+  optBytesAfter: 1204
   optStage: ran

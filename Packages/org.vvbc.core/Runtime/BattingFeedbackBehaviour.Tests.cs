@@ -52,8 +52,60 @@ public partial class BattingFeedbackBehaviour
         Vector3 velocity = new Vector3(30f, 10f, 40f);
         Assert.IsTrue(Mathf.Abs(ExitKmh(velocity) - Mathf.Sqrt(2600f) * 3.6f) < 0.001f);
         Assert.IsTrue(Mathf.Abs(LaunchAngle(velocity) - 11.3099f) < 0.01f);
-        Assert.IsTrue(Mathf.Abs(SprayAngle(velocity) - 36.8699f) < 0.01f);
+        Assert.IsTrue(Mathf.Abs(SprayAngle(velocity, Vector3.forward) - 36.8699f) < 0.01f);
         Assert.IsTrue(Mathf.Abs(SpinRpm(Vector3.up * (2f * Mathf.PI)) - 60f) < 0.01f);
         Assert.IsTrue(CapReason(0) == "None" && CapReason(4) == "Tracking spike");
+    }
+    [TsukimiTest]
+    public void SprayAngleFollowsCenterAndHandlesVerticalVelocity()
+    {
+        Vector3 velocity = new Vector3(3f, 5f, 4f);
+        Quaternion rotation = Quaternion.Euler(0f, 72f, 0f);
+        float angle = SprayAngle(velocity, Vector3.forward);
+        Assert.IsTrue(Mathf.Abs(angle - SprayAngle(rotation * velocity, rotation * Vector3.forward)) < 0.001f);
+        Assert.IsTrue(SprayAngle(Vector3.right, Vector3.forward) > 0f);
+        Assert.IsTrue(SprayAngle(Vector3.left, Vector3.forward) < 0f);
+        Assert.IsTrue(SprayAngle(Vector3.up, Vector3.forward) == 0f);
+        Assert.IsTrue(SprayAngle(Vector3.forward, Vector3.up) == 0f);
+    }
+    [TsukimiTest]
+    public void TrailTimesFollowZoneDurationAndSingleUsesReference()
+    {
+        Assert.IsTrue(Mathf.Abs(TrailTime(1f, 1.6f, 1.2f, 1, 7) - 1.1f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(TrailTime(1f, 2.2f, 1.2f, 1, 7) - 1.2f) < 0.00001f);
+        Assert.IsTrue(TrailTime(1f, 2f, 1.3f, 0, 1) == 1.3f);
+    }
+
+    [TsukimiTest]
+    public void SavedPoseRejectsHistoryGapsAndUnavailableTimes()
+    {
+        _poseCount = 2;
+        _poseTimes[0] = 1f; _poseTimes[1] = 2f;
+        _poseCores[0] = Vector3.zero; _poseCores[1] = Vector3.right * 2f;
+        _poseVelocities[0] = Vector3.right * 2f; _poseVelocities[1] = Vector3.right * 2f;
+        _poseRotations[0] = Quaternion.identity; _poseRotations[1] = Quaternion.identity;
+        _poseOffsets[0] = Vector3.up; _poseOffsets[1] = Vector3.up;
+        _poseSegments[1] = 1;
+        Assert.IsFalse(SampleSavedPose(1.5f));
+        Assert.IsFalse(SampleSavedPose(0.9f));
+    }
+
+    [TsukimiTest]
+    public void ResetDiscardsTrailState()
+    {
+        _poseCount = 7; _trailEntered = true; _trailEndKnown = true; _trailReady = true; _trailCount = 7;
+        ResetTrail();
+        Assert.IsTrue(_poseCount == 0 && !_trailEntered && !_trailEndKnown && !_trailReady && _trailCount == 0);
+    }
+    [TsukimiTest]
+    public void SavedPoseHistoryGrowsWithoutDiscardingEarlierSamples()
+    {
+        _poseCount = 128;
+        _poseTimes[0] = 1f; _poseTimes[127] = 2f;
+        _poseCores[0] = Vector3.left; _poseCores[127] = Vector3.right;
+        _poseSegments[127] = 4;
+        GrowPoses();
+        Assert.IsTrue(_poseTimes.Length == 256 && _poseTimes[0] == 1f && _poseTimes[127] == 2f);
+        Assert.IsTrue(_poseCores[0] == Vector3.left && _poseCores[127] == Vector3.right && _poseSegments[127] == 4);
     }
 }

@@ -10,6 +10,10 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public BatContactBehaviour contact;
     public BallFlightBehaviour flight;
     public Transform batPhantom;
+    public Transform[] batPhantoms;
+    public Renderer[] batRenderers;
+    [Tooltip("Number of snapshots; add matching entries to both arrays to use more than the preallocated seven.")]
+    public int phantomCount = 7;
     public Transform ballPhantom;
     public Renderer batRenderer;
     public Renderer ballRenderer;
@@ -70,6 +74,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public void OnBallReset()
     {
         if (flight != null) ResetForSequence(flight.flightSequence);
+        if (contact != null) contact.feedbackTrailActive = false;
         enabled = false;
     }
 
@@ -83,6 +88,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         if (flight == null || contact == null) return;
         if (_sequence != flight.flightSequence) ResetForSequence(flight.flightSequence);
         UpdateWind();
+        UpdateTrail();
         BatMotionBehaviour motion = contact.motion;
         if (flight.flying && motion != null)
         {
@@ -91,7 +97,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
                 !InZone(flight.body.position)) { _exited = true; _exitTime = Time.time; }
             if (_entered && (!_exited || Time.time <= _exitTime + peakAfterExit)) UpdatePeaks(motion);
         }
-        if (_hasResult && !_shown && Time.time >= _showAt)
+        if (_hasResult && !_shown && _trailReady && Time.time >= _showAt)
         {
             ShowSnapshot();
             _shown = true;
@@ -108,6 +114,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _scanTime = 0f; _peakSpeed = 0f; _peakAngular = 0f;
         _scanPoints = 0;
         _hasPreviousCandidateY = false;
+        ResetTrail();
         ClearPresentation();
         if (windAudio != null) { windAudio.Stop(); windAudio.volume = 0f; windAudio.clip = null; }
         if (contactAudio != null) contactAudio.Stop();
@@ -117,6 +124,9 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     private void ClearPresentation()
     {
         if (batRenderer != null) batRenderer.enabled = false;
+        if (batRenderers != null)
+            for (int i = 0; i < batRenderers.Length; i++)
+                if (batRenderers[i] != null) batRenderers[i].enabled = false;
         if (ballRenderer != null) ballRenderer.enabled = false;
         if (contactPointRenderer != null) contactPointRenderer.enabled = false;
         if (metrics != null) metrics.text = "";
@@ -146,6 +156,8 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _normalizedY = contact.snapshotNormalizedY; _quality = contact.contactQuality;
         _yaw = TimingYaw(contact.snapshotX, contact.centerDirection);
         _resultVelocity = contact.resultVelocity; _resultSpin = contact.resultSpin;
+        _trailReady = false; _trailCount = 0; contact.feedbackTrailActive = true;
+        PredictTrailExit();
         if (!_entered) { _entered = true; _entryTime = _time; }
         PlayContact();
         Vibrate(contact.snapshotHeldHands);
@@ -221,11 +233,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     private void ShowSnapshot()
     {
         Color color = TimingColor(_yaw);
-        if (batRenderer != null && CanMoveVisual(batPhantom))
-        {
-            batPhantom.SetPositionAndRotation(_batPosition, _batRotation);
-            batRenderer.material.color = color; batRenderer.enabled = true;
-        }
+        ShowBatTrail();
         if (ballRenderer != null && _ballRotationValid && CanMoveVisual(ballPhantom))
         {
             ballPhantom.SetPositionAndRotation(_ballPosition, _ballRotation);
@@ -266,7 +274,15 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     {
         return Mathf.Atan2(velocity.y, Mathf.Sqrt(velocity.x * velocity.x + velocity.z * velocity.z)) * Mathf.Rad2Deg;
     }
-    private float SprayAngle(Vector3 velocity) { return Mathf.Atan2(velocity.x, velocity.z) * Mathf.Rad2Deg; }
+    private float SprayAngle(Vector3 velocity, Vector3 center)
+    {
+        velocity.y = 0f;
+        center.y = 0f;
+        if (velocity.sqrMagnitude < 0.000001f || center.sqrMagnitude < 0.000001f) return 0f;
+        center = center.normalized;
+        Vector3 right = Vector3.Cross(Vector3.up, center);
+        return Mathf.Atan2(Vector3.Dot(velocity, right), Vector3.Dot(velocity, center)) * Mathf.Rad2Deg;
+    }
     private float SpinRpm(Vector3 spin) { return spin.magnitude * 60f / (2f * Mathf.PI); }
 
     private void UpdateMetrics()
@@ -278,7 +294,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         string ball = _isContact
             ? ExitKmh(_resultVelocity).ToString("F1") + " km/h\nLaunch: " +
               LaunchAngle(_resultVelocity).ToString("F1") + "°\nSpray: " +
-              SprayAngle(_resultVelocity).ToString("F1") + "°\nSpin: " +
+              SprayAngle(_resultVelocity, contact.centerDirection).ToString("F1") + "°\nSpin: " +
               SpinRpm(_resultSpin).ToString("F0") + " rpm"
             : "—\nLaunch: —\nSpray: —\nSpin: —";
         metrics.text = "SWING MEASUREMENTS\nBat speed: " + _speed.ToString("F1") + " m/s\nPeak speed: " +

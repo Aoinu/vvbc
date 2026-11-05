@@ -9,6 +9,7 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
     public float width = 0.4318f;
     public float bottom = 0.70f;
     public float top = 1.30f;
+    public Vector2 zoneCenterOffset;
 
     // These values are copied at release, so a later adjustment does not change a pitch.
     public Vector3 snapshotOrigin;
@@ -22,15 +23,15 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
     public void Snapshot()
     {
         if (plateOrigin == null) return;
-        snapshotOrigin = plateOrigin.position;
         Vector3 forward = plateOrigin.forward;
         forward.y = 0f;
         snapshotForward = forward.normalized;
         snapshotRight = Vector3.Cross(Vector3.up, snapshotForward);
+        snapshotOrigin = plateOrigin.position + snapshotRight * zoneCenterOffset.x;
         snapshotDepth = plateDepth;
         snapshotWidth = width;
-        snapshotBottom = bottom;
-        snapshotTop = top;
+        snapshotBottom = bottom + zoneCenterOffset.y;
+        snapshotTop = top + zoneCenterOffset.y;
     }
 
     public bool ContainsBall(Vector3 position, float radius)

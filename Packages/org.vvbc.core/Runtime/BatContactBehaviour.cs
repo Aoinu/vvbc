@@ -37,6 +37,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private Vector3 _core, _coreVelocity, _batOmega, _axis, _y, _normal, _referenceVelocity;
     private Quaternion _rotation;
     private float _planeValue;
+    [HideInInspector] public float feedbackCandidateTime;
+    [HideInInspector] public bool feedbackTrailActive;
     public float contactTime;
     public Vector3 contactPosition;
     public Vector3 resultVelocity;
@@ -93,6 +95,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 
     public void OnBatContactPose()
     {
+        if (feedbackTrailActive && feedbackListener != null && flight != null && flight.flying)
+            feedbackListener.SendCustomEvent("OnFeedbackBatPose");
         if (flight == null || motion == null || contactZone == null || !flight.flying || flight.contactConsumed) return;
         if (_collisionSequence != flight.flightSequence || _collisionRevision != motion.contactRevision)
         {
@@ -261,7 +265,10 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         Quaternion ballRotation = flight.sampledRotation;
         float referenceSpeed = _referenceVelocity.magnitude;
         int heldHands = motion.LocalHeldHands();
-        if (!result.valid || !flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
+        if (!result.valid) return false;
+        feedbackCandidateTime = time;
+        if (feedbackListener != null) feedbackListener.SendCustomEvent("OnFeedbackPreContact");
+        if (!flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
             result.linearVelocity, result.angularVelocity)) return false;
         contactTime = time;
         contactPitchSequence = _sequence;

@@ -1,0 +1,109 @@
+// Execute with isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/BattingTrailIntegration.cs.txt
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+try
+{
+    var root = new GameObject("Trail fixture");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, scene);
+    var feedback = root.AddComponent<BattingFeedbackBehaviour>();
+    var flight = root.AddComponent<BallFlightBehaviour>();
+    var contact = root.AddComponent<BatContactBehaviour>();
+    var motion = root.AddComponent<BatMotionBehaviour>();
+    feedback.flight = flight; feedback.contact = contact; contact.motion = motion; contact.flight = flight;
+    contact.contactZone = root.transform; contact.zoneHalfSize = new Vector3(1f, 100f, 1f);
+    contact.centerDirection = Vector3.forward; contact.maxExtrapolation = 0.025f;
+    flight.flying = true; flight.flightSequence = 123;
+    var phantomObjects = new GameObject[7]; feedback.batPhantoms = new Transform[7]; feedback.batRenderers = new Renderer[7];
+    var material = AssetDatabase.LoadAssetAtPath<Material>("Packages/org.vvbc.core/Runtime/Materials/BallPhantom.mat");
+    if (material == null) material = new Material(Shader.Find("Standard"));
+    for (int i = 0; i < 7; i++)
+    {
+        var go = new GameObject("Phantom " + i); go.transform.SetParent(root.transform);
+        phantomObjects[i] = go; feedback.batPhantoms[i] = go.transform;
+        feedback.batRenderers[i] = go.AddComponent<MeshRenderer>(); feedback.batRenderers[i].sharedMaterial = material;
+    }
+    feedback.phantomCount = 7; feedback.OnFlightStarted();
+    if (!contact.feedbackTrailActive) throw new Exception("trail capture not enabled at pitch start");
+    var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    System.Action<object,string,object> set = (o,n,v) => o.GetType().GetField(n, flags).SetValue(o,v);
+    System.Func<object,string,object> get = (o,n) => o.GetType().GetField(n, flags).GetValue(o);
+    System.Action<object,string> call = (o,n) => o.GetType().GetMethod(n,flags).Invoke(o,null);
+    System.Action<bool,string> check = (ok,label) => { if (!ok) throw new Exception("Batting trail: " + label); };
+    float[] bt = new float[64], mt = new float[32];
+    Vector3[] bp = new Vector3[64], bv = new Vector3[64], spin = new Vector3[64];
+    Vector3[] mp = new Vector3[32], mv = new Vector3[32], mo = new Vector3[32], omega = new Vector3[32], referenceVelocity = new Vector3[32];
+    Quaternion[] mr = new Quaternion[32];
+    set(flight,"_times",bt); set(flight,"_positions",bp); set(flight,"_velocities",bv); set(flight,"_angularVelocities",spin);
+    set(motion,"_contactTimes",mt); set(motion,"_contactPositions",mp); set(motion,"_contactVelocities",mv);
+    set(motion,"_contactCoreOffsets",mo); set(motion,"_contactAngularVelocities",omega); set(motion,"_contactRotations",mr);
+    set(motion,"_contactReferenceVelocities",referenceVelocity);
+    float start = Mathf.Max(10f, Time.time + 1f); float dt = 0.02f;
+    for (int n = 0; n <= 90; n++)
+    {
+        float time = start + n * dt; int bi = n % 64, mi = n % 32;
+        bt[bi] = time; bp[bi] = new Vector3(0f, 0f, -2f + 0.04f * n); bv[bi] = Vector3.forward * 2f;
+        mt[mi] = time; mp[mi] = new Vector3(n * 0.01f, 1f, 0f); mv[mi] = Vector3.right * 0.5f;
+        mo[mi] = new Vector3(0f, 0.3f, 0f); mr[mi] = Quaternion.Euler(0f, n * 0.5f, -90f);
+        referenceVelocity[mi] = Vector3.right * 10f;
+        int bc = Mathf.Min(n + 1, 64), mc = Mathf.Min(n + 1, 32);
+        set(flight,"_sampleCount",bc); set(flight,"_nextSample",(bi + 1) % 64);
+        flight.oldestMotionTime = bt[(bi + 1 - bc + 64) % 64]; flight.latestMotionTime = time;
+        set(motion,"_contactCount",mc); set(motion,"_contactNext",(mi + 1) % 32);
+        motion.contactOldestTime = mt[(mi + 1 - mc + 32) % 32]; motion.contactLatestTime = time;
+        feedback.OnFeedbackBatPose();
+        feedback.Update();
+    }
+    check((bool)get(feedback,"_hasResult") && !(bool)get(feedback,"_isContact"), "miss result");
+    check(!contact.feedbackTrailActive, "capture stops after miss snapshots");
+    check((bool)get(feedback,"_trailEntered") && (bool)get(feedback,"_trailEndKnown"), "entry and exit");
+    float entry = (float)get(feedback,"_trailEntry"), exit = (float)get(feedback,"_trailExit");
+    check(Mathf.Abs(entry - (start + 25 * dt)) < 0.0002f && Mathf.Abs(exit - (start + 75 * dt)) < 0.0002f, "actual crossing times");
+    check((int)get(feedback,"_poseCount") > 32, "retains older samples");
+    set(feedback,"_time",start + 50 * dt); set(feedback,"_trailReady",false); call(feedback,"FreezeTrail");
+    var valid = (bool[])get(feedback,"_trailValid"); var positions = (Vector3[])get(feedback,"_trailPositions");
+    var rotations = (Quaternion[])get(feedback,"_trailRotations"); var colors = (Color[])get(feedback,"_trailColors");
+    for (int i = 0; i < 7; i++)
+    {
+        float n = 25f + 50f * i / 6f;
+        Quaternion expectedRotation = Quaternion.Euler(0f, n * 0.5f, -90f);
+        Vector3 expected = new Vector3(n * 0.01f, 1f, 0f) - expectedRotation * new Vector3(0f, 0.3f, 0f);
+        check(valid[i] && Vector3.Distance(positions[i], expected) < 0.002f && Quaternion.Angle(rotations[i], expectedRotation) < 0.1f, "pose " + i);
+        check(i == 0 || colors[i] != colors[0], "independent timing color " + i);
+    }
+    feedback.phantomCount = 1; set(feedback, "_trailReady", false); call(feedback, "FreezeTrail");
+    var single = (Vector3[])get(feedback, "_trailPositions");
+    var singleRotation = Quaternion.Euler(0f, 25f, -90f);
+    check((int)get(feedback, "_trailCount") == 1 && ((bool[])get(feedback, "_trailValid"))[0] &&
+        Vector3.Distance(single[0], new Vector3(0.5f, 1f, 0f) - singleRotation * new Vector3(0f, 0.3f, 0f)) < 0.002f, "single reference time");
+    feedback.phantomCount = 7;
+    // Exercise the public contact notification using the already-captured
+    // incoming trajectory, after more than one Motion ring's worth of samples.
+    set(feedback, "_trailReady", false);
+    contact.contactTime = start + 50f * dt; contact.contactPosition = Vector3.zero;
+    contact.snapshotIncomingVelocity = Vector3.forward * 2f; contact.snapshotIncomingSpin = Vector3.zero;
+    contact.resultVelocity = Vector3.right * 100f; contact.resultSpin = Vector3.up * 30f;
+    contact.contactValid = true; contact.contactPitchSequence = flight.flightSequence;
+    flight.dragCoefficient = 0f; flight.magnusCoefficient = 0f; flight.contactConsumed = true;
+    feedback.OnContactConfirmed();
+    check(contact.feedbackTrailActive, "contact resumes capture");
+    check((bool)get(feedback, "_hasResult") && (bool)get(feedback, "_isContact") &&
+        (bool)get(feedback, "_trailEndKnown") && Mathf.Abs((float)get(feedback, "_trailExit") - exit) < 0.002f, "contact predicts pitch exit");
+    call(feedback, "FreezeTrail");
+    check(((bool[])get(feedback,"_trailValid")).All(v => v), "seven contact poses");
+    check((float)get(feedback, "_showAt") > Time.time + 0.9f, "one second delay");
+    feedback.Update(); check(!(bool)get(feedback, "_shown"), "no early display");
+    for (int i = 0; i < 7; i++) feedback.batRenderers[i].enabled = true;
+    feedback.OnBallReset();
+    check(!contact.feedbackTrailActive && feedback.batRenderers.All(r => !r.enabled), "reset clears renderers and capture");
+    set(feedback,"_trailEntered",true); set(feedback,"_trailEntry",start);
+    contact.contactTime = start; contact.contactPosition = Vector3.zero;
+    contact.snapshotIncomingVelocity = Vector3.forward * 2f; contact.snapshotIncomingSpin = Vector3.zero;
+    flight.dragCoefficient = 0f; flight.magnusCoefficient = 0f;
+    contact.resultVelocity = Vector3.right * 100f; call(feedback,"PredictTrailExit");
+    float predicted = (float)get(feedback,"_trailExit");
+    check((bool)get(feedback,"_trailEndKnown") && Mathf.Abs(predicted - start - 0.5f) < 0.002f, "predicted exit");
+    contact.resultVelocity = Vector3.back * 500f; contact.resultSpin = Vector3.up * 300f;
+    call(feedback,"PredictTrailExit");
+    check(Mathf.Abs((float)get(feedback,"_trailExit") - predicted) < 0.00001f, "independent of batted result");
+    return "PASS long miss trajectory, seven measured poses and colors, reset, incoming-only prediction";
+}
+finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene); }
