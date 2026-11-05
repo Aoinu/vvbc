@@ -19,7 +19,7 @@ try
     {
         var go = new GameObject("Phantom " + i); go.transform.SetParent(root.transform);
         phantomObjects[i] = go; feedback.batPhantoms[i] = go.transform;
-        feedback.batRenderers[i] = go.AddComponent<MeshRenderer>(); feedback.batRenderers[i].sharedMaterial = material;
+        feedback.batRenderers[i] = go.AddComponent<MeshRenderer>(); feedback.batRenderers[i].sharedMaterial = material; feedback.batRenderers[i].enabled = false;
     }
     feedback.phantomCount = 7; feedback.OnFlightStarted();
     if (!contact.feedbackTrailActive) throw new Exception("trail capture not enabled at pitch start");
@@ -69,6 +69,30 @@ try
         check(valid[i] && Vector3.Distance(positions[i], expected) < 0.002f && Quaternion.Angle(rotations[i], expectedRotation) < 0.1f, "pose " + i);
         check(i == 0 || colors[i] != colors[0], "independent timing color " + i);
     }
+    call(feedback, "ShowBatTrail");
+    check(feedback.trailValid == 7 && feedback.trailRendered == 7, "seven render calls");
+    for (int i = 0; i < 7; i++)
+        check(feedback.batRenderers[i].enabled && Vector3.Distance(feedback.batPhantoms[i].position, positions[i]) < 0.0001f &&
+            Quaternion.Angle(feedback.batPhantoms[i].rotation, rotations[i]) < 0.01f &&
+            feedback.batRenderers[i].material.color == colors[i], "rendered pose and color " + i);
+    for (int i = 0; i < 7; i++) feedback.batRenderers[i].enabled = false;
+    var goodTransforms = feedback.batPhantoms; var goodRenderers = feedback.batRenderers;
+    feedback.batPhantoms = new Transform[0]; feedback.batRenderers = new Renderer[0];
+    set(feedback, "_trailReady", false); call(feedback, "FreezeTrail");
+    check(feedback.trailAvailable == 0 && feedback.trailRequested == 7 && feedback.trailRejectionReason != "" && (int)get(feedback,"_trailCount") == 0, "empty arrays rejected");
+    feedback.batPhantoms = goodTransforms; feedback.batRenderers = (Renderer[])goodRenderers.Clone(); feedback.batRenderers[3] = null;
+    set(feedback, "_trailReady", false); call(feedback, "FreezeTrail");
+    check(feedback.trailAvailable == 6 && feedback.trailRejectionReason != "", "missing element rejected");
+    feedback.batRenderers = goodRenderers;
+    // A discontinuity invalidates only times inside its interval.
+    var segments = (int[])get(feedback,"_poseSegments");
+    var poseTimes = (float[])get(feedback,"_poseTimes");
+    int poseCount = (int)get(feedback,"_poseCount");
+    for (int i = 0; i < poseCount; i++) segments[i] = poseTimes[i] >= start + 0.68f ? 1 : 0;
+    set(feedback, "_trailReady", false); call(feedback, "FreezeTrail"); call(feedback, "ShowBatTrail");
+    check(feedback.trailValid > 0 && feedback.trailValid < 7 && feedback.trailRendered == feedback.trailValid, "gap preserves other rendered poses");
+    for (int i = 0; i < poseCount; i++) segments[i] = 0;
+    for (int i = 0; i < 7; i++) feedback.batRenderers[i].enabled = false;
     feedback.phantomCount = 1; set(feedback, "_trailReady", false); call(feedback, "FreezeTrail");
     var single = (Vector3[])get(feedback, "_trailPositions");
     var singleRotation = Quaternion.Euler(0f, 25f, -90f);
@@ -89,6 +113,8 @@ try
         (bool)get(feedback, "_trailEndKnown") && Mathf.Abs((float)get(feedback, "_trailExit") - exit) < 0.002f, "contact predicts pitch exit");
     call(feedback, "FreezeTrail");
     check(((bool[])get(feedback,"_trailValid")).All(v => v), "seven contact poses");
+    call(feedback, "ShowBatTrail");
+    check(feedback.trailRendered == 7 && feedback.batRenderers.All(r => r.enabled), "contact renders seven");
     check((float)get(feedback, "_showAt") > Time.time + 0.9f, "one second delay");
     feedback.Update(); check(!(bool)get(feedback, "_shown"), "no early display");
     for (int i = 0; i < 7; i++) feedback.batRenderers[i].enabled = true;
@@ -104,6 +130,52 @@ try
     contact.resultVelocity = Vector3.back * 500f; contact.resultSpin = Vector3.up * 300f;
     call(feedback,"PredictTrailExit");
     check(Mathf.Abs((float)get(feedback,"_trailExit") - predicted) < 0.00001f, "independent of batted result");
-    return "PASS long miss trajectory, seven measured poses and colors, reset, incoming-only prediction";
+    // Default 3 m deep zone at 140 km/h, at common VR display rates.
+    foreach (float frameRate in new[] { 72f, 90f, 120f })
+    foreach (bool hit in new[] { false, true })
+    {
+        flight.flightSequence++; flight.contactConsumed = false; flight.flying = true;
+        contact.zoneHalfSize = new Vector3(1.5f, 100f, 1.5f);
+        feedback.OnFlightStarted();
+        float fastStart = start + 10f; float frame = 1f / frameRate; float velocity = 140f / 3.6f;
+        for (int n = 0; n < 20; n++)
+        {
+            float t = fastStart + n * frame; int bi = n % 64, mi = n % 32;
+            bt[bi] = t; bp[bi] = new Vector3(0f, 0f, -2f + velocity * n * frame); bv[bi] = Vector3.forward * velocity;
+            mt[mi] = t; mp[mi] = new Vector3(n * frame, 1f, 0f); mv[mi] = Vector3.right;
+            mo[mi] = Vector3.zero; mr[mi] = Quaternion.Euler(0f, n * 2f, -90f); referenceVelocity[mi] = Vector3.right * 10f;
+            int bc = Mathf.Min(n + 1, 64), mc = Mathf.Min(n + 1, 32);
+            set(flight,"_sampleCount",bc); set(flight,"_nextSample",(bi + 1) % 64);
+            flight.oldestMotionTime = bt[(bi + 1 - bc + 64) % 64]; flight.latestMotionTime = t;
+            set(motion,"_contactCount",mc); set(motion,"_contactNext",(mi + 1) % 32);
+            motion.contactOldestTime = mt[(mi + 1 - mc + 32) % 32]; motion.contactLatestTime = t;
+            feedback.OnFeedbackBatPose();
+            if (hit && !flight.contactConsumed && t >= fastStart + 2f / velocity)
+            {
+                contact.feedbackCandidateTime = fastStart + 2f / velocity;
+                feedback.OnFeedbackPreContact();
+                contact.contactTime = contact.feedbackCandidateTime; contact.contactPosition = Vector3.zero;
+                contact.snapshotIncomingVelocity = Vector3.forward * velocity; contact.snapshotIncomingSpin = Vector3.zero;
+                contact.contactValid = true; contact.contactPitchSequence = flight.flightSequence;
+                flight.contactConsumed = true; feedback.OnContactConfirmed();
+            }
+            feedback.Update();
+        }
+        check((bool)get(feedback,"_hasResult") && (bool)get(feedback,"_isContact") == hit, "fast result " + frameRate + " hit=" + hit);
+        check(feedback.trailValid == 7, "fast measured samples " + frameRate);
+        call(feedback,"ShowBatTrail");
+        check(feedback.trailRendered == 7, "fast render " + frameRate);
+        feedback.OnBallReset();
+    }
+    return "PASS seven rendered poses/colors, invalid references, partial gap, contact/miss, reset, 140 km/h contact/miss at 72/90/120 Hz";
 }
-finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene); }
+finally
+{
+    var temporaryMaterials = new HashSet<Material>();
+    foreach (var rootObject in scene.GetRootGameObjects())
+        foreach (var renderer in rootObject.GetComponentsInChildren<Renderer>(true))
+            foreach (var usedMaterial in renderer.sharedMaterials)
+                if (usedMaterial != null && !EditorUtility.IsPersistent(usedMaterial)) temporaryMaterials.Add(usedMaterial);
+    UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+    foreach (var usedMaterial in temporaryMaterials) UnityEngine.Object.DestroyImmediate(usedMaterial);
+}

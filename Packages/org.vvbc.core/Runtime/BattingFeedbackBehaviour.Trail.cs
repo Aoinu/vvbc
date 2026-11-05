@@ -20,12 +20,22 @@ public partial class BattingFeedbackBehaviour
     private bool[] _trailValid;
     private int _trailCount;
 
+    // Updated only when a trail is frozen or shown; no per-frame logging.
+    [Header("Trail diagnostics (last result)")]
+    public int trailRequested, trailAvailable, trailPoseSamples, trailValid, trailRendered;
+    public float trailEntry, trailExit, trailLastPoseTime;
+    public string trailRejectionReason;
+    private bool _poseGap;
+
     private void ResetTrail()
     {
         _poseCount = 0; _poseSegment = 0; _poseRevision = -1; _poseSource = null;
         _trailHasSample = false; _trailInside = false; _trailEntered = false;
         _trailEndKnown = false; _trailReady = false;
         _trailScanTime = 0f; _trailEntry = 0f; _trailExit = 0f; _trailCount = 0;
+        _poseGap = false;
+        trailRequested = 0; trailAvailable = 0; trailPoseSamples = 0; trailValid = 0; trailRendered = 0;
+        trailEntry = 0f; trailExit = 0f; trailLastPoseTime = 0f; trailRejectionReason = "";
         if (contact != null) contact.feedbackTrailActive = flight != null && flight.flying;
     }
 
@@ -172,7 +182,7 @@ public partial class BattingFeedbackBehaviour
         if (motion.contactLatestTime <= 0f) return;
         bool gap = _poseCount > 0 && (motion != _poseSource || motion.contactHistoryRevision != _poseRevision ||
             motion.contactOldestTime > _poseTimes[_poseCount - 1] + 0.000001f);
-        if (gap) _poseSegment++;
+        if (gap) { _poseSegment++; _poseGap = true; }
         _poseRevision = motion.contactHistoryRevision; _poseSource = motion;
         float cursor = _poseCount == 0 || gap ? motion.contactOldestTime : _poseTimes[_poseCount - 1];
         if ((_poseCount == 0 || gap) && motion.TrySampleContactPose(cursor, 0f)) AddPose(motion, cursor);
@@ -221,10 +231,38 @@ public partial class BattingFeedbackBehaviour
         if (_trailReady) return;
         _trailReady = true;
         if (contact != null) contact.feedbackTrailActive = false;
-        if (!_trailEntered || !_trailEndKnown || _trailExit < _trailEntry) return;
-        int available = batPhantoms != null && batRenderers != null ? Mathf.Min(batPhantoms.Length, batRenderers.Length) : 0;
-        if (available == 0 && batPhantom != null && batRenderer != null) available = 1;
-        _trailCount = Mathf.Min(Mathf.Max(1, phantomCount), available);
+        trailRequested = phantomCount; trailPoseSamples = _poseCount;
+        trailEntry = _trailEntry; trailExit = _trailExit;
+        trailLastPoseTime = _poseCount > 0 ? _poseTimes[_poseCount - 1] : 0f;
+        _trailCount = 0; trailValid = 0; trailRendered = 0; trailAvailable = 0;
+        trailRejectionReason = "";
+        if (batPhantoms != null && batRenderers != null)
+        {
+            int pairs = Mathf.Min(batPhantoms.Length, batRenderers.Length);
+            for (int i = 0; i < pairs; i++)
+                if (batPhantoms[i] != null && batRenderers[i] != null) trailAvailable++;
+        }
+        if (phantomCount < 1 || batPhantoms == null || batRenderers == null ||
+            batPhantoms.Length != batRenderers.Length || batPhantoms.Length < phantomCount || trailAvailable < phantomCount)
+        {
+            trailRejectionReason = "Phantom count or references are incomplete";
+            return;
+        }
+        for (int i = 0; i < phantomCount; i++)
+        {
+            if (batPhantoms[i] == null || batRenderers[i] == null)
+            { trailRejectionReason = "Requested phantom reference is missing"; break; }
+            if (!batRenderers[i].transform.IsChildOf(batPhantoms[i]))
+            { trailRejectionReason = "Renderer is outside its phantom"; break; }
+            for (int j = 0; j < i; j++)
+                if (batPhantoms[i] == batPhantoms[j] || batRenderers[i] == batRenderers[j])
+                { trailRejectionReason = "Phantom references are duplicated"; break; }
+            if (trailRejectionReason != "") break;
+        }
+        if (trailRejectionReason != "") return;
+        if (!_trailEntered || !_trailEndKnown || _trailExit < _trailEntry)
+        { trailRejectionReason = "Zone entry or exit unavailable"; return; }
+        _trailCount = phantomCount;
         _trailPositions = new Vector3[_trailCount]; _trailRotations = new Quaternion[_trailCount];
         _trailColors = new Color[_trailCount]; _trailValid = new bool[_trailCount];
         for (int i = 0; i < _trailCount; i++)
@@ -234,6 +272,14 @@ public partial class BattingFeedbackBehaviour
             _trailPositions[i] = _savedPosition; _trailRotations[i] = _savedRotation;
             _trailColors[i] = TimingColor(TimingYaw(_savedRotation * Vector3.up, contact.centerDirection));
             _trailValid[i] = true;
+            trailValid++;
+        }
+        if (trailValid < _trailCount)
+        {
+            if (_poseGap) trailRejectionReason = "Pose history interrupted";
+            else if (contact.motion == null || contact.motion.contactLatestTime < _trailExit)
+                trailRejectionReason = "Bat tracking did not reach trail exit";
+            else trailRejectionReason = "Pose history unavailable at one or more trail times";
         }
     }
 
@@ -275,11 +321,14 @@ public partial class BattingFeedbackBehaviour
     {
         for (int i = 0; i < _trailCount; i++)
         {
-            Transform phantom = batPhantoms != null && batPhantoms.Length > i ? batPhantoms[i] : batPhantom;
-            Renderer renderer = batRenderers != null && batRenderers.Length > i ? batRenderers[i] : batRenderer;
-            if (!_trailValid[i] || renderer == null || !CanMoveVisual(phantom)) continue;
+            Transform phantom = batPhantoms[i];
+            Renderer renderer = batRenderers[i];
+            if (!_trailValid[i]) continue;
+            if (renderer == null || !CanMoveVisual(phantom))
+            { trailRejectionReason = "Visual reference missing or inside a physics hierarchy"; continue; }
             phantom.SetPositionAndRotation(_trailPositions[i], _trailRotations[i]);
             renderer.material.color = _trailColors[i]; renderer.enabled = true;
+            trailRendered++;
         }
     }
 }

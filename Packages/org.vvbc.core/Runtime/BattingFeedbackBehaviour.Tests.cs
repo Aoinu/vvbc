@@ -97,6 +97,16 @@ public partial class BattingFeedbackBehaviour
         ResetTrail();
         Assert.IsTrue(_poseCount == 0 && !_trailEntered && !_trailEndKnown && !_trailReady && _trailCount == 0);
     }
+
+    [TsukimiTest]
+    public void EmptyPhantomArraysAreDiagnosedInsteadOfFallingBack()
+    {
+        phantomCount = 7; batPhantoms = new Transform[0]; batRenderers = new Renderer[0];
+        _trailEntered = true; _trailEndKnown = true; _trailEntry = 1f; _trailExit = 2f;
+        FreezeTrail();
+        Assert.IsTrue(_trailReady && _trailCount == 0 && trailRequested == 7 && trailAvailable == 0);
+        Assert.IsTrue(trailRejectionReason == "Phantom count or references are incomplete");
+    }
     [TsukimiTest]
     public void SavedPoseHistoryGrowsWithoutDiscardingEarlierSamples()
     {

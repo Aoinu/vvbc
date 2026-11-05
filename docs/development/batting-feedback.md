@@ -17,11 +17,11 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    The packaged Bat phantoms use simple cylinders; their roots follow the recorded
    Bat model origin and rotation. Replace the seven meshes in the scene with a
    matching Bat model as needed. Set the Ball phantom scale to the actual Ball diameter.
-   `phantomCount` defaults to seven and is limited by the assigned `batPhantoms`
-   and `batRenderers` arrays. To use more, add matching visual-only roots and
-   renderers to both arrays. With one phantom the selected contact or closest
-   approach time is used. The old single-phantom fields remain a one-object
-   fallback for existing scene instances.
+   `phantomCount` defaults to seven; `batPhantoms` and `batRenderers` must have
+   matching lengths and at least that many distinct, paired references. Each
+   renderer must be below its phantom root. Missing or duplicate references
+   reject the trail instead of silently falling back to one object. With an
+   explicitly configured count of one, the selected contact or closest time is used.
    Keep the phantom and marker objects free of colliders. The phantom materials
    should support transparency. Inspector colors include their alpha values.
    Place the feedback root outside Collider and Rigidbody hierarchies: movable
@@ -54,6 +54,17 @@ at the selected time. The Bat trail spans the pitch's entry and exit times,
 using an incoming-flight prediction after a hit. Its pose samples are retained
 while the pitch passes through the zone; a gap in the recorded history hides
 only the affected phantom. Each timing color uses only horizontal Bat-axis yaw.
+
+Use **Tools > VVBC > Batting Trail > Validate Prefab and Open Scenes** to find
+incomplete Udon variable overrides. To migrate an old instance with both arrays
+empty, select its root and use **Migrate Selected Empty Arrays**. This uses the
+seven existing named phantom children and changes only the two arrays and count;
+it refuses nonempty arrays and ambiguous children. Save the scene after checking
+its other overrides. The runtime Udon inspector exposes `trailRequested`,
+`trailAvailable`, `trailPoseSamples`, `trailEntry`, `trailExit`, `trailLastPoseTime`, `trailValid`,
+`trailRendered` and `trailRejectionReason` for the last frozen result. A history
+interruption or unavailable measured times can leave only part of the trail;
+no per-frame diagnostic logs are emitted.
 
 ## Client checks
 
