@@ -9,6 +9,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 {
     public BallFlightBehaviour flight;
     public BatMotionBehaviour motion;
+    public UdonBehaviour feedbackListener;
     public Transform contactZone;
     public Vector3 zoneHalfSize = new Vector3(1.5f, 1.5f, 1.5f);
     public Vector3 centerDirection = Vector3.forward;
@@ -48,12 +49,17 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public bool ballSampleExtrapolated;
     public bool batSampleExtrapolated;
     public Vector3 snapshotBatCorePosition;
+    public Vector3 snapshotBatRootPosition;
     public Quaternion snapshotBatRotation;
     public Vector3 snapshotBatCoreVelocity;
     public Vector3 snapshotBatAngularVelocity;
     public Vector3 snapshotX, snapshotY, snapshotN;
     public float snapshotPlaneX, snapshotPlaneY, snapshotNormalizedY;
     public Vector3 snapshotIncomingVelocity, snapshotIncomingSpin;
+    public Quaternion snapshotBallRotation;
+    public bool snapshotBallRotationValid;
+    public float snapshotReferenceSpeed, snapshotRawPower, snapshotPowerCap;
+    public int snapshotPowerCapReason, snapshotHeldHands;
 
     public void Start()
     {
@@ -223,6 +229,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (!InsideZone(_ballPosition)) return false;
         if (!ValidTiming(_axis, centerDirection)) return false;
         Vector3 center = centerDirection - Vector3.Dot(centerDirection, Vector3.up) * Vector3.up;
+        Vector3 batRootPosition = motion.contactSampleRootPosition;
         Vector3 delta = _ballPosition - _core;
         float px = Vector3.Dot(delta, _axis);
         float py = Vector3.Dot(delta, _y);
@@ -242,12 +249,18 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshot.normalizedY = Mathf.Clamp(py / width, -1f, 1f);
         snapshot.quality = Quality(px);
         float rawPower = BallResultMath.RawPower(_referenceVelocity.magnitude);
-        snapshot.power = Mathf.Min(rawPower, motion.ContactPowerCap(time, center.normalized, rawPower));
+        float powerCap = motion.ContactPowerCap(time, center.normalized, rawPower);
+        int capReason = motion.contactPowerCapReason;
+        snapshot.power = Mathf.Min(rawPower, powerCap);
         snapshot.sprayScale = sprayScale;
         snapshot.launchScale = launchScale;
         BallResult result = BallResultMath.Calculate(snapshot);
         bool ballExtrapolated = time > flight.latestMotionTime;
         bool batExtrapolated = time > motion.contactLatestTime;
+        bool ballRotationValid = flight.TrySampleFeedbackRotation(time, maxExtrapolation);
+        Quaternion ballRotation = flight.sampledRotation;
+        float referenceSpeed = _referenceVelocity.magnitude;
+        int heldHands = motion.LocalHeldHands();
         if (!result.valid || !flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
             result.linearVelocity, result.angularVelocity)) return false;
         contactTime = time;
@@ -258,6 +271,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         batSampleExtrapolated = batExtrapolated;
         contactPosition = snapshot.contactPosition;
         snapshotBatCorePosition = snapshot.batCorePosition;
+        snapshotBatRootPosition = batRootPosition;
         snapshotBatRotation = _rotation;
         snapshotBatCoreVelocity = snapshot.batCoreVelocity;
         snapshotBatAngularVelocity = snapshot.batAngularVelocity;
@@ -265,6 +279,13 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshotPlaneX = px; snapshotPlaneY = py; snapshotNormalizedY = snapshot.normalizedY;
         snapshotIncomingVelocity = snapshot.incomingVelocity;
         snapshotIncomingSpin = _ballSpin;
+        snapshotBallRotation = ballRotation;
+        snapshotBallRotationValid = ballRotationValid;
+        snapshotReferenceSpeed = referenceSpeed;
+        snapshotRawPower = rawPower;
+        snapshotPowerCap = powerCap;
+        snapshotPowerCapReason = capReason;
+        snapshotHeldHands = heldHands;
         contactQuality = snapshot.quality;
         finalBatPower = snapshot.power;
         resultVelocity = result.linearVelocity;
@@ -272,6 +293,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         _previousY = _y;
         _hasPreviousY = true;
         _opportunityEnded = true;
+        if (feedbackListener != null) feedbackListener.SendCustomEvent("OnContactConfirmed");
         return true;
     }
 

@@ -1,5 +1,6 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.Udon;
 
 public partial class BallFlightBehaviour : TsukimiBehaviour
 {
@@ -8,6 +9,7 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     public float magnusCoefficient = 0.00063f;
     public SphereCollider ballCollider;
     public PitchCrossingBehaviour motionObserver;
+    public UdonBehaviour feedbackListener;
     public LayerMask groundLayers;
 
     // The owner of the Ball lifecycle turns flight on only for a free ball.
@@ -28,11 +30,13 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
     private readonly Vector3[] _positions = new Vector3[HistoryCapacity];
     private readonly Vector3[] _velocities = new Vector3[HistoryCapacity];
     private readonly Vector3[] _angularVelocities = new Vector3[HistoryCapacity];
+    private readonly Quaternion[] _rotations = new Quaternion[HistoryCapacity];
     private int _nextSample;
     private int _sampleCount;
     public Vector3 sampledPosition;
     public Vector3 sampledVelocity;
     public Vector3 sampledAngularVelocity;
+    public Quaternion sampledRotation;
     [HideInInspector] public float oldestMotionTime;
     [HideInInspector] public float latestMotionTime;
 
@@ -62,6 +66,11 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         }
         body.isKinematic = true;
         body.position = position;
+        if (feedbackListener != null)
+        {
+            feedbackListener.enabled = true;
+            feedbackListener.SendCustomEvent("OnBallReset");
+        }
     }
 
     public void Launch(Vector3 position, Vector3 velocity, Vector3 angularVelocity)
@@ -85,6 +94,11 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
             Vector3 scale = ballCollider.transform.lossyScale;
             float largestScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Max(Mathf.Abs(scale.y), Mathf.Abs(scale.z)));
             motionObserver.BeginPitch(Time.fixedTime, position, velocity, ballCollider.radius * largestScale);
+        }
+        if (feedbackListener != null)
+        {
+            feedbackListener.enabled = true;
+            feedbackListener.SendCustomEvent("OnFlightStarted");
         }
     }
 
@@ -189,6 +203,7 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
                 _positions[last] = position;
                 _velocities[last] = velocity;
                 _angularVelocities[last] = angularVelocity;
+                _rotations[last] = body != null ? body.rotation : Quaternion.identity;
                 return;
             }
         }
@@ -196,10 +211,42 @@ public partial class BallFlightBehaviour : TsukimiBehaviour
         _positions[_nextSample] = position;
         _velocities[_nextSample] = velocity;
         _angularVelocities[_nextSample] = angularVelocity;
+        _rotations[_nextSample] = body != null ? body.rotation : Quaternion.identity;
         _nextSample = (_nextSample + 1) % HistoryCapacity;
         if (_sampleCount < HistoryCapacity) _sampleCount++;
         oldestMotionTime = _times[(_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity];
         latestMotionTime = time;
+    }
+
+    // The ball pose history is independent of flight and result calculations.
+    public bool TrySampleFeedbackRotation(float time, float maxExtrapolation)
+    {
+        if (_sampleCount == 0 || !Finite(time) || !Finite(maxExtrapolation)) return false;
+        int first = (_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity;
+        if (time < _times[first]) return false;
+        for (int i = 0; i < _sampleCount; i++)
+        {
+            int current = (first + i) % HistoryCapacity;
+            if (time > _times[current]) continue;
+            int previous = i == 0 ? current : (current - 1 + HistoryCapacity) % HistoryCapacity;
+            Quaternion a = _rotations[previous];
+            Quaternion b = _rotations[current];
+            if (Quaternion.Dot(a, a) < 0.0001f || Quaternion.Dot(b, b) < 0.0001f) return false;
+            float span = _times[current] - _times[previous];
+            float fraction = span > 0f ? (time - _times[previous]) / span : 0f;
+            sampledRotation = Quaternion.Slerp(a, b, fraction);
+            return true;
+        }
+        int last = (_nextSample - 1 + HistoryCapacity) % HistoryCapacity;
+        float elapsed = time - _times[last];
+        Quaternion rotation = _rotations[last];
+        if (elapsed < 0f || elapsed > Mathf.Min(Mathf.Max(0f, maxExtrapolation), 0.03f) ||
+            Quaternion.Dot(rotation, rotation) < 0.0001f) return false;
+        Vector3 omega = _angularVelocities[last];
+        float speed = omega.magnitude;
+        sampledRotation = speed > 0.00001f
+            ? Quaternion.AngleAxis(speed * elapsed * Mathf.Rad2Deg, omega / speed) * rotation : rotation;
+        return true;
     }
 
     // Returns false outside the recorded interval; launch and reset clear it.

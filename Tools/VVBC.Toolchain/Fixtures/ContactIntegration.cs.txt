@@ -210,6 +210,22 @@ try
     check(!motion.TrySampleContactPose(1.005f, 0.025f), "tracking jump does not form a sample interval");
     motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, 99, null, false, false, false, null);
     check(!motion.TrySampleContactPose(1.01f, 0.025f), "grip change clears history");
+    batRigid.centerOfMass = UnityEngine.Vector3.up * 0.25f;
+    batBody.transform.SetPositionAndRotation(UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
+    record.Invoke(motion, new object[] { 2f });
+    check(!motion.TryGetMeasuredPeaks(2f, 2f), "initial pose is not a measured frame difference");
+    batBody.transform.SetPositionAndRotation(UnityEngine.Vector3.right * 0.2f,
+        UnityEngine.Quaternion.AngleAxis(9f, UnityEngine.Vector3.up));
+    record.Invoke(motion, new object[] { 2.1f });
+    check(motion.TryGetMeasuredPeaks(2.1f, 2.1f) &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakReferenceSpeed - 2f) < 0.001f &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakAngularSpeed - 90f) < 0.01f,
+        "measured reference speed and angular speed use frame differences in m/s and degrees/s");
+    check(motion.TrySampleContactPose(2.1f, 0f) &&
+        UnityEngine.Vector3.Distance(motion.contactSampleRootPosition, UnityEngine.Vector3.right * 0.2f) < 0.001f,
+        "feedback retains the actual bat root when the core is offset");
+    motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, 100, null, false, false, false, null);
+    check(!motion.TryGetMeasuredPeaks(2f, 3f), "grip change clears measured history");
     mt[0] = -0.03f; mt[1] = 0.01f;
     mp[0] = UnityEngine.Vector3.left * 0.06f; mp[1] = UnityEngine.Vector3.right * 0.02f;
     mv[0] = UnityEngine.Vector3.right * 2f; mv[1] = mv[0];
@@ -237,6 +253,88 @@ try
         UnityEngine.Quaternion.AngleAxis(350f, UnityEngine.Vector3.up), 1f);
     check((shortest - UnityEngine.Vector3.down * (10f * UnityEngine.Mathf.Deg2Rad)).sqrMagnitude < 0.000001f,
         "angular difference follows the shortest rotation");
+    bt[0] = 1f; bt[1] = 1.02f;
+    var ballRotations = new UnityEngine.Quaternion[64];
+    ballRotations[0] = UnityEngine.Quaternion.identity;
+    ballRotations[1] = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up);
+    var ballAngular = new UnityEngine.Vector3[64];
+    ballAngular[1] = UnityEngine.Vector3.up * (1000f * UnityEngine.Mathf.Deg2Rad);
+    set(flight, "_times", bt); set(flight, "_rotations", ballRotations);
+    set(flight, "_angularVelocities", ballAngular); set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    check(flight.TrySampleFeedbackRotation(1.01f, 0.025f) &&
+        UnityEngine.Quaternion.Angle(flight.sampledRotation, UnityEngine.Quaternion.AngleAxis(10f, UnityEngine.Vector3.up)) < 0.05f,
+        "ball rotation interpolates at snapshot time");
+    check(flight.TrySampleFeedbackRotation(1.03f, 0.025f) &&
+        UnityEngine.Quaternion.Angle(flight.sampledRotation, UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.up)) < 0.05f &&
+        !flight.TrySampleFeedbackRotation(1.1f, 0.1f), "ball rotation extrapolation is bounded");
+    var feedback = make("Feedback").AddComponent<BattingFeedbackBehaviour>();
+    feedback.flight = flight; feedback.contact = contact;
+    flight.flightSequence = 123;
+    contact.contactPitchSequence = 123; contact.contactValid = true;
+    contact.contactTime = 4f; contact.contactPosition = new UnityEngine.Vector3(1f, 2f, 3f);
+    contact.snapshotBatCorePosition = new UnityEngine.Vector3(4f, 5f, 6f);
+    contact.snapshotBatRootPosition = new UnityEngine.Vector3(7f, 8f, 9f);
+    contact.snapshotBatRotation = UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.up);
+    contact.snapshotBallRotation = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up);
+    contact.snapshotBallRotationValid = true;
+    feedback.OnContactConfirmed();
+    var feedbackType = feedback.GetType();
+    var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var canMoveVisual = feedbackType.GetMethod("CanMoveVisual", flags);
+    check(!(bool)canMoveVisual.Invoke(feedback, new object[] { batBody.transform }) &&
+        (bool)canMoveVisual.Invoke(feedback, new object[] { zone }),
+        "feedback rejects physics transforms as visual or movable audio targets");
+    check((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback) == contact.contactPosition &&
+        (UnityEngine.Vector3)feedbackType.GetField("_batPosition", flags).GetValue(feedback) == contact.snapshotBatRootPosition,
+        "contact feedback copies the accepted snapshot");
+    contact.contactPosition = UnityEngine.Vector3.zero;
+    feedback.OnContactConfirmed();
+    check((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback) != UnityEngine.Vector3.zero,
+        "duplicate contact cannot replace frozen feedback");
+    flight.Stage(UnityEngine.Vector3.zero);
+    feedback.Update();
+    check(!(bool)feedbackType.GetField("_hasResult", flags).GetValue(feedback) &&
+        !(bool)feedbackType.GetField("_shown", flags).GetValue(feedback), "ball reset discards pending feedback");
+    bt[0] = 5f; bt[1] = 5.1f;
+    bp[0] = new UnityEngine.Vector3(0f, 0.5f, -1f); bp[1] = new UnityEngine.Vector3(0f, 0.5f, 1f);
+    bv[0] = UnityEngine.Vector3.forward * 20f; bv[1] = bv[0];
+    set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+    set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    mt[0] = 5f; mt[1] = 5.1f; mp[0] = UnityEngine.Vector3.zero; mp[1] = UnityEngine.Vector3.zero;
+    mv[0] = UnityEngine.Vector3.zero; mv[1] = UnityEngine.Vector3.zero;
+    mr[0] = UnityEngine.Quaternion.identity; mr[1] = UnityEngine.Quaternion.identity;
+    mref[0] = UnityEngine.Vector3.right * 8f; mref[1] = mref[0];
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactVelocities", mv);
+    set(motion, "_contactRotations", mr); set(motion, "_contactReferenceVelocities", mref);
+    set(motion, "_contactCount", 2); set(motion, "_contactNext", 2);
+    contact.centerDirection = UnityEngine.Vector3.forward;
+    var sampleCandidate = feedbackType.GetMethod("SampleCandidate", flags);
+    var consider = feedbackType.GetMethod("ConsiderScannedPoint", flags);
+    foreach (float t in new[] { 5.02f, 5.045f, 5.075f })
+    {
+        check((bool)sampleCandidate.Invoke(feedback, new object[] { motion, t }), "sample miss candidate");
+        consider.Invoke(feedback, new object[] { motion, t });
+    }
+    check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_time", flags).GetValue(feedback) - 5.05f) < 0.002f &&
+        UnityEngine.Mathf.Abs(((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback)).z) < 0.04f,
+        "miss refinement and display use the same closest snapshot");
+    feedbackType.GetMethod("FinalizeMiss", flags).Invoke(feedback, new object[] { 6f });
+    check((bool)feedbackType.GetField("_hasResult", flags).GetValue(feedback) &&
+        !(bool)feedbackType.GetField("_isContact", flags).GetValue(feedback), "miss is distinct from contact");
+    float now = UnityEngine.Time.time;
+    var measured = motion.GetType().GetMethod("RecordMeasuredSpeed", flags);
+    measured.Invoke(motion, new object[] { now - 0.61f, 99f, 999f });
+    measured.Invoke(motion, new object[] { now - 0.59f, 4f, 120f });
+    measured.Invoke(motion, new object[] { now - 0.30f, 12f, 60f });
+    measured.Invoke(motion, new object[] { now - 0.01f, 8f, 240f });
+    measured.Invoke(motion, new object[] { now + 0.01f, 200f, 2000f });
+    set(feedback, "_entryTime", now - 0.30f); set(feedback, "_exitTime", now - 0.10f);
+    set(feedback, "_exited", true); set(feedback, "_peakSpeed", 0f); set(feedback, "_peakAngular", 0f);
+    feedbackType.GetMethod("UpdatePeaks", flags).Invoke(feedback, new object[] { motion });
+    check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_peakSpeed", flags).GetValue(feedback) - 12f) < 0.001f &&
+        UnityEngine.Mathf.Abs((float)feedbackType.GetField("_peakAngular", flags).GetValue(feedback) - 240f) < 0.001f &&
+        UnityEngine.Mathf.Abs((float)feedbackType.GetField("_speed", flags).GetValue(feedback) - 8f) < 0.001f,
+        "entry-minus-0.3 and exit-plus-0.1 bound measured peaks independently from closest speed");
     return "PASS contact integration: time, roots, snapshot, flight, extrapolation, reset, strike, collision and discontinuity";
 }
 finally

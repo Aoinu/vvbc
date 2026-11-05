@@ -5,6 +5,7 @@ using VRC.Udon;
 public partial class BatMotionBehaviour
 {
     private const int ContactHistoryCapacity = 32;
+    private const int MeasuredHistoryCapacity = 128;
     // Local +Y is the root-to-tip direction of the packaged Bat model.
     [SerializeField] private float powerReferenceLocalY = 0.71f;
     [SerializeField] private float contactMaxLinearSpeed = 100f;
@@ -12,6 +13,7 @@ public partial class BatMotionBehaviour
     [SerializeField] private float contactMaxSampleGap = 0.15f;
     private readonly float[] _contactTimes = new float[ContactHistoryCapacity];
     private readonly Vector3[] _contactPositions = new Vector3[ContactHistoryCapacity];
+    private readonly Vector3[] _contactCoreOffsets = new Vector3[ContactHistoryCapacity];
     private readonly Quaternion[] _contactRotations = new Quaternion[ContactHistoryCapacity];
     private readonly Vector3[] _contactVelocities = new Vector3[ContactHistoryCapacity];
     private readonly Vector3[] _contactAngularVelocities = new Vector3[ContactHistoryCapacity];
@@ -23,6 +25,16 @@ public partial class BatMotionBehaviour
     private readonly Quaternion[] _contactRightRotations = new Quaternion[ContactHistoryCapacity];
     private readonly bool[] _contactHandsValid = new bool[ContactHistoryCapacity];
     private int _contactNext, _contactCount;
+    // Keep frame differences separate from the velocities used for Hermite
+    // reconstruction: that history backfills its first velocity.
+    private readonly float[] _measuredTimes = new float[MeasuredHistoryCapacity];
+    private readonly float[] _measuredReferenceSpeeds = new float[MeasuredHistoryCapacity];
+    private readonly float[] _measuredAngularSpeeds = new float[MeasuredHistoryCapacity];
+    private int _measuredNext, _measuredCount;
+    public float measuredOldestTime;
+    public float measuredLatestTime;
+    public float measuredPeakReferenceSpeed;
+    public float measuredPeakAngularSpeed;
     private UdonBehaviour _contactListener;
     public float contactLatestTime;
     public float contactPreviousTime;
@@ -30,6 +42,7 @@ public partial class BatMotionBehaviour
     public int contactRevision;
     public int contactHistoryRevision;
     public Vector3 contactSamplePosition;
+    public Vector3 contactSampleRootPosition;
     public Quaternion contactSampleRotation;
     public Vector3 contactSampleVelocity;
     public Vector3 contactSampleAngularVelocity;
@@ -42,6 +55,17 @@ public partial class BatMotionBehaviour
     public float pushDistance = 0.12f;
     public float pushMaximumRotation = 10f;
     public float handSpikeSpeed = 25f;
+    // 0 None, 1 one-hand, 2 wrist, 3 push, 4 tracking spike.
+    public int contactPowerCapReason;
+
+    public int LocalHeldHands()
+    {
+        if (_mode != LocalHeld) return 0;
+        int mask = 0;
+        if (lowerHand == BatGripConstants.HandLeft || upperHand == BatGripConstants.HandLeft) mask |= 1;
+        if (lowerHand == BatGripConstants.HandRight || upperHand == BatGripConstants.HandRight) mask |= 2;
+        return mask;
+    }
 
     public void SetContactListener(UdonBehaviour listener) { _contactListener = listener; }
 
@@ -61,6 +85,10 @@ public partial class BatMotionBehaviour
         contactHistoryRevision++;
         _contactNext = 0;
         _contactCount = 0;
+        _measuredNext = 0;
+        _measuredCount = 0;
+        measuredOldestTime = 0f;
+        measuredLatestTime = 0f;
         contactLatestTime = 0f;
         contactPreviousTime = 0f;
         contactOldestTime = 0f;
@@ -84,6 +112,7 @@ public partial class BatMotionBehaviour
         Vector3 velocity = Vector3.zero;
         Vector3 angularVelocity = Vector3.zero;
         Vector3 referenceVelocity = Vector3.zero;
+        bool measured = false;
         if (_contactCount > 0)
         {
             int last = (_contactNext - 1 + ContactHistoryCapacity) % ContactHistoryCapacity;
@@ -112,10 +141,13 @@ public partial class BatMotionBehaviour
                     _contactAngularVelocities[last] = angularVelocity;
                     _contactReferenceVelocities[last] = referenceVelocity;
                 }
+                if (_contactCount > 0) measured = true;
             }
         }
+        if (measured) RecordMeasuredSpeed(time, referenceVelocity.magnitude, angularVelocity.magnitude * Mathf.Rad2Deg);
         _contactTimes[_contactNext] = time;
         _contactPositions[_contactNext] = core;
+        _contactCoreOffsets[_contactNext] = Quaternion.Inverse(rotation) * (core - body.transform.position);
         _contactRotations[_contactNext] = rotation;
         _contactVelocities[_contactNext] = velocity;
         _contactAngularVelocities[_contactNext] = angularVelocity;
@@ -147,6 +179,38 @@ public partial class BatMotionBehaviour
             _contactListener.SendCustomEvent("OnBatContactPose");
     }
 
+    private void RecordMeasuredSpeed(float time, float referenceSpeed, float angularSpeedDegrees)
+    {
+        _measuredTimes[_measuredNext] = time;
+        _measuredReferenceSpeeds[_measuredNext] = referenceSpeed;
+        _measuredAngularSpeeds[_measuredNext] = angularSpeedDegrees;
+        _measuredNext = (_measuredNext + 1) % MeasuredHistoryCapacity;
+        if (_measuredCount < MeasuredHistoryCapacity) _measuredCount++;
+        measuredOldestTime = _measuredTimes[(_measuredNext - _measuredCount + MeasuredHistoryCapacity) % MeasuredHistoryCapacity];
+        measuredLatestTime = time;
+    }
+
+    // Samples are timestamped at the end of each measured frame interval.
+    // Callers must accumulate before old samples leave this bounded history.
+    public bool TryGetMeasuredPeaks(float start, float end)
+    {
+        measuredPeakReferenceSpeed = 0f;
+        measuredPeakAngularSpeed = 0f;
+        if (!ContactFinite(start) || !ContactFinite(end) || end < start) return false;
+        bool found = false;
+        int first = (_measuredNext - _measuredCount + MeasuredHistoryCapacity) % MeasuredHistoryCapacity;
+        for (int i = 0; i < _measuredCount; i++)
+        {
+            int index = (first + i) % MeasuredHistoryCapacity;
+            float time = _measuredTimes[index];
+            if (time < start || time > end) continue;
+            found = true;
+            measuredPeakReferenceSpeed = Mathf.Max(measuredPeakReferenceSpeed, _measuredReferenceSpeeds[index]);
+            measuredPeakAngularSpeed = Mathf.Max(measuredPeakAngularSpeed, _measuredAngularSpeeds[index]);
+        }
+        return found;
+    }
+
     public float NextContactSampleTime(float time, float limit)
     {
         int first = (_contactNext - _contactCount + ContactHistoryCapacity) % ContactHistoryCapacity;
@@ -176,6 +240,7 @@ public partial class BatMotionBehaviour
             {
                 contactSamplePosition = _contactPositions[current];
                 contactSampleRotation = _contactRotations[current];
+                contactSampleRootPosition = contactSamplePosition - contactSampleRotation * _contactCoreOffsets[current];
                 contactSampleVelocity = _contactVelocities[current];
                 contactSampleAngularVelocity = _contactAngularVelocities[current];
                 contactSampleReferenceVelocity = _contactReferenceVelocities[current];
@@ -191,6 +256,8 @@ public partial class BatMotionBehaviour
                 (-6f * u2 + 6f * u) * _contactPositions[current] +
                 (3f * u2 - 2f * u) * dt * _contactVelocities[current]) / dt;
             contactSampleRotation = Quaternion.Slerp(_contactRotations[previous], _contactRotations[current], u);
+            contactSampleRootPosition = contactSamplePosition - contactSampleRotation *
+                Vector3.Lerp(_contactCoreOffsets[previous], _contactCoreOffsets[current], u);
             contactSampleAngularVelocity = Vector3.Lerp(_contactAngularVelocities[previous], _contactAngularVelocities[current], u);
             contactSampleReferenceVelocity = Vector3.Lerp(_contactReferenceVelocities[previous], _contactReferenceVelocities[current], u);
             return true;
@@ -206,6 +273,7 @@ public partial class BatMotionBehaviour
         contactSampleRotation = speed > 0.00001f
             ? Quaternion.AngleAxis(speed * elapsed * Mathf.Rad2Deg, contactSampleAngularVelocity / speed) * _contactRotations[lastIndex]
             : _contactRotations[lastIndex];
+        contactSampleRootPosition = contactSamplePosition - contactSampleRotation * _contactCoreOffsets[lastIndex];
         return true;
     }
 
@@ -216,6 +284,7 @@ public partial class BatMotionBehaviour
     // not classify a normal swing as invalid.
     public float ContactPowerCap(float time, Vector3 centerDirection, float rawPower)
     {
+        contactPowerCapReason = 0;
         if (_contactCount < 2 || invalidWindowSeconds <= 0f) return 1f;
         int first = (_contactNext - _contactCount + ContactHistoryCapacity) % ContactHistoryCapacity;
         int end = -1; int next = -1; int start = -1;
@@ -264,21 +333,22 @@ public partial class BatMotionBehaviour
         float rr = BatVisualCorrection.RotationAngleDegrees(_contactRightRotations[start], rightRotation);
         float cap = 1f;
         if ((l >= oneHandMovingDistance && r <= oneHandStillDistance) ||
-            (r >= oneHandMovingDistance && l <= oneHandStillDistance)) cap = 0.40f;
+            (r >= oneHandMovingDistance && l <= oneHandStillDistance)) { cap = 0.40f; contactPowerCapReason = 1; }
         if (l <= wristStillDistance && r <= wristStillDistance && lr >= wristRotationDegrees &&
-            rr >= wristRotationDegrees && rawPower >= 0.55f) cap = Mathf.Min(cap, 0.30f);
+            rr >= wristRotationDegrees && rawPower >= 0.55f)
+        { if (cap > 0.30f) contactPowerCapReason = 2; cap = Mathf.Min(cap, 0.30f); }
         Vector3 forward = centerDirection - Vector3.Dot(centerDirection, Vector3.up) * Vector3.up;
         if (forward.sqrMagnitude > 0.0001f && l >= pushDistance && r >= pushDistance &&
             lr <= pushMaximumRotation && rr <= pushMaximumRotation &&
             BatVisualCorrection.RotationAngleDegrees(_contactRotations[start], batRotation) <= pushMaximumRotation &&
             Vector3.Dot(dl.normalized, forward.normalized) > 0.9f && Vector3.Dot(dr.normalized, forward.normalized) > 0.9f)
-            cap = Mathf.Min(cap, 0.35f);
+        { if (cap > 0.35f) contactPowerCapReason = 3; cap = Mathf.Min(cap, 0.35f); }
         if (spikeEnd != first && _contactHandsValid[spikeStart] && _contactHandsValid[spikeEnd])
         {
             float spikeDt = _contactTimes[spikeEnd] - _contactTimes[spikeStart];
             if (spikeDt > 0f && (Vector3.Distance(_contactLeftPositions[spikeEnd], _contactLeftPositions[spikeStart]) / spikeDt > handSpikeSpeed ||
                 Vector3.Distance(_contactRightPositions[spikeEnd], _contactRightPositions[spikeStart]) / spikeDt > handSpikeSpeed))
-                cap = Mathf.Min(cap, 0.20f);
+            { if (cap > 0.20f) contactPowerCapReason = 4; cap = Mathf.Min(cap, 0.20f); }
         }
         return cap;
     }

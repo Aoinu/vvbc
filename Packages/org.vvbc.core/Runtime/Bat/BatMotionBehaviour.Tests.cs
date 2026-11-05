@@ -4,6 +4,48 @@ using UnityEngine;
 public partial class BatMotionBehaviour
 {
     [TsukimiTest]
+    public void FeedbackHandsReflectOnlyLocallyHeldGrips()
+    {
+        _mode = LocalHeld; lowerHand = BatGripConstants.HandLeft; upperHand = BatGripConstants.HandNone;
+        Assert.IsTrue(LocalHeldHands() == 1);
+        upperHand = BatGripConstants.HandRight;
+        Assert.IsTrue(LocalHeldHands() == 3);
+        lowerHand = BatGripConstants.HandRight; upperHand = BatGripConstants.HandNone;
+        Assert.IsTrue(LocalHeldHands() == 2);
+        _mode = RemoteHeld;
+        Assert.IsTrue(LocalHeldHands() == 0);
+    }
+
+    [TsukimiTest]
+    public void MeasuredPeaksUseFrameSamplesAndInclusiveTimeWindow()
+    {
+        RecordMeasuredSpeed(0.69f, 100f, 1000f);
+        RecordMeasuredSpeed(0.70f, 4f, 120f);
+        RecordMeasuredSpeed(1.00f, 12f, 60f);
+        RecordMeasuredSpeed(1.10f, 8f, 240f);
+        RecordMeasuredSpeed(1.11f, 200f, 2000f);
+        Assert.IsTrue(TryGetMeasuredPeaks(0.70f, 1.10f));
+        Assert.IsTrue(Mathf.Abs(measuredPeakReferenceSpeed - 12f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(measuredPeakAngularSpeed - 240f) < 0.0001f);
+        Assert.IsFalse(TryGetMeasuredPeaks(2f, 3f));
+        Assert.IsTrue(measuredPeakReferenceSpeed == 0f && measuredPeakAngularSpeed == 0f);
+        Assert.IsFalse(TryGetMeasuredPeaks(2f, 1f));
+    }
+
+    [TsukimiTest]
+    public void MeasuredHistoryWrapAndResetDoNotReturnStaleFrames()
+    {
+        for (int i = 0; i < 130; i++) RecordMeasuredSpeed(i, i, i * 2f);
+        Assert.IsTrue(measuredOldestTime == 2f && measuredLatestTime == 129f);
+        Assert.IsFalse(TryGetMeasuredPeaks(0f, 1f));
+        Assert.IsTrue(TryGetMeasuredPeaks(2f, 3f));
+        Assert.IsTrue(measuredPeakReferenceSpeed == 3f && measuredPeakAngularSpeed == 6f);
+        ResetContactHistory();
+        Assert.IsFalse(TryGetMeasuredPeaks(2f, 3f));
+        Assert.IsTrue(measuredOldestTime == 0f && measuredLatestTime == 0f);
+    }
+
+    [TsukimiTest]
     public void ContactHistoryRejectsMissingSamplesAndDoesNotExtrapolateBeyondLimit()
     {
         Assert.IsFalse(TrySampleContactPose(1f, 0.025f));
@@ -17,6 +59,19 @@ public partial class BatMotionBehaviour
         Assert.IsFalse(TrySampleContactPose(1.06f, 0.1f));
         ResetContactHistory();
         Assert.IsFalse(TrySampleContactPose(1.02f, 0.025f));
+    }
+
+    [TsukimiTest]
+    public void ContactHistoryPreservesRootOffsetFromTheRecordedCore()
+    {
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1f;
+        _contactPositions[0] = new Vector3(1f, 2f, 3f); _contactPositions[1] = _contactPositions[0];
+        _contactRotations[0] = Quaternion.identity; _contactRotations[1] = Quaternion.identity;
+        _contactCoreOffsets[0] = new Vector3(0f, 0.4f, 0f); _contactCoreOffsets[1] = _contactCoreOffsets[0];
+        Assert.IsTrue(TrySampleContactPose(1f, 0f));
+        Assert.IsTrue(Mathf.Abs(contactSampleRootPosition.y - 1.6f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(contactSamplePosition.y - 2f) < 0.0001f);
     }
 
     [TsukimiTest]
@@ -39,8 +94,10 @@ public partial class BatMotionBehaviour
         _contactRightRotations[0] = Quaternion.identity; _contactRightRotations[1] = Quaternion.identity;
         _contactLeftPositions[1] = Vector3.right * 0.2f;
         Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.4f) < 0.0001f);
+        Assert.IsTrue(contactPowerCapReason == 1);
         _contactRightPositions[1] = Vector3.right * 0.2f;
         Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.2f) - 1f) < 0.0001f);
+        Assert.IsTrue(contactPowerCapReason == 0);
         _contactHandsValid[0] = false;
         Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 1f) < 0.0001f);
     }
