@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -12,24 +13,76 @@ using VRC.Udon.Common;
 [InitializeOnLoad]
 public static class PitchPresetSynchronizer
 {
-    private static bool queued;
+    private static readonly HashSet<PitchPresetLibrary> pending = new HashSet<PitchPresetLibrary>();
+    private static readonly Dictionary<PitchPresetLibrary, string> snapshots = new Dictionary<PitchPresetLibrary, string>();
+    private static bool scanAll;
+    private static bool syncing;
+    private static Editor dragOwner;
+    private static EditorWindow dragWindow;
+
     static PitchPresetSynchronizer()
     {
         Undo.undoRedoPerformed += QueueAll;
+        EditorApplication.focusChanged += focused => { if (!focused && dragOwner != null) EndDrag(dragOwner); };
         EditorApplication.playModeStateChanged += state => { if (state == PlayModeStateChange.EnteredEditMode) QueueAll(); };
         EditorApplication.update += Pump;
     }
 
-    public static void Queue(PitchPresetLibrary library)
+    // Establish a baseline before the Inspector edits the asset, without hiding an existing request.
+    public static void Observe(PitchPresetLibrary library)
     {
-        if (library == null || queued) return;
-        queued = true;
+        if (library != null && !snapshots.ContainsKey(library) && !pending.Contains(library) && !scanAll)
+            snapshots[library] = EditorJsonUtility.ToJson(library);
+    }
+
+    public static void BeginDrag(Editor owner)
+    {
+        dragOwner = owner;
+        dragWindow = EditorWindow.focusedWindow;
+    }
+
+    public static void EndDrag(Editor owner)
+    {
+        if (dragOwner != owner) return;
+        dragOwner = null;
+        dragWindow = null;
         EditorApplication.QueuePlayerLoopUpdate();
     }
-    private static void QueueAll() { queued = true; EditorApplication.QueuePlayerLoopUpdate(); }
+
+    public static void Queue(PitchPresetLibrary library)
+    {
+        if (library == null) return;
+        pending.Add(library);
+        EditorApplication.QueuePlayerLoopUpdate();
+    }
+
+    private static void QueueAll()
+    {
+        scanAll = true;
+        EditorApplication.QueuePlayerLoopUpdate();
+    }
+
     private static void Pump()
     {
-        if (queued && !EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isCompiling && !EditorApplication.isUpdating) SyncAll();
+        // A lost Inspector or window focus may prevent the MouseUp event from arriving.
+        if (dragOwner != null && (dragWindow == null || EditorWindow.focusedWindow != dragWindow))
+            EndDrag(dragOwner);
+        if ((!scanAll && pending.Count == 0) || dragOwner != null || syncing ||
+            EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating) return;
+
+        if (scanAll)
+        {
+            foreach (string guid in AssetDatabase.FindAssets("t:PitchPresetLibrary", new[] { "Assets", "Packages/org.vvbc.core" }))
+            {
+                var library = AssetDatabase.LoadAssetAtPath<PitchPresetLibrary>(AssetDatabase.GUIDToAssetPath(guid));
+                if (library != null) pending.Add(library);
+            }
+            scanAll = false;
+        }
+        bool changed = pending.Any(library => library != null &&
+            (!snapshots.TryGetValue(library, out string old) || old != EditorJsonUtility.ToJson(library)));
+        pending.Clear();
+        if (changed) SyncAll();
     }
 
     public static bool Valid(PitchPresetLibrary library)
@@ -79,38 +132,52 @@ public static class PitchPresetSynchronizer
 
     public static void SyncAll()
     {
-        if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating) { queued = true; return; }
-        queued = false;
-        var libraries = AssetDatabase.FindAssets("t:PitchPresetLibrary", new[] { "Assets", "Packages/org.vvbc.core" })
-            .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<PitchPresetLibrary>).Where(Valid).ToArray();
-        if (libraries.Length == 0) return;
-        foreach (string prefabGuid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets", "Packages/org.vvbc.core" }))
+        if (dragOwner != null || syncing || EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
         {
-            string path = AssetDatabase.GUIDToAssetPath(prefabGuid);
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            if (prefab == null) continue;
-            bool needsUpdate = libraries.Any(lib => prefab.GetComponentsInChildren<UdonBehaviour>(true)
-                .Any(u => IsBound(u, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(lib))) && !Matches(u, lib)));
-            if (!needsUpdate) continue;
-            GameObject contents = PrefabUtility.LoadPrefabContents(path);
-            try
-            {
-                foreach (var behaviour in contents.GetComponentsInChildren<UdonBehaviour>(true))
-                    foreach (var library in libraries)
-                        if (IsBound(behaviour, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(library))) && !Matches(behaviour, library)) Apply(behaviour, library);
-                PrefabUtility.SaveAsPrefabAsset(contents, path);
-            }
-            finally { PrefabUtility.UnloadPrefabContents(contents); }
+            QueueAll();
+            return;
         }
-        foreach (var behaviour in UnityEngine.Object.FindObjectsByType<UdonBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            foreach (var library in libraries)
-                if (IsBound(behaviour, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(library))) && !Matches(behaviour, library))
+        syncing = true;
+        try
+        {
+            var libraries = AssetDatabase.FindAssets("t:PitchPresetLibrary", new[] { "Assets", "Packages/org.vvbc.core" })
+                .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<PitchPresetLibrary>).Where(Valid).ToArray();
+            if (libraries.Length == 0) return;
+            foreach (string prefabGuid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets", "Packages/org.vvbc.core" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(prefabGuid);
+                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (prefab == null) continue;
+                bool needsUpdate = libraries.Any(lib => prefab.GetComponentsInChildren<UdonBehaviour>(true)
+                    .Any(u => IsBound(u, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(lib))) && !Matches(u, lib)));
+                if (!needsUpdate) continue;
+                GameObject contents = PrefabUtility.LoadPrefabContents(path);
+                try
                 {
-                    Apply(behaviour, library);
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
-                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(behaviour.gameObject.scene);
+                    foreach (var behaviour in contents.GetComponentsInChildren<UdonBehaviour>(true))
+                        foreach (var library in libraries)
+                            if (IsBound(behaviour, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(library))) && !Matches(behaviour, library)) Apply(behaviour, library);
+                    PrefabUtility.SaveAsPrefabAsset(contents, path);
                 }
-        AssetDatabase.SaveAssets();
+                finally { PrefabUtility.UnloadPrefabContents(contents); }
+            }
+            foreach (var behaviour in UnityEngine.Object.FindObjectsByType<UdonBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                foreach (var library in libraries)
+                    if (IsBound(behaviour, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(library))) && !Matches(behaviour, library))
+                    {
+                        Apply(behaviour, library);
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
+                        UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(behaviour.gameObject.scene);
+                    }
+            AssetDatabase.SaveAssets();
+            // SaveAssets can invoke OnValidate again; record the state actually processed.
+            foreach (string guid in AssetDatabase.FindAssets("t:PitchPresetLibrary", new[] { "Assets", "Packages/org.vvbc.core" }))
+            {
+                var library = AssetDatabase.LoadAssetAtPath<PitchPresetLibrary>(AssetDatabase.GUIDToAssetPath(guid));
+                if (library != null) snapshots[library] = EditorJsonUtility.ToJson(library);
+            }
+        }
+        finally { syncing = false; }
     }
 
     public static string ValidateOpenScenes()

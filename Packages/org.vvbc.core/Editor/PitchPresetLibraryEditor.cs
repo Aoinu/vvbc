@@ -17,9 +17,12 @@ public class PitchPresetLibraryEditor : Editor
     private GameObject bindingTarget;
     private Mesh previewMesh;
     private Material previewMaterial;
+    private Mesh arrowMesh;
+    private Material arrowMaterial;
 
     private void OnEnable()
     {
+        PitchPresetSynchronizer.Observe((PitchPresetLibrary)target);
         EditorApplication.update += Tick;
         string ballPath = AssetDatabase.FindAssets("Ball t:Model").Select(AssetDatabase.GUIDToAssetPath)
             .FirstOrDefault(path => path.StartsWith("Packages/org.vvbc.assets", System.StringComparison.OrdinalIgnoreCase) && path.EndsWith("/Ball.fbx", System.StringComparison.OrdinalIgnoreCase));
@@ -28,7 +31,14 @@ public class PitchPresetLibraryEditor : Editor
             .FirstOrDefault(path => path.StartsWith("Packages/org.vvbc.assets", System.StringComparison.OrdinalIgnoreCase) && path.EndsWith("/MT_Ball_Unity.mat", System.StringComparison.OrdinalIgnoreCase));
         previewMaterial = string.IsNullOrEmpty(materialPath) ? null : AssetDatabase.LoadAssetAtPath<Material>(materialPath);
     }
-    private void OnDisable() { EditorApplication.update -= Tick; if (preview != null) preview.Cleanup(); }
+    private void OnDisable()
+    {
+        PitchPresetSynchronizer.EndDrag(this);
+        EditorApplication.update -= Tick;
+        if (preview != null) preview.Cleanup();
+        if (arrowMesh != null) DestroyImmediate(arrowMesh);
+        if (arrowMaterial != null) DestroyImmediate(arrowMaterial);
+    }
     private void Tick()
     {
         double now = EditorApplication.timeSinceStartup;
@@ -47,10 +57,13 @@ public class PitchPresetLibraryEditor : Editor
         var seam = entry.FindPropertyRelative("seamEuler");
         var phase = entry.FindPropertyRelative("initialPhase");
         EditorGUILayout.LabelField(Names[selected], EditorStyles.boldLabel);
+        Event current = Event.current;
+        EventType originalType = current.rawType;
         Vector3 value = EditorGUILayout.Vector3Field("Spin axis (right, up, forward)", axis.vector3Value);
-        value.x = EditorGUILayout.Slider("Backspin (-) / topspin (+)", value.x, -1f, 1f);
-        value.y = EditorGUILayout.Slider("Glove (-) / arm side (+)", value.y, -1f, 1f);
-        value.z = EditorGUILayout.Slider("Gyro (forward axis)", value.z, -1f, 1f);
+        value.x = AxisSlider("Backspin (-) / topspin (+)", value.x, originalType);
+        value.y = AxisSlider("Glove (-) / arm side (+)", value.y, originalType);
+        value.z = AxisSlider("Gyro (forward axis)", value.z, originalType);
+        if (originalType == EventType.MouseUp && current.button == 0) PitchPresetSynchronizer.EndDrag(this);
         axis.vector3Value = value;
         if (value.sqrMagnitude < 0.000001f) EditorGUILayout.HelpBox("The spin axis must be non-zero, even when runtime rpm is zero.", MessageType.Error);
         EditorGUILayout.PropertyField(seam, new GUIContent("Seam orientation (degrees)"));
@@ -84,6 +97,39 @@ public class PitchPresetLibraryEditor : Editor
         }
     }
 
+    private float AxisSlider(string label, float value, EventType originalType)
+    {
+        int before = GUIUtility.hotControl;
+        float result = EditorGUILayout.Slider(label, value, -1f, 1f);
+        if (originalType == EventType.MouseDown && Event.current.button == 0 && before == 0 && GUIUtility.hotControl != 0)
+            PitchPresetSynchronizer.BeginDrag(this);
+        return result;
+    }
+
+    private void CreateArrow()
+    {
+        const int sides = 16;
+        var vertices = new Vector3[sides * 3 + 1];
+        var triangles = new int[sides * 9];
+        for (int i = 0; i < sides; i++)
+        {
+            float angle = i * Mathf.PI * 2f / sides;
+            Vector3 radial = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+            vertices[i] = radial * 0.025f + Vector3.down * 1.15f;
+            vertices[sides + i] = radial * 0.025f + Vector3.up * 0.95f;
+            vertices[2 * sides + i] = radial * 0.10f + Vector3.up * 0.90f;
+            int next = (i + 1) % sides;
+            int t = i * 9;
+            triangles[t] = i; triangles[t + 1] = sides + i; triangles[t + 2] = next;
+            triangles[t + 3] = next; triangles[t + 4] = sides + i; triangles[t + 5] = sides + next;
+            triangles[t + 6] = 2 * sides + i; triangles[t + 7] = 3 * sides; triangles[t + 8] = 2 * sides + next;
+        }
+        vertices[3 * sides] = Vector3.up * 1.25f;
+        arrowMesh = new Mesh { name = "Pitch spin axis", hideFlags = HideFlags.HideAndDontSave, vertices = vertices, triangles = triangles };
+        arrowMesh.RecalculateNormals();
+        arrowMaterial = new Material(Shader.Find("Standard")) { hideFlags = HideFlags.HideAndDontSave, color = new Color(1f, 0.3f, 0.15f) };
+    }
+
     private void DrawPreview(Rect rect, Vector3 axis, Vector3 seamEuler, float phase)
     {
         Event e = Event.current;
@@ -92,7 +138,7 @@ public class PitchPresetLibraryEditor : Editor
         if (preview == null) { preview = new PreviewRenderUtility(); preview.cameraFieldOfView = 30f; }
         if (previewMesh == null || previewMaterial == null) { EditorGUI.HelpBox(rect, "VVBC Assets ball model and material are required for preview.", MessageType.Info); return; }
         preview.BeginPreview(rect, GUIStyle.none);
-        preview.camera.transform.position = new Vector3(0f, 0f, -4f);
+        preview.camera.transform.position = new Vector3(0f, 0f, -5.2f);
         preview.camera.transform.rotation = Quaternion.identity;
         preview.camera.nearClipPlane = 0.01f; preview.camera.farClipPlane = 20f;
         preview.lights[0].intensity = 1.2f; preview.lights[0].transform.rotation = Quaternion.Euler(30f, 40f, 0f);
@@ -103,16 +149,10 @@ public class PitchPresetLibraryEditor : Editor
         float scale = 1.5f / Mathf.Max(previewMesh.bounds.size.x, Mathf.Max(previewMesh.bounds.size.y, previewMesh.bounds.size.z));
         Matrix4x4 matrix = Matrix4x4.TRS(-(rotation * previewMesh.bounds.center) * scale, rotation, Vector3.one * scale);
         preview.DrawMesh(previewMesh, matrix, previewMaterial, 0);
+        if (arrowMesh == null) CreateArrow();
+        preview.DrawMesh(arrowMesh, Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.up, view * unit)), arrowMaterial, 0);
         preview.camera.Render();
         GUI.DrawTexture(rect, preview.EndPreview(), ScaleMode.StretchToFill, false);
-        Vector3 tip = view * unit * 1.05f;
-        Vector3 projected = preview.camera.WorldToScreenPoint(tip);
-        Vector2 center = rect.center;
-        Vector2 end = new Vector2(rect.x + projected.x, rect.yMax - projected.y);
-        Handles.BeginGUI(); Handles.color = new Color(1f, 0.3f, 0.15f, 1f); Handles.DrawAAPolyLine(4f, center, end);
-        Vector2 back = (end - center).normalized; Vector2 side = new Vector2(-back.y, back.x);
-        Handles.DrawAAConvexPolygon(end, end - back * 12f + side * 6f, end - back * 12f - side * 6f);
-        Handles.EndGUI();
         GUI.Label(new Rect(rect.x + 8f, rect.y + 8f, rect.width - 16f, 20f), "Axis: " + unit.ToString("F2"));
     }
 }
