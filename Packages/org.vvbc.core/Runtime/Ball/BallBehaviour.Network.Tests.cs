@@ -2,7 +2,7 @@ using Tsukimi;
 using UnityEngine;
 using VRC.SDKBase;
 
-public partial class BallNetworkBehaviour
+public partial class BallBehaviour
 {
     [TsukimiTest]
     public void PublishedSnapshotsKeepKindMotionAndSequence()
@@ -26,7 +26,6 @@ public partial class BallNetworkBehaviour
     [TsukimiTest]
     public void DuplicateAndOlderSnapshotsDoNotAdvanceAcceptedSequence()
     {
-        flight = null;
         _acceptedSequence = 5;
         _acceptedKind = 3;
         _sequence = 5;
@@ -48,7 +47,6 @@ public partial class BallNetworkBehaviour
     [TsukimiTest]
     public void ResetWinsAnEqualSequenceRaceWithAnOldHit()
     {
-        flight = null;
         _acceptedSequence = 7;
         _acceptedKind = 3;
         _sequence = 7;
@@ -66,11 +64,7 @@ public partial class BallNetworkBehaviour
         VRCPlayerApi pitcher = Mimic.Join();
         VRCPlayerApi hitter = Mimic.Join();
         Mimic.Become(hitter);
-        flight = null;
-        flightVisual = null;
         Mimic.Become(pitcher);
-        flight = null;
-        flightVisual = null;
         QueueState(2, Vector3.up, Vector3.forward, Vector3.left, 10.0);
         Mimic.Deliver(hitter);
         Mimic.Become(hitter);
@@ -94,9 +88,9 @@ public partial class BallNetworkBehaviour
         _pending = true;
         _pendingBaseSequence = 0;
         _pendingKind = 3;
-        _pendingPosition = Vector3.up;
-        _pendingVelocity = Vector3.right;
-        _pendingSpin = Vector3.forward;
+        _networkPendingPosition = Vector3.up;
+        _networkPendingVelocity = Vector3.right;
+        _networkPendingSpin = Vector3.forward;
         _pendingServerTime = 4.0;
         PublishPending();
         Assert.AreEqual(0, _sequence);
@@ -122,5 +116,25 @@ public partial class BallNetworkBehaviour
         Assert.IsFalse(CanCatchUp(3.001, 0.02f));
         Assert.IsFalse(CanCatchUp(-0.01, 0.02f));
         Assert.IsFalse(CanCatchUp(0.1, 0.001f));
+    }
+    [TsukimiTest]
+    public void FailedSerializationRetriesOnlyTheCurrentSnapshotUpToTheLimit()
+    {
+        Mimic.Join();
+        _publishedSequence = 3;
+        _acceptedSequence = 3;
+        _publishedKind = 2;
+        _acceptedKind = 2;
+        maximumSerializationRetries = 3;
+        VRC.Udon.Common.SerializationResult failure = new VRC.Udon.Common.SerializationResult();
+        OnPostSerialization(failure);
+        Assert.AreEqual(1, _serializationRetries);
+        OnPostSerialization(failure);
+        OnPostSerialization(failure);
+        Assert.AreEqual(3, _serializationRetries);
+        _serializationRetries = 0;
+        _acceptedSequence = 4;
+        OnPostSerialization(failure);
+        Assert.AreEqual(0, _serializationRetries);
     }
 }

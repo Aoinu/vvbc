@@ -5,14 +5,9 @@ using VRC.Udon.Common;
 using VRC.Udon;
 
 // One instance on the physical ball. Only committed motion snapshots are synced.
-[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-public partial class BallNetworkBehaviour : TsukimiBehaviour
+public partial class BallBehaviour
 {
-    public BallFlightBehaviour flight;
-    public BallFlightVisualBehaviour flightVisual;
-    public Renderer ballRenderer;
-    public Collider ballCollider;
-    public GameObject animationBall;
+    [HideInInspector] public UdonBehaviour presentationListener;
     [HideInInspector] public UdonBehaviour contactListener;
 
     [UdonSynced] private int _sequence;
@@ -25,13 +20,23 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
     private const int StageState = 1;
     private const int PitchState = 2;
     private const int HitState = 3;
-    private const double MaxCatchupSeconds = 3.0;
+    [Header("Network")]
+    [Tooltip("Maximum age of a received flight snapshot to simulate, in seconds. Default 3.")]
+    public float maximumCatchupSeconds = 3f;
+    [Tooltip("Smallest fixed timestep allowed for network catch-up, in seconds. Default 0.005.")]
+    public float minimumCatchupStep = 0.005f;
+    [Range(0, 10), Tooltip("Maximum retries after a failed serialization. Default 3.")]
+    public int maximumSerializationRetries = 3;
+    [Tooltip("Delay between serialization retries, in seconds. Default 1.")]
+    public float serializationRetrySeconds = 1f;
+    [Tooltip("Delay before checking a pending ownership transfer, in seconds. Default 1.")]
+    public float ownershipCheckSeconds = 1f;
     private int _acceptedSequence;
     private int _acceptedKind;
     private bool _pending;
     private int _pendingBaseSequence;
     private int _pendingKind;
-    private Vector3 _pendingPosition, _pendingVelocity, _pendingSpin;
+    private Vector3 _networkPendingPosition, _networkPendingVelocity, _networkPendingSpin;
     private double _pendingServerTime;
     private int _publishedSequence, _publishedKind;
     private Vector3 _publishedPosition, _publishedVelocity, _publishedSpin;
@@ -62,15 +67,15 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
         _pending = true;
         _pendingBaseSequence = _acceptedSequence;
         _pendingKind = kind;
-        _pendingPosition = position;
-        _pendingVelocity = velocity;
-        _pendingSpin = spin;
+        _networkPendingPosition = position;
+        _networkPendingVelocity = velocity;
+        _networkPendingSpin = spin;
         _pendingServerTime = serverTime;
         if (IsLocalOwner()) PublishPending();
         else
         {
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            if (_pending) SendCustomEventDelayedSeconds(nameof(CheckPendingOwnership), 1f);
+            if (_pending) SendCustomEventDelayedSeconds(nameof(CheckPendingOwnership), ownershipCheckSeconds);
         }
     }
 
@@ -100,29 +105,27 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
         _acceptedSequence = _publishedSequence;
         _publishedKind = _pendingKind;
         _acceptedKind = _publishedKind;
-        _publishedPosition = _pendingPosition;
-        _publishedVelocity = _pendingVelocity;
-        _publishedSpin = _pendingSpin;
+        _publishedPosition = _networkPendingPosition;
+        _publishedVelocity = _networkPendingVelocity;
+        _publishedSpin = _networkPendingSpin;
         _publishedServerTime = _pendingServerTime;
         _serializationRetries = 0;
         _pending = false;
         CopyPublished();
-        if (_publishedKind == StageState && flight != null)
+        if (_publishedKind == StageState)
         {
-            flight.Stage(_publishedPosition);
-            SetPresentation(false);
+            Stage(_publishedPosition);
         }
-        else if (_publishedKind == PitchState && flight != null)
+        else if (_publishedKind == PitchState)
         {
-            flight.Launch(_publishedPosition, _publishedVelocity, _publishedSpin);
-            SetPresentation(true);
+            Launch(_publishedPosition, _publishedVelocity, _publishedSpin);
         }
         RequestSerialization();
     }
 
     public void OnLocalHitApplied()
     {
-        if (flightVisual != null && flightVisual.gameObject.activeSelf) flightVisual.BeginFlight();
+        BeginFlight();
     }
 
     private void CopyPublished()
@@ -144,13 +147,13 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
     {
         if (result.success) { _serializationRetries = 0; return; }
         if (!IsLocalOwner() || _publishedSequence != _acceptedSequence || _publishedKind != _acceptedKind) return;
-        if (_serializationRetries >= 3)
+        if (_serializationRetries >= maximumSerializationRetries)
         {
             Debug.LogWarning("BallNetwork: serialization failed after retries");
             return;
         }
         _serializationRetries++;
-        SendCustomEventDelayedSeconds(nameof(RetrySerialization), 1f);
+        SendCustomEventDelayedSeconds(nameof(RetrySerialization), serializationRetrySeconds);
     }
 
     public void RetrySerialization()
@@ -165,32 +168,28 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
         _acceptedSequence = _sequence;
         _acceptedKind = _kind;
         _pending = false;
-        if (flight == null) return;
         if (_kind == StageState)
         {
-            flight.Stage(_position);
-            SetPresentation(false);
+            Stage(_position);
             return;
         }
-        if (_kind != PitchState && _kind != HitState) return;
+        if ((_kind != PitchState && _kind != HitState) || body == null) return;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _serverTime);
         if (!CanCatchUp(elapsed, Time.fixedDeltaTime))
         {
             Debug.LogWarning("BallNetwork: snapshot age outside catch-up range: " + elapsed);
-            if (flight.body != null) flight.Stage(flight.body.position);
-            SetPresentation(false);
+            if (body != null) Stage(body.position);
             return;
         }
         BallFlightState state = AdvanceSnapshot(_position, _velocity, _spin, Physics.gravity,
-            flight.dragCoefficient, flight.magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
-        if (_kind == HitState) flight.ApplyRemoteHit(state.position, state.velocity, _spin);
-        else flight.Launch(state.position, state.velocity, _spin);
-        SetPresentation(true);
+            dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
+        if (_kind == HitState) ApplyRemoteHit(state.position, state.velocity, _spin);
+        else Launch(state.position, state.velocity, _spin);
     }
 
     private bool CanCatchUp(double elapsed, float step)
     {
-        return elapsed >= 0.0 && elapsed <= MaxCatchupSeconds && step >= 0.005f;
+        return elapsed >= 0.0 && elapsed <= maximumCatchupSeconds && step >= minimumCatchupStep;
     }
 
     private BallFlightState AdvanceSnapshot(Vector3 position, Vector3 velocity, Vector3 spin,
@@ -199,7 +198,7 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
         BallFlightState state = new BallFlightState();
         state.position = position;
         state.velocity = velocity;
-        return BallAerodynamics.Advance(state, spin, gravity, drag, magnus, elapsed, step);
+        return BallFlightModel.Advance(state, spin, gravity, drag, magnus, elapsed, step);
     }
 
     // A reset wins a simultaneous old hit; a hit wins the pitch it replaces.
@@ -211,20 +210,11 @@ public partial class BallNetworkBehaviour : TsukimiBehaviour
         return 0;
     }
 
-    private void SetPresentation(bool flying)
+    private void SetPresentation(bool visible)
     {
-        if (ballRenderer != null) ballRenderer.enabled = flying;
-        if (ballCollider != null) ballCollider.enabled = flying;
-        if (animationBall != null) animationBall.SetActive(!flying);
-        if (flying && contactListener != null) contactListener.SendCustomEvent("IgnorePlayerBatCollisions");
-        if (flightVisual == null) return;
-        if (!flying)
-        {
-            if (flightVisual.gameObject.activeSelf) flightVisual.EndFlight();
-            flightVisual.gameObject.SetActive(false);
-            return;
-        }
-        flightVisual.gameObject.SetActive(true);
-        flightVisual.BeginFlight();
+        if (ballRenderer != null) ballRenderer.enabled = visible;
+        if (ballCollider != null) ballCollider.enabled = visible;
+        if (visible && contactListener != null) contactListener.SendCustomEvent("IgnorePlayerBatCollisions");
+        if (presentationListener != null) presentationListener.SendCustomEvent("OnBallPresentationChanged");
     }
 }

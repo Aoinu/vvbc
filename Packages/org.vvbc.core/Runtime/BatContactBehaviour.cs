@@ -7,7 +7,7 @@ using VRC.Udon;
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public partial class BatContactBehaviour : TsukimiBehaviour
 {
-    public BallFlightBehaviour flight;
+    public BallBehaviour flight;
     public BatMotionBehaviour motion;
     public UdonBehaviour feedbackListener;
     public Transform contactZone;
@@ -66,8 +66,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 
     public void Start()
     {
-        if (flight != null && flight.network != null)
-            flight.network.contactListener = GetComponent<UdonBehaviour>();
+        if (flight != null)
+            flight.contactListener = GetComponent<UdonBehaviour>();
         BindMotion();
     }
 

@@ -2,14 +2,12 @@ using Tsukimi;
 using UnityEngine;
 
 // Visual sampling is active only between release and reset.
-public partial class BallFlightVisualBehaviour : TsukimiBehaviour
+public partial class BallBehaviour
 {
-    public Rigidbody body;
-    public TrailRenderer speedTrail;
-    public LineRenderer flightPath;
-    public float minimumTrailSpeedKmh = 80f;
-    public float minimumPathPointDistance = 0.05f;
-    public int maximumPathPoints = 1024;
+    [Header("Visual Effects")]
+    [Tooltip("Minimum speed for the trail, in km/h.")] public float minimumTrailSpeedKmh = 80f;
+    [Tooltip("Minimum distance between world-space path points, in metres.")] public float minimumPathPointDistance = 0.05f;
+    [Tooltip("Maximum number of points retained until reset.")] public int maximumPathPoints = 1024;
 
     private int _pathCount;
     private Vector3 _lastPathPoint;
@@ -46,7 +44,7 @@ public partial class BallFlightVisualBehaviour : TsukimiBehaviour
         _pathCount = 0;
     }
 
-    private void FixedUpdate()
+    private void UpdateFlightVisual()
     {
         if (body == null || speedTrail == null || flightPath == null || body.isKinematic) return;
         Vector3 position = body.position;

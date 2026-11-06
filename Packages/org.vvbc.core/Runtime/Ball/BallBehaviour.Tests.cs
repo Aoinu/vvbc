@@ -1,7 +1,7 @@
 using Tsukimi;
 using UnityEngine;
 
-public partial class BallFlightBehaviour
+public partial class BallBehaviour
 {
     [TsukimiTest]
     public void BackspinProducesUpwardMagnusAndDragOpposesMotion()
@@ -93,9 +93,9 @@ public partial class BallFlightBehaviour
         BallFlightState state = new BallFlightState();
         state.position = new Vector3(1f, 2f, 3f);
         state.velocity = Vector3.right * 10f;
-        BallFlightState same = BallAerodynamics.Advance(state, Vector3.zero, Vector3.down * 10f, 0f, 0f, 0f, 0.02f);
+        BallFlightState same = BallFlightModel.Advance(state, Vector3.zero, Vector3.down * 10f, 0f, 0f, 0f, 0.02f);
         Assert.AreEqual(state.position, same.position);
-        BallFlightState later = BallAerodynamics.Advance(state, Vector3.zero, Vector3.down * 10f, 0f, 0f, 0.03f, 0.02f);
+        BallFlightState later = BallFlightModel.Advance(state, Vector3.zero, Vector3.down * 10f, 0f, 0f, 0.03f, 0.02f);
         Assert.IsTrue(Mathf.Abs(later.position.x - 1.3f) < 0.0001f);
         Assert.IsTrue(Mathf.Abs(later.position.y - 1.993f) < 0.0001f);
         Assert.IsTrue(Mathf.Abs(later.velocity.y + 0.3f) < 0.0001f);

@@ -36,6 +36,8 @@ MonoBehaviour:
     null\n    _initialSide: %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step:
     %SystemInt32, 0\n    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3,
     null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
+    __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
+    __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
     __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_1:
@@ -87,16 +89,27 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __StartTrial___inl3__up: %UnityEngineVector3,
     null\n    __StartTrial_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Advance_budget:
     %SystemInt32, 0\n    __Advance_i: %SystemInt32, 0\n    __Advance___t0: %SystemBoolean,
-    null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance___t1:
-    %UnityEngineVector3, null\n    __Advance___t2: %UnityEngineVector3, null\n   
-    __Advance___t3: %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n   
-    __Advance_side: %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n   
-    __Advance_fraction: %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n   
-    __Advance___t6: %SystemBoolean, null\n    __Advance___inl_t0: %UnityEngineVector3,
-    null\n    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl4__velocity:
-    %UnityEngineVector3, null\n    __Advance___inl4__angularVelocity: %UnityEngineVector3,
+    null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance_state__position:
+    %UnityEngineVector3, null\n    __Advance_state__velocity: %UnityEngineVector3,
+    null\n    __Advance___t1__position: %UnityEngineVector3, null\n    __Advance___t1__velocity:
+    %UnityEngineVector3, null\n    __Advance___t2__position: %UnityEngineVector3,
+    null\n    __Advance___t2__velocity: %UnityEngineVector3, null\n    __Advance___t3:
+    %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n    __Advance_side:
+    %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n    __Advance_fraction:
+    %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n    __Advance___t6:
+    %SystemBoolean, null\n    __Advance___inl4__state__position: %UnityEngineVector3,
+    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__spin:
+    %UnityEngineVector3, null\n    __Advance___inl4__gravity: %UnityEngineVector3,
     null\n    __Advance___inl4__drag: %SystemSingle, 0\n    __Advance___inl4__magnus:
-    %SystemSingle, 0\n    __Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
+    %SystemSingle, 0\n    __Advance___inl4__dt: %SystemSingle, 0\n    __Advance___inl4____t0:
+    %UnityEngineVector3, null\n    __Advance___inl4____t1: %UnityEngineVector3, null\n   
+    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl10__velocity:
+    %UnityEngineVector3, null\n    __Advance___inl10__spin: %UnityEngineVector3,
+    null\n    __Advance___inl10__drag: %SystemSingle, 0\n    __Advance___inl10__magnus:
+    %SystemSingle, 0\n    __Advance___inl16__velocity: %UnityEngineVector3, null\n   
+    __Advance___inl16__angularVelocity: %UnityEngineVector3, null\n    __Advance___inl16__drag:
+    %SystemSingle, 0\n    __Advance___inl16__magnus: %SystemSingle, 0\n    __Advance_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_1:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_difference:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_error:
@@ -118,22 +131,22 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3___t11: %SystemSingle, 0\n   
     __FinishTrial__SystemBoolean_UnityEngineVector3___inl5____t0: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl6____t0: %UnityEngineVector3,
-    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin: %UnityEngineVector3,
-    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__direction:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction:
+    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin: %UnityEngineVector3,
+    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__direction:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_1:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_2:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_3:
@@ -141,9 +154,14 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_5:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_6:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n   
-    __const_0: %UnityEngineVector3, null\n    __const_1: %SystemSingle, 0\n    __const_2:
-    %SystemBoolean, null\n    __const_3: %SystemInt32, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0:
+    %SystemUInt32, 0xFFFFFFFC\n    __X16zBallAerodynamics__m__Acceleration_p_0: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_p_1: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_p_2: %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_p_3:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_ret: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %UnityEngineVector3,
+    null\n    __const_1: %SystemSingle, 0\n    __const_2: %SystemBoolean, null\n   
+    __const_3: %SystemInt32, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0:
     %SystemSingle, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1:
     %SystemSingle, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20:
@@ -156,11 +174,11 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14:
     %UnityEngineVector3, null\n    __retaddr_2: %SystemUInt32, 0x00000C58\n    __const_10:
     %SystemInt32, 1\n    __const_11: %SystemInt32, 2\n    __retaddr_3: %SystemUInt32,
-    0x000016C0\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
-    0x0000175C\n    __retaddr_5: %SystemUInt32, 0x000020EC\n    __const_12: %SystemSingle,
+    0x00001738\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
+    0x000017D4\n    __retaddr_5: %SystemUInt32, 0x00002164\n    __const_12: %SystemSingle,
     0.000001\n    __const_13: %SystemSingle, -0.2\n    __const_14: %SystemSingle,
-    0.2\n    __retaddr_6: %SystemUInt32, 0x0000297C\n.data_end\n.code_start\n   
-    .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
+    0.2\n    __retaddr_6: %SystemUInt32, 0x000029F4\n    __fold_SystemSingle__0:
+    %SystemSingle, null\n.data_end\n.code_start\n    .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
     BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_body:\n       
@@ -565,6 +583,8 @@ MonoBehaviour:
     PUSH, __Advance___t4\n        COPY\n        PUSH, __const_1\n        PUSH, __Advance_fraction\n       
     COPY\n        PUSH, __const_2\n        PUSH, __Advance___t5\n        COPY\n       
     PUSH, __const_2\n        PUSH, __Advance___t6\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__state__position\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__state__velocity\n        COPY\n        PUSH, __const_0\n       
     PUSH, __Advance___inl_t1\n        COPY\n        PUSH, __const_10\n        PUSH,
     stepsPerFrame\n        PUSH, __Advance_budget\n        EXTERN, \"UnityEngineMathf.__Max__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __const_3\n        PUSH, __Advance_i\n        COPY\n        PUSH, __const_3\n       
@@ -597,17 +617,23 @@ MonoBehaviour:
     PUSH, _dt\n        PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _velocity\n        PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
-    PUSH, _velocity\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, _velocity\n        PUSH, _dt\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    PUSH, __Advance___inl4__state__velocity\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance___inl4__state__velocity\n        PUSH, _dt\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _position\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, _position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, _step\n        PUSH, __const_10\n        PUSH, _step\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __Advance___inl4__state__position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance___inl4__state__position\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
+    COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, _position\n       
+    COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, _velocity\n       
+    COPY\n        PUSH, _step\n        PUSH, __const_10\n        PUSH, _step\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __Advance_previous\n        PUSH, _target\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     PUSH, _normal\n        PUSH, __Advance_previousSide\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
-    PUSH, _position\n        PUSH, _target\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    PUSH, __Advance___inl4__state__position\n        PUSH, _target\n        PUSH,
+    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     PUSH, _normal\n        PUSH, __Advance_side\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
@@ -669,16 +695,16 @@ MonoBehaviour:
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_determinant\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl5____t0\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl6____t0\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n       
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n       
     COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_p_1\n       
     PUSH, _target\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_difference\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
@@ -736,12 +762,12 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3_L9:\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___t5\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L11\n        PUSH,
     __const_2\n        PUSH, solving\n        COPY\n        PUSH, _bestPitch\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        EXTERN,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, _bestYaw\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, _bestPitch\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -749,7 +775,7 @@ MonoBehaviour:
     _bestYaw\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
     EXTERN, \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
@@ -757,18 +783,18 @@ MonoBehaviour:
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     PUSH, launchDirection\n        EXTERN, \"UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _relativeSpin\n        JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L12\n       
-    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
-    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineVector3.__get_sqrMagnitude__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -776,23 +802,23 @@ MonoBehaviour:
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_31\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L15\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n        EXTERN,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        EXTERN,
     \"UnityEngineVector3.__get_right__UnityEngineVector3\"\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L15:\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n        EXTERN,
-    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n        EXTERN,
+    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n       
+    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -800,9 +826,9 @@ MonoBehaviour:
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -958,12 +984,12 @@ MonoBehaviour:
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_31\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L31\n        PUSH,
     __const_2\n        PUSH, solving\n        COPY\n        PUSH, _bestPitch\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        EXTERN,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, _bestYaw\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, _bestPitch\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -971,7 +997,7 @@ MonoBehaviour:
     _bestYaw\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
     EXTERN, \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
@@ -979,18 +1005,18 @@ MonoBehaviour:
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     PUSH, launchDirection\n        EXTERN, \"UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _relativeSpin\n        JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L32\n       
-    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
-    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
+    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineVector3.__get_sqrMagnitude__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -998,23 +1024,23 @@ MonoBehaviour:
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_31\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L35\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        EXTERN,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n        EXTERN,
     \"UnityEngineVector3.__get_right__UnityEngineVector3\"\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L35:\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n        EXTERN,
-    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n        EXTERN,
+    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
+    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -1022,9 +1048,9 @@ MonoBehaviour:
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -1042,11 +1068,32 @@ MonoBehaviour:
     JUMP_INDIRECT, __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L31:\n       
     PUSH, __const_3\n        PUSH, _trial\n        COPY\n        PUSH, __retaddr_6\n       
     PUSH, __StartTrial_retjump\n        COPY\n        JUMP, StartTrial\n        JUMP_INDIRECT,
-    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n.code_end\n"
+    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n    X16zBallAerodynamics__m__Acceleration:\n       
+    PUSH, __fold_SystemSingle__0\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
+    COPY\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n        PUSH,
+    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __fold_SystemSingle__0\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
+    EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
+    EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_3\n        PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
+    PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_ret\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n        JUMP_INDIRECT,
+    __X16zBallAerodynamics__m__Acceleration_retjump\n.code_end\n"
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 802ef6a721c0ab24f8fbb7691c39a0a5, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 0d675fd1e4514b7b17cbc522b814d596e499393bfcebf1bbff9c927ee5f44f32
+  sourceFingerprint: 06fb0a7b067cf1969c3b7949aaeae10cb28eebcc76b2691bd86b98f9197021b0
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -1101,6 +1148,8 @@ MonoBehaviour:
     null\n    _initialSide: %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step:
     %SystemInt32, 0\n    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3,
     null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
+    __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
+    __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
     __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_1:
@@ -1152,16 +1201,27 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __StartTrial___inl3__up: %UnityEngineVector3,
     null\n    __StartTrial_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Advance_budget:
     %SystemInt32, 0\n    __Advance_i: %SystemInt32, 0\n    __Advance___t0: %SystemBoolean,
-    null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance___t1:
-    %UnityEngineVector3, null\n    __Advance___t2: %UnityEngineVector3, null\n   
-    __Advance___t3: %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n   
-    __Advance_side: %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n   
-    __Advance_fraction: %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n   
-    __Advance___t6: %SystemBoolean, null\n    __Advance___inl_t0: %UnityEngineVector3,
-    null\n    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl4__velocity:
-    %UnityEngineVector3, null\n    __Advance___inl4__angularVelocity: %UnityEngineVector3,
+    null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance_state__position:
+    %UnityEngineVector3, null\n    __Advance_state__velocity: %UnityEngineVector3,
+    null\n    __Advance___t1__position: %UnityEngineVector3, null\n    __Advance___t1__velocity:
+    %UnityEngineVector3, null\n    __Advance___t2__position: %UnityEngineVector3,
+    null\n    __Advance___t2__velocity: %UnityEngineVector3, null\n    __Advance___t3:
+    %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n    __Advance_side:
+    %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n    __Advance_fraction:
+    %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n    __Advance___t6:
+    %SystemBoolean, null\n    __Advance___inl4__state__position: %UnityEngineVector3,
+    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__spin:
+    %UnityEngineVector3, null\n    __Advance___inl4__gravity: %UnityEngineVector3,
     null\n    __Advance___inl4__drag: %SystemSingle, 0\n    __Advance___inl4__magnus:
-    %SystemSingle, 0\n    __Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
+    %SystemSingle, 0\n    __Advance___inl4__dt: %SystemSingle, 0\n    __Advance___inl4____t0:
+    %UnityEngineVector3, null\n    __Advance___inl4____t1: %UnityEngineVector3, null\n   
+    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl10__velocity:
+    %UnityEngineVector3, null\n    __Advance___inl10__spin: %UnityEngineVector3,
+    null\n    __Advance___inl10__drag: %SystemSingle, 0\n    __Advance___inl10__magnus:
+    %SystemSingle, 0\n    __Advance___inl16__velocity: %UnityEngineVector3, null\n   
+    __Advance___inl16__angularVelocity: %UnityEngineVector3, null\n    __Advance___inl16__drag:
+    %SystemSingle, 0\n    __Advance___inl16__magnus: %SystemSingle, 0\n    __Advance_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_1:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_difference:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_error:
@@ -1183,22 +1243,22 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3___t11: %SystemSingle, 0\n   
     __FinishTrial__SystemBoolean_UnityEngineVector3___inl5____t0: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl6____t0: %UnityEngineVector3,
-    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin: %UnityEngineVector3,
-    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__direction:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction:
+    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin: %UnityEngineVector3,
+    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__direction:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_1:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_2:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_3:
@@ -1206,9 +1266,14 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_5:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_6:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n   
-    __const_0: %UnityEngineVector3, null\n    __const_1: %SystemSingle, 0\n    __const_2:
-    %SystemBoolean, null\n    __const_3: %SystemInt32, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0:
+    %SystemUInt32, 0xFFFFFFFC\n    __X16zBallAerodynamics__m__Acceleration_p_0: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_p_1: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_p_2: %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_p_3:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_ret: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %UnityEngineVector3,
+    null\n    __const_1: %SystemSingle, 0\n    __const_2: %SystemBoolean, null\n   
+    __const_3: %SystemInt32, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0:
     %SystemSingle, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1:
     %SystemSingle, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3:
@@ -1313,9 +1378,9 @@ MonoBehaviour:
     %SystemBoolean, null\n    __Advance_intnl_23: %SystemSingle, 0\n    __Advance_intnl_24:
     %SystemSingle, 0\n    __Advance_intnl_25: %UnityEngineVector3, null\n    __Advance_intnl_26:
     %UnityEngineVector3, null\n    __Advance_intnl_27: %UnityEngineVector3, null\n   
-    __retaddr_3: %SystemUInt32, 0x00001D60\n    __Advance_intnl_28: %SystemInt32,
+    __retaddr_3: %SystemUInt32, 0x00002080\n    __Advance_intnl_28: %SystemInt32,
     0\n    __Advance_intnl_29: %SystemBoolean, null\n    __retaddr_4: %SystemUInt32,
-    0x00001DFC\n    __Advance_intnl_30: %SystemInt32, 0\n    __Advance_intnl_31:
+    0x0000211C\n    __Advance_intnl_30: %SystemInt32, 0\n    __Advance_intnl_31:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_0:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_1:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_2:
@@ -1358,7 +1423,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_39:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_40:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_41:
-    %SystemInt32, 0\n    __retaddr_5: %SystemUInt32, 0x00002A70\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_42:
+    %SystemInt32, 0\n    __retaddr_5: %SystemUInt32, 0x00002D90\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_42:
     %SystemInt32, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_43:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_44:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_45:
@@ -1423,7 +1488,13 @@ MonoBehaviour:
     0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_103: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_104: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_105: %SystemBoolean,
-    null\n    __retaddr_6: %SystemUInt32, 0x00003560\n.data_end\n.code_start\n   
+    null\n    __retaddr_6: %SystemUInt32, 0x00003880\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
+    0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_3: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_4: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_5: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_6: %UnityEngineVector3, null\n.data_end\n.code_start\n   
     .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
     BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_retjump\n       
@@ -1895,20 +1966,36 @@ MonoBehaviour:
     PUSH, __const_3\n        PUSH, __Advance_budget\n        COPY\n        PUSH,
     __const_3\n        PUSH, __Advance_i\n        COPY\n        PUSH, __const_2\n       
     PUSH, __Advance___t0\n        COPY\n        PUSH, __const_0\n        PUSH, __Advance_previous\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1\n        COPY\n       
-    PUSH, __const_0\n        PUSH, __Advance___t2\n        COPY\n        PUSH, __const_3\n       
-    PUSH, __Advance___t3\n        COPY\n        PUSH, __const_1\n        PUSH, __Advance_previousSide\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __Advance_side\n        COPY\n       
-    PUSH, __const_2\n        PUSH, __Advance___t4\n        COPY\n        PUSH, __const_1\n       
-    PUSH, __Advance_fraction\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __Advance___t5\n        COPY\n        PUSH, __const_2\n        PUSH, __Advance___t6\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl_t0\n        COPY\n       
-    PUSH, __const_0\n        PUSH, __Advance___inl_t1\n        COPY\n        PUSH,
-    __const_0\n        PUSH, __Advance___inl4__velocity\n        COPY\n        PUSH,
-    __const_0\n        PUSH, __Advance___inl4__angularVelocity\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __Advance___inl4__drag\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __Advance___inl4__magnus\n        COPY\n       
-    PUSH, __const_10\n        PUSH, stepsPerFrame\n        PUSH, __Advance_intnl_0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance_state__position\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance_state__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__position\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t2__position\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t2__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __Advance___t3\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __Advance_previousSide\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __Advance_side\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __Advance___t4\n        COPY\n        PUSH, __const_1\n        PUSH, __Advance_fraction\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __Advance___t5\n        COPY\n       
+    PUSH, __const_2\n        PUSH, __Advance___t6\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__state__position\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__state__velocity\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__spin\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__gravity\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __Advance___inl4__drag\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __Advance___inl4__magnus\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __Advance___inl4__dt\n        COPY\n        PUSH, __const_0\n        PUSH,
+    __Advance___inl4____t0\n        COPY\n        PUSH, __const_0\n        PUSH,
+    __Advance___inl4____t1\n        COPY\n        PUSH, __const_0\n        PUSH,
+    __Advance___inl_t1\n        COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl10__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl10__spin\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl10__drag\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl10__magnus\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl16__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl16__angularVelocity\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl16__drag\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl16__magnus\n       
+    COPY\n        PUSH, __const_10\n        PUSH, stepsPerFrame\n        PUSH, __Advance_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__Max__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __Advance_intnl_0\n        PUSH, __Advance_budget\n        COPY\n       
     PUSH, __const_3\n        PUSH, __Advance_i\n        COPY\n        PUSH, __const_3\n       
@@ -1919,39 +2006,65 @@ MonoBehaviour:
     PUSH, __Advance___t5\n        COPY\n        ANNOTATION, \"@tsukimi loop trip=unknown
     no-computed-jump\"\n    __Advance_L2:\n        PUSH, __Advance___t5\n       
     JUMP_IF_FALSE, __Advance_L3\n        PUSH, _position\n        PUSH, __Advance_previous\n       
-    COPY\n        PUSH, _velocity\n        PUSH, __Advance___t1\n        COPY\n       
-    PUSH, _gravity\n        PUSH, __Advance___inl_t0\n        COPY\n        PUSH,
-    _velocity\n        PUSH, __Advance___inl4__velocity\n        COPY\n        PUSH,
-    _trialSpin\n        PUSH, __Advance___inl4__angularVelocity\n        COPY\n       
-    PUSH, _drag\n        PUSH, __Advance___inl4__drag\n        COPY\n        PUSH,
-    _magnus\n        PUSH, __Advance___inl4__magnus\n        COPY\n        PUSH,
-    __Advance___inl4__drag\n        PUSH, __Advance_intnl_2\n        EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
-    PUSH, __Advance___inl4__velocity\n        PUSH, __Advance_intnl_3\n        EXTERN,
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__position\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__velocity\n       
+    COPY\n        PUSH, __Advance___t1__position\n        PUSH, __Advance_state__position\n       
+    COPY\n        PUSH, __Advance___t1__velocity\n        PUSH, __Advance_state__velocity\n       
+    COPY\n        PUSH, _position\n        PUSH, __Advance_state__position\n       
+    COPY\n        PUSH, _velocity\n        PUSH, __Advance_state__velocity\n       
+    COPY\n        PUSH, __Advance_state__position\n        PUSH, __Advance___inl4__state__position\n       
+    COPY\n        PUSH, __Advance_state__velocity\n        PUSH, __Advance___inl4__state__velocity\n       
+    COPY\n        PUSH, _trialSpin\n        PUSH, __Advance___inl4__spin\n       
+    COPY\n        PUSH, _gravity\n        PUSH, __Advance___inl4__gravity\n       
+    COPY\n        PUSH, _drag\n        PUSH, __Advance___inl4__drag\n        COPY\n       
+    PUSH, _magnus\n        PUSH, __Advance___inl4__magnus\n        COPY\n       
+    PUSH, _dt\n        PUSH, __Advance___inl4__dt\n        COPY\n        PUSH, __Advance___inl4__state__velocity\n       
+    PUSH, __Advance___inl4____t0\n        COPY\n        PUSH, __Advance___inl4__state__velocity\n       
+    PUSH, __Advance___inl10__velocity\n        COPY\n        PUSH, __Advance___inl4__spin\n       
+    PUSH, __Advance___inl10__spin\n        COPY\n        PUSH, __Advance___inl4__drag\n       
+    PUSH, __Advance___inl10__drag\n        COPY\n        PUSH, __Advance___inl4__magnus\n       
+    PUSH, __Advance___inl10__magnus\n        COPY\n        PUSH, __Advance___inl10__velocity\n       
+    PUSH, __Advance___inl16__velocity\n        COPY\n        PUSH, __Advance___inl10__spin\n       
+    PUSH, __Advance___inl16__angularVelocity\n        COPY\n        PUSH, __Advance___inl10__drag\n       
+    PUSH, __Advance___inl16__drag\n        COPY\n        PUSH, __Advance___inl10__magnus\n       
+    PUSH, __Advance___inl16__magnus\n        COPY\n        PUSH, __Advance___inl16__drag\n       
+    PUSH, __Advance_intnl_2\n        EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
+    PUSH, __Advance___inl16__velocity\n        PUSH, __Advance_intnl_3\n        EXTERN,
     \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __Advance_intnl_2\n       
     PUSH, __Advance_intnl_3\n        PUSH, __Advance_intnl_4\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __Advance_intnl_4\n        PUSH, __Advance___inl4__velocity\n        PUSH,
+    PUSH, __Advance_intnl_4\n        PUSH, __Advance___inl16__velocity\n        PUSH,
     __Advance_intnl_5\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __Advance___inl4__angularVelocity\n        PUSH, __Advance___inl4__velocity\n       
+    PUSH, __Advance___inl16__angularVelocity\n        PUSH, __Advance___inl16__velocity\n       
     PUSH, __Advance_intnl_6\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __Advance___inl4__magnus\n        PUSH, __Advance_intnl_6\n        PUSH,
+    PUSH, __Advance___inl16__magnus\n        PUSH, __Advance_intnl_6\n        PUSH,
     __Advance_intnl_7\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __Advance_intnl_5\n        PUSH, __Advance_intnl_7\n        PUSH, __Advance_intnl_8\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __Advance_intnl_8\n        PUSH, __Advance___inl_t1\n        COPY\n       
-    PUSH, __Advance___inl_t0\n        PUSH, __Advance___inl_t1\n        PUSH, __Advance_intnl_9\n       
-    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __Advance_intnl_9\n        PUSH, _dt\n        PUSH, __Advance_intnl_10\n       
+    PUSH, __Advance___inl4__gravity\n        PUSH, __Advance___inl_t1\n        PUSH,
+    __Advance_intnl_9\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance_intnl_9\n        PUSH, __Advance___inl4__dt\n        PUSH, __Advance_intnl_10\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __Advance___t1\n        PUSH, __Advance_intnl_10\n        PUSH, __Advance_intnl_11\n       
-    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __Advance_intnl_11\n        PUSH, _velocity\n        COPY\n        PUSH,
-    _position\n        PUSH, __Advance___t2\n        COPY\n        PUSH, _velocity\n       
-    PUSH, _dt\n        PUSH, __Advance_intnl_12\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __Advance___t2\n        PUSH, __Advance_intnl_12\n        PUSH, __Advance_intnl_13\n       
-    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __Advance_intnl_13\n        PUSH, _position\n        COPY\n        PUSH,
-    _step\n        PUSH, __Advance___t3\n        COPY\n        PUSH, __Advance___t3\n       
-    PUSH, __const_10\n        PUSH, __Advance_intnl_14\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __Advance___inl4____t0\n        PUSH, __Advance_intnl_10\n        PUSH,
+    __Advance_intnl_11\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance_intnl_11\n        PUSH, __Advance___inl4__state__velocity\n       
+    COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, __Advance___inl4____t1\n       
+    COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __Advance___inl4__dt\n       
+    PUSH, __Advance_intnl_12\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __Advance___inl4____t1\n        PUSH, __Advance_intnl_12\n        PUSH,
+    __Advance_intnl_13\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance_intnl_13\n        PUSH, __Advance___inl4__state__position\n       
+    COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
+    COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n        PUSH,
+    __Advance___t2__position\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    PUSH, __Advance___t2__velocity\n        COPY\n        PUSH, __Advance___t2__position\n       
+    PUSH, __Advance_state__position\n        COPY\n        PUSH, __Advance___t2__velocity\n       
+    PUSH, __Advance_state__velocity\n        COPY\n        PUSH, __Advance_state__position\n       
+    PUSH, _position\n        COPY\n        PUSH, __Advance_state__velocity\n       
+    PUSH, _velocity\n        COPY\n        PUSH, _step\n        PUSH, __Advance___t3\n       
+    COPY\n        PUSH, __Advance___t3\n        PUSH, __const_10\n        PUSH, __Advance_intnl_14\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __Advance_intnl_14\n        PUSH, _step\n        COPY\n        PUSH, __Advance_previous\n       
     PUSH, _target\n        PUSH, __Advance_intnl_15\n        EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __Advance_intnl_15\n        PUSH, _normal\n        PUSH, __Advance_intnl_16\n       
@@ -2028,14 +2141,6 @@ MonoBehaviour:
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___t11\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl5____t0\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl6____t0\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__direction\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n       
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n       
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n       
@@ -2044,6 +2149,14 @@ MonoBehaviour:
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__direction\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n       
     COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_p_1\n       
     PUSH, _target\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_0\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
@@ -2114,23 +2227,23 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3___t5\n        COPY\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L9:\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___t5\n        JUMP_IF_FALSE,
     __FinishTrial__SystemBoolean_UnityEngineVector3_L11\n        PUSH, __const_2\n       
-    PUSH, solving\n        COPY\n        PUSH, _bestYaw\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw\n       
-    COPY\n        PUSH, _bestPitch\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch\n       
-    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch\n       
+    PUSH, solving\n        COPY\n        PUSH, _bestYaw\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n       
+    COPY\n        PUSH, _bestPitch\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
+    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_13\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_13\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        COPY\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        COPY\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_14\n        EXTERN, \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_14\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_15\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_15\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_16\n        EXTERN,
-    \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw\n       
+    \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_17\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_17\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_18\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_15\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_16\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_18\n       
@@ -2139,22 +2252,22 @@ MonoBehaviour:
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_19\n        PUSH,
     launchDirection\n        COPY\n        PUSH, _relativeSpin\n        JUMP_IF_FALSE,
     __FinishTrial__SystemBoolean_UnityEngineVector3_L12\n        PUSH, _localSpin\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
-    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__direction\n       
-    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__direction\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction\n       
+    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_20\n        EXTERN,
     \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_20\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_21\n       
     EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_21\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_22\n        EXTERN,
     \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_22\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_23\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_23\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n        COPY\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        COPY\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_24\n        EXTERN,
     \"UnityEngineVector3.__get_sqrMagnitude__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_24\n       
     PUSH, __const_6\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_25\n       
@@ -2162,31 +2275,31 @@ MonoBehaviour:
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_25\n        JUMP_IF_FALSE,
     __FinishTrial__SystemBoolean_UnityEngineVector3_L15\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_26\n       
     EXTERN, \"UnityEngineVector3.__get_right__UnityEngineVector3\"\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_26\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_26\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     COPY\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L15:\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n        PUSH,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n        PUSH,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_27\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_27\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_28\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_28\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n        COPY\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n        COPY\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_29\n        EXTERN,
-    \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_29\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_30\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_31\n        EXTERN,
-    \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n       
+    \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_31\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_32\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_30\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_32\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_33\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_34\n        EXTERN,
-    \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_34\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_35\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_33\n        PUSH,
@@ -2368,23 +2481,23 @@ MonoBehaviour:
     \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_80\n        JUMP_IF_FALSE,
     __FinishTrial__SystemBoolean_UnityEngineVector3_L31\n        PUSH, __const_2\n       
-    PUSH, solving\n        COPY\n        PUSH, _bestYaw\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n       
-    COPY\n        PUSH, _bestPitch\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
-    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
+    PUSH, solving\n        COPY\n        PUSH, _bestYaw\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw\n       
+    COPY\n        PUSH, _bestPitch\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch\n       
+    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_81\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_81\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        COPY\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        COPY\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_82\n        EXTERN, \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_82\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_83\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_83\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_84\n        EXTERN,
-    \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw\n       
+    \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_85\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_85\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_86\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_83\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_84\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_86\n       
@@ -2393,22 +2506,22 @@ MonoBehaviour:
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_87\n        PUSH,
     launchDirection\n        COPY\n        PUSH, _relativeSpin\n        JUMP_IF_FALSE,
     __FinishTrial__SystemBoolean_UnityEngineVector3_L32\n        PUSH, _localSpin\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
-    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction\n       
-    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
+    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__direction\n       
+    COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__direction\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_88\n        EXTERN,
     \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_88\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_89\n       
     EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_89\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_90\n        EXTERN,
     \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_90\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_91\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_91\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        COPY\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n        COPY\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_92\n        EXTERN,
     \"UnityEngineVector3.__get_sqrMagnitude__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_92\n       
     PUSH, __const_6\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_93\n       
@@ -2416,31 +2529,31 @@ MonoBehaviour:
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_93\n        JUMP_IF_FALSE,
     __FinishTrial__SystemBoolean_UnityEngineVector3_L35\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_94\n       
     EXTERN, \"UnityEngineVector3.__get_right__UnityEngineVector3\"\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_94\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_94\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     COPY\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L35:\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        PUSH,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n        PUSH,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_95\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_95\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_96\n        EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_96\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n        COPY\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n        COPY\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_97\n        EXTERN,
-    \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_97\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_98\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_99\n        EXTERN,
-    \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
+    \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_99\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_100\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_98\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_100\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_101\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_102\n        EXTERN,
-    \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_102\n        PUSH,
     __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_103\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_101\n        PUSH,
@@ -2460,7 +2573,24 @@ MonoBehaviour:
     converged\n        COPY\n        JUMP_INDIRECT, __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n   
     __FinishTrial__SystemBoolean_UnityEngineVector3_L31:\n        PUSH, __const_3\n       
     PUSH, _trial\n        COPY\n        PUSH, __retaddr_6\n        PUSH, __StartTrial_retjump\n       
-    COPY\n        JUMP, StartTrial\n        JUMP_INDIRECT, __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n.code_end\n"
+    COPY\n        JUMP, StartTrial\n        JUMP_INDIRECT, __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n   
+    X16zBallAerodynamics__m__Acceleration:\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_2\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_0\n        EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n       
+    EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_6\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_6\n        PUSH, __X16zBallAerodynamics__m__Acceleration_ret\n       
+    COPY\n        JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n       
+    JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n.code_end\n"
   optAfterUasm: ".data_start\n    stepsPerFrame: %SystemInt32, 64\n    .export stepsPerFrame\n   
     maxIterations: %SystemInt32, 8\n    .export maxIterations\n    maxStepsPerTrajectory:
     %SystemInt32, 500\n    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle,
@@ -2483,6 +2613,8 @@ MonoBehaviour:
     null\n    _initialSide: %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step:
     %SystemInt32, 0\n    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3,
     null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
+    __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
+    __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
     __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_1:
@@ -2534,16 +2666,27 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __StartTrial___inl3__up: %UnityEngineVector3,
     null\n    __StartTrial_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Advance_budget:
     %SystemInt32, 0\n    __Advance_i: %SystemInt32, 0\n    __Advance___t0: %SystemBoolean,
-    null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance___t1:
-    %UnityEngineVector3, null\n    __Advance___t2: %UnityEngineVector3, null\n   
-    __Advance___t3: %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n   
-    __Advance_side: %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n   
-    __Advance_fraction: %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n   
-    __Advance___t6: %SystemBoolean, null\n    __Advance___inl_t0: %UnityEngineVector3,
-    null\n    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl4__velocity:
-    %UnityEngineVector3, null\n    __Advance___inl4__angularVelocity: %UnityEngineVector3,
+    null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance_state__position:
+    %UnityEngineVector3, null\n    __Advance_state__velocity: %UnityEngineVector3,
+    null\n    __Advance___t1__position: %UnityEngineVector3, null\n    __Advance___t1__velocity:
+    %UnityEngineVector3, null\n    __Advance___t2__position: %UnityEngineVector3,
+    null\n    __Advance___t2__velocity: %UnityEngineVector3, null\n    __Advance___t3:
+    %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n    __Advance_side:
+    %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n    __Advance_fraction:
+    %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n    __Advance___t6:
+    %SystemBoolean, null\n    __Advance___inl4__state__position: %UnityEngineVector3,
+    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__spin:
+    %UnityEngineVector3, null\n    __Advance___inl4__gravity: %UnityEngineVector3,
     null\n    __Advance___inl4__drag: %SystemSingle, 0\n    __Advance___inl4__magnus:
-    %SystemSingle, 0\n    __Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
+    %SystemSingle, 0\n    __Advance___inl4__dt: %SystemSingle, 0\n    __Advance___inl4____t0:
+    %UnityEngineVector3, null\n    __Advance___inl4____t1: %UnityEngineVector3, null\n   
+    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl10__velocity:
+    %UnityEngineVector3, null\n    __Advance___inl10__spin: %UnityEngineVector3,
+    null\n    __Advance___inl10__drag: %SystemSingle, 0\n    __Advance___inl10__magnus:
+    %SystemSingle, 0\n    __Advance___inl16__velocity: %UnityEngineVector3, null\n   
+    __Advance___inl16__angularVelocity: %UnityEngineVector3, null\n    __Advance___inl16__drag:
+    %SystemSingle, 0\n    __Advance___inl16__magnus: %SystemSingle, 0\n    __Advance_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_1:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_difference:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_error:
@@ -2565,22 +2708,22 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3___t11: %SystemSingle, 0\n   
     __FinishTrial__SystemBoolean_UnityEngineVector3___inl5____t0: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl6____t0: %UnityEngineVector3,
-    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__yaw: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__pitch: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c: %SystemSingle,
-    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin: %UnityEngineVector3,
-    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__direction:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c:
-    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin:
-    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction:
+    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__yaw: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__pitch: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c: %SystemSingle,
+    0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin: %UnityEngineVector3,
+    null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__direction:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__yaw:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__pitch:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c:
+    %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__direction:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right:
+    %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_1:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_2:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_3:
@@ -2588,9 +2731,14 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_5:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3___cse_6:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n   
-    __const_0: %UnityEngineVector3, null\n    __const_1: %SystemSingle, 0\n    __const_2:
-    %SystemBoolean, null\n    __const_3: %SystemInt32, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0:
+    %SystemUInt32, 0xFFFFFFFC\n    __X16zBallAerodynamics__m__Acceleration_p_0: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_p_1: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_p_2: %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_p_3:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_ret: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %UnityEngineVector3,
+    null\n    __const_1: %SystemSingle, 0\n    __const_2: %SystemBoolean, null\n   
+    __const_3: %SystemInt32, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0:
     %SystemSingle, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1:
     %SystemSingle, 0\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20:
@@ -2603,11 +2751,11 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14:
     %UnityEngineVector3, null\n    __retaddr_2: %SystemUInt32, 0x00000C58\n    __const_10:
     %SystemInt32, 1\n    __const_11: %SystemInt32, 2\n    __retaddr_3: %SystemUInt32,
-    0x000016C0\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
-    0x0000175C\n    __retaddr_5: %SystemUInt32, 0x000020EC\n    __const_12: %SystemSingle,
+    0x00001738\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
+    0x000017D4\n    __retaddr_5: %SystemUInt32, 0x00002164\n    __const_12: %SystemSingle,
     0.000001\n    __const_13: %SystemSingle, -0.2\n    __const_14: %SystemSingle,
-    0.2\n    __retaddr_6: %SystemUInt32, 0x0000297C\n.data_end\n.code_start\n   
-    .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
+    0.2\n    __retaddr_6: %SystemUInt32, 0x000029F4\n    __fold_SystemSingle__0:
+    %SystemSingle, null\n.data_end\n.code_start\n    .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
     BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_body:\n       
@@ -3012,6 +3160,8 @@ MonoBehaviour:
     PUSH, __Advance___t4\n        COPY\n        PUSH, __const_1\n        PUSH, __Advance_fraction\n       
     COPY\n        PUSH, __const_2\n        PUSH, __Advance___t5\n        COPY\n       
     PUSH, __const_2\n        PUSH, __Advance___t6\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__state__position\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __Advance___inl4__state__velocity\n        COPY\n        PUSH, __const_0\n       
     PUSH, __Advance___inl_t1\n        COPY\n        PUSH, __const_10\n        PUSH,
     stepsPerFrame\n        PUSH, __Advance_budget\n        EXTERN, \"UnityEngineMathf.__Max__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __const_3\n        PUSH, __Advance_i\n        COPY\n        PUSH, __const_3\n       
@@ -3044,17 +3194,23 @@ MonoBehaviour:
     PUSH, _dt\n        PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _velocity\n        PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
-    PUSH, _velocity\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, _velocity\n        PUSH, _dt\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    PUSH, __Advance___inl4__state__velocity\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance___inl4__state__velocity\n        PUSH, _dt\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _position\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, _position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, _step\n        PUSH, __const_10\n        PUSH, _step\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __Advance___inl4__state__position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __Advance___inl4__state__position\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
+    COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, _position\n       
+    COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, _velocity\n       
+    COPY\n        PUSH, _step\n        PUSH, __const_10\n        PUSH, _step\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __Advance_previous\n        PUSH, _target\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     PUSH, _normal\n        PUSH, __Advance_previousSide\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
-    PUSH, _position\n        PUSH, _target\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    PUSH, __Advance___inl4__state__position\n        PUSH, _target\n        PUSH,
+    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     PUSH, _normal\n        PUSH, __Advance_side\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
@@ -3116,16 +3272,16 @@ MonoBehaviour:
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_determinant\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl5____t0\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl6____t0\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n       
     COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n       
     COPY\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_p_1\n       
     PUSH, _target\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3_difference\n       
     EXTERN, \"UnityEngineVector3.__op_Subtraction__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
@@ -3183,12 +3339,12 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3_L9:\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___t5\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L11\n        PUSH,
     __const_2\n        PUSH, solving\n        COPY\n        PUSH, _bestPitch\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        EXTERN,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, _bestYaw\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, _bestPitch\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -3196,7 +3352,7 @@ MonoBehaviour:
     _bestYaw\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
     EXTERN, \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl9__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
@@ -3204,18 +3360,18 @@ MonoBehaviour:
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     PUSH, launchDirection\n        EXTERN, \"UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _relativeSpin\n        JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L12\n       
-    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
-    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineVector3.__get_sqrMagnitude__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -3223,23 +3379,23 @@ MonoBehaviour:
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_31\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L15\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n        EXTERN,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        EXTERN,
     \"UnityEngineVector3.__get_right__UnityEngineVector3\"\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L15:\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n        EXTERN,
-    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n        EXTERN,
+    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__right\n       
+    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__up\n       
+    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -3247,9 +3403,9 @@ MonoBehaviour:
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl10__forward\n       
+    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -3405,12 +3561,12 @@ MonoBehaviour:
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_31\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L31\n        PUSH,
     __const_2\n        PUSH, solving\n        COPY\n        PUSH, _bestPitch\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        EXTERN,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        EXTERN,
     \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH, _bestYaw\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__Sin__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, _bestPitch\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -3418,7 +3574,7 @@ MonoBehaviour:
     _bestYaw\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
     EXTERN, \"UnityEngineMathf.__Cos__SystemSingle__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl11__c\n        PUSH,
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl13__c\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
@@ -3426,18 +3582,18 @@ MonoBehaviour:
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_21\n       
     PUSH, launchDirection\n        EXTERN, \"UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\"\n       
     PUSH, _relativeSpin\n        JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L32\n       
-    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
-    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, _localSpin\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
+    COPY\n        PUSH, launchDirection\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__get_up__UnityEngineVector3\"\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     EXTERN, \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     EXTERN, \"UnityEngineVector3.__get_sqrMagnitude__SystemSingle\"\n        PUSH,
     __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
@@ -3445,23 +3601,23 @@ MonoBehaviour:
     EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_31\n       
     JUMP_IF_FALSE, __FinishTrial__SystemBoolean_UnityEngineVector3_L35\n        PUSH,
-    __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n        EXTERN,
+    __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n        EXTERN,
     \"UnityEngineVector3.__get_right__UnityEngineVector3\"\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L35:\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n        EXTERN,
-    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n        EXTERN,
+    \"UnityEngineVector3.__get_normalized__UnityEngineVector3\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__right\n       
+    EXTERN, \"UnityEngineVector3.__get_x__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__right\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__up\n       
+    EXTERN, \"UnityEngineVector3.__get_y__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__up\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -3469,9 +3625,9 @@ MonoBehaviour:
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
     PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__localSpin\n       
+    PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__localSpin\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
-    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl12__forward\n       
+    EXTERN, \"UnityEngineVector3.__get_z__SystemSingle\"\n        PUSH, __FinishTrial__SystemBoolean_UnityEngineVector3___inl14__forward\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
     PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
@@ -3489,7 +3645,28 @@ MonoBehaviour:
     JUMP_INDIRECT, __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n    __FinishTrial__SystemBoolean_UnityEngineVector3_L31:\n       
     PUSH, __const_3\n        PUSH, _trial\n        COPY\n        PUSH, __retaddr_6\n       
     PUSH, __StartTrial_retjump\n        COPY\n        JUMP, StartTrial\n        JUMP_INDIRECT,
-    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n.code_end\n"
+    __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n    X16zBallAerodynamics__m__Acceleration:\n       
+    PUSH, __fold_SystemSingle__0\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_0\n       
+    COPY\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n        PUSH,
+    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __fold_SystemSingle__0\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_1\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
+    EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_20\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
+    EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_3\n        PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_3\n       
+    PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_2\n       
+    PUSH, __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_ret\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n        JUMP_INDIRECT,
+    __X16zBallAerodynamics__m__Acceleration_retjump\n.code_end\n"
   optBeforeInject:
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=5202174863686470559\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=5202174863686470559"
@@ -3502,11 +3679,12 @@ MonoBehaviour:
   - "=__const_0\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
   - "=__const_4\tPrimConst\t=SystemSingle\t0\tSingle:=Infinity\t\t\t\t"
   - "=__const_9\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__fold_SystemSingle__0\tPrimConst\t=SystemSingle\t0\tSingle:=-0\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 238
-  optExternAfter: 236
-  optInsnBefore: 1857
-  optInsnAfter: 1402
-  optBytesBefore: 13672
-  optBytesAfter: 10628
+  optExternBefore: 245
+  optExternAfter: 242
+  optInsnBefore: 2008
+  optInsnAfter: 1448
+  optBytesBefore: 14716
+  optBytesAfter: 10968
   optStage: ran

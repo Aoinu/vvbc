@@ -1,11 +1,12 @@
 # Local bat contact and ball result
 
 `BatContact` connects the local player's Bat to one locally simulated Ball.
-It does not itself synchronize contact or arbitrate between clients. For the
-optional shared Ball setup see [ball network prototype](ball-network-prototype.md).
+It does not itself synchronize contact or arbitrate between clients. BallBehaviour
+synchronizes committed snapshots as described in the
+[ball network prototype](ball-network-prototype.md).
 Place one contact
 prefab per local batting lane, assign its `flight` to the ball's
-`BallFlightBehaviour`, and position `contactZone` around the intended hitting
+`BallBehaviour`, and position `contactZone` around the intended hitting
 area. The prefab's own Transform is the default zone; its `zoneHalfSize` is in
 that Transform's local coordinates. Set `centerDirection` to the horizontal
 world-space direction from home plate toward center field. The Bat is resolved
@@ -24,7 +25,7 @@ decision and must be checked in each consumer world. The runtime also requests
 per-collider ignores for available Bats; collider disable/enable and activation
 can reset those pairwise ignores. Bat Contact itself evaluates sampled histories
 geometrically, independently of physics contacts and trigger events.
-Keep `groundLayers` on Ball Flight configured for ground and mound surfaces,
+Keep `groundLayers` on BallBehaviour configured for ground and mound surfaces,
 and bind the existing strike observer as described in
 [batting pitcher setup](batting-pitcher.md).
 
@@ -108,5 +109,5 @@ starting values, not validated anti-cheat thresholds.
    extrapolation boundaries for false contacts or speed spikes.
 5. Inspect the transition from pitch to batted flight for visible jumps and
    test ground/wall contact close to the hit. Repeat with multiple clients to
-   characterize the existing Bat sync and visual correction. Without the
-   optional Ball network component, the Ball remains local to each client.
+   characterize the existing Bat sync and visual correction and the Ball's
+   snapshot ownership transitions.

@@ -1,7 +1,7 @@
 using Tsukimi;
 using UnityEngine;
 
-public partial class BallFlightBehaviour
+public partial class BallBehaviour
 {
     private BallResultSnapshot ResultExample()
     {

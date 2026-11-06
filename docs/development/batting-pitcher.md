@@ -1,6 +1,6 @@
 # Batting pitcher development setup
 
-The initial pitcher also supports a local-only setup. The Sandbox integration uses
+The initial pitcher supports a single-client development setup. The Sandbox integration uses
 `Assets/Development/Prefabs/VVBC Batting Pitcher.prefab`; this development asset
 references the existing local Shinano avatar, copied pitching animation and
 controller, and the assets package ball model. It is ignored by Git and is not
@@ -26,14 +26,14 @@ made during a cycle take effect on the next one. If the solver cannot converge,
 the pitcher still uses its best direction. The Rigidbody is a sibling of the
 animated Humanoid; only the display ball follows its hand.
 
-`BallFlightVisual` is an optional visual prefab under `PhysicalBall`. Bind its
-`Sampler` Udon component to the ball Rigidbody, and assign that component to
-the pitcher's `flightVisual` field. Its white speed trail is shown only at or
-above 80 km/h. Its width starts at approximately the ball diameter and tapers
-linearly to zero over 0.2 seconds. The blue path records the ball's actual
-flight and is cleared on reset. Adjust the speed threshold, path sampling
-distance, and maximum point count on `Sampler`; the `SpeedTrail` component
-controls its duration and width. The sampler is inactive while waiting.
+`Runtime/Prefabs/Ball.prefab` contains the Rigidbody, collider, Pickup,
+Manual Sync BallBehaviour, speed trail, world-space flight path and bounce and
+wind sources. Assign a ball mesh and material to `Visual/BallModel`, and clips
+to BallBehaviour's `impactClip` and `windClip`. The package does not contain
+these assets; the ignored Sandbox instance uses the assets-package ball model
+and local audio clips. The trail appears at 80 km/h by default; the path records
+actual flight and is cleared on Stage. Its threshold, sampling distance and
+point limit are adjustable on BallBehaviour.
 
 The Humanoid Animator uses Apply Root Motion so the pitching motion retains its
 translation and rotation. At the start of the next preparation the Behaviour
@@ -50,6 +50,15 @@ the fixed `ReleasePoint`, and `minimumReleaseNormalizedTime` together. The
 event needs to be on the same GameObject as the Animator and pitcher Udon
 component. The minimum time rejects events arriving before the current motion
 reaches the release portion; the clip is played without overlapping transitions.
+
+The scene-independent Ball integration fixture uses a disposable Unity preview
+scene. Run the following to check Stage, Pitch, Hit, reset and snapshot
+reconstruction. It supplements the T# tests and does not replace ClientSim or
+multi-client VRChat validation.
+
+```powershell
+isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/BallIntegration.cs.txt
+```
 
 ## Strike result and phantom
 
@@ -77,14 +86,14 @@ the separate transparent `BallPhantom` material; the three colours, including
 alpha, are adjustable on the behaviour. The ball's SphereCollider supplies
 the displayed diameter and geometric radius, including its world scale.
 
-Bind the ball flight behaviour's `ballCollider` and `motionObserver` to the
-SphereCollider and `Pitch Crossing` Udon component. Bind the crossing component's
-`flight` to the ball flight behaviour. Configure `groundLayers` to include
+The Ball prefab binds its own `ballCollider`. Assign its `motionObserver` to
+the `Pitch Crossing` Udon component and the crossing component's `flight` to
+the BallBehaviour. Configure `groundLayers` to include
 ground and mound colliders but exclude the bat and backstop. In the local
 Sandbox the ground plane uses Environment; the backstop remains on Default.
 The Sandbox assigns the mesh from `org.vvbc.assets` on the prefab instance.
 
-`BallFlightBehaviour.Launch` snapshots and starts the observer, sends it the
+`BallBehaviour.Launch` snapshots and starts the observer, sends it the
 same fixed-time samples used by flight history, and reports ground contacts.
 The observer records the front crossing separately from the geometric result;
 it displays the previous phantom until a new result is available. A future
@@ -94,5 +103,5 @@ without changing the geometric result. Contact detection is provided by the
 separate optional component described below.
 
 The optional local Bat Contact connection and its setup, tuning and validation
-are described in [bat contact](bat-contact.md). To share the ball between
-players, configure the separate [network prototype](ball-network-prototype.md).
+are described in [bat contact](bat-contact.md). The Ball
+uses the [network prototype](ball-network-prototype.md) to share committed snapshots.

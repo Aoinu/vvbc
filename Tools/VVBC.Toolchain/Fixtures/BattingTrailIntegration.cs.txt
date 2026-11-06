@@ -5,7 +5,7 @@ try
     var root = new GameObject("Trail fixture");
     UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, scene);
     var feedback = root.AddComponent<BattingFeedbackBehaviour>();
-    var flight = root.AddComponent<BallFlightBehaviour>();
+    var flight = root.AddComponent<BallBehaviour>();
     var contact = root.AddComponent<BatContactBehaviour>();
     var motion = root.AddComponent<BatMotionBehaviour>();
     feedback.flight = flight; feedback.contact = contact; contact.motion = motion; contact.flight = flight;

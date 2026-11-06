@@ -8,7 +8,7 @@ using VRC.SDKBase;
 public partial class BattingFeedbackBehaviour : TsukimiBehaviour
 {
     public BatContactBehaviour contact;
-    public BallFlightBehaviour flight;
+    public BallBehaviour flight;
     public Transform batPhantom;
     public Transform[] batPhantoms;
     public Renderer[] batRenderers;
@@ -21,10 +21,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public Renderer contactPointRenderer;
     public Text metrics;
     public AudioSource contactAudio;
-    public AudioSource windAudio;
-    public AudioSource bounceAudio;
     public AudioClip contactClip;
-    public AudioClip windClip;
     public float displayDelay = 1f;
     public float missSwingSpeed = 5f;
     public float peakBeforeEntry = 0.3f;
@@ -41,9 +38,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public float contactMaxVolume = 1f;
     public float contactMinPitch = 0.8f;
     public float contactMaxPitch = 1.2f;
-    public float windStartSpeed = 20f;
-    public float windMaxSpeed = 40f;
-    public float windMaxVolume = 0.35f;
     public float hapticDuration = 0.08f;
     public float hapticAmplitude = 0.5f;
     public float hapticFrequency = 0.5f;
@@ -87,7 +81,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     {
         if (flight == null || contact == null) return;
         if (_sequence != flight.flightSequence) ResetForSequence(flight.flightSequence);
-        UpdateWind();
         UpdateTrail();
         BatMotionBehaviour motion = contact.motion;
         if (flight.flying && motion != null)
@@ -116,9 +109,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _hasPreviousCandidateY = false;
         ResetTrail();
         ClearPresentation();
-        if (windAudio != null) { windAudio.Stop(); windAudio.volume = 0f; windAudio.clip = null; }
         if (contactAudio != null) contactAudio.Stop();
-        if (bounceAudio != null) bounceAudio.Stop();
     }
 
     private void ClearPresentation()
@@ -181,23 +172,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         if ((hands & 2) != 0) player.PlayHapticEventInHand(VRC_Pickup.PickupHand.Right, hapticDuration, hapticAmplitude, hapticFrequency);
     }
 
-    private void UpdateWind()
-    {
-        if (windAudio == null || flight == null) return;
-        if (!flight.flying || flight.body == null || windClip == null)
-        { if (windAudio.isPlaying) windAudio.Stop(); windAudio.volume = 0f; return; }
-        float speed = flight.body.velocity.magnitude;
-        if (!windAudio.transform.IsChildOf(flight.body.transform))
-        {
-            if (!CanMoveVisual(windAudio.transform)) { windAudio.Stop(); windAudio.volume = 0f; return; }
-            windAudio.transform.position = flight.body.position;
-        }
-        float volume = WindVolume(speed, windStartSpeed, windMaxSpeed, windMaxVolume);
-        windAudio.volume = volume;
-        if (volume > 0f && !windAudio.isPlaying && windAudio.clip != windClip)
-        { windAudio.clip = windClip; windAudio.Play(); }
-    }
-
     // Never move a transform that could move a Rigidbody or Collider, even if
     // a consumer accidentally assigns a physics object to a visual/audio slot.
     private bool CanMoveVisual(Transform value)
@@ -205,12 +179,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         return value != null && value.GetComponentInParent<Rigidbody>() == null &&
             value.GetComponentInChildren<Rigidbody>() == null && value.GetComponentInParent<Collider>() == null &&
             value.GetComponentInChildren<Collider>() == null;
-    }
-
-    private float WindVolume(float speed, float start, float maximum, float volume)
-    {
-        if (maximum <= start) return speed >= start ? volume : 0f;
-        return Mathf.Clamp01((speed - start) / (maximum - start)) * volume;
     }
 
     private float TimingYaw(Vector3 axis, Vector3 direction)

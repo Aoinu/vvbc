@@ -6,13 +6,13 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
 
 ## Development setup
 
-1. Configure Bat Contact, the pitcher, Ball Flight and strike observer as in
+1. Configure Bat Contact, the pitcher, BallBehaviour and strike observer as in
    [bat contact](bat-contact.md) and [batting pitcher](batting-pitcher.md).
 2. Place `Runtime/Prefabs/BattingFeedback.prefab` in the scene. Assign its
    `contact` to the lane's Bat Contact UdonBehaviour and `flight` to the same
-   Ball Flight UdonBehaviour used by that contact. The feedback registers its
+   BallBehaviour UdonBehaviour used by that contact. The feedback registers its
    local listeners at Start; use one feedback instance per contact evaluator
-   and Ball Flight. It sleeps between pitches and wakes on launch.
+   and BallBehaviour. It sleeps between pitches and wakes on launch.
 3. Position and orient the World Space `Metrics Display` for the batting lane.
    Its root uses a 0.001 scale so the 500-by-750 UI rect renders at roughly
    0.5-by-0.75 m; do not set its Transform scale to zero.
@@ -29,24 +29,17 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    Place the feedback root outside Collider and Rigidbody hierarchies: movable
    phantom and contact-audio targets in a physics hierarchy are rejected so a
    bad reference cannot move physics objects.
-4. For Ball bounce, add an UdonBehaviour on the Ball Rigidbody GameObject and
-   assign `Runtime/TsukimiProgramAssets/FeedbackImpactAudioBehaviour.asset`.
-   Place `Runtime/Prefabs/BallImpactAudio.prefab` as a child of the Ball,
-   and assign its AudioSource to `impactAudio`. Set `impactLayers` to the same
-   ground layers as Ball Flight, `minimumSpeed` to 0.8, and `cooldown` to 0.1.
-   Assign this AudioSource to the feedback's optional `bounceAudio` so reset can
-   stop it. An empty impact mask means all layers.
-5. The Bat prefab has an independent impact UdonBehaviour on its Body. Its
-   default threshold is 1 m/s and it only plays for the local owner. Its audio
-   is triggered by collision, not by pickup release.
-6. In the ignored local development scene or a local ignored PlayerObject
-   prefab override, assign `Assets/Development/Sounds/bat_contact.mp3` and
-   `jet.ogg` to the feedback's `contactClip` and `windClip`, `ball_bounce.wav`
-   to the Ball impact's `impactClip`, and `bat_drop.mp3` to the Bat Body impact's
-   `impactClip`. Do not assign these clips in the distributed package prefabs.
-   All four clips may be left empty; their playback is skipped safely. Wind is
-   intentionally not looped by this initial implementation. See the audio settings
-   below before adjusting volume or distance.
+4. Ball bounce and wind are handled by the Ball prefab's BallBehaviour and
+   its `Audio/Bounce` and `Audio/Wind` sources. Configure `impactLayers`,
+   thresholds, cooldown, wind speeds and volumes there. An empty impact mask
+   accepts all layers. Reset stops both sources.
+5. The Bat prefab keeps its independent impact UdonBehaviour on its Body.
+   Its default threshold is 1 m/s and it only plays for the local owner.
+6. In the ignored local Sandbox, assign `bat_contact.mp3` to feedback's
+   `contactClip`, `jet.ogg` to BallBehaviour's `windClip`, `ball_bounce.wav`
+   to its `impactClip`, and `bat_drop.mp3` to the Bat impact's `impactClip`.
+   The package contains no clips; unset clips are skipped safely. Wind is a
+   one-shot and does not restart until reset clears its clip.
 
 The delay defaults to one second and the marker diameter to 0.03 m. Measurements
 are taken in world units. Bat peak history holds 128 frame differences and is
@@ -80,9 +73,9 @@ cannot establish the cause without listening to the actual clips in VRChat.
 | Sound | Prefab / GameObject | Min / Max distance | Dynamic volume controls |
 | --- | --- | --- | --- |
 | Bat contact | `BattingFeedback.prefab` / `Contact Audio` | 1 / 350 m | feedback `contactMinVolume` 0.45, `contactMaxVolume` 1 |
-| Ball impact | `BallImpactAudio.prefab` / root, parented to Ball | 1 / 250 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
+| Ball impact | `Ball.prefab` / `Audio/Bounce` | 1 / 250 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
 | Bat drop / impact | `Bat.prefab` / `Body/Drop Audio` | 1 / 250 m | Body impact `minimumVolume` 0.35, `maximumVolume` 1 |
-| Flight wind | `BattingFeedback.prefab` / `Wind Audio` | 1 / 200 m | feedback `windMaxVolume` 0.35 |
+| Flight wind | `Ball.prefab` / `Audio/Wind` | 1 / 200 m | Ball `windMaxVolume` 0.35 |
 
 Contact playback is driven by local feedback, not a broadcast event: increasing
 its range does not by itself make a hit play on other clients. Verify remote
@@ -96,7 +89,7 @@ reset clears its clip. Contact volume and pitch interpolate using
 component of relative collision velocity, interpolating from minimum to maximum
 volume between `minimumSpeed` and `maximumSpeed`; below threshold it does not
 play. Its layer filter, optional local-owner filter and cooldown are unchanged.
-Reset stops the contact, wind and optional Ball impact sources.
+Reset stops the Ball wind and impact sources; feedback stops contact audio.
 
 Each source uses Spatial Blend 3D, Custom Volume Rolloff and its own editable
 **AudioSource > 3D Sound Settings > Volume** curve. The initial curve holds near
@@ -121,8 +114,8 @@ range and when several effects play together; reduce Gain if necessary.
 Existing scene/prefab instances can have overrides for these fields or audio
 settings: inspect and
 update those overrides explicitly; updating a package prefab does not replace them.
-For existing local Ball audio sources, replace them with the Ball Impact Audio
-prefab or copy its AudioSource and VRC settings, then reassign both references.
+For existing Ball instances, migrate the impact and wind clips and overrides to
+the BallBehaviour and its child AudioSources.
 
 In VRChat, check weak, medium and strong contact and impacts at 1, 3, 100 and
 200 m, near the maximum and beyond it; compare the wind with contact and

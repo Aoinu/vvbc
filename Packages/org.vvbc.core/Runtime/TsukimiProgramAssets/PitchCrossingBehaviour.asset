@@ -28,9 +28,11 @@ MonoBehaviour:
     %SystemSingle, 0\n    _bottom: %SystemSingle, 0\n    _top: %SystemSingle, 0\n   
     _radius: %SystemSingle, 0\n    _previousTime: %SystemSingle, 0\n    _previousPosition:
     %UnityEngineVector3, null\n    _previousVelocity: %UnityEngineVector3, null\n   
-    _swingPending: %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n   
-    __refl_typename: %SystemString, \"PitchCrossingBehaviour\"\n    __refl_typeids:
-    %SystemInt64Array, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_0:
+    _swingPending: %SystemBoolean, null\n    __ret__X15zBallFlightModel__m__Step__position:
+    %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__velocity:
+    %UnityEngineVector3, null\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"PitchCrossingBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_0:
     %SystemSingle, 0\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_1:
     %UnityEngineVector3, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_2:
     %UnityEngineVector3, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_3:
@@ -130,30 +132,42 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_i:
-    %SystemInt32, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0:
-    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3:
+    %SystemInt32, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1:
+    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4:
-    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6:
+    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11:
-    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12:
-    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__angularVelocity:
+    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14:
+    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t15:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__spin:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__gravity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__drag:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t0:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t1:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v0:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p1:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v1:
@@ -181,6 +195,15 @@ MonoBehaviour:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__y:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dx:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dy:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__spin:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__drag:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__magnus:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__angularVelocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__drag:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__magnus:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_p_0:
     %UnityEngineVector3, null\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_p_1:
@@ -230,12 +253,16 @@ MonoBehaviour:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3___cse_1:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_ret:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __retaddr_end:
-    %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n    __const_1:
-    %VRCUdonUdonBehaviour, null\n    __const_2: %UnityEngineTransform, null\n   
-    __const_3: %UnityEngineVector3, null\n    __const_4: %SystemSingle, 0\n    __const_5:
-    %UnityEngineObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_0:
+    %SystemUInt32, 0xFFFFFFFC\n    __X16zBallAerodynamics__m__Acceleration_p_0: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_p_1: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_p_2: %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_p_3:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_ret: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __recStack: %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __recRetStack:
+    %SystemObjectArray, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0:
+    %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2:
+    %UnityEngineTransform, null\n    __const_3: %UnityEngineVector3, null\n    __const_4:
+    %SystemSingle, 0\n    __const_5: %UnityEngineObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __const_6: %SystemString, \"plateOrigin\"\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_1:
     %SystemObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_2:
     %UnityEngineTransform, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_3:
@@ -382,7 +409,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_21:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_22:
-    %UnityEngineVector3, null\n    __retaddr_6: %SystemUInt32, 0x00012E40\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_23:
+    %UnityEngineVector3, null\n    __retaddr_6: %SystemUInt32, 0x00012F08\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_23:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_24:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_27:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_28:
@@ -406,7 +433,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_49:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_50:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_51:
-    %UnityEngineVector3, null\n    __retaddr_7: %SystemUInt32, 0x000132E0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_52:
+    %UnityEngineVector3, null\n    __retaddr_7: %SystemUInt32, 0x000133A8\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_52:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_53:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_56:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_57:
@@ -491,8 +518,14 @@ MonoBehaviour:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_81:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_83:
     %SystemBoolean, null\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_85:
-    %SystemSingle, 0\n    __const_39: %SystemSingle, -1\n.data_end\n.code_start\n   
-    .export BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle\n   
+    %SystemSingle, 0\n    __const_39: %SystemSingle, -1\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
+    0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_3: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_4: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_5: %UnityEngineVector3, null\n   
+    __fold_SystemSingle__0: %SystemSingle, null\n.data_end\n.code_start\n    .export
+    BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle\n   
     BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle:\n       
     PUSH, __const_1\n        PUSH, __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle___t1\n       
     COPY\n        PUSH, __const_2\n        PUSH, __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle___t2\n       
@@ -4908,22 +4941,25 @@ MonoBehaviour:
     PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean:\n       
     PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
     COPY\n        PUSH, __const_27\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_i\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__u2\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__u3\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl8__u2\n       
@@ -4933,6 +4969,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__y\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dx\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dy\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
     COPY\n        PUSH, flight\n        PUSH, __const_5\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_0\n       
@@ -4955,43 +4992,47 @@ MonoBehaviour:
     EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_3\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L5\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
-    EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n        PUSH,
-    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_3\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n        PUSH,
+    flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
     PUSH, __const_29\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
-    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
     PUSH, __const_30\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_7\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_9\n       
     EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_10\n       
     EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_9\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_10\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_11\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_11\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_12\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_13\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_7\n       
@@ -5000,29 +5041,37 @@ MonoBehaviour:
     EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_12\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_14\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
-    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
-    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, hasFrontCrossing\n        JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    PUSH, __ret__X15zBallFlightModel__m__Step__position\n        COPY\n        PUSH,
+    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n        COPY\n        PUSH,
+    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
+    COPY\n        PUSH, hasFrontCrossing\n        JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6\n       
     JUMP, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L9\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6:\n       
     PUSH, _forward\n        PUSH, _depth\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_21\n       
@@ -5132,24 +5181,24 @@ MonoBehaviour:
     PUSH, frontCrossing\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __const_16\n        PUSH, hasFrontCrossing\n        COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L9:\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L11\n       
-    PUSH, hasFrontCrossing\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, hasFrontCrossing\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L11:\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L13\n       
     JUMP_INDIRECT, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_retjump\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L13:\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L15\n       
-    PUSH, hasResult\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, hasResult\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L15:\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L19\n       
     PUSH, _depth\n        PUSH, __const_21\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_49\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -5796,11 +5845,25 @@ MonoBehaviour:
     __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_L23:\n       
     PUSH, __const_39\n        PUSH, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_ret\n       
     COPY\n        JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n       
-    JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n.code_end\n"
+    JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    X16zBallAerodynamics__m__Acceleration:\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n        EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n       
+    PUSH, __fold_SystemSingle__0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_ret\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n        JUMP_INDIRECT,
+    __X16zBallAerodynamics__m__Acceleration_retjump\n.code_end\n"
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: e5fa3daa9c91a2846882a2ae2a4cd11c, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 8ced6ec8c14f6d700aa5347276d55d37cce22fe9e402b8081f9e5b53430fa38d
+  sourceFingerprint: 6a39a5bf49ef394866a6bf9d7027a407b6077d080dcaf79b58b1f2140706385f
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -5845,9 +5908,11 @@ MonoBehaviour:
     %SystemSingle, 0\n    _bottom: %SystemSingle, 0\n    _top: %SystemSingle, 0\n   
     _radius: %SystemSingle, 0\n    _previousTime: %SystemSingle, 0\n    _previousPosition:
     %UnityEngineVector3, null\n    _previousVelocity: %UnityEngineVector3, null\n   
-    _swingPending: %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n   
-    __refl_typename: %SystemString, \"PitchCrossingBehaviour\"\n    __refl_typeids:
-    %SystemInt64Array, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_0:
+    _swingPending: %SystemBoolean, null\n    __ret__X15zBallFlightModel__m__Step__position:
+    %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__velocity:
+    %UnityEngineVector3, null\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"PitchCrossingBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_0:
     %SystemSingle, 0\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_1:
     %UnityEngineVector3, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_2:
     %UnityEngineVector3, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_3:
@@ -5947,30 +6012,42 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_i:
-    %SystemInt32, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0:
-    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3:
+    %SystemInt32, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1:
+    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4:
-    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6:
+    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11:
-    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12:
-    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__angularVelocity:
+    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14:
+    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t15:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__spin:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__gravity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__drag:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t0:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t1:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v0:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p1:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v1:
@@ -5998,6 +6075,15 @@ MonoBehaviour:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__y:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dx:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dy:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__spin:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__drag:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__magnus:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__angularVelocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__drag:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__magnus:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_p_0:
     %UnityEngineVector3, null\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_p_1:
@@ -6047,12 +6133,16 @@ MonoBehaviour:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3___cse_1:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_ret:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __retaddr_end:
-    %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n    __const_1:
-    %VRCUdonUdonBehaviour, null\n    __const_2: %UnityEngineTransform, null\n   
-    __const_3: %UnityEngineVector3, null\n    __const_4: %SystemSingle, 0\n    __const_5:
-    %UnityEngineObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_0:
+    %SystemUInt32, 0xFFFFFFFC\n    __X16zBallAerodynamics__m__Acceleration_p_0: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_p_1: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_p_2: %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_p_3:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_ret: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __recStack: %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __recRetStack:
+    %SystemObjectArray, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0:
+    %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2:
+    %UnityEngineTransform, null\n    __const_3: %UnityEngineVector3, null\n    __const_4:
+    %SystemSingle, 0\n    __const_5: %UnityEngineObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __const_6: %SystemString, \"plateOrigin\"\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_1:
     %SystemObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_2:
     %UnityEngineTransform, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_3:
@@ -6204,7 +6294,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_20:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_21:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_22:
-    %UnityEngineVector3, null\n    __retaddr_6: %SystemUInt32, 0x000132B4\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_23:
+    %UnityEngineVector3, null\n    __retaddr_6: %SystemUInt32, 0x0001369C\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_23:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_24:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_25:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_26:
@@ -6233,7 +6323,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_49:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_50:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_51:
-    %UnityEngineVector3, null\n    __retaddr_7: %SystemUInt32, 0x00013864\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_52:
+    %UnityEngineVector3, null\n    __retaddr_7: %SystemUInt32, 0x00013C4C\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_52:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_53:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_54:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_55:
@@ -6365,7 +6455,13 @@ MonoBehaviour:
     %SystemInt32, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_85:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_86:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_87:
-    %SystemInt32, 0\n    __const_39: %SystemSingle, -1\n.data_end\n.code_start\n   
+    %SystemInt32, 0\n    __const_39: %SystemSingle, -1\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
+    0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_3: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_4: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_5: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_6: %UnityEngineVector3, null\n.data_end\n.code_start\n   
     .export BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle\n   
     BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle:\n       
     PUSH, __const_0\n        PUSH, __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle___t0\n       
@@ -10846,29 +10942,41 @@ MonoBehaviour:
     PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean:\n       
     PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
     COPY\n        PUSH, __const_27\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_i\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
-    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
-    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__velocity\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1\n       
-    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__angularVelocity\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t15\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__spin\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__gravity\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__drag\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t1\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v0\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p1\n       
@@ -10897,6 +11005,15 @@ MonoBehaviour:
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__y\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dx\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dy\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__spin\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__drag\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__magnus\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__angularVelocity\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__drag\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__magnus\n       
     COPY\n        PUSH, flight\n        PUSH, __const_5\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_0\n       
@@ -10922,64 +11039,102 @@ MonoBehaviour:
     EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_3\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L5\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_3\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_4\n       
     EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n        PUSH,
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_4\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_3\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
     PUSH, __const_29\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_6\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_6\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
-    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
     PUSH, __const_30\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_7\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_7\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_8\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_8\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__angularVelocity\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__spin\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__gravity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__drag\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t0\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__spin\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__spin\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__drag\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__drag\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__magnus\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__spin\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__angularVelocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__drag\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__drag\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__magnus\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__magnus\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__drag\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_9\n       
     EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_10\n       
     EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_9\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_10\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_11\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_11\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_12\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__angularVelocity\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__angularVelocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_13\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__magnus\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_13\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_14\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
@@ -10988,30 +11143,47 @@ MonoBehaviour:
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_15\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_15\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__gravity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t0\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_18\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_18\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t1\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_20\n       
+    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_20\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    PUSH, __ret__X15zBallFlightModel__m__Step__position\n        COPY\n        PUSH,
+    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n        COPY\n        PUSH,
+    __ret__X15zBallFlightModel__m__Step__position\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__position\n       
+    COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n        PUSH,
+    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
-    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_1\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_20\n       
-    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_20\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
     COPY\n        PUSH, hasFrontCrossing\n        JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6\n       
     JUMP, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L9\n   
@@ -11147,12 +11319,12 @@ MonoBehaviour:
     PUSH, frontCrossing\n        COPY\n        PUSH, __const_16\n        PUSH, hasFrontCrossing\n       
     COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L9:\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L11\n       
-    PUSH, hasFrontCrossing\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, hasFrontCrossing\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L11:\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L13\n       
     JUMP_INDIRECT, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_retjump\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L13:\n       
@@ -11160,15 +11332,15 @@ MonoBehaviour:
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_47\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_47\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L15\n       
     PUSH, hasResult\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_48\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_48\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L15:\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L19\n       
     PUSH, _depth\n        PUSH, __const_21\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_49\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -11394,8 +11566,8 @@ MonoBehaviour:
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_0\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t15\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t15\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_94\n       
     EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -11960,7 +12132,24 @@ MonoBehaviour:
     __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_L23:\n       
     PUSH, __const_39\n        PUSH, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_ret\n       
     COPY\n        JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n       
-    JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n.code_end\n"
+    JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    X16zBallAerodynamics__m__Acceleration:\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_2\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_0\n        EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n       
+    EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n       
+    EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_6\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_6\n        PUSH, __X16zBallAerodynamics__m__Acceleration_ret\n       
+    COPY\n        JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n       
+    JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n.code_end\n"
   optAfterUasm: ".data_start\n    zone: %VRCUdonUdonBehaviour, null\n    .export
     zone\n    phantom: %VRCUdonUdonBehaviour, null\n    .export phantom\n    flight:
     %VRCUdonUdonBehaviour, null\n    .export flight\n    tracking: %SystemBoolean,
@@ -11975,9 +12164,11 @@ MonoBehaviour:
     %SystemSingle, 0\n    _bottom: %SystemSingle, 0\n    _top: %SystemSingle, 0\n   
     _radius: %SystemSingle, 0\n    _previousTime: %SystemSingle, 0\n    _previousPosition:
     %UnityEngineVector3, null\n    _previousVelocity: %UnityEngineVector3, null\n   
-    _swingPending: %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n   
-    __refl_typename: %SystemString, \"PitchCrossingBehaviour\"\n    __refl_typeids:
-    %SystemInt64Array, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_0:
+    _swingPending: %SystemBoolean, null\n    __ret__X15zBallFlightModel__m__Step__position:
+    %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__velocity:
+    %UnityEngineVector3, null\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"PitchCrossingBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_0:
     %SystemSingle, 0\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_1:
     %UnityEngineVector3, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_2:
     %UnityEngineVector3, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_p_3:
@@ -12077,30 +12268,42 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_i:
-    %SystemInt32, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0:
-    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3:
+    %SystemInt32, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_state__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1:
+    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4:
-    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6:
+    %VRCUdonUdonBehaviour, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11:
-    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12:
-    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__velocity:
-    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__angularVelocity:
+    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14:
+    %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t15:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__spin:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__gravity:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__drag:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__magnus:
-    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__dt:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t0:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6____t1:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p0:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v0:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__p1:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__v1:
@@ -12128,6 +12331,15 @@ MonoBehaviour:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__y:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dx:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dy:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__spin:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__drag:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl11__magnus:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__velocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__angularVelocity:
+    %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__drag:
+    %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl13__magnus:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_p_0:
     %UnityEngineVector3, null\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_p_1:
@@ -12177,12 +12389,16 @@ MonoBehaviour:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3___cse_1:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_ret:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __retaddr_end:
-    %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean, null\n    __const_1:
-    %VRCUdonUdonBehaviour, null\n    __const_2: %UnityEngineTransform, null\n   
-    __const_3: %UnityEngineVector3, null\n    __const_4: %SystemSingle, 0\n    __const_5:
-    %UnityEngineObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_0:
+    %SystemUInt32, 0xFFFFFFFC\n    __X16zBallAerodynamics__m__Acceleration_p_0: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_p_1: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_p_2: %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_p_3:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_ret: %UnityEngineVector3,
+    null\n    __X16zBallAerodynamics__m__Acceleration_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __recStack: %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __recRetStack:
+    %SystemObjectArray, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __const_0:
+    %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2:
+    %UnityEngineTransform, null\n    __const_3: %UnityEngineVector3, null\n    __const_4:
+    %SystemSingle, 0\n    __const_5: %UnityEngineObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __const_6: %SystemString, \"plateOrigin\"\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_1:
     %SystemObject, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_2:
     %UnityEngineTransform, null\n    __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_intnl_3:
@@ -12329,7 +12545,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_21:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_22:
-    %UnityEngineVector3, null\n    __retaddr_6: %SystemUInt32, 0x00012E40\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_23:
+    %UnityEngineVector3, null\n    __retaddr_6: %SystemUInt32, 0x00012F08\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_23:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_24:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_27:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_28:
@@ -12353,7 +12569,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_49:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_50:
     %UnityEngineVector3, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_51:
-    %UnityEngineVector3, null\n    __retaddr_7: %SystemUInt32, 0x000132E0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_52:
+    %UnityEngineVector3, null\n    __retaddr_7: %SystemUInt32, 0x000133A8\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_52:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_53:
     %SystemBoolean, null\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_56:
     %SystemSingle, 0\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_57:
@@ -12438,8 +12654,14 @@ MonoBehaviour:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_81:
     %SystemSingle, 0\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_83:
     %SystemBoolean, null\n    __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_intnl_85:
-    %SystemSingle, 0\n    __const_39: %SystemSingle, -1\n.data_end\n.code_start\n   
-    .export BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle\n   
+    %SystemSingle, 0\n    __const_39: %SystemSingle, -1\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
+    %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
+    0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_3: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_4: %UnityEngineVector3, null\n   
+    __X16zBallAerodynamics__m__Acceleration_intnl_5: %UnityEngineVector3, null\n   
+    __fold_SystemSingle__0: %SystemSingle, null\n.data_end\n.code_start\n    .export
+    BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle\n   
     BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle:\n       
     PUSH, __const_1\n        PUSH, __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle___t1\n       
     COPY\n        PUSH, __const_2\n        PUSH, __BeginPitch__SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle___t2\n       
@@ -16855,22 +17077,25 @@ MonoBehaviour:
     PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean:\n       
     PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
     COPY\n        PUSH, __const_27\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_i\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
     COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_u_1\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__u2\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl7__u3\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl8__u2\n       
@@ -16880,6 +17105,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__y\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dx\n       
     COPY\n        PUSH, __const_4\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl9__dy\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
     COPY\n        PUSH, flight\n        PUSH, __const_5\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_0\n       
@@ -16902,43 +17128,47 @@ MonoBehaviour:
     EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_3\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L5\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
-    EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n        PUSH,
-    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_2\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_3\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t0\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n        PUSH,
+    flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t1\n       
     PUSH, __const_29\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t2\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
-    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t3__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t4\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t5\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_5\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    COPY\n        PUSH, flight\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
     PUSH, __const_30\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_7\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_9\n       
     EXTERN, \"SystemSingle.__op_UnaryMinus__SystemSingle__SystemSingle\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_10\n       
     EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_9\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_10\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_11\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_11\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_12\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t7\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_13\n       
     EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_7\n       
@@ -16947,29 +17177,37 @@ MonoBehaviour:
     EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_12\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_14\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t9\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t0\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
-    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
-    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t10\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl_t1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_16\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
+    EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_17\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_dt\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
     EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_1\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t8__position\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_19\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
     EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, hasFrontCrossing\n        JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    PUSH, __ret__X15zBallFlightModel__m__Step__position\n        COPY\n        PUSH,
+    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n        COPY\n        PUSH,
+    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__velocity\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextVelocity\n       
+    COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___inl6__state__position\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_nextPosition\n       
+    COPY\n        PUSH, hasFrontCrossing\n        JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6\n       
     JUMP, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L9\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L6:\n       
     PUSH, _forward\n        PUSH, _depth\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_21\n       
@@ -17079,24 +17317,24 @@ MonoBehaviour:
     PUSH, frontCrossing\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __const_16\n        PUSH, hasFrontCrossing\n        COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L9:\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     COPY\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L11\n       
-    PUSH, hasFrontCrossing\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, hasFrontCrossing\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     COPY\n    __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L11:\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t11\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t13\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L13\n       
     JUMP_INDIRECT, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_retjump\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L13:\n       
     PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_p_4\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L15\n       
-    PUSH, hasResult\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, hasResult\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
     __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L15:\n       
-    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t12\n       
+    PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean___t14\n       
     JUMP_IF_FALSE, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_L19\n       
     PUSH, _depth\n        PUSH, __const_21\n        PUSH, __PredictCrossings__SystemSingle_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemBoolean_intnl_49\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -17743,7 +17981,21 @@ MonoBehaviour:
     __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_L23:\n       
     PUSH, __const_39\n        PUSH, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_ret\n       
     COPY\n        JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n       
-    JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n.code_end\n"
+    JUMP_INDIRECT, __CrossingFraction__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_retjump\n   
+    X16zBallAerodynamics__m__Acceleration:\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n        EXTERN, \"UnityEngineVector3.__get_magnitude__SystemSingle\"\n       
+    PUSH, __fold_SystemSingle__0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_1\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_2\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_1\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n        EXTERN, \"UnityEngineVector3.__Cross__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_p_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_4\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n        EXTERN, \"UnityEngineVector3.__op_Multiply__SystemSingle_UnityEngineVector3__UnityEngineVector3\"\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_3\n        PUSH, __X16zBallAerodynamics__m__Acceleration_intnl_5\n       
+    PUSH, __X16zBallAerodynamics__m__Acceleration_ret\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
+    JUMP_INDIRECT, __X16zBallAerodynamics__m__Acceleration_retjump\n        JUMP_INDIRECT,
+    __X16zBallAerodynamics__m__Acceleration_retjump\n.code_end\n"
   optBeforeInject:
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=2184334015348262212\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=2184334015348262212"
@@ -17758,11 +18010,12 @@ MonoBehaviour:
   - "=__recRetStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
   - "=__const_3\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
   - "=__const_16\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__fold_SystemSingle__0\tPrimConst\t=SystemSingle\t0\tSingle:=-0\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 2389
-  optExternAfter: 2385
-  optInsnBefore: 11139
-  optInsnAfter: 10699
-  optBytesBefore: 87192
-  optBytesAfter: 84232
+  optExternBefore: 2396
+  optExternAfter: 2391
+  optInsnBefore: 11320
+  optInsnAfter: 10754
+  optBytesBefore: 88436
+  optBytesAfter: 84632
   optStage: ran

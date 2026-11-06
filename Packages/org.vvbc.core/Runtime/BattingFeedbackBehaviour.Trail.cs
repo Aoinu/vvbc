@@ -146,7 +146,7 @@ public partial class BattingFeedbackBehaviour
         float time = contact.contactTime;
         for (int i = 0; i < 500; i++)
         {
-            BallFlightState next = BallAerodynamics.Advance(state, spin, Physics.gravity,
+            BallFlightState next = BallFlightModel.Advance(state, spin, Physics.gravity,
                 flight.dragCoefficient, flight.magnusCoefficient, step, step);
             float left = 0f;
             for (int j = 1; j <= 8; j++)

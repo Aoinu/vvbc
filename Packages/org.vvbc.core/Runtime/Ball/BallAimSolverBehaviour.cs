@@ -104,8 +104,12 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         for (int i = 0; i < budget && solving; i++)
         {
             Vector3 previous = _position;
-            _velocity += (_gravity + BallAerodynamics.Acceleration(_velocity, _trialSpin, _drag, _magnus)) * _dt;
-            _position += _velocity * _dt;
+            BallFlightState state = new BallFlightState();
+            state.position = _position;
+            state.velocity = _velocity;
+            state = BallFlightModel.Step(state, _trialSpin, _gravity, _drag, _magnus, _dt);
+            _position = state.position;
+            _velocity = state.velocity;
             _step++;
             float previousSide = Vector3.Dot(previous - _target, _normal);
             float side = Vector3.Dot(_position - _target, _normal);

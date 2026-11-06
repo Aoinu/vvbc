@@ -8,26 +8,21 @@ periodic correction is used.
 
 ## Scene setup
 
-1. Start with the existing pitcher, Ball Flight, strike observer, flight visual
-   and local Bat Contact setup described in the adjacent documents.
-2. Add an UdonBehaviour using `BallNetworkBehaviour` to the physical Ball's
-   Rigidbody GameObject. Do not add `VRCObjectSync` or enable Udon position sync
-   for that ball. Disable collision ownership transfer on the ball's Udon
-   components. Set its `flight`, `flightVisual`, `ballRenderer`,
-   `ballCollider` and `animationBall` references to the corresponding scene
-   objects. Set Ball Flight's `network` reference back to this component.
-3. The owner of the pitcher Animator GameObject runs its automatic pitch cycle.
-   Set its pitcher UdonBehaviour to Manual sync so that the object is networked;
-   the pitcher itself has no synced variables. The cycle first
-   takes Ball ownership for Stage, then releases a pitch. The local batter's
-   existing Bat Contact evaluates the pitch and requests Ball ownership after
-   saving the hit result. Other clients do not re-evaluate an already received
-   hit. The pitcher takes ownership again for the next Stage.
-4. Keep Bat Contact bound to the local player's Bat. At each flight start the
-   local Bat Contact asks every currently available PlayerObject Bat to ignore
-   the Ball collider on that client. Spawn the Bats before starting a pitch and
-   verify physical Bat/Ball collisions in the actual world without changing
-   the SDK collision matrix or adding a layer.
+1. Place `Runtime/Prefabs/Ball.prefab` and connect its BallBehaviour to the
+   pitcher, strike observer and Bat Contact. Its own Rigidbody, collider,
+   renderer, trail and sound sources are already bound. Supply a model and clips
+   as described in [batting pitcher](batting-pitcher.md).
+2. BallBehaviour declares Manual sync and holds the Stage, Pitch and Hit
+   snapshots. Do not add `VRCObjectSync` or Udon position sync. The pitcher
+   registers its own animation-ball presentation listener; the ball does not
+   own the animated hand-held model.
+3. The owner of the pitcher Animator GameObject runs the automatic cycle. It
+   takes Ball ownership for Stage, then releases a pitch. Bat Contact saves a
+   local hit and requests Ball ownership; the pitcher takes it back for Stage.
+4. Keep Bat Contact bound to the local player's Bat. At flight start it asks
+   available PlayerObject Bats to ignore the Ball collider locally. Spawn Bats
+   before starting a pitch and verify collisions in the actual world without
+   changing the SDK collision matrix or adding a layer.
 
 ## Two-client check
 
@@ -42,8 +37,9 @@ client logs for `BallNetwork` warnings.
 
 ## Limits
 
-Catch-up is limited to three seconds and requires a fixed time step of at least
-5 ms. A snapshot outside that range stops the current flight and logs a warning;
+Catch-up defaults to a maximum of three seconds and a fixed time step of at least
+5 ms; both limits are configurable on BallBehaviour. A snapshot outside that
+range stops the current flight and logs a warning;
 it is not silently placed at a shortened elapsed time. Catch-up models free
 flight, not collisions that happened before reception. Ownership transfer and
 network delivery can fail or be delayed. A transfer still pending after one

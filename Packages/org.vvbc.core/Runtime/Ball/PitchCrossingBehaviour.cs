@@ -6,7 +6,7 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
 {
     public StrikeZoneBehaviour zone;
     public BallPhantomBehaviour phantom;
-    public BallFlightBehaviour flight;
+    public BallBehaviour flight;
     public bool tracking;
     public bool hasFrontCrossing;
     public bool hasResult;
@@ -134,9 +134,12 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
         if (dt <= 0f) return;
         for (int i = 0; i < 500; i++)
         {
-            Vector3 nextVelocity = velocity + (Physics.gravity + BallAerodynamics.Acceleration(velocity, spin,
-                flight.dragCoefficient, flight.magnusCoefficient)) * dt;
-            Vector3 nextPosition = position + nextVelocity * dt;
+            BallFlightState state = new BallFlightState();
+            state.position = position;
+            state.velocity = velocity;
+            state = BallFlightModel.Step(state, spin, Physics.gravity, flight.dragCoefficient, flight.magnusCoefficient, dt);
+            Vector3 nextVelocity = state.velocity;
+            Vector3 nextPosition = state.position;
             if (!hasFrontCrossing)
             {
                 float u = CrossingFraction(position, velocity, nextPosition, nextVelocity, dt,

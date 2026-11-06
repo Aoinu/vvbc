@@ -58,6 +58,24 @@ public partial class BallAimSolverBehaviour
     }
 
     [TsukimiTest]
+    public void SolverStepUsesTheSameSemiImplicitModel()
+    {
+        Vector3 release = new Vector3(0f, 1.8f, 0f);
+        Vector3 spin = Vector3.left * 200f;
+        Vector3 gravity = Vector3.down * 9.81f;
+        BeginSolve(release, new Vector3(0f, 1f, 18f), Vector3.forward, 30f,
+            spin, gravity, 0.00622f, 0.00063f, 0.02f);
+        stepsPerFrame = 1;
+        BallFlightState expected = new BallFlightState();
+        expected.position = _position;
+        expected.velocity = _velocity;
+        expected = BallFlightModel.Step(expected, _trialSpin, gravity, 0.00622f, 0.00063f, 0.02f);
+        Advance();
+        Assert.IsTrue(Vector3.Distance(expected.position, _position) < 0.00001f);
+        Assert.IsTrue(Vector3.Distance(expected.velocity, _velocity) < 0.00001f);
+    }
+
+    [TsukimiTest]
     public void SpinBasisRotatesWithPitchDirectionAndPreservesMagnitude()
     {
         Vector3 local = new Vector3(-100f, -60f, 120f);

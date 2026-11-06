@@ -17,16 +17,6 @@ public partial class BattingFeedbackBehaviour
     }
 
     [TsukimiTest]
-    public void WindVolumeUsesSpecifiedSpeedThresholds()
-    {
-        Assert.IsTrue(contactMinVolume == 0.45f && contactMaxVolume == 1f && windMaxVolume == 0.35f);
-        Assert.IsTrue(WindVolume(19f, 20f, 40f, 1f) == 0f);
-        Assert.IsTrue(Mathf.Abs(WindVolume(30f, 20f, 40f, 1f) - 0.5f) < 0.0001f);
-        Assert.IsTrue(WindVolume(40f, 20f, 40f, 1f) == 1f);
-        Assert.IsTrue(WindVolume(60f, 20f, 40f, 1f) == 1f);
-    }
-
-    [TsukimiTest]
     public void MissRequiresSpeedAndResetDiscardsPendingSnapshot()
     {
         _hasClosest = true; _speed = 4.9f;

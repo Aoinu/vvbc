@@ -24,7 +24,7 @@ try
 {
     var ballObject = make("Ball");
     var body = ballObject.AddComponent<UnityEngine.Rigidbody>();
-    var flight = ballObject.AddComponent<BallFlightBehaviour>();
+    var flight = ballObject.AddComponent<BallBehaviour>();
     flight.body = body;
     var motion = make("Motion").AddComponent<BatMotionBehaviour>();
     var zone = make("Zone").transform;
@@ -81,7 +81,7 @@ try
         UnityEngine.Mathf.Abs(contact.snapshotBatCoreVelocity.z - expectedCoreVelocity) < 0.02f &&
         (contact.snapshotIncomingVelocity - new UnityEngine.Vector3(20f, 0f, 10f)).sqrMagnitude < 0.0001f, "all motion fields use tc");
     var expected = new BallFlightState { position = contact.contactPosition, velocity = contact.resultVelocity };
-    expected = BallAerodynamics.Advance(expected, contact.resultSpin, UnityEngine.Physics.gravity,
+    expected = BallFlightModel.Advance(expected, contact.resultSpin, UnityEngine.Physics.gravity,
         flight.dragCoefficient, flight.magnusCoefficient, end - contact.contactTime, UnityEngine.Time.fixedDeltaTime);
     check((body.position - expected.position).sqrMagnitude < 0.00000001f &&
         (body.velocity - expected.velocity).sqrMagnitude < 0.00000001f, "post-contact flight at physics time");
@@ -156,7 +156,7 @@ try
     contact.OnBatContactPose();
     check(contact.contactValid && contact.contactTime > end, "second future contact accepted");
     var expectedFuture = new BallFlightState { position = contact.contactPosition, velocity = contact.resultVelocity };
-    expectedFuture = BallAerodynamics.Advance(expectedFuture, contact.resultSpin, UnityEngine.Physics.gravity,
+    expectedFuture = BallFlightModel.Advance(expectedFuture, contact.resultSpin, UnityEngine.Physics.gravity,
         flight.dragCoefficient, flight.magnusCoefficient, end + 0.02f - contact.contactTime, UnityEngine.Time.fixedDeltaTime);
     var apply = flight.GetType().GetMethod("ApplyPendingContact", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
     apply.Invoke(flight, new object[] { end + 0.02f });

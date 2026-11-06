@@ -1,0 +1,89 @@
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+var root = new UnityEngine.GameObject("Ball integration");
+UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(root, scene);
+try
+{
+    var body = root.AddComponent<UnityEngine.Rigidbody>();
+    var collider = root.AddComponent<UnityEngine.SphereCollider>();
+    var ball = root.AddComponent<BallBehaviour>();
+    var visual = new UnityEngine.GameObject("visual");
+    visual.transform.SetParent(root.transform, false);
+    var renderer = visual.AddComponent<UnityEngine.MeshRenderer>();
+    var trailObject = new UnityEngine.GameObject("trail");
+    trailObject.transform.SetParent(root.transform, false);
+    var trail = trailObject.AddComponent<UnityEngine.TrailRenderer>();
+    var pathObject = new UnityEngine.GameObject("path");
+    pathObject.transform.SetParent(root.transform, false);
+    var path = pathObject.AddComponent<UnityEngine.LineRenderer>();
+    path.useWorldSpace = true;
+    var bounce = root.AddComponent<UnityEngine.AudioSource>();
+    var wind = root.AddComponent<UnityEngine.AudioSource>();
+    ball.body = body;
+    ball.ballCollider = collider;
+    ball.ballRenderer = renderer;
+    ball.speedTrail = trail;
+    ball.flightPath = path;
+    ball.impactAudio = bounce;
+    ball.windAudio = wind;
+
+    ball.Stage(UnityEngine.Vector3.up);
+    if (ball.flying || !body.isKinematic || collider.enabled || renderer.enabled || path.positionCount != 0)
+        throw new System.Exception("Stage presentation or body state");
+    ball.Launch(UnityEngine.Vector3.up, UnityEngine.Vector3.forward * 30f, UnityEngine.Vector3.left * 200f);
+    if (!ball.flying || body.isKinematic || !collider.enabled || !renderer.enabled || path.positionCount != 1)
+        throw new System.Exception("Launch state");
+    int sequence = ball.flightSequence;
+    float time = UnityEngine.Time.fixedTime;
+    if (!ball.ApplyContactResult(sequence, time, UnityEngine.Vector3.up, UnityEngine.Vector3.forward * 30f,
+        UnityEngine.Vector3.left * 200f, UnityEngine.Vector3.right * 10f, UnityEngine.Vector3.up * 10f))
+        throw new System.Exception("Hit rejected");
+    if (!ball.contactConsumed || UnityEngine.Vector3.Distance(body.velocity, UnityEngine.Vector3.right * 10f) > 0.001f)
+        throw new System.Exception("Hit application failed");
+    if (ball.ApplyContactResult(sequence, time, UnityEngine.Vector3.up, UnityEngine.Vector3.zero,
+        UnityEngine.Vector3.zero, UnityEngine.Vector3.right, UnityEngine.Vector3.zero))
+        throw new System.Exception("Duplicate hit accepted");
+    ball.Stage(UnityEngine.Vector3.zero);
+    if (ball.flying || !body.isKinematic || collider.enabled || renderer.enabled ||
+        path.positionCount != 0 || trail.emitting || wind.volume != 0f)
+        throw new System.Exception("Reset did not clear presentation/audio");
+
+    var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var type = typeof(BallBehaviour);
+    System.Action<string, object> set = (name, value) => type.GetField(name, flags).SetValue(ball, value);
+    set("_sequence", 1);
+    set("_kind", 2);
+    set("_position", UnityEngine.Vector3.up * 2f);
+    set("_velocity", UnityEngine.Vector3.forward * 20f);
+    set("_spin", UnityEngine.Vector3.left * 100f);
+    set("_serverTime", VRC.SDKBase.Networking.GetServerTimeInSeconds());
+    ball.OnDeserialization();
+    if (!ball.flying || body.isKinematic || !collider.enabled || body.velocity.z < 19f)
+        throw new System.Exception("Pitch snapshot was not restored");
+    int accepted = (int)type.GetField("_acceptedSequence", flags).GetValue(ball);
+    ball.OnDeserialization();
+    if ((int)type.GetField("_acceptedSequence", flags).GetValue(ball) != accepted)
+        throw new System.Exception("Duplicate snapshot accepted");
+    set("_sequence", 0);
+    ball.OnDeserialization();
+    if ((int)type.GetField("_acceptedSequence", flags).GetValue(ball) != accepted)
+        throw new System.Exception("Older snapshot accepted");
+    set("_sequence", 2);
+    set("_kind", 3);
+    set("_position", UnityEngine.Vector3.up);
+    set("_velocity", UnityEngine.Vector3.right * 15f);
+    set("_serverTime", VRC.SDKBase.Networking.GetServerTimeInSeconds());
+    ball.OnDeserialization();
+    if (!ball.flying || !ball.contactConsumed || body.velocity.x < 14f)
+        throw new System.Exception("Hit snapshot was not restored");
+    set("_sequence", 3);
+    set("_kind", 1);
+    set("_position", UnityEngine.Vector3.right);
+    ball.OnDeserialization();
+    if (ball.flying || !body.isKinematic || body.position != UnityEngine.Vector3.right)
+        throw new System.Exception("Stage snapshot was not restored");
+    return "PASS Stage -> Pitch -> Hit, duplicate hit, reset, snapshot restoration and ordering, optional references";
+}
+finally
+{
+    UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+}

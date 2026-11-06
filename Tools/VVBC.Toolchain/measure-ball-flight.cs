@@ -5,7 +5,7 @@ var physics = scene.GetPhysicsScene();
 var go = new GameObject("Measurement");
 UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go, scene);
 var body = go.AddComponent<Rigidbody>();
-var flight = go.AddComponent<BallFlightBehaviour>(); flight.body = body; flight.ConfigureBody(); flight.flying = true;
+var flight = go.AddComponent<BallBehaviour>(); flight.body = body; flight.ConfigureBody(); flight.flying = true;
 var solver = go.AddComponent<BallAimSolverBehaviour>();
 var results = new List<string>();
 var spin = Vector3.left * (2500f * 2f * Mathf.PI / 60f);
