@@ -79,10 +79,14 @@ cannot establish the cause without listening to the actual clips in VRChat.
 
 | Sound | Prefab / GameObject | Min / Max distance | Dynamic volume controls |
 | --- | --- | --- | --- |
-| Bat contact | `BattingFeedback.prefab` / `Contact Audio` | 1 / 30 m | feedback `contactMinVolume` 0.45, `contactMaxVolume` 1 |
-| Ball impact | `BallImpactAudio.prefab` / root, parented to Ball | 1 / 20 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
-| Bat drop / impact | `Bat.prefab` / `Body/Drop Audio` | 1 / 12 m | Body impact `minimumVolume` 0.35, `maximumVolume` 1 |
-| Flight wind | `BattingFeedback.prefab` / `Wind Audio` | 1 / 8 m | feedback `windMaxVolume` 0.35 |
+| Bat contact | `BattingFeedback.prefab` / `Contact Audio` | 1 / 350 m | feedback `contactMinVolume` 0.45, `contactMaxVolume` 1 |
+| Ball impact | `BallImpactAudio.prefab` / root, parented to Ball | 1 / 250 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
+| Bat drop / impact | `Bat.prefab` / `Body/Drop Audio` | 1 / 250 m | Body impact `minimumVolume` 0.35, `maximumVolume` 1 |
+| Flight wind | `BattingFeedback.prefab` / `Wind Audio` | 1 / 200 m | feedback `windMaxVolume` 0.35 |
+
+Contact playback is driven by local feedback, not a broadcast event: increasing
+its range does not by itself make a hit play on other clients. Verify remote
+listeners separately when using the shared Ball prototype.
 
 The existing wind follows **ball flight speed**, not bat swing speed: it starts
 at `windStartSpeed` 20 m/s and reaches `windMaxVolume` at `windMaxSpeed` 40 m/s.
@@ -96,10 +100,13 @@ Reset stops the contact, wind and optional Ball impact sources.
 
 Each source uses Spatial Blend 3D, Custom Volume Rolloff and its own editable
 **AudioSource > 3D Sound Settings > Volume** curve. The initial curve holds near
-full level at close range and decreases smoothly to zero at Max Distance; beyond
-that distance Unity holds the final value, so keep the final value at zero.
-`VRCSpatialAudioSource` has spatialization and **Use AudioSource Volume Curve**
-enabled, Gain +10 dB and Volumetric Radius 0; Near/Far do not define this curve.
+full level through much of the stadium and decreases smoothly to zero at Max
+Distance; beyond that distance Unity holds the final value, so keep it at zero.
+The initial normalized curve keys are (0, 1), (0.2, 0.96), (0.6, 0.8) and
+(1, 0), with smooth tangents. `VRCSpatialAudioSource` has spatialization and
+**Use AudioSource Volume Curve** enabled and Volumetric Radius 0. Contact Gain
+is +20 dB, deliberately 10 dB higher than before; Ball impact, Bat impact and
+wind remain at +10 dB. Near/Far do not define these curves.
 See [VRChat spatial audio](https://creators.vrchat.com/worlds/components/vrc_spatialaudiosource/)
 and [Unity maxDistance](https://docs.unity3d.com/ScriptReference/AudioSource-maxDistance.html).
 
@@ -109,15 +116,17 @@ these values set the base playback range and event-dependent scaling. Runtime
 writes `AudioSource.volume`, so editing that AudioSource field alone is not a
 persistent loudness adjustment. Keep ranges within 0–1 and minimum no greater
 than maximum. Change the source's curve and Max Distance separately to tune reach.
-Change Gain only after testing, to avoid stacking boosts. Existing scene/prefab
-instances can have overrides for these fields or audio settings: inspect and
+The contact Gain boost is intentionally large: listen for clipping at close
+range and when several effects play together; reduce Gain if necessary.
+Existing scene/prefab instances can have overrides for these fields or audio
+settings: inspect and
 update those overrides explicitly; updating a package prefab does not replace them.
 For existing local Ball audio sources, replace them with the Ball Impact Audio
 prefab or copy its AudioSource and VRC settings, then reassign both references.
 
-In VRChat, check weak, medium and strong contact and impacts at 1, 3, halfway,
-near the maximum and beyond it; compare the wind with contact and simultaneous
-impacts for balance and audible clipping. Check both moving listener and moving
+In VRChat, check weak, medium and strong contact and impacts at 1, 3, 100 and
+200 m, near the maximum and beyond it; compare the wind with contact and
+simultaneous impacts for balance and audible clipping. Check both moving listener and moving
 source, desktop and VR, and different clients. The world debug Audio Sources
 view can show source, volume, distance and Steam Audio conversion; its displayed
 volume does not include VRC Gain. Also repeat with clips unset and reset between
