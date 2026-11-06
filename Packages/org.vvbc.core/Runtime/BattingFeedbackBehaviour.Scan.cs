@@ -93,16 +93,16 @@ public partial class BattingFeedbackBehaviour
         if (_candidateAxis.sqrMagnitude < 0.000001f) return false;
         _candidateAxis = _candidateAxis.normalized;
         Vector3 incoming = flight.sampledVelocity.magnitude < 0.1f
-            ? -contact.centerDirection.normalized : flight.sampledVelocity.normalized;
+            ? -contact.CenterDirection().normalized : flight.sampledVelocity.normalized;
         _candidateY = Vector3.Cross(incoming, _candidateAxis);
         if (_candidateY.sqrMagnitude < 0.000001f)
         {
             _candidateY = _hasPreviousCandidateY
                 ? _previousCandidateY - Vector3.Dot(_previousCandidateY, _candidateAxis) * _candidateAxis : Vector3.zero;
-            if (_candidateY.sqrMagnitude < 0.000001f) _candidateY = Vector3.Cross(-contact.centerDirection.normalized, _candidateAxis);
+            if (_candidateY.sqrMagnitude < 0.000001f) _candidateY = Vector3.Cross(-contact.CenterDirection().normalized, _candidateAxis);
             if (_candidateY.sqrMagnitude < 0.000001f) _candidateY = Vector3.Cross(Vector3.up, _candidateAxis);
             if (_candidateY.sqrMagnitude < 0.000001f)
-                _candidateY = Vector3.Cross(Vector3.Cross(Vector3.up, contact.centerDirection.normalized), _candidateAxis);
+                _candidateY = Vector3.Cross(Vector3.Cross(Vector3.up, contact.CenterDirection().normalized), _candidateAxis);
         }
         if (_candidateY.sqrMagnitude < 0.000001f) return false;
         _candidateY = _candidateY.normalized;
@@ -156,12 +156,12 @@ public partial class BattingFeedbackBehaviour
         _speed = motion.contactSampleReferenceVelocity.magnitude;
         _angular = motion.contactSampleAngularVelocity.magnitude * Mathf.Rad2Deg;
         _rawPower = contact.EvaluateRawPower(_speed);
-        _powerCap = motion.ContactPowerCap(time, contact.centerDirection, _rawPower);
+        _powerCap = motion.ContactPowerCap(time, contact.CenterDirection(), _rawPower);
         _capReason = motion.contactPowerCapReason;
         _power = Mathf.Min(_rawPower, _powerCap);
         _planeX = _candidateX; _planeY = _candidateYValue;
         _normalizedY = _candidateYValue / _candidateWidth;
-        _yaw = TimingYaw(_candidateAxis, contact.centerDirection);
+        _yaw = TimingYaw(_candidateAxis, contact.CenterDirection());
     }
 
     private void FinalizeMiss(float now)

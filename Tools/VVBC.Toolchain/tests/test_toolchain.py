@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import unittest
 
@@ -30,9 +31,17 @@ class DirectPackageTests(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding='utf-8')
 
+    def make_assets_package(self):
+        assets = self.root / MODULE.ASSETS
+        MODULE.write_json(assets / 'package.json', {'name': 'org.vvbc.assets', 'version': '0.0.1'})
+        self.write(assets / 'Runtime/model.fbx', 'tracked model')
+        subprocess.run(['git', 'init', '-q', str(assets)], check=True)
+        subprocess.run(['git', '-C', str(assets), 'add', 'package.json', 'Runtime/model.fbx'], check=True)
+        self.write(assets / 'Runtime/local-only.fbx', 'untracked')
+
     def test_declared_dependencies(self):
         self.assertEqual(self.tool.check()['vpmDependencies'], {
-            MODULE.TSUKIMI: '0.10.1', 'com.vrchat.worlds': '3.10.5'})
+            MODULE.TSUKIMI: '0.10.1', 'com.vrchat.worlds': '3.10.5', 'org.vvbc.assets': '0.0.1'})
 
     def test_runtime_baseline_references_pass(self):
         path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'
@@ -149,15 +158,19 @@ class DirectPackageTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.tool.fixture(False)
 
     def test_consumer_package_has_no_fixture_or_development_assets(self):
+        self.make_assets_package()
         self.tool.consumer_prepare(self.project, 'package', self.compiler)
         self.assertFalse((self.project / MODULE.RUNTIME / '__ToolchainFixture').exists())
         self.assertFalse((self.project / 'Assets/VirtualVenueBaseballComponents').exists())
         manifest = MODULE.read_json(self.project / 'Packages/manifest.json')
         self.assertEqual(manifest['dependencies'][MODULE.TSUKIMI], 'file:' + self.compiler.as_posix())
         self.assertFalse((self.project / 'Packages' / MODULE.TSUKIMI).exists())
+        self.assertTrue((self.project / MODULE.ASSETS / 'Runtime/model.fbx').exists())
+        self.assertFalse((self.project / MODULE.ASSETS / 'Runtime/local-only.fbx').exists())
         with self.assertRaises(ValueError): self.tool.consumer_prepare(self.project, 'package', self.compiler)
 
     def test_fixture_consumer_compiles_package_sources(self):
+        self.make_assets_package()
         self.tool.consumer_prepare(self.project, 'fixture', self.compiler)
         for source, relative in self.tool.fixture_files():
             self.assertEqual(source.read_bytes(), (self.project / relative).read_bytes())
@@ -174,6 +187,7 @@ class DirectPackageTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.tool.consumer_prepare(self.root / 'consumer', 'package', self.compiler)
 
     def test_consumer_cannot_capture_temporary_fixture(self):
+        self.make_assets_package()
         self.tool.fixture(True)
         with self.assertRaises(ValueError): self.tool.consumer_prepare(self.project, 'fixture', self.compiler)
 

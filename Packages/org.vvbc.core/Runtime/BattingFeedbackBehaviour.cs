@@ -144,7 +144,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _capReason = contact.snapshotPowerCapReason; _power = contact.finalBatPower;
         _planeX = contact.snapshotPlaneX; _planeY = contact.snapshotPlaneY;
         _normalizedY = contact.snapshotNormalizedY; _quality = contact.contactQuality;
-        _yaw = TimingYaw(contact.snapshotX, contact.centerDirection);
+        _yaw = TimingYaw(contact.snapshotX, contact.CenterDirection());
         _resultVelocity = contact.resultVelocity; _resultSpin = contact.resultSpin;
         _trailReady = false; _trailCount = 0; contact.feedbackTrailActive = true;
         PredictTrailExit();
@@ -261,7 +261,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         string ball = _isContact
             ? ExitKmh(_resultVelocity).ToString("F1") + " km/h\nLaunch: " +
               LaunchAngle(_resultVelocity).ToString("F1") + "°\nSpray: " +
-              SprayAngle(_resultVelocity, contact.centerDirection).ToString("F1") + "°\nSpin: " +
+              SprayAngle(_resultVelocity, contact.CenterDirection()).ToString("F1") + "°\nSpin: " +
               SpinRpm(_resultSpin).ToString("F0") + " rpm"
             : "—\nLaunch: —\nSpray: —\nSpin: —";
         metrics.text = "SWING MEASUREMENTS\nBat speed: " + _speed.ToString("F1") + " m/s\nPeak speed: " +

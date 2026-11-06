@@ -155,15 +155,23 @@ try
     set(contact, "_sequence", -1);
     contact.OnBatContactPose();
     check(contact.contactValid && contact.contactTime > end, "second future contact accepted");
+    float futurePhysicsTime = end + 0.02f;
     var expectedFuture = new BallFlightState { position = contact.contactPosition, velocity = contact.resultVelocity };
     expectedFuture = BallFlightModel.Advance(expectedFuture, contact.resultSpin, UnityEngine.Physics.gravity,
-        flight.dragCoefficient, flight.magnusCoefficient, end + 0.02f - contact.contactTime, UnityEngine.Time.fixedDeltaTime);
+        flight.dragCoefficient, flight.magnusCoefficient, futurePhysicsTime - contact.contactTime, UnityEngine.Time.fixedDeltaTime);
     var apply = flight.GetType().GetMethod("ApplyPendingContact", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-    apply.Invoke(flight, new object[] { end + 0.02f });
+    var pendingTime = (float)flight.GetType().GetField("_pendingTime", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    var pendingPosition = (UnityEngine.Vector3)flight.GetType().GetField("_pendingPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    var pendingVelocity = (UnityEngine.Vector3)flight.GetType().GetField("_pendingVelocity", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    apply.Invoke(flight, new object[] { futurePhysicsTime });
     check((body.position - expectedFuture.position).sqrMagnitude < 0.00000001f &&
         (body.velocity - expectedFuture.velocity).sqrMagnitude < 0.00000001f &&
         !(bool)flight.GetType().GetField("_contactPending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight),
-        "pending result applies once at later physics time");
+        "pending result applies once at later physics time; position error=" + (body.position - expectedFuture.position).magnitude +
+        " velocity error=" + (body.velocity - expectedFuture.velocity).magnitude +
+        " pending time delta=" + (pendingTime - contact.contactTime) + " pending position delta=" + (pendingPosition - contact.contactPosition).magnitude +
+        " pending velocity delta=" + (pendingVelocity - contact.resultVelocity).magnitude +
+        " pending=" + flight.GetType().GetField("_contactPending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight));
 
     // Resume an interval previously beyond the extrapolation limit after a new
     // fixed sample arrives. Several Bat samples occurred in the meantime.

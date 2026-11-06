@@ -11,8 +11,12 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public BatMotionBehaviour motion;
     public UdonBehaviour feedbackListener;
     public Transform contactZone;
+    [Tooltip("HomePlate defining the direction toward the pitcher.")]
+    public StrikeZoneBehaviour strikeZone;
+    [Tooltip("Independent contact box half extents, in metres.")]
     public Vector3 zoneHalfSize = new Vector3(1.5f, 1.5f, 1.5f);
-    public Vector3 centerDirection = Vector3.forward;
+    // Used only by legacy standalone instances without a HomePlate reference.
+    [HideInInspector] public Vector3 centerDirection = Vector3.forward;
     public float maxExtrapolation = 0.025f;
     public float minContactX = 0.10f;
     public float maxContactX = 0.855f;
@@ -33,6 +37,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private bool _enteredZone;
     private bool _opportunityEnded;
     private Vector3 _previousY;
+    private Vector3 _centerDirectionSnapshot;
     private bool _hasPreviousY;
     private Vector3 _ballPosition, _ballVelocity, _ballSpin;
     private Vector3 _core, _coreVelocity, _batOmega, _axis, _y, _normal, _referenceVelocity;
@@ -69,6 +74,13 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (flight != null)
             flight.contactListener = GetComponent<UdonBehaviour>();
         BindMotion();
+    }
+
+    public Vector3 CenterDirection()
+    {
+        if (strikeZone != null) return StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward);
+        // Keep existing standalone contact prefabs usable until migrated.
+        return StrikeZoneGeometry.Forward(centerDirection);
     }
 
     // A missing value can occur on existing instances whose Udon variable table
@@ -145,8 +157,18 @@ public partial class BatContactBehaviour : TsukimiBehaviour
                 }
             }
         }
-        if (motion != null) motion.SetContactListener(GetComponent<UdonBehaviour>());
+        if (motion != null) motion.RegisterContactListener(GetComponent<UdonBehaviour>(), flight != null && flight.flying);
         else SendCustomEventDelayedFrames(nameof(BindMotion), 60);
+    }
+
+    public void OnBallPitchStarted()
+    {
+        if (motion != null) motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), true);
+    }
+
+    public void OnBallPitchStopped()
+    {
+        if (motion != null) motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
     }
 
     public void OnBatContactPose()
@@ -154,6 +176,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (feedbackTrailActive && feedbackListener != null && flight != null && flight.flying)
             feedbackListener.SendCustomEvent("OnFeedbackBatPose");
         if (flight == null || motion == null || contactZone == null || !flight.flying || flight.contactConsumed) return;
+        _centerDirectionSnapshot = CenterDirection();
         if (_collisionSequence != flight.flightSequence || _collisionRevision != motion.contactRevision)
         {
             motion.IgnoreBallCollision(flight.ballCollider);
@@ -245,7 +268,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         _coreVelocity = motion.contactSampleVelocity;
         _batOmega = motion.contactSampleAngularVelocity;
         _referenceVelocity = motion.contactSampleReferenceVelocity;
-        if (!BuildPlane(_rotation * Vector3.up, _ballVelocity, centerDirection)) return false;
+        if (!BuildPlane(_rotation * Vector3.up, _ballVelocity, _centerDirectionSnapshot)) return false;
         _planeValue = Vector3.Dot(_ballPosition - _core, _normal);
         return !float.IsNaN(_planeValue) && _planeValue <= float.MaxValue && _planeValue >= -float.MaxValue;
     }
@@ -287,8 +310,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private bool AcceptCandidate(float time)
     {
         if (!InsideZone(_ballPosition)) return false;
-        if (!ValidTiming(_axis, centerDirection)) return false;
-        Vector3 center = centerDirection - Vector3.Dot(centerDirection, Vector3.up) * Vector3.up;
+        Vector3 center = _centerDirectionSnapshot;
+        if (!ValidTiming(_axis, center)) return false;
         Vector3 batRootPosition = motion.contactSampleRootPosition;
         Vector3 delta = _ballPosition - _core;
         float px = Vector3.Dot(delta, _axis);

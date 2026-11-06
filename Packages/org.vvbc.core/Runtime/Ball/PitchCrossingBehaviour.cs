@@ -24,7 +24,7 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
 
     public void BeginPitch(float time, Vector3 position, Vector3 velocity, float radius)
     {
-        if (zone == null || zone.plateOrigin == null) return;
+        if (zone == null) return;
         zone.Snapshot();
         _origin = zone.snapshotOrigin;
         _forward = zone.snapshotForward;

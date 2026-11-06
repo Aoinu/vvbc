@@ -1,7 +1,6 @@
 using UnityEditor;
 using UnityEngine;
 using VRC.Udon;
-using VRC.Udon.Common;
 
 // Udon components, rather than Tsukimi source classes, are placed in scenes.
 [InitializeOnLoad]
@@ -53,12 +52,13 @@ public static class BattingZoneGizmos
         out Vector3 right, out float depth, out float width, out float bottom, out float top)
     {
         Transform plate = Read<Transform>(behaviour, "plateOrigin", null);
+        if (plate == null) plate = behaviour.transform;
         origin = Vector3.zero; forward = Vector3.zero; right = Vector3.zero;
         depth = width = bottom = top = 0f;
         if (plate == null) return false;
-        forward = plate.forward; forward.y = 0f; forward.Normalize();
+        forward = StrikeZoneGeometry.Forward(plate.forward);
         if (forward.sqrMagnitude < 0.000001f) return false;
-        right = Vector3.Cross(Vector3.up, forward);
+        right = StrikeZoneGeometry.Right(forward);
         Vector2 offset = Read(behaviour, "zoneCenterOffset", Vector2.zero);
         origin = plate.position + right * offset.x;
         depth = Read(behaviour, "plateDepth", 0.4318f);
@@ -87,6 +87,9 @@ public static class BattingZoneGizmos
             if (!IsProgram(behaviour, "StrikeZoneBehaviour")) continue;
             if (!Geometry(behaviour, out Vector3 origin, out Vector3 forward, out Vector3 right,
                 out float depth, out float width, out float bottom, out float top)) continue;
+            Handles.color = Color.white;
+            Handles.ArrowHandleCap(0, behaviour.transform.position, Quaternion.LookRotation(forward),
+                HandleUtility.GetHandleSize(behaviour.transform.position) * 0.6f, EventType.Repaint);
             Vector3 center = origin + forward * (depth * 0.5f) + Vector3.up * ((bottom + top) * 0.5f);
             EditorGUI.BeginChangeCheck();
             Vector3 moved = Handles.Slider2D(center, forward, right, Vector3.up,
@@ -95,11 +98,7 @@ public static class BattingZoneGizmos
             Vector3 delta = moved - center;
             Vector2 offset = Read(behaviour, "zoneCenterOffset", Vector2.zero);
             offset += new Vector2(Vector3.Dot(delta, right), delta.y);
-            Undo.RecordObject(behaviour, "Move strike zone center");
-            if (!behaviour.publicVariables.TrySetVariableValue("zoneCenterOffset", offset))
-                behaviour.publicVariables.TryAddVariable(new UdonVariable<Vector2>("zoneCenterOffset", offset));
-            PrefabUtility.RecordPrefabInstancePropertyModifications(behaviour);
-            EditorUtility.SetDirty(behaviour);
+            VVBC.Editor.HomePlateConnections.SetVector2(behaviour, "zoneCenterOffset", offset);
         }
     }
 }

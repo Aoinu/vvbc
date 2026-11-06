@@ -37,9 +37,16 @@ namespace VVBC.Editor
                 // Migration performs a full schema/value comparison. It belongs to
                 // the explicit upgrade/build path, never to the repaint loop.
                 var values = TSharpPrefabOverrides.EnsureAuthoringData(behaviour, false);
+                if (values != null && cachedAsset != asset && TSharpPrefabFieldSync.Symbols(behaviour).Any(symbol =>
+                    !values.fields.Any(field => field != null && field.symbol == symbol)))
+                    values = TSharpPrefabOverrides.EnsureAuthoringData(behaviour, true);
                 DrawSynchronization(behaviour, asset);
                 EditorGUILayout.Space();
                 if (values != null) DrawFields(values, asset);
+                string homePlateError = HomePlateConnections.Check(behaviour);
+                if (!string.IsNullOrEmpty(homePlateError)) EditorGUILayout.HelpBox(homePlateError, MessageType.Warning);
+                string pitcherError = HomePlateConnections.CheckPitcher(behaviour);
+                if (!string.IsNullOrEmpty(pitcherError)) EditorGUILayout.HelpBox(pitcherError, MessageType.Warning);
                 asset.DrawInteractionInspector(behaviour);
 
                 EditorGUILayout.Space();
@@ -172,6 +179,8 @@ namespace VVBC.Editor
             {
                 Undo.RecordObject(values.target, "Edit T# prefab field");
                 TSharpPrefabFieldSync.Apply(values, false);
+                if (HomePlateConnections.IsProgram(values.target, "StrikeZoneBehaviour"))
+                    HomePlateConnections.Synchronize(values.target);
                 EditorUtility.SetDirty(values);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(values);
                 if (values.gameObject.scene.IsValid())

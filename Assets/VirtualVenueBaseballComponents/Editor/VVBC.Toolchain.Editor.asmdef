@@ -3,6 +3,7 @@
   "references": [
     "TsukimiCode.UdonTools.Editor",
     "TsukimiCode.UdonTools.Runtime",
+    "VVBC.Authoring",
     "VRC.Udon",
     "VRC.Udon.Editor"
   ],

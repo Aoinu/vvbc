@@ -4,14 +4,18 @@
 It does not itself synchronize contact or arbitrate between clients. BallBehaviour
 synchronizes committed snapshots as described in the
 [ball network prototype](ball-network-prototype.md).
-Place one contact
-prefab per local batting lane, assign its `flight` to the ball's
-`BallBehaviour`, and position `contactZone` around the intended hitting
-area. The prefab's own Transform is the default zone; its `zoneHalfSize` is in
-that Transform's local coordinates. Set `centerDirection` to the horizontal
-world-space direction from home plate toward center field. The Bat is resolved
+Place one HomePlate per local batting lane and assign its Ball. Position its
+`ContactZone` child around the intended hitting area; `zoneHalfSize` is in that
+child's local coordinates and remains independent of the strike zone. Its
+batting reference direction follows HomePlate toward the pitcher. The old
+standalone contact prefab retains its legacy direction for existing scenes.
+The Bat is resolved
 from the local player's PlayerObject; the contact listener runs after the local
 held Bat's `PostLateUpdate` pose. A missing or ambiguous PlayerObject is retried.
+Multiple HomePlates register with the same local Bat independently. The Bat
+retains pose history while held so an immediately arriving pitch has prior
+samples, but sends contact-pose events only to lanes whose Ball is in a pitch.
+Staging a Ball deactivates only that lane's notifications.
 
 Put the Ball SphereCollider on the VRChat Pickup layer (13), set its Exclude
 Layers to Pickup, and assign the Core Baseball Physic Material. This keeps the

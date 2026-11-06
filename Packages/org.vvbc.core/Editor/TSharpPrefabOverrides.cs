@@ -129,7 +129,11 @@ namespace VVBC.Editor
             if (values == null || values.target == null || EditorApplication.isPlayingOrWillChangePlaymode) return;
             EditorApplication.delayCall += () =>
             {
-                if (values != null && values.target != null) TSharpPrefabFieldSync.Apply(values, false);
+                if (values == null || values.target == null) return;
+                if (TSharpPrefabFieldSync.Symbols(values.target).Any(symbol =>
+                    !values.fields.Any(field => field != null && field.symbol == symbol)))
+                    EnsureAuthoringData(values.target, true);
+                TSharpPrefabFieldSync.Apply(values, false);
             };
         }
 

@@ -14,6 +14,7 @@ public partial class BallBehaviour
     public void Stage(Vector3 position)
     {
         flying = false;
+        if (contactListener != null) contactListener.SendCustomEvent("OnBallPitchStopped");
         EndFlight();
         StopBallAudio();
         SetPresentation(false);
@@ -66,6 +67,7 @@ public partial class BallBehaviour
         flying = true;
         SetPresentation(true);
         BeginFlight();
+        if (pitch && contactListener != null) contactListener.SendCustomEvent("OnBallPitchStarted");
         RecordMotion(Time.fixedTime, position, velocity, angularVelocity);
         if (pitch && motionObserver != null && ballCollider != null)
         {

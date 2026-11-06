@@ -35,7 +35,8 @@ public partial class BatMotionBehaviour
     public float measuredLatestTime;
     public float measuredPeakReferenceSpeed;
     public float measuredPeakAngularSpeed;
-    private UdonBehaviour _contactListener;
+    private UdonBehaviour[] _contactListeners = new UdonBehaviour[0];
+    private bool[] _contactListenerActive = new bool[0];
     public float contactLatestTime;
     public float contactPreviousTime;
     public float contactOldestTime;
@@ -67,7 +68,33 @@ public partial class BatMotionBehaviour
         return mask;
     }
 
-    public void SetContactListener(UdonBehaviour listener) { _contactListener = listener; }
+    public void RegisterContactListener(UdonBehaviour listener, bool active)
+    {
+        if (listener == null) return;
+        for (int i = 0; i < _contactListeners.Length; i++)
+        {
+            if (_contactListeners[i] != listener) continue;
+            _contactListenerActive[i] = active;
+            return;
+        }
+        UdonBehaviour[] listeners = new UdonBehaviour[_contactListeners.Length + 1];
+        bool[] activeStates = new bool[listeners.Length];
+        for (int i = 0; i < _contactListeners.Length; i++)
+        {
+            listeners[i] = _contactListeners[i];
+            activeStates[i] = _contactListenerActive[i];
+        }
+        listeners[listeners.Length - 1] = listener;
+        activeStates[activeStates.Length - 1] = active;
+        _contactListeners = listeners;
+        _contactListenerActive = activeStates;
+    }
+
+    public void SetContactListenerActive(UdonBehaviour listener, bool active)
+    {
+        for (int i = 0; i < _contactListeners.Length; i++)
+            if (_contactListeners[i] == listener) _contactListenerActive[i] = active;
+    }
 
     public void IgnoreBallCollision(Collider ballCollider)
     {
@@ -175,8 +202,10 @@ public partial class BatMotionBehaviour
         _contactNext = (_contactNext + 1) % ContactHistoryCapacity;
         if (_contactCount < ContactHistoryCapacity) _contactCount++;
         contactOldestTime = _contactTimes[(_contactNext - _contactCount + ContactHistoryCapacity) % ContactHistoryCapacity];
-        if (_contactCount >= 2 && _contactListener != null)
-            _contactListener.SendCustomEvent("OnBatContactPose");
+        if (_contactCount >= 2)
+            for (int i = 0; i < _contactListeners.Length; i++)
+                if (_contactListenerActive[i] && _contactListeners[i] != null)
+                    _contactListeners[i].SendCustomEvent("OnBatContactPose");
     }
 
     private void RecordMeasuredSpeed(float time, float referenceSpeed, float angularSpeedDegrees)

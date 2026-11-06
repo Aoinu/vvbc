@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -11,6 +12,7 @@ CORE = 'Packages/org.vvbc.core'
 RUNTIME = CORE + '/Runtime'
 FIXTURE = 'Tools/VVBC.Toolchain/Fixtures'
 TSUKIMI = 'com.tsukimicode.udon-tools'
+ASSETS = 'Packages/org.vvbc.assets'
 REQUIRED_RUNTIME_REFERENCES = {'TsukimiCode.UdonTools.Runtime', 'UdonSharp.Runtime', 'VRC.Udon', 'Unity.TextMeshPro'}
 
 
@@ -35,8 +37,8 @@ class Toolchain:
     def check(self):
         metadata = read_json(self.root / CORE / 'package.json')
         if metadata['name'] != 'org.vvbc.core' or metadata['vpmDependencies'] != {
-                'com.vrchat.worlds': '3.10.5', TSUKIMI: '0.10.1'}:
-            raise ValueError('Core must declare exactly the verified Worlds/Tsukimi dependencies')
+                'com.vrchat.worlds': '3.10.5', TSUKIMI: '0.10.1', 'org.vvbc.assets': '0.0.1'}:
+            raise ValueError('Core must declare exactly the verified Worlds/Tsukimi/assets dependencies')
         if metadata.get('dependencies'):
             raise ValueError('Core dependencies are resolved through its reviewed VPM declarations')
         asmdef = read_json(self.root / RUNTIME / 'VVBC.Runtime.asmdef')
@@ -108,13 +110,31 @@ class Toolchain:
         installed = read_json(compiler / 'package.json')
         if installed['name'] != TSUKIMI or installed['version'] != '0.10.1':
             raise ValueError('Installed Tsukimi metadata does not match core dependency')
+        assets = self.root / ASSETS
+        asset_metadata = read_json(assets / 'package.json')
+        if asset_metadata['name'] != 'org.vvbc.assets' or asset_metadata['version'] != '0.0.1':
+            raise ValueError('Assets package metadata does not match core dependency')
+        # Copy only tracked files, including their Unity metas. Untracked local
+        # development assets must not enter the isolated consumer snapshot.
+        result = subprocess.run(['git', '-C', str(assets), 'ls-files', '-z'],
+                                check=True, stdout=subprocess.PIPE)
+        tracked = [Path(p.decode('utf-8')) for p in result.stdout.split(b'\0') if p]
+        if Path('package.json') not in tracked:
+            raise ValueError('Assets package is not a tracked repository snapshot')
         package = project / CORE
         validation = project / 'Assets/__VVBCValidation'
         if package.exists() or validation.exists():
             raise ValueError('Refusing to overwrite a previous consumer validation')
+        if (project / ASSETS).exists():
+            raise ValueError('Refusing to overwrite consumer assets package')
         if (self.root / RUNTIME / '__ToolchainFixture').exists():
             raise ValueError('Clean local fixture deployment before snapshotting production core')
         shutil.copytree(self.root / CORE, package)
+        for relative in tracked:
+            source = assets / relative
+            target = project / ASSETS / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
         if scope == 'fixture':
             for source, relative in self.fixture_files():
                 target = project / relative

@@ -270,7 +270,7 @@ public partial class BattingFeedbackBehaviour
             float time = TrailTime(_trailEntry, _trailExit, _time, i, _trailCount);
             if (!SampleSavedPose(time)) continue;
             _trailPositions[i] = _savedPosition; _trailRotations[i] = _savedRotation;
-            _trailColors[i] = TimingColor(TimingYaw(_savedRotation * Vector3.up, contact.centerDirection));
+            _trailColors[i] = TimingColor(TimingYaw(_savedRotation * Vector3.up, contact.CenterDirection()));
             _trailValid[i] = true;
             trailValid++;
         }

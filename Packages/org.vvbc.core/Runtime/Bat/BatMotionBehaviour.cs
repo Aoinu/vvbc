@@ -196,7 +196,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
             if (SolveOwnerPose())
             {
                 UpdateDropVelocity(Time.deltaTime);
-                if (_contactListener != null) RecordContactPose(Time.time);
+                if (_contactListeners.Length > 0) RecordContactPose(Time.time);
             }
             else ResetContactHistory();
         }

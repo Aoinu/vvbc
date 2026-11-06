@@ -8,11 +8,11 @@ using VRC.SDKBase;
 public partial class BattingPitcherBehaviour : TsukimiBehaviour
 {
     public Animator animator;
-    public BallBehaviour ball;
+    private BallBehaviour ball;
     public BallAimSolverBehaviour solver;
     public Transform releasePoint;
-    [Tooltip("Center of the strike zone. Point its forward axis from pitcher toward batter; move it to adjust the target plane.")]
-    public Transform strikeZoneCenter;
+    [Tooltip("HomePlate to aim at. Its Ball is used for this pitcher.")]
+    public StrikeZoneBehaviour strikeZone;
     public GameObject animationBall;
 
     public float speedKmh = 120f;
@@ -24,8 +24,6 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     // Baked from the editor preset asset; no ScriptableObject is read at runtime.
     public Vector3[] pitchSpinAxes = new Vector3[0];
     [HideInInspector] public string presetAssetGuid = "";
-    public float strikeZoneWidth = 0.43f;
-    public float strikeZoneHeight = 0.6f;
     public float resetSeconds = 3f;
     // The development clip releases at 2.0 / 5.2 normalized time.
     public float minimumReleaseNormalizedTime = 0.35f;
@@ -55,8 +53,9 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void Start()
     {
+        if (strikeZone != null) ball = strikeZone.ball;
         if (animator == null || ball == null || ball.body == null || solver == null ||
-            releasePoint == null || strikeZoneCenter == null)
+            releasePoint == null || strikeZone == null)
         {
             Debug.LogError("BattingPitcher: required reference is missing");
             enabled = false;
@@ -77,7 +76,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         }
         _visualStartPosition = animator.transform.localPosition;
         _visualStartRotation = animator.transform.localRotation;
-        ball.presentationListener = GetComponent<VRC.Udon.UdonBehaviour>();
+        ball.RegisterPresentationListener(GetComponent<VRC.Udon.UdonBehaviour>());
         OnBallPresentationChanged();
         _isPitchController = IsPitchController();
         if (_isPitchController)
@@ -115,7 +114,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         int row = selectedCourse / 3;
         courseColumn = column;
         courseRow = row;
-        Vector3 target = CourseTarget(strikeZoneCenter.position, strikeZoneCenter.right, column, row);
+        Vector3 target = strikeZone.AimPoint(column, row);
         selectedPitchType = Mathf.Clamp(pitchType, 0, 6);
         Vector3 axis = pitchSpinAxes[selectedPitchType];
         Vector3 localSpin = axis.normalized * (Mathf.Max(0f, spinRpm) * (2f * Mathf.PI / 60f));
@@ -125,7 +124,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         animator.transform.localPosition = _visualStartPosition;
         animator.transform.localRotation = _visualStartRotation;
         animator.Play("Pitch Idle", 0, 0f);
-        solver.BeginSolveRelativeSpin(_releaseSnapshot, target, strikeZoneCenter.forward, _speedSnapshot,
+        solver.BeginSolveRelativeSpin(_releaseSnapshot, target, -StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward), _speedSnapshot,
             localSpin, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
     }
 
@@ -193,13 +192,6 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         int count = 0;
         for (int i = 0; i < 9; i++) if ((mask & (1 << i)) != 0) count++;
         return count;
-    }
-
-    // The plane faces along the pitch, so its right is the batter's left.
-    private Vector3 CourseTarget(Vector3 center, Vector3 planeRight, int column, int row)
-    {
-        return center - planeRight * ((column - 1) * strikeZoneWidth / 3f)
-            + Vector3.up * ((1 - row) * strikeZoneHeight / 3f);
     }
 
     private int SelectCourse(int mask, int choice)

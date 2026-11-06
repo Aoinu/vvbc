@@ -7,7 +7,7 @@ using VRC.Udon;
 // One instance on the physical ball. Only committed motion snapshots are synced.
 public partial class BallBehaviour
 {
-    [HideInInspector] public UdonBehaviour presentationListener;
+    private UdonBehaviour[] _presentationListeners = new UdonBehaviour[0];
     [HideInInspector] public UdonBehaviour contactListener;
 
     [UdonSynced] private int _sequence;
@@ -215,6 +215,18 @@ public partial class BallBehaviour
         if (ballRenderer != null) ballRenderer.enabled = visible;
         if (ballCollider != null) ballCollider.enabled = visible;
         if (visible && contactListener != null) contactListener.SendCustomEvent("IgnorePlayerBatCollisions");
-        if (presentationListener != null) presentationListener.SendCustomEvent("OnBallPresentationChanged");
+        for (int i = 0; i < _presentationListeners.Length; i++)
+            if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallPresentationChanged");
+    }
+
+    public void RegisterPresentationListener(UdonBehaviour listener)
+    {
+        if (listener == null) return;
+        for (int i = 0; i < _presentationListeners.Length; i++)
+            if (_presentationListeners[i] == listener) return;
+        UdonBehaviour[] next = new UdonBehaviour[_presentationListeners.Length + 1];
+        for (int i = 0; i < _presentationListeners.Length; i++) next[i] = _presentationListeners[i];
+        next[next.Length - 1] = listener;
+        _presentationListeners = next;
     }
 }

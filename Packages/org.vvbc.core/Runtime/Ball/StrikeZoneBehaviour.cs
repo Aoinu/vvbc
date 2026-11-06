@@ -4,12 +4,20 @@ using UnityEngine;
 // The origin is the rear tip of the plate; forward points toward the pitcher.
 public partial class StrikeZoneBehaviour : TsukimiBehaviour
 {
-    public Transform plateOrigin;
+    // Legacy standalone prefabs can retain their original origin; HomePlate uses its root.
+    [HideInInspector] public Transform plateOrigin;
+    [Header("Home Plate")]
+    [Tooltip("The physical Ball assigned to this HomePlate.")]
+    public BallBehaviour ball;
+    [Tooltip("Plate depth in metres, from the rear tip toward the pitcher.")]
     public float plateDepth = 0.4318f;
+    [Header("Strike Zone")]
+    [Tooltip("Zone width in metres.")]
     public float width = 0.4318f;
     // MLB's 2026 ABS proportions for a 1.80 m batter: 27% to 53.5% of height.
-    public float bottom = 0.486f;
-    public float top = 0.963f;
+    [Tooltip("Height of the bottom edge above the plate origin, in metres.")] public float bottom = 0.486f;
+    [Tooltip("Height of the top edge above the plate origin, in metres.")] public float top = 0.963f;
+    [Tooltip("Horizontal and vertical offset in metres, in HomePlate coordinates.")]
     public Vector2 zoneCenterOffset;
 
     // These values are copied at release, so a later adjustment does not change a pitch.
@@ -23,16 +31,26 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
 
     public void Snapshot()
     {
-        if (plateOrigin == null) return;
-        Vector3 forward = plateOrigin.forward;
-        forward.y = 0f;
-        snapshotForward = forward.normalized;
-        snapshotRight = Vector3.Cross(Vector3.up, snapshotForward);
-        snapshotOrigin = plateOrigin.position + snapshotRight * zoneCenterOffset.x;
+        Transform plate = PlateTransform();
+        snapshotForward = StrikeZoneGeometry.Forward(plate.forward);
+        snapshotRight = StrikeZoneGeometry.Right(snapshotForward);
+        snapshotOrigin = plate.position + snapshotRight * zoneCenterOffset.x;
         snapshotDepth = plateDepth;
         snapshotWidth = width;
         snapshotBottom = bottom + zoneCenterOffset.y;
         snapshotTop = top + zoneCenterOffset.y;
+    }
+
+    public Vector3 AimPoint(int column, int row)
+    {
+        Transform plate = PlateTransform();
+        return StrikeZoneGeometry.AimPoint(plate.position, plate.forward, plateDepth,
+            width, bottom, top, zoneCenterOffset, column, row);
+    }
+
+    public Transform PlateTransform()
+    {
+        return plateOrigin != null ? plateOrigin : transform;
     }
 
     public bool ContainsBall(Vector3 position, float radius)
