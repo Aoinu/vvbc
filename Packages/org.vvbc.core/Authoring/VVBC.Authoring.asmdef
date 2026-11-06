@@ -1,0 +1,6 @@
+{
+  "name": "VVBC.Authoring",
+  "references": [
+    "VRC.Udon"
+  ]
+}

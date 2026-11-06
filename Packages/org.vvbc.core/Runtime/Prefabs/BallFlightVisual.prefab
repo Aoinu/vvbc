@@ -187,6 +187,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3358349778571700348}
   - component: {fileID: 3127428683761958871}
+  - component: {fileID: 2672245476230821500}
   m_Layer: 0
   m_Name: Sampler
   m_TagString: Untagged
@@ -236,6 +237,207 @@ MonoBehaviour:
   - {fileID: 2539155816868640959}
   - {fileID: 6843550965609677290}
   publicVariablesSerializationDataFormat: 0
+--- !u!114 &2672245476230821500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5133108666322331858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f531c490642846699ac06a49dfe4e66e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 3127428683761958871}
+  migrationId: 530e8ba65abf49c5b1c176d30d93fe19
+  fields:
+  - symbol: body
+    typeName: UnityEngine.Rigidbody
+    isNull: 1
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: speedTrail
+    typeName: UnityEngine.TrailRenderer
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 2539155816868640959}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: flightPath
+    typeName: UnityEngine.LineRenderer
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 6843550965609677290}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: minimumTrailSpeedKmh
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 80
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: minimumPathPointDistance
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.05
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: maximumPathPoints
+    typeName: System.Int32
+    isNull: 0
+    booleanValue: 0
+    integerValue: 1024
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
 --- !u!1 &7973825907148256341
 GameObject:
   m_ObjectHideFlags: 0

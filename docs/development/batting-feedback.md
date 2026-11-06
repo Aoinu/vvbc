@@ -14,6 +14,8 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    local listeners at Start; use one feedback instance per contact evaluator
    and Ball Flight. It sleeps between pitches and wakes on launch.
 3. Position and orient the World Space `Metrics Display` for the batting lane.
+   Its root uses a 0.001 scale so the 500-by-750 UI rect renders at roughly
+   0.5-by-0.75 m; do not set its Transform scale to zero.
    The packaged Bat phantoms use simple cylinders; their roots follow the recorded
    Bat model origin and rotation. Replace the seven meshes in the scene with a
    matching Bat model as needed. Set the Ball phantom scale to the actual Ball diameter.

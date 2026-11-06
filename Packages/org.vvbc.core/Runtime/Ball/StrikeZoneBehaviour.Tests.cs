@@ -4,6 +4,15 @@ using UnityEngine;
 public partial class StrikeZoneBehaviour
 {
     [TsukimiTest]
+    public void DefaultZoneUsesMlbAbsHeightsForAn180CmBatter()
+    {
+        Assert.IsTrue(Mathf.Abs(bottom - 1.8f * 0.27f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(top - 1.8f * 0.535f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(top - bottom - 0.477f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs((top + bottom) * 0.5f - 0.7245f) < 0.00001f);
+    }
+
+    [TsukimiTest]
     public void RectangleDistanceIncludesEdgesAndRoundedCorners()
     {
         snapshotOrigin = Vector3.zero;

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Script: {fileID: 11500000, guid: f9a7b89c02db4ea99a275917b647a31c, type: 3}
   m_Name: PitchSettingsBehaviour
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 281a2a5203a17874480dfdddc9d3db8b,
@@ -3957,7 +3957,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 30d877fdaaea33a4293570af72546fac, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 7802334de8d42e5e1ac7dae8df9c2cbb9d2d2e57cbb6a6862f75fbda76bde8e1
+  sourceFingerprint: f002fe6749029c15a58c5df622e3bc35293428f26eead03435c14caf064442a4
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []

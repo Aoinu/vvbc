@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Script: {fileID: 11500000, guid: f9a7b89c02db4ea99a275917b647a31c, type: 3}
   m_Name: BallFlightVisualBehaviour
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 92fbe31dc59236b4a98bb160e3238aa4,
@@ -559,7 +559,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 9f24ad0714e8a564ca2c4a3e7f44099e, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 6d35c68002403380bbeeb08b4db2e2d66c2805d4c7e7f979883038bf10eab7ae
+  sourceFingerprint: b95bef98d20501c989081e81f511dbb174a70e7dc9799204a78d4bdca6c52138
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []

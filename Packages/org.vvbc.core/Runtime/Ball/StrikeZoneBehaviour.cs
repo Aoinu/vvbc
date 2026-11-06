@@ -7,8 +7,9 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
     public Transform plateOrigin;
     public float plateDepth = 0.4318f;
     public float width = 0.4318f;
-    public float bottom = 0.70f;
-    public float top = 1.30f;
+    // MLB's 2026 ABS proportions for a 1.80 m batter: 27% to 53.5% of height.
+    public float bottom = 0.486f;
+    public float top = 0.963f;
     public Vector2 zoneCenterOffset;
 
     // These values are copied at release, so a later adjustment does not change a pitch.

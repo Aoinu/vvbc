@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Script: {fileID: 11500000, guid: f9a7b89c02db4ea99a275917b647a31c, type: 3}
   m_Name: BatMotionBehaviour
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 61cbbe1dca68dd643a4e899bc977d517,

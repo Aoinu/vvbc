@@ -129,7 +129,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
                 if (batRenderers[i] != null) batRenderers[i].enabled = false;
         if (ballRenderer != null) ballRenderer.enabled = false;
         if (contactPointRenderer != null) contactPointRenderer.enabled = false;
-        if (metrics != null) metrics.text = "";
     }
 
     // Called only after the authoritative contact and all its fields are fixed.

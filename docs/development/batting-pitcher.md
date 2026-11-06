@@ -61,9 +61,18 @@ crossing component copies the dimensions and pose when a pitch is released.
 The front edge is at `plateDepth`, and the judgment plane is at half that
 distance. Height is measured in the world's vertical direction.
 
+The default vertical zone follows MLB's 2026 ABS proportions for a 1.80 m
+batter: bottom at 27% (0.486 m), top at 53.5% (0.963 m), for a 0.477 m zone
+centered at 0.7245 m above the plate origin. Align the Contact Zone center and
+the pitcher's `StrikeZoneCenter` with that same height. This is a fixed,
+height-based approximation; MLB's traditional umpire-called zone is determined
+from the batter's stance and body landmarks.
+
 The prefab's `Ball Phantom` MeshFilter is intentionally unassigned so core
 does not depend on a development model. Supply a ball mesh and set the phantom
-behaviour's `meshDiameter` to the mesh's unscaled diameter. Its renderer uses
+behaviour's `meshDiameter` to the mesh's unscaled diameter. The prefab's default
+is 0.0007200219 for the Sandbox `Ball.fbx` mesh; set it again when using a
+different mesh. Its renderer uses
 the separate transparent `BallPhantom` material; the three colours, including
 alpha, are adjustable on the behaviour. The ball's SphereCollider supplies
 the displayed diameter and geometric radius, including its world scale.

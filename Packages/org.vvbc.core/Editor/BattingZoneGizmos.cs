@@ -63,8 +63,8 @@ public static class BattingZoneGizmos
         origin = plate.position + right * offset.x;
         depth = Read(behaviour, "plateDepth", 0.4318f);
         width = Read(behaviour, "width", 0.4318f);
-        bottom = Read(behaviour, "bottom", 0.7f) + offset.y;
-        top = Read(behaviour, "top", 1.3f) + offset.y;
+        bottom = Read(behaviour, "bottom", 0.486f) + offset.y;
+        top = Read(behaviour, "top", 0.963f) + offset.y;
         return true;
     }
 

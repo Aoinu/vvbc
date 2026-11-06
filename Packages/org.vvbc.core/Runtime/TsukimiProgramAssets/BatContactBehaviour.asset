@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Script: {fileID: 11500000, guid: f9a7b89c02db4ea99a275917b647a31c, type: 3}
   m_Name: BatContactBehaviour
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 4a0448ca398a4344d87775861497fe77,
@@ -23306,7 +23306,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: d81267966af7f234680f9dfcb873b881, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 0f296d818244888061e15d46c1cd14132c7fa825655f93970dff981b48098fbc
+  sourceFingerprint: 262f4c7072e2bef8a5fe7e7409e552b2bdab9f70a3e57f0f1e6296b092a0a799
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
