@@ -37,13 +37,13 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public Color contactPointColor = Color.white;
     public Color missPointColor = Color.magenta;
     public float contactPointDiameter = 0.03f;
-    public float contactMinVolume = 0.2f;
+    public float contactMinVolume = 0.45f;
     public float contactMaxVolume = 1f;
     public float contactMinPitch = 0.8f;
     public float contactMaxPitch = 1.2f;
     public float windStartSpeed = 20f;
     public float windMaxSpeed = 40f;
-    public float windMaxVolume = 1f;
+    public float windMaxVolume = 0.35f;
     public float hapticDuration = 0.08f;
     public float hapticAmplitude = 0.5f;
     public float hapticFrequency = 0.5f;

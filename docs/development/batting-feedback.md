@@ -31,8 +31,8 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    bad reference cannot move physics objects.
 4. For Ball bounce, add an UdonBehaviour on the Ball Rigidbody GameObject and
    assign `Runtime/TsukimiProgramAssets/FeedbackImpactAudioBehaviour.asset`.
-   Add a child AudioSource and `VRCSpatialAudioSource`, use 3D spatial blend,
-   and assign the AudioSource to `impactAudio`. Set `impactLayers` to the same
+   Place `Runtime/Prefabs/BallImpactAudio.prefab` as a child of the Ball,
+   and assign its AudioSource to `impactAudio`. Set `impactLayers` to the same
    ground layers as Ball Flight, `minimumSpeed` to 0.8, and `cooldown` to 0.1.
    Assign this AudioSource to the feedback's optional `bounceAudio` so reset can
    stop it. An empty impact mask means all layers.
@@ -44,9 +44,9 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    `jet.ogg` to the feedback's `contactClip` and `windClip`, `ball_bounce.wav`
    to the Ball impact's `impactClip`, and `bat_drop.mp3` to the Bat Body impact's
    `impactClip`. Do not assign these clips in the distributed package prefabs.
-   All four clips may be left empty. AudioSource and VRC spatial settings control
-   distance; the feedback and impact inspectors expose volume, pitch and speed
-   thresholds. Wind is intentionally not looped by this initial implementation.
+   All four clips may be left empty; their playback is skipped safely. Wind is
+   intentionally not looped by this initial implementation. See the audio settings
+   below before adjusting volume or distance.
 
 The delay defaults to one second and the marker diameter to 0.03 m. Measurements
 are taken in world units. Bat peak history holds 128 frame differences and is
@@ -67,6 +67,61 @@ its other overrides. The runtime Udon inspector exposes `trailRequested`,
 `trailRendered` and `trailRejectionReason` for the last frozen result. A history
 interruption or unavailable measured times can leave only part of the trail;
 no per-frame diagnostic logs are emitted.
+
+## 3D audio settings and tuning
+
+These are initial values for client listening, not a loudness guarantee. The
+package contains no audio clips; clip loudness, VRChat settings and simultaneous
+sounds all affect the result. The previous sources used inverse-square spatial
+falloff with Near 0, Far 40 m and Gain +10 dB; that falloff and low dynamic
+minimums can both make weak or distant events quiet. AudioSource volume alone
+cannot establish the cause without listening to the actual clips in VRChat.
+
+| Sound | Prefab / GameObject | Min / Max distance | Dynamic volume controls |
+| --- | --- | --- | --- |
+| Bat contact | `BattingFeedback.prefab` / `Contact Audio` | 1 / 30 m | feedback `contactMinVolume` 0.45, `contactMaxVolume` 1 |
+| Ball impact | `BallImpactAudio.prefab` / root, parented to Ball | 1 / 20 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
+| Bat drop / impact | `Bat.prefab` / `Body/Drop Audio` | 1 / 12 m | Body impact `minimumVolume` 0.35, `maximumVolume` 1 |
+| Flight wind | `BattingFeedback.prefab` / `Wind Audio` | 1 / 8 m | feedback `windMaxVolume` 0.35 |
+
+The existing wind follows **ball flight speed**, not bat swing speed: it starts
+at `windStartSpeed` 20 m/s and reaches `windMaxVolume` at `windMaxSpeed` 40 m/s.
+No new swing event is introduced. It is a one-shot and does not restart until
+reset clears its clip. Contact volume and pitch interpolate using
+`Clamp01(finalBatPower * contactQuality)`. Impact uses the absolute normal
+component of relative collision velocity, interpolating from minimum to maximum
+volume between `minimumSpeed` and `maximumSpeed`; below threshold it does not
+play. Its layer filter, optional local-owner filter and cooldown are unchanged.
+Reset stops the contact, wind and optional Ball impact sources.
+
+Each source uses Spatial Blend 3D, Custom Volume Rolloff and its own editable
+**AudioSource > 3D Sound Settings > Volume** curve. The initial curve holds near
+full level at close range and decreases smoothly to zero at Max Distance; beyond
+that distance Unity holds the final value, so keep the final value at zero.
+`VRCSpatialAudioSource` has spatialization and **Use AudioSource Volume Curve**
+enabled, Gain +10 dB and Volumetric Radius 0; Near/Far do not define this curve.
+See [VRChat spatial audio](https://creators.vrchat.com/worlds/components/vrc_spatialaudiosource/)
+and [Unity maxDistance](https://docs.unity3d.com/ScriptReference/AudioSource-maxDistance.html).
+
+Adjust `contactMinVolume` / `contactMaxVolume`, `minimumVolume` /
+`maximumVolume`, or `windMaxVolume` on the relevant T# behaviour inspector:
+these values set the base playback range and event-dependent scaling. Runtime
+writes `AudioSource.volume`, so editing that AudioSource field alone is not a
+persistent loudness adjustment. Keep ranges within 0–1 and minimum no greater
+than maximum. Change the source's curve and Max Distance separately to tune reach.
+Change Gain only after testing, to avoid stacking boosts. Existing scene/prefab
+instances can have overrides for these fields or audio settings: inspect and
+update those overrides explicitly; updating a package prefab does not replace them.
+For existing local Ball audio sources, replace them with the Ball Impact Audio
+prefab or copy its AudioSource and VRC settings, then reassign both references.
+
+In VRChat, check weak, medium and strong contact and impacts at 1, 3, halfway,
+near the maximum and beyond it; compare the wind with contact and simultaneous
+impacts for balance and audible clipping. Check both moving listener and moving
+source, desktop and VR, and different clients. The world debug Audio Sources
+view can show source, volume, distance and Steam Audio conversion; its displayed
+volume does not include VRC Gain. Also repeat with clips unset and reset between
+pitches. Unity/ClientSim alone cannot certify actual VRChat loudness.
 
 ## Client checks
 

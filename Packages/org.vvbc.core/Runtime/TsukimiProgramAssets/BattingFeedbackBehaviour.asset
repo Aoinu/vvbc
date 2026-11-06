@@ -38,12 +38,12 @@ MonoBehaviour:
     null\n    .export redColor\n    contactPointColor: %UnityEngineColor, null\n   
     .export contactPointColor\n    missPointColor: %UnityEngineColor, null\n    .export
     missPointColor\n    contactPointDiameter: %SystemSingle, 0.03\n    .export contactPointDiameter\n   
-    contactMinVolume: %SystemSingle, 0.2\n    .export contactMinVolume\n    contactMaxVolume:
+    contactMinVolume: %SystemSingle, 0.45\n    .export contactMinVolume\n    contactMaxVolume:
     %SystemSingle, 1\n    .export contactMaxVolume\n    contactMinPitch: %SystemSingle,
     0.8\n    .export contactMinPitch\n    contactMaxPitch: %SystemSingle, 1.2\n   
     .export contactMaxPitch\n    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n   
     windMaxSpeed: %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume:
-    %SystemSingle, 1\n    .export windMaxVolume\n    hapticDuration: %SystemSingle,
+    %SystemSingle, 0.35\n    .export windMaxVolume\n    hapticDuration: %SystemSingle,
     0.08\n    .export hapticDuration\n    hapticAmplitude: %SystemSingle, 0.5\n   
     .export hapticAmplitude\n    hapticFrequency: %SystemSingle, 0.5\n    .export
     hapticFrequency\n    _sequence: %SystemInt32, -1\n    _entered: %SystemBoolean,
@@ -38392,7 +38392,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 9f086c0d21eba2f438b8833f94036b5d, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 480aad6d0a0441a89d934d9344d197d3934a5ee5b5fe1a631aef9f8459d71d96
+  sourceFingerprint: 8fe80a88526c7539d4423a0f0a8e89dcf532e104ebce7d4eb1ef65d750b2250f
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -38570,12 +38570,12 @@ MonoBehaviour:
     null\n    .export redColor\n    contactPointColor: %UnityEngineColor, null\n   
     .export contactPointColor\n    missPointColor: %UnityEngineColor, null\n    .export
     missPointColor\n    contactPointDiameter: %SystemSingle, 0.03\n    .export contactPointDiameter\n   
-    contactMinVolume: %SystemSingle, 0.2\n    .export contactMinVolume\n    contactMaxVolume:
+    contactMinVolume: %SystemSingle, 0.45\n    .export contactMinVolume\n    contactMaxVolume:
     %SystemSingle, 1\n    .export contactMaxVolume\n    contactMinPitch: %SystemSingle,
     0.8\n    .export contactMinPitch\n    contactMaxPitch: %SystemSingle, 1.2\n   
     .export contactMaxPitch\n    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n   
     windMaxSpeed: %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume:
-    %SystemSingle, 1\n    .export windMaxVolume\n    hapticDuration: %SystemSingle,
+    %SystemSingle, 0.35\n    .export windMaxVolume\n    hapticDuration: %SystemSingle,
     0.08\n    .export hapticDuration\n    hapticAmplitude: %SystemSingle, 0.5\n   
     .export hapticAmplitude\n    hapticFrequency: %SystemSingle, 0.5\n    .export
     hapticFrequency\n    _sequence: %SystemInt32, -1\n    _entered: %SystemBoolean,
@@ -77720,12 +77720,12 @@ MonoBehaviour:
     null\n    .export redColor\n    contactPointColor: %UnityEngineColor, null\n   
     .export contactPointColor\n    missPointColor: %UnityEngineColor, null\n    .export
     missPointColor\n    contactPointDiameter: %SystemSingle, 0.03\n    .export contactPointDiameter\n   
-    contactMinVolume: %SystemSingle, 0.2\n    .export contactMinVolume\n    contactMaxVolume:
+    contactMinVolume: %SystemSingle, 0.45\n    .export contactMinVolume\n    contactMaxVolume:
     %SystemSingle, 1\n    .export contactMaxVolume\n    contactMinPitch: %SystemSingle,
     0.8\n    .export contactMinPitch\n    contactMaxPitch: %SystemSingle, 1.2\n   
     .export contactMaxPitch\n    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n   
     windMaxSpeed: %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume:
-    %SystemSingle, 1\n    .export windMaxVolume\n    hapticDuration: %SystemSingle,
+    %SystemSingle, 0.35\n    .export windMaxVolume\n    hapticDuration: %SystemSingle,
     0.08\n    .export hapticDuration\n    hapticAmplitude: %SystemSingle, 0.5\n   
     .export hapticAmplitude\n    hapticFrequency: %SystemSingle, 0.5\n    .export
     hapticFrequency\n    _sequence: %SystemInt32, -1\n    _entered: %SystemBoolean,

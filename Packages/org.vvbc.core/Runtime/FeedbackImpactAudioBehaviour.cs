@@ -13,7 +13,7 @@ public partial class FeedbackImpactAudioBehaviour : TsukimiBehaviour
     public bool requireLocalOwner;
     public float minimumSpeed = 0.8f;
     public float maximumSpeed = 10f;
-    public float minimumVolume = 0.1f;
+    public float minimumVolume = 0.35f;
     public float maximumVolume = 1f;
     public float pitch = 1f;
     public float cooldown = 0.1f;
