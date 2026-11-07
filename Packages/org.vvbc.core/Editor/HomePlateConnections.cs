@@ -102,11 +102,33 @@ namespace VVBC.Editor
             var contact = Child(root, "ContactZone", "BatContactBehaviour");
             var crossing = Child(root, "PitchCrossing", "PitchCrossingBehaviour");
             var phantom = Child(root, "BallPhantom", "BallPhantomBehaviour");
+            var left = Child(root, "BatterBoxLeft", "BatterBoxBehaviour");
+            var rightBox = Child(root, "BatterBoxRight", "BatterBoxBehaviour");
             // An old standalone StrikeZone is not a HomePlate instance.
             if (!IsHomePlate(zone)) return null;
+            if (zone.SyncMethod != VRC.SDKBase.Networking.SyncType.Manual) return "HomePlate must use Manual Sync.";
             if (contact == null || crossing == null || phantom == null) return "HomePlate is missing a required child behaviour.";
+            if (left == null || rightBox == null) return "HomePlate is missing a BatterBox behaviour.";
+            foreach (var box in new[] { left, rightBox })
+            {
+                var colliders = box.GetComponents<Collider>();
+                if (colliders.Length != 1 || !(colliders[0] is BoxCollider) || !colliders[0].isTrigger)
+                    return "Each BatterBox requires exactly one BoxCollider trigger.";
+                if (ReadReference(box, "homePlate") != zone) return "BatterBox HomePlate reference is incorrect.";
+            }
+            var leftValues = left.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == left);
+            var rightValues = rightBox.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == rightBox);
+            var leftSide = leftValues?.fields.FirstOrDefault(f => f.symbol == "isLeft");
+            var rightSide = rightValues?.fields.FirstOrDefault(f => f.symbol == "isLeft");
+            if (leftSide == null || rightSide == null || !leftSide.booleanValue || rightSide.booleanValue)
+                return "BatterBox left/right settings are incorrect.";
+            var allColliders = root.GetComponentsInChildren<Collider>(true);
+            if (allColliders.Length != 2 || allColliders.Any(c => c.gameObject != left.gameObject && c.gameObject != rightBox.gameObject))
+                return "Only the two BatterBox trigger colliders are allowed.";
             var values = zone.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == zone);
             if (values == null) return "HomePlate T# authoring data is missing.";
+            var occupancy = values.fields.FirstOrDefault(f => f.symbol == "useBatterOccupancy");
+            if (occupancy == null || !occupancy.booleanValue) return "HomePlate occupancy is disabled.";
             var origin = values.fields.FirstOrDefault(f => f.symbol == "plateOrigin");
             if (origin != null && !origin.isNull && origin.objectValue != null && origin.objectValue != root)
                 return "HomePlate origin must be its root Transform.";
@@ -119,7 +141,8 @@ namespace VVBC.Editor
                 Vector3.Distance(Vector3.Cross(right, up), forward) > 0.0001f)
                 return "HomePlate requires unit effective scale and yaw-only rotation, including its parents.";
             if (ReadReference(contact, "strikeZone") != zone || ReadReference(crossing, "zone") != zone ||
-                ReadReference(crossing, "phantom") != phantom) return "HomePlate internal references are inconsistent.";
+                ReadReference(crossing, "phantom") != phantom || ReadReference(zone, "contactListener") != contact)
+                return "HomePlate internal references are inconsistent.";
             var ball = ReadReference(zone, "ball");
             if (ball == null) return EditorUtility.IsPersistent(zone) || PrefabStageUtility.GetPrefabStage(zone.gameObject) != null
                 ? null : "HomePlate has no Ball assigned.";

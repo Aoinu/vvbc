@@ -1692,7 +1692,7 @@ MonoBehaviour:
   serializedProgramAsset: {fileID: 11400000, guid: 61cbbe1dca68dd643a4e899bc977d517,
     type: 2}
   programSource: {fileID: 11400000, guid: ff144b7c90a71714698ba2ea3aede1da, type: 2}
-  serializedPublicVariablesBytesString: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABgcAAAAAAAAAAi8CAAAAAWAAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAVQBuAGkAdAB5AEUAbgBnAGkAbgBlAC4AVAByAGEAbgBzAGYAbwByAG0ALAAgAFUAbgBpAHQAeQBFAG4AZwBpAG4AZQAuAEMAbwByAGUATQBvAGQAdQBsAGUAXQBdACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgACAAAABgIAAAAAAAAAJwEEAAAAdAB5AHAAZQABFwAAAFMAeQBzAHQAZQBtAC4AUwB0AHIAaQBuAGcALAAgAG0AcwBjAG8AcgBsAGkAYgAnAQoAAABTAHkAbQBi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
+  serializedPublicVariablesBytesString: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABggAAAAAAAAAAi8CAAAAAWAAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAVQBuAGkAdAB5AEUAbgBnAGkAbgBlAC4AVAByAGEAbgBzAGYAbwByAG0ALAAgAFUAbgBpAHQAeQBFAG4AZwBpAG4AZQAuAEMAbwByAGUATQBvAGQAdQBsAGUAXQBdACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgACAAAABgIAAAAAAAAAJwEEAAAAdAB5AHAAZQABFwAAAFMAeQBzAHQAZQBtAC4AUwB0AHIAaQBuAGcALAAgAG0AcwBjAG8AcgBsAGkAYgAnAQoAAABTAHkAbQBi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
   publicVariablesUnityEngineObjects:
   - {fileID: 2082657940982954865}
   - {fileID: 8527309192383487951}
@@ -3148,6 +3148,557 @@ MonoBehaviour:
     booleanValue: 0
     integerValue: 0
     singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: powerCurve
+    typeName: UnityEngine.AnimationCurve
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2.5
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 2.75
+        value: 0.03437588
+        inSlope: 0.1315172
+        outSlope: 0.1315172
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 3
+        value: 0.0657586
+        inSlope: 0.11843364
+        outSlope: 0.11843364
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 3.5
+        value: 0.1214268
+        inSlope: 0.10375938
+        outSlope: 0.10375938
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 4
+        value: 0.16951798
+        inSlope: 0.08833219
+        outSlope: 0.08833219
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 5
+        value: 0.25
+        inSlope: 0.06948913
+        outSlope: 0.06948913
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 7.5
+        value: 0.3962406
+        inSlope: 0.05
+        outSlope: 0.05
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 10
+        value: 0.5
+        inSlope: 0.03537594
+        outSlope: 0.03537594
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 15
+        value: 0.6462406
+        inSlope: 0.025
+        outSlope: 0.025
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 20
+        value: 0.75
+        inSlope: 0.01768797
+        outSlope: 0.01768797
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 30
+        value: 0.8962406
+        inSlope: 0.0125
+        outSlope: 0.0125
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 40
+        value: 1
+        inSlope: 0.010375941
+        outSlope: 0.010375941
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: minContactX
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.1
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: maxContactX
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.855
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: sweetSpotX
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.68
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: widthAtGrip
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.045
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: widthAtBarrel
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.07
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: minimumQuality
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.25
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: timingYawDegrees
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 30
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: wristMinimumPower
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.55
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: pushMinimumDirectionDot
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.9
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: oneHandPowerCap
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.4
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: wristPowerCap
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.3
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: pushPowerCap
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.35
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: spikePowerCap
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.2
     stringValue: 
     vector2Value: {x: 0, y: 0}
     vector3Value: {x: 0, y: 0, z: 0}

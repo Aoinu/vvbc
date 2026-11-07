@@ -14,6 +14,7 @@ public partial class BattingFeedbackBehaviour
     private BatMotionBehaviour _poseSource;
     private bool _trailHasSample, _trailInside, _trailEntered, _trailEndKnown, _trailReady;
     private float _trailScanTime, _trailEntry, _trailExit;
+    private float _trailNotBefore;
     private Vector3[] _trailPositions;
     private Quaternion[] _trailRotations;
     private Color[] _trailColors;
@@ -32,11 +33,11 @@ public partial class BattingFeedbackBehaviour
         _poseCount = 0; _poseSegment = 0; _poseRevision = -1; _poseSource = null;
         _trailHasSample = false; _trailInside = false; _trailEntered = false;
         _trailEndKnown = false; _trailReady = false;
-        _trailScanTime = 0f; _trailEntry = 0f; _trailExit = 0f; _trailCount = 0;
+        _trailScanTime = 0f; _trailNotBefore = 0f; _trailEntry = 0f; _trailExit = 0f; _trailCount = 0;
         _poseGap = false;
         trailRequested = 0; trailAvailable = 0; trailPoseSamples = 0; trailValid = 0; trailRendered = 0;
         trailEntry = 0f; trailExit = 0f; trailLastPoseTime = 0f; trailRejectionReason = "";
-        if (contact != null) contact.feedbackTrailActive = flight != null && flight.flying;
+        if (contact != null) contact.feedbackTrailActive = contact.motion != null && flight != null && flight.flying && !flight.contactConsumed;
     }
 
     // Contact invokes this before scanning its own candidates. This prevents a
@@ -59,7 +60,7 @@ public partial class BattingFeedbackBehaviour
 
     private void UpdateTrail()
     {
-        if (_trailReady || flight == null || contact == null || !flight.flying) return;
+        if (_trailReady || flight == null || contact == null || contact.motion == null || !flight.flying) return;
         BatMotionBehaviour motion = contact.motion;
         if (!flight.contactConsumed && !_trailEndKnown) ScanPitchZone(flight.latestMotionTime);
         if (_trailEntered && motion != null && (!_trailEndKnown || _poseCount == 0 || _poseTimes[_poseCount - 1] < _trailExit))
@@ -87,12 +88,14 @@ public partial class BattingFeedbackBehaviour
     {
         if (contact.contactZone == null || _trailEndKnown) return;
         float start = _trailHasSample ? Mathf.Max(_trailScanTime, flight.oldestMotionTime) : flight.oldestMotionTime;
+        start = Mathf.Max(start, _trailNotBefore);
         if (limit < start) return;
         if (!_trailHasSample)
         {
             if (!flight.TrySampleContactMotion(start, contact.maxExtrapolation)) return;
             _trailInside = InZone(flight.sampledPosition);
             _trailHasSample = true; _trailScanTime = start;
+            if (_trailInside && _trailNotBefore > 0f) { _trailEntered = true; _trailEntry = start; }
         }
         // A discontinuity in the flight history cannot be treated as a crossing.
         if (start > _trailScanTime + 0.000001f)

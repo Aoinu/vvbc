@@ -63,8 +63,20 @@ public static class BattingZoneGizmos
         origin = plate.position + right * offset.x;
         depth = Read(behaviour, "plateDepth", 0.4318f);
         width = Read(behaviour, "width", 0.4318f);
-        bottom = Read(behaviour, "bottom", 0.486f) + offset.y;
-        top = Read(behaviour, "top", 0.963f) + offset.y;
+        if (Read(behaviour, "useBatterOccupancy", false))
+        {
+            float height = Read(behaviour, "defaultBatterHeight", 1.8f);
+            bottom = height * Read(behaviour, "bottomHeightRatio", 0.27f);
+            top = height * Read(behaviour, "topHeightRatio", 0.535f);
+            if (float.IsNaN(bottom) || float.IsNaN(top) || bottom < 0f || top <= bottom || top > float.MaxValue)
+            { bottom = 0.486f; top = 0.963f; }
+            bottom += offset.y; top += offset.y;
+        }
+        else
+        {
+            bottom = Read(behaviour, "bottom", 0.486f) + offset.y;
+            top = Read(behaviour, "top", 0.963f) + offset.y;
+        }
         return true;
     }
 

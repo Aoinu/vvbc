@@ -107,15 +107,29 @@ namespace VVBC.Toolchain
             if (core == null || visual == null || PrefabUtility.GetPrefabAssetType(visual) != PrefabAssetType.Variant ||
                 PrefabUtility.GetCorrespondingObjectFromSource(visual) != core)
                 throw new InvalidOperationException("HomePlate Visual must be a variant of HomePlate.");
-            if (core.GetComponentsInChildren<Collider>(true).Length != 0 || visual.GetComponentsInChildren<Collider>(true).Length != 0)
-                throw new InvalidOperationException("HomePlate contains an unexpected Collider.");
+            foreach (var plate in new[] { core, visual })
+            {
+                var left = plate.transform.Find("BatterBoxLeft");
+                var right = plate.transform.Find("BatterBoxRight");
+                var colliders = plate.GetComponentsInChildren<Collider>(true);
+                if (left == null || right == null || colliders.Length != 2 ||
+                    colliders.Any(c => !(c is BoxCollider) || !c.isTrigger || (c.transform != left && c.transform != right)) ||
+                    left.GetComponents<Collider>().Length != 1 || right.GetComponents<Collider>().Length != 1)
+                    throw new InvalidOperationException("HomePlate must contain only two BatterBox trigger colliders.");
+                var plateZone = plate.GetComponent<UdonBehaviour>();
+                var leftBehaviour = left.GetComponent<UdonBehaviour>();
+                var rightBehaviour = right.GetComponent<UdonBehaviour>();
+                if (leftBehaviour == null || rightBehaviour == null || Reference(leftBehaviour, "homePlate") != plateZone ||
+                    Reference(rightBehaviour, "homePlate") != plateZone)
+                    throw new InvalidOperationException("HomePlate BatterBox references are invalid.");
+            }
             var zone = core.GetComponent<UdonBehaviour>();
             var contact = core.transform.Find("ContactZone")?.GetComponent<UdonBehaviour>();
             var crossing = core.transform.Find("PitchCrossing")?.GetComponent<UdonBehaviour>();
             var phantom = core.transform.Find("BallPhantom")?.GetComponent<UdonBehaviour>();
-            if (zone == null || contact == null || crossing == null || phantom == null ||
+            if (zone == null || zone.SyncMethod != VRC.SDKBase.Networking.SyncType.Manual || contact == null || crossing == null || phantom == null ||
                 Reference(contact, "strikeZone") != zone || Reference(crossing, "zone") != zone ||
-                Reference(crossing, "phantom") != phantom || Reference(zone, "ball") != null)
+                Reference(crossing, "phantom") != phantom || Reference(zone, "contactListener") != contact || Reference(zone, "ball") != null)
                 throw new InvalidOperationException("HomePlate internal references are invalid.");
             var phantomFilter = phantom.GetComponent<MeshFilter>();
             var phantomRenderer = phantom.GetComponent<MeshRenderer>();

@@ -10,14 +10,15 @@ physics validation. Scene instances may override prefab settings.
 
 Each player gets a Bat under their `VVBCPlayerObjectTemplate`. The owner alone
 can spawn, pick up and drive it; other players see its synchronized Body and a
-local visual correction. The Bat represents a held or released object, not a
-ball-contact, power or result calculation.
+local visual correction. The Bat represents a held or released object and owns
+the local player's batting parameters; HomePlate's Contact evaluates geometry
+and applies the ball result.
 
 | Code | Responsibility |
 |---|---|
 | `BatBehaviour` | Manual Sync state and authorized transitions, input, spawn, physics and presentation changes, pickup reconciliation and Motion lifecycle. |
 | `BatGripBehaviour` | One relay per Pickup: resolves the holding hand and forwards Pickup/Drop to Bat. |
-| `BatMotionBehaviour` | Active `PostLateUpdate` work: local Body pose and release velocity, available proxy following, remote visual correction and release interpolation. |
+| `BatMotionBehaviour` | Active `PostLateUpdate` work, Bat batting settings and active contact-listener history: local Body pose and release velocity, available proxy following, remote visual correction and release interpolation. |
 | `BatBodyOwnershipBehaviour` | Relays Body ownership changes to Bat; Body's callback is separate from Bat's. |
 | `BatSpawnSwitchBehaviour` | On interaction, resolve exactly one locally owned Bat among local PlayerObjects and request Respawn. |
 | `BatGripLogic`, `BatGripConstants` | Pure grip transitions and stable integer identifiers. |

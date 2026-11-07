@@ -460,7 +460,7 @@ MonoBehaviour:
   SynchronizePosition: 0
   AllowCollisionOwnershipTransfer: 1
   Reliable: 0
-  _syncMethod: 2
+  _syncMethod: 3
   serializedProgramAsset: {fileID: 11400000, guid: fa9789c5becca8c42a1379559d0c9f20,
     type: 2}
   programSource: {fileID: 11400000, guid: e1c443acaf2b5ba46bcb36be540f4afd, type: 2}
@@ -889,6 +889,316 @@ MonoBehaviour:
   - symbol: ball
     typeName: VRC.Udon.UdonBehaviour
     isNull: 1
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: useBatterOccupancy
+    typeName: System.Boolean
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: contactListener
+    typeName: VRC.Udon.UdonBehaviour
+    isNull: 1
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: occupantOnlyObjects
+    typeName: UnityEngine.GameObject[]
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: eyeToHeightOffset
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.1
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: bottomHeightRatio
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.27
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: topHeightRatio
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0.535
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: defaultBatterHeight
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 1.8
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: occupantPlayerId
+    typeName: System.Int32
+    isNull: 0
+    booleanValue: 0
+    integerValue: -1
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: syncedZoneBottom
+    typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: syncedZoneTop
+    typeName: System.Single
+    isNull: 0
     booleanValue: 0
     integerValue: 0
     singleValue: 0

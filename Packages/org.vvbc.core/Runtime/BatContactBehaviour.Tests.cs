@@ -40,12 +40,11 @@ public partial class BatContactBehaviour
     [TsukimiTest]
     public void TimingUsesOnlyHorizontalYawAndCurvesUseLongitudinalPosition()
     {
-        Assert.IsTrue(ValidTiming(new Vector3(1f, 2f, 0f), Vector3.forward));
-        Assert.IsFalse(ValidTiming(Vector3.forward, Vector3.forward));
-        Assert.IsTrue(Quality(sweetSpotX) > Quality(minContactX));
-        Assert.IsTrue(ContactWidth(maxContactX) > ContactWidth(minContactX));
-        maxContactX = minContactX;
-        Assert.AreEqual(0f, ContactWidth(minContactX));
+        Assert.IsTrue(ValidTiming(new Vector3(1f, 2f, 0f), Vector3.forward, 30f));
+        Assert.IsFalse(ValidTiming(Vector3.forward, Vector3.forward, 30f));
+        Assert.IsTrue(Quality(0.68f, 0.1f, 0.855f, 0.68f, 0.25f) > Quality(0.1f, 0.1f, 0.855f, 0.68f, 0.25f));
+        Assert.IsTrue(ContactWidth(0.855f, 0.1f, 0.855f, 0.045f, 0.07f) > ContactWidth(0.1f, 0.1f, 0.855f, 0.045f, 0.07f));
+        Assert.AreEqual(0f, ContactWidth(0.1f, 0.1f, 0.1f, 0.045f, 0.07f));
     }
 
     [TsukimiTest]
@@ -68,17 +67,11 @@ public partial class BatContactBehaviour
     public void ContactCurvesRemapPhysicalPositionWhenAxisIsReversed()
     {
         float position = 0.32f;
-        float width = ContactWidth(position);
-        float quality = Quality(position);
-        float oldMin = minContactX;
-        minContactX = -maxContactX;
-        maxContactX = -oldMin;
-        sweetSpotX = -sweetSpotX;
-        float oldWidth = widthAtGrip;
-        widthAtGrip = widthAtBarrel;
-        widthAtBarrel = oldWidth;
-        Assert.IsTrue(Mathf.Abs(ContactWidth(-position) - width) < 0.0001f);
-        Assert.IsTrue(Mathf.Abs(Quality(-position) - quality) < 0.0001f);
-        Assert.AreEqual(Mathf.Abs(0.04f) <= width, Mathf.Abs(-0.04f) <= ContactWidth(-position));
+        float width = ContactWidth(position, 0.1f, 0.855f, 0.045f, 0.07f);
+        float quality = Quality(position, 0.1f, 0.855f, 0.68f, 0.25f);
+        float reverseWidth = ContactWidth(-position, -0.855f, -0.1f, 0.07f, 0.045f);
+        Assert.IsTrue(Mathf.Abs(reverseWidth - width) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(Quality(-position, -0.855f, -0.1f, -0.68f, 0.25f) - quality) < 0.0001f);
+        Assert.AreEqual(Mathf.Abs(0.04f) <= width, Mathf.Abs(-0.04f) <= reverseWidth);
     }
 }

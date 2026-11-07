@@ -56,6 +56,12 @@ public partial class BatMotionBehaviour
     public float pushDistance = 0.12f;
     public float pushMaximumRotation = 10f;
     public float handSpikeSpeed = 25f;
+    public float wristMinimumPower = 0.55f;
+    public float pushMinimumDirectionDot = 0.9f;
+    public float oneHandPowerCap = 0.40f;
+    public float wristPowerCap = 0.30f;
+    public float pushPowerCap = 0.35f;
+    public float spikePowerCap = 0.20f;
     // 0 None, 1 one-hand, 2 wrist, 3 push, 4 tracking spike.
     public int contactPowerCapReason;
 
@@ -71,10 +77,12 @@ public partial class BatMotionBehaviour
     public void RegisterContactListener(UdonBehaviour listener, bool active)
     {
         if (listener == null) return;
+        bool wasActive = HasActiveContactListener();
         for (int i = 0; i < _contactListeners.Length; i++)
         {
             if (_contactListeners[i] != listener) continue;
             _contactListenerActive[i] = active;
+            if (!wasActive && HasActiveContactListener()) ResetContactHistory();
             return;
         }
         UdonBehaviour[] listeners = new UdonBehaviour[_contactListeners.Length + 1];
@@ -88,12 +96,22 @@ public partial class BatMotionBehaviour
         activeStates[activeStates.Length - 1] = active;
         _contactListeners = listeners;
         _contactListenerActive = activeStates;
+        if (!wasActive && HasActiveContactListener()) ResetContactHistory();
     }
 
     public void SetContactListenerActive(UdonBehaviour listener, bool active)
     {
+        bool wasActive = HasActiveContactListener();
         for (int i = 0; i < _contactListeners.Length; i++)
             if (_contactListeners[i] == listener) _contactListenerActive[i] = active;
+        if (!wasActive && HasActiveContactListener()) ResetContactHistory();
+    }
+
+    private bool HasActiveContactListener()
+    {
+        for (int i = 0; i < _contactListeners.Length; i++)
+            if (_contactListenerActive[i] && _contactListeners[i] != null) return true;
+        return false;
     }
 
     public void IgnoreBallCollision(Collider ballCollider)
@@ -362,22 +380,22 @@ public partial class BatMotionBehaviour
         float rr = BatVisualCorrection.RotationAngleDegrees(_contactRightRotations[start], rightRotation);
         float cap = 1f;
         if ((l >= oneHandMovingDistance && r <= oneHandStillDistance) ||
-            (r >= oneHandMovingDistance && l <= oneHandStillDistance)) { cap = 0.40f; contactPowerCapReason = 1; }
+            (r >= oneHandMovingDistance && l <= oneHandStillDistance)) { cap = oneHandPowerCap; contactPowerCapReason = 1; }
         if (l <= wristStillDistance && r <= wristStillDistance && lr >= wristRotationDegrees &&
-            rr >= wristRotationDegrees && rawPower >= 0.55f)
-        { if (cap > 0.30f) contactPowerCapReason = 2; cap = Mathf.Min(cap, 0.30f); }
+            rr >= wristRotationDegrees && rawPower >= wristMinimumPower)
+        { if (cap > wristPowerCap) contactPowerCapReason = 2; cap = Mathf.Min(cap, wristPowerCap); }
         Vector3 forward = centerDirection - Vector3.Dot(centerDirection, Vector3.up) * Vector3.up;
         if (forward.sqrMagnitude > 0.0001f && l >= pushDistance && r >= pushDistance &&
             lr <= pushMaximumRotation && rr <= pushMaximumRotation &&
             BatVisualCorrection.RotationAngleDegrees(_contactRotations[start], batRotation) <= pushMaximumRotation &&
-            Vector3.Dot(dl.normalized, forward.normalized) > 0.9f && Vector3.Dot(dr.normalized, forward.normalized) > 0.9f)
-        { if (cap > 0.35f) contactPowerCapReason = 3; cap = Mathf.Min(cap, 0.35f); }
+            Vector3.Dot(dl.normalized, forward.normalized) > pushMinimumDirectionDot && Vector3.Dot(dr.normalized, forward.normalized) > pushMinimumDirectionDot)
+        { if (cap > pushPowerCap) contactPowerCapReason = 3; cap = Mathf.Min(cap, pushPowerCap); }
         if (spikeEnd != first && _contactHandsValid[spikeStart] && _contactHandsValid[spikeEnd])
         {
             float spikeDt = _contactTimes[spikeEnd] - _contactTimes[spikeStart];
             if (spikeDt > 0f && (Vector3.Distance(_contactLeftPositions[spikeEnd], _contactLeftPositions[spikeStart]) / spikeDt > handSpikeSpeed ||
                 Vector3.Distance(_contactRightPositions[spikeEnd], _contactRightPositions[spikeStart]) / spikeDt > handSpikeSpeed))
-            { if (cap > 0.20f) contactPowerCapReason = 4; cap = Mathf.Min(cap, 0.20f); }
+            { if (cap > spikePowerCap) contactPowerCapReason = 4; cap = Mathf.Min(cap, spikePowerCap); }
         }
         return cap;
     }

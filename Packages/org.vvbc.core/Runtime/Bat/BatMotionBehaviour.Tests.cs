@@ -4,6 +4,35 @@ using UnityEngine;
 public partial class BatMotionBehaviour
 {
     [TsukimiTest]
+    public void BattingGeometryAndTimingRejectInvalidUpdates()
+    {
+        Assert.IsFalse(SetBattingGeometry(1f, 0f, 0.5f, 0.1f, 0.1f, 0.5f));
+        Assert.IsFalse(SetBattingGeometry(0f, 1f, 0.5f, 0.1f, 0.1f, float.NaN));
+        Assert.IsFalse(SetBattingTiming(91f));
+        Assert.IsFalse(SetBattingTiming(float.NaN));
+        Assert.IsFalse(SetBattingCapSetting(11, 1.1f));
+        Assert.IsFalse(SetBattingCapSetting(0, 0f));
+        Assert.AreEqual(0.1f, minContactX);
+        Assert.AreEqual(30f, timingYawDegrees);
+    }
+
+    [TsukimiTest]
+    public void BattingSettingsRestoreInspectorDefaults()
+    {
+        minContactX = 0.2f;
+        Assert.IsTrue(SetBattingGeometry(0f, 1f, 0.5f, 0.1f, 0.2f, 0.4f));
+        Assert.IsTrue(SetBattingTiming(15f));
+        Assert.IsTrue(SetBattingCapSetting(11, 0.6f));
+        Assert.AreEqual(0f, minContactX);
+        Assert.AreEqual(15f, timingYawDegrees);
+        Assert.AreEqual(0.6f, wristPowerCap);
+        ResetBattingSettings();
+        Assert.AreEqual(0.2f, minContactX);
+        Assert.AreEqual(30f, timingYawDegrees);
+        Assert.AreEqual(0.3f, wristPowerCap);
+    }
+
+    [TsukimiTest]
     public void FeedbackHandsReflectOnlyLocallyHeldGrips()
     {
         _mode = LocalHeld; lowerHand = BatGripConstants.HandLeft; upperHand = BatGripConstants.HandNone;

@@ -49,7 +49,7 @@ public partial class BattingFeedbackBehaviour
 
     private void ConsiderScannedPoint(BatMotionBehaviour motion, float time)
     {
-        float distance = CandidateDistance();
+        float distance = CandidateDistance(motion);
         ConsiderCandidate(motion, time);
         if (_scanPoints > 0 && time <= _scanMiddleTime) return;
         if (_scanPoints >= 2 && _scanMiddleDistance <= _scanLeftDistance && _scanMiddleDistance <= distance)
@@ -66,10 +66,10 @@ public partial class BattingFeedbackBehaviour
             float a = (2f * left + right) / 3f;
             float b = (left + 2f * right) / 3f;
             if (!SampleCandidate(motion, a) || !InZone(_candidateBall)) return;
-            float da = CandidateDistance();
+            float da = CandidateDistance(motion);
             ConsiderCandidate(motion, a);
             if (!SampleCandidate(motion, b) || !InZone(_candidateBall)) return;
-            float db = CandidateDistance();
+            float db = CandidateDistance(motion);
             ConsiderCandidate(motion, b);
             if (da <= db) right = b; else left = a;
         }
@@ -110,10 +110,10 @@ public partial class BattingFeedbackBehaviour
         Vector3 delta = _candidateBall - _candidateCore;
         _candidateX = Vector3.Dot(delta, _candidateAxis);
         _candidateYValue = Vector3.Dot(delta, _candidateY);
-        float span = contact.maxContactX - contact.minContactX;
+        float span = motion.maxContactX - motion.minContactX;
         if (span <= 0f) return false;
-        _candidateWidth = Mathf.Lerp(contact.widthAtGrip, contact.widthAtBarrel,
-            Mathf.Clamp01((_candidateX - contact.minContactX) / span));
+        _candidateWidth = Mathf.Lerp(motion.widthAtGrip, motion.widthAtBarrel,
+            Mathf.Clamp01((_candidateX - motion.minContactX) / span));
         return _candidateWidth > 0f;
     }
 
@@ -128,11 +128,11 @@ public partial class BattingFeedbackBehaviour
     }
 
     // The valid region is the trapezoid in the existing contact plane.
-    private float CandidateDistance()
+    private float CandidateDistance(BatMotionBehaviour motion)
     {
         Vector2 p = new Vector2(_candidateX, _candidateYValue);
-        float minX = contact.minContactX, maxX = contact.maxContactX;
-        float minW = contact.widthAtGrip, maxW = contact.widthAtBarrel;
+        float minX = motion.minContactX, maxX = motion.maxContactX;
+        float minW = motion.widthAtGrip, maxW = motion.widthAtBarrel;
         float planar = 0f;
         if (_candidateX < minX || _candidateX > maxX || Mathf.Abs(_candidateYValue) > _candidateWidth)
         {
@@ -147,7 +147,7 @@ public partial class BattingFeedbackBehaviour
 
     private void ConsiderCandidate(BatMotionBehaviour motion, float time)
     {
-        float distance = CandidateDistance();
+        float distance = CandidateDistance(motion);
         if (_hasClosest && distance >= _distance) return;
         _hasClosest = true; _distance = distance; _time = time;
         _batPosition = motion.contactSampleRootPosition; _batRotation = _candidateBatRotation; _ballPosition = _candidateBall;
@@ -155,7 +155,7 @@ public partial class BattingFeedbackBehaviour
         if (_ballRotationValid) _ballRotation = flight.sampledRotation;
         _speed = motion.contactSampleReferenceVelocity.magnitude;
         _angular = motion.contactSampleAngularVelocity.magnitude * Mathf.Rad2Deg;
-        _rawPower = contact.EvaluateRawPower(_speed);
+        _rawPower = motion.EvaluateRawPower(_speed);
         _powerCap = motion.ContactPowerCap(time, contact.CenterDirection(), _rawPower);
         _capReason = motion.contactPowerCapReason;
         _power = Mathf.Min(_rawPower, _powerCap);

@@ -18,16 +18,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     // Used only by legacy standalone instances without a HomePlate reference.
     [HideInInspector] public Vector3 centerDirection = Vector3.forward;
     public float maxExtrapolation = 0.025f;
-    public float minContactX = 0.10f;
-    public float maxContactX = 0.855f;
-    public float sweetSpotX = 0.68f;
-    public float widthAtGrip = 0.045f;
-    public float widthAtBarrel = 0.070f;
-    public float minimumQuality = 0.25f;
-    public float timingYawDegrees = 30f;
     public float sprayScale = 1f;
     public float launchScale = 1f;
-    public AnimationCurve powerCurve;
 
     private int _sequence = -1;
     private int _collisionSequence = -1;
@@ -36,6 +28,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private float _scannedUntil;
     private bool _enteredZone;
     private bool _opportunityEnded;
+    private float _activationTime = -float.MaxValue;
+    private bool _bindRetryPending;
     private Vector3 _previousY;
     private Vector3 _centerDirectionSnapshot;
     private bool _hasPreviousY;
@@ -73,7 +67,13 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     {
         if (flight != null)
             flight.contactListener = GetComponent<UdonBehaviour>();
-        BindMotion();
+        // Never trust an authored Bat reference: resolve this client's PlayerObject.
+        if (motion != null)
+        {
+            motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
+            motion = null;
+        }
+        if (CanUseContact()) BindMotion();
     }
 
     public Vector3 CenterDirection()
@@ -83,36 +83,9 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         return StrikeZoneGeometry.Forward(centerDirection);
     }
 
-    // A missing value can occur on existing instances whose Udon variable table
-    // predates powerCurve. An explicitly empty curve remains editable and empty.
     public float EvaluateRawPower(float speed)
     {
-        if (float.IsNaN(speed) || speed <= 0f || speed > float.MaxValue) return 0f;
-        if (powerCurve == null) powerCurve = CreateDefaultPowerCurve();
-        if (powerCurve.length == 0) return 0f;
-        // Do not extrapolate even if a user selects a looping wrap mode.
-        powerCurve.preWrapMode = WrapMode.ClampForever;
-        powerCurve.postWrapMode = WrapMode.ClampForever;
-        float power = powerCurve.Evaluate(speed);
-        return float.IsNaN(power) ? 0f : Mathf.Clamp01(power);
-    }
-
-    private AnimationCurve CreateDefaultPowerCurve()
-    {
-        AnimationCurve curve = AnimationCurve.Linear(0f, 0f, 2.5f, 0f);
-        curve.AddKey(2.75f, 0.03437588f);
-        curve.AddKey(3f, 0.0657586f);
-        curve.AddKey(3.5f, 0.1214268f);
-        curve.AddKey(4f, 0.16951798f);
-        curve.AddKey(5f, 0.25f);
-        curve.AddKey(7.5f, 0.3962406f);
-        curve.AddKey(10f, 0.5f);
-        curve.AddKey(15f, 0.6462406f);
-        curve.AddKey(20f, 0.75f);
-        curve.AddKey(30f, 0.8962406f);
-        curve.AddKey(40f, 1f);
-        for (int i = 0; i < curve.length; i++) curve.SmoothTangents(i, i == 1 ? 1f : 0f);
-        return curve;
+        return motion != null ? motion.EvaluateRawPower(speed) : 0f;
     }
 
     // Physics.IgnoreCollision is local. Apply it to every player's Bat on each
@@ -138,6 +111,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 
     public void BindMotion()
     {
+        _bindRetryPending = false;
+        if (!CanUseContact()) return;
         if (motion == null)
         {
             VRCPlayerApi player = Networking.LocalPlayer;
@@ -157,13 +132,52 @@ public partial class BatContactBehaviour : TsukimiBehaviour
                 }
             }
         }
-        if (motion != null) motion.RegisterContactListener(GetComponent<UdonBehaviour>(), flight != null && flight.flying);
-        else SendCustomEventDelayedFrames(nameof(BindMotion), 60);
+        if (motion != null)
+        {
+            motion.RegisterContactListener(GetComponent<UdonBehaviour>(), flight != null && flight.flying && !flight.contactConsumed);
+            if (feedbackListener != null) feedbackListener.SendCustomEvent("OnContactAccessGained");
+        }
+        else if (!_bindRetryPending)
+        {
+            _bindRetryPending = true;
+            SendCustomEventDelayedFrames(nameof(BindMotion), 60);
+        }
+    }
+
+    private bool CanUseContact()
+    {
+        return strikeZone == null || !strikeZone.useBatterOccupancy || strikeZone.IsLocalOccupant();
+    }
+
+    public void OnOccupancyChanged()
+    {
+        if (CanUseContact())
+        {
+            if (motion == null)
+            {
+                _activationTime = Time.time;
+                _sequence = -1;
+                if (!_bindRetryPending) BindMotion();
+            }
+            return;
+        }
+        if (feedbackListener != null) feedbackListener.SendCustomEvent("OnContactAccessLost");
+        if (motion != null) motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
+        motion = null;
+        _sequence = -1;
+        contactValid = false;
+        _enteredZone = false;
+        _opportunityEnded = false;
+        _hasPreviousY = false;
     }
 
     public void OnBallPitchStarted()
     {
+        if (!CanUseContact() || flight == null || !flight.flying || flight.contactConsumed) return;
+        _activationTime = Time.time;
+        _sequence = -1;
         if (motion != null) motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), true);
+        else if (!_bindRetryPending) BindMotion();
     }
 
     public void OnBallPitchStopped()
@@ -173,6 +187,16 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 
     public void OnBatContactPose()
     {
+        if (!CanUseContact())
+        {
+            OnOccupancyChanged();
+            return;
+        }
+        if (flight == null || !flight.flying || flight.contactConsumed)
+        {
+            if (motion != null) motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
+            return;
+        }
         if (feedbackTrailActive && feedbackListener != null && flight != null && flight.flying)
             feedbackListener.SendCustomEvent("OnFeedbackBatPose");
         if (flight == null || motion == null || contactZone == null || !flight.flying || flight.contactConsumed) return;
@@ -187,7 +211,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         {
             _sequence = flight.flightSequence;
             contactValid = false;
-            _scannedUntil = motion.contactPreviousTime;
+            _scannedUntil = Mathf.Max(motion.contactPreviousTime, _activationTime);
             _enteredZone = false;
             _opportunityEnded = false;
             _hasPreviousY = false;
@@ -197,7 +221,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (_historyRevision != motion.contactHistoryRevision)
         {
             _historyRevision = motion.contactHistoryRevision;
-            _scannedUntil = motion.contactOldestTime;
+            _scannedUntil = Mathf.Max(motion.contactOldestTime, _activationTime);
             _hasPreviousY = false;
         }
         float start = Mathf.Max(_scannedUntil, Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime));
@@ -311,13 +335,13 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     {
         if (!InsideZone(_ballPosition)) return false;
         Vector3 center = _centerDirectionSnapshot;
-        if (!ValidTiming(_axis, center)) return false;
+        if (!ValidTiming(_axis, center, motion.timingYawDegrees)) return false;
         Vector3 batRootPosition = motion.contactSampleRootPosition;
         Vector3 delta = _ballPosition - _core;
         float px = Vector3.Dot(delta, _axis);
         float py = Vector3.Dot(delta, _y);
-        float width = ContactWidth(px);
-        if (px < minContactX || px > maxContactX || width <= 0.00001f || Mathf.Abs(py) > width) return false;
+        float width = ContactWidth(px, motion.minContactX, motion.maxContactX, motion.widthAtGrip, motion.widthAtBarrel);
+        if (px < motion.minContactX || px > motion.maxContactX || width <= 0.00001f || Mathf.Abs(py) > width) return false;
         BallResultSnapshot snapshot = new BallResultSnapshot();
         snapshot.contactPosition = _ballPosition;
         snapshot.batCorePosition = _core;
@@ -330,7 +354,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshot.centerDirection = center.normalized;
         snapshot.worldUp = Vector3.up;
         snapshot.normalizedY = Mathf.Clamp(py / width, -1f, 1f);
-        snapshot.quality = Quality(px);
+        snapshot.quality = Quality(px, motion.minContactX, motion.maxContactX, motion.sweetSpotX, motion.minimumQuality);
         float rawPower = EvaluateRawPower(_referenceVelocity.magnitude);
         float powerCap = motion.ContactPowerCap(time, center.normalized, rawPower);
         int capReason = motion.contactPowerCapReason;
@@ -380,25 +404,26 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         _hasPreviousY = true;
         _opportunityEnded = true;
         if (feedbackListener != null) feedbackListener.SendCustomEvent("OnContactConfirmed");
+        motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
         return true;
     }
 
-    private bool ValidTiming(Vector3 axis, Vector3 centerDirectionValue)
+    private bool ValidTiming(Vector3 axis, Vector3 centerDirectionValue, float yawDegrees)
     {
         Vector3 horizontal = axis - Vector3.Dot(axis, Vector3.up) * Vector3.up;
         Vector3 center = centerDirectionValue - Vector3.Dot(centerDirectionValue, Vector3.up) * Vector3.up;
         if (horizontal.sqrMagnitude < 0.000001f || center.sqrMagnitude < 0.000001f) return false;
-        return Mathf.Abs(Vector3.Dot(horizontal.normalized, center.normalized)) <= Mathf.Sin(timingYawDegrees * Mathf.Deg2Rad);
+        return Mathf.Abs(Vector3.Dot(horizontal.normalized, center.normalized)) <= Mathf.Sin(yawDegrees * Mathf.Deg2Rad);
     }
 
-    private float ContactWidth(float x)
+    private float ContactWidth(float x, float minContactX, float maxContactX, float widthAtGrip, float widthAtBarrel)
     {
         float span = maxContactX - minContactX;
         if (span <= 0f) return 0f;
         return Mathf.Lerp(widthAtGrip, widthAtBarrel, Mathf.Clamp01((x - minContactX) / span));
     }
 
-    private float Quality(float x)
+    private float Quality(float x, float minContactX, float maxContactX, float sweetSpotX, float minimumQuality)
     {
         float span = x < sweetSpotX ? sweetSpotX - minContactX : maxContactX - sweetSpotX;
         if (span <= 0f) return Mathf.Clamp01(minimumQuality);

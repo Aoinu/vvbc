@@ -34,6 +34,24 @@ try
     if (Vector3.Distance(aim, new Vector3(3.5f, 3.1f, -3.9f)) > 0.0001f ||
         Vector3.Distance(geometryContact.CenterDirection(), Vector3.right) > 0.0001f)
         throw new Exception("Parent yaw, world height or batter-left aim is incorrect");
+    geometryZone.useBatterOccupancy = true;
+    geometryZone.occupantPlayerId = 5;
+    geometryZone.syncedZoneBottom = 0.54f; geometryZone.syncedZoneTop = 1.07f;
+    geometryZone.Snapshot();
+    var oldBottom = geometryZone.snapshotBottom;
+    var oldTop = geometryZone.snapshotTop;
+    var oldAim = geometryZone.AimPoint(1, 1);
+    geometryZone.syncedZoneBottom = 0.486f; geometryZone.syncedZoneTop = 0.963f;
+    if (Mathf.Abs(oldBottom - 0.49f) > 0.0001f || Mathf.Abs(oldTop - 1.02f) > 0.0001f ||
+        Mathf.Abs(geometryZone.snapshotBottom - oldBottom) > 0.0001f ||
+        Mathf.Abs(geometryZone.snapshotTop - oldTop) > 0.0001f ||
+        geometryZone.AimPoint(1, 1).y >= oldAim.y)
+        throw new Exception("Dynamic zone, offset or pitch snapshot is incorrect");
+    geometryZone.occupantPlayerId = -1;
+    if (Mathf.Abs(geometryZone.EffectiveBottom() - 0.486f) > 0.0001f ||
+        Mathf.Abs(geometryZone.EffectiveTop() - 0.963f) > 0.0001f)
+        throw new Exception("Unoccupied zone did not return to baseline");
+    geometryZone.useBatterOccupancy = false;
     geometryZone.width = 1.2f; geometryZone.top = 2f; geometryZone.zoneCenterOffset = Vector2.one;
     if (geometryContact.zoneHalfSize != new Vector3(0.4f, 0.5f, 0.8f) ||
         geometryContact.transform.localPosition != Vector3.zero)
@@ -62,12 +80,36 @@ try
     motion.SetContactListenerActive(listenerB, true);
     motion.SetContactListenerActive(listenerA, false);
     if (active[0] || !active[1]) throw new Exception("Stopping one lane affected another");
+    var privateMotion = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var hasActive = typeof(BatMotionBehaviour).GetMethod("HasActiveContactListener", privateMotion);
+    var countField = typeof(BatMotionBehaviour).GetField("_contactCount", privateMotion);
+    motion.SetContactListenerActive(listenerB, false);
+    if ((bool)hasActive.Invoke(motion, null)) throw new Exception("Inactive lanes still sample Bat history");
+    countField.SetValue(motion, 2);
+    int oldRevision = motion.contactHistoryRevision;
+    motion.SetContactListenerActive(listenerA, true);
+    if (!(bool)hasActive.Invoke(motion, null) || (int)countField.GetValue(motion) != 0 || motion.contactHistoryRevision == oldRevision)
+        throw new Exception("Activating the first lane did not discard stale Bat history");
+    motion.SetContactListenerActive(listenerA, false);
+    if ((bool)hasActive.Invoke(motion, null)) throw new Exception("No active lanes should sample history");
     UnityEngine.Object.DestroyImmediate(geometryParent);
     if (UnityEditor.PrefabUtility.GetPrefabAssetType(visualPrefab) != UnityEditor.PrefabAssetType.Variant ||
         UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(visualPrefab) != platePrefab)
         throw new Exception("Visual is not the HomePlate variant");
-    if (platePrefab.GetComponentsInChildren<Collider>(true).Length != 0 || visualPrefab.GetComponentsInChildren<Collider>(true).Length != 0)
-        throw new Exception("Unexpected collider");
+    foreach (var plate in new[] { platePrefab, visualPrefab })
+    {
+        var left = plate.transform.Find("BatterBoxLeft");
+        var right = plate.transform.Find("BatterBoxRight");
+        var colliders = plate.GetComponentsInChildren<Collider>(true);
+        if (!left || !right || colliders.Length != 2 ||
+            Array.Exists(colliders, c => !(c is BoxCollider) || !c.isTrigger || (c.transform != left && c.transform != right)) ||
+            left.GetComponents<Collider>().Length != 1 || right.GetComponents<Collider>().Length != 1)
+            throw new Exception("Expected exactly two BatterBox trigger colliders");
+        var zone = plate.GetComponent<VRC.Udon.UdonBehaviour>();
+        if (get(left.GetComponent<VRC.Udon.UdonBehaviour>(), "homePlate") != zone ||
+            get(right.GetComponent<VRC.Udon.UdonBehaviour>(), "homePlate") != zone)
+            throw new Exception("BatterBox references are incorrect");
+    }
     if (validate.Invoke(null, new object[] { platePrefab.GetComponent<VRC.Udon.UdonBehaviour>() }) != null)
         throw new Exception("Generic HomePlate prefab was rejected without a Ball");
     var poseParent = new GameObject("Pose parent");
@@ -175,6 +217,15 @@ try
         sync.Invoke(null, new object[] { firstZone });
     }
     finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(otherScene); }
+    var occupantObject = new GameObject("OccupantOnly0");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(occupantObject, scene);
+    var authoring = firstZone.GetComponents<VVBC.Authoring.TSharpPrefabValues>().Single(v => v.target == firstZone);
+    var occupantSlot = authoring.fields.Single(f => f.symbol == "occupantOnlyObjects");
+    var codec = assembly.GetType("VVBC.Editor.TSharpPrefabValueCodec").GetMethod("Set", flags);
+    var applyFields = assembly.GetType("VVBC.Editor.TSharpPrefabFieldSync").GetMethod("Apply", flags);
+    codec.Invoke(null, new object[] { occupantSlot, typeof(GameObject[]), new[] { occupantObject, null } });
+    applyFields.Invoke(null, new object[] { authoring, false });
+    UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(authoring);
     if (!UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, scenePath)) throw new Exception("Scene save failed");
     UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
     scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
@@ -191,6 +242,16 @@ try
         if (get(zone, "ball") != ball || get(crossing, "flight") != ball || get(ball, "motionObserver") != crossing)
             throw new Exception("Scene reload lost references in set " + i);
         if (get(pitcher, "strikeZone") != zone) throw new Exception("Pitcher target did not survive scene reload");
+        if (i == 0)
+        {
+            var slot = zone.GetComponents<VVBC.Authoring.TSharpPrefabValues>().Single(v => v.target == zone)
+                .fields.Single(f => f.symbol == "occupantOnlyObjects");
+            if (slot.isNull || slot.objectArray.Length != 2 || slot.objectArray[0] != Array.Find(roots, g => g.name == "OccupantOnly0") || slot.objectArray[1] != null)
+                throw new Exception("Occupant-only object override did not survive scene reload");
+            if (!zone.publicVariables.TryGetVariableValue("occupantOnlyObjects", out GameObject[] storedObjects) ||
+                storedObjects == null || storedObjects.Length != 2 || storedObjects[0] != slot.objectArray[0] || storedObjects[1] != null)
+                throw new Exception("Occupant-only Udon variables do not match the saved override");
+        }
         if (!UnityEditor.PrefabUtility.IsPartOfPrefabInstance(zone)) throw new Exception("Prefab connection lost");
     }
     return "PASS: variant, visual references, two independent sets, Undo/Redo and scene reload";

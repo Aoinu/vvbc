@@ -1,0 +1,67 @@
+// Exercise the managed C# behaviours in an isolated preview scene.
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+try
+{
+    var contactObject = new GameObject("Contact");
+    var feedbackObject = new GameObject("Feedback");
+    var motionObject = new GameObject("Motion");
+    var ballObject = new GameObject("Ball");
+    foreach (var go in new[] { contactObject, feedbackObject, motionObject, ballObject })
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go, scene);
+    var contactUdon = contactObject.AddComponent<VRC.Udon.UdonBehaviour>();
+    var feedbackUdon = feedbackObject.AddComponent<VRC.Udon.UdonBehaviour>();
+    var contact = contactObject.AddComponent<BatContactBehaviour>();
+    var feedback = feedbackObject.AddComponent<BattingFeedbackBehaviour>();
+    var motion = motionObject.AddComponent<BatMotionBehaviour>();
+    var flight = ballObject.AddComponent<BallBehaviour>();
+    contact.motion = motion; contact.flight = flight; contact.contactZone = contactObject.transform;
+    feedback.contact = contact; feedback.flight = flight;
+    flight.flying = true; flight.contactConsumed = true; flight.flightSequence = 5;
+    contact.contactValid = true; contact.contactPitchSequence = 5;
+    motion.RegisterContactListener(contactUdon, true);
+    feedback.OnContactConfirmed();
+    motion.SetContactListenerActive(contactUdon, false);
+    var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var listeners = (VRC.Udon.UdonBehaviour[])typeof(BatMotionBehaviour).GetField("_contactListeners", flags).GetValue(motion);
+    var active = (bool[])typeof(BatMotionBehaviour).GetField("_contactListenerActive", flags).GetValue(motion);
+    if (listeners.Length != 2 || listeners[0] != contactUdon || listeners[1] != feedbackUdon || active[0] || !active[1])
+        throw new Exception("Feedback did not take over sampling after contact");
+    feedback.OnContactAccessLost();
+    if (active[1] || contact.feedbackTrailActive) throw new Exception("Occupancy loss did not stop feedback sampling");
+    flight.contactConsumed = false;
+    var ballFlags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var times = (float[])typeof(BallBehaviour).GetField("_times", ballFlags).GetValue(flight);
+    times[0] = 1f; times[1] = 2f;
+    typeof(BallBehaviour).GetField("_sampleCount", ballFlags).SetValue(flight, 2);
+    typeof(BallBehaviour).GetField("_nextSample", ballFlags).SetValue(flight, 2);
+    flight.oldestMotionTime = 1f; flight.latestMotionTime = 2f;
+    for (int i = 0; i < 4; i++)
+    {
+        var unused = new GameObject("Unused plate " + i);
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(unused, scene);
+        var zone = unused.AddComponent<StrikeZoneBehaviour>();
+        zone.useBatterOccupancy = true;
+        var evaluator = unused.AddComponent<BatContactBehaviour>();
+        evaluator.strikeZone = zone; evaluator.flight = flight; evaluator.motion = motion;
+        evaluator.contactZone = unused.transform;
+        evaluator.contactValid = true;
+        evaluator.OnBatContactPose();
+        int sequence = (int)typeof(BatContactBehaviour).GetField("_sequence", flags).GetValue(evaluator);
+        if (sequence != -1 || evaluator.contactValid || evaluator.motion != null)
+            throw new Exception("Unused HomePlate retained contact state or entered scanning");
+        evaluator.motion = null;
+        feedback.contact = evaluator;
+        feedback.OnFlightStarted();
+        feedback.Update();
+        if ((bool)typeof(BattingFeedbackBehaviour).GetField("_trailHasSample", flags).GetValue(feedback))
+            throw new Exception("Unused HomePlate entered feedback trail scanning");
+        if (i == 0)
+        {
+            typeof(BattingFeedbackBehaviour).GetMethod("ScanPitchZone", flags).Invoke(feedback, new object[] { 2f });
+            if (!(bool)typeof(BattingFeedbackBehaviour).GetField("_trailHasSample", flags).GetValue(feedback))
+                throw new Exception("Feedback scan guard fixture has no sample to detect");
+        }
+    }
+    return "PASS: contact listener stops at hit and local feedback tail stops on lost access";
+}
+finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene); }

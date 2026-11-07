@@ -93,18 +93,39 @@ try
     contact.OnBatContactPose();
     check(contact.contactSequence == count && flight.contactConsumed, "duplicate contact");
     check(contact.contactPosition == frozenPosition && contact.resultVelocity == frozenVelocity, "snapshot stays frozen");
-    var defaultPowerCurve = contact.powerCurve;
+    float originalQuality = contact.contactQuality;
+    check(motion.SetBattingGeometry(0.10f, 0.855f, 0.68f, 0.045f, 0.070f, 1f), "set Bat geometry");
+    seed(0.35f, 0.75f, 201);
+    contact.OnBatContactPose();
+    check(contact.contactValid && contact.contactQuality > originalQuality && contact.contactQuality == 1f,
+        "Bat geometry changes actual contact quality");
+    mr[0] = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up) * rotation; mr[1] = mr[0];
+    check(motion.SetBattingTiming(10f), "set narrow Bat timing");
+    seed(0.35f, 0.75f, 202);
+    contact.OnBatContactPose();
+    check(!contact.contactValid, "narrow Bat timing rejects contact");
+    check(motion.SetBattingTiming(30f), "set default Bat timing");
+    seed(0.35f, 0.75f, 203);
+    contact.OnBatContactPose();
+    check(contact.contactValid, "wider Bat timing accepts contact");
+    mr[0] = rotation; mr[1] = rotation;
+    motion.ResetBattingSettings();
+    seed(0.35f, 0.75f, 204);
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.contactQuality - originalQuality) < 0.0001f,
+        "Bat reset restores original quality");
+    var defaultPowerCurve = motion.powerCurve;
     check(UnityEngine.Mathf.Abs(contact.snapshotRawPower - 0.75f) < 0.0001f &&
         UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(contact.snapshotRawPower, contact.snapshotPowerCap)) < 0.0001f,
         "default raw power and final cap are applied to contact");
-    contact.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
+    motion.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
     seed(0.35f, 0.75f, 107);
     contact.OnBatContactPose();
     check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotRawPower - 0.5f) < 0.0001f &&
         UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(contact.snapshotRawPower, contact.snapshotPowerCap)) < 0.0001f &&
         contact.resultVelocity.magnitude < frozenVelocity.magnitude,
         "edited curve changes actual contact power and result");
-    contact.powerCurve = defaultPowerCurve;
+    motion.powerCurve = defaultPowerCurve;
     seed(0.35f, 0.75f, 105);
     var incomingSpin = new UnityEngine.Vector3[64];
     incomingSpin[0] = UnityEngine.Vector3.up * 300f; incomingSpin[1] = incomingSpin[0];
@@ -328,7 +349,7 @@ try
     set(motion, "_contactRotations", mr); set(motion, "_contactReferenceVelocities", mref);
     set(motion, "_contactCount", 2); set(motion, "_contactNext", 2);
     contact.centerDirection = UnityEngine.Vector3.forward;
-    contact.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
+    motion.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
     var sampleCandidate = feedbackType.GetMethod("SampleCandidate", flags);
     var consider = feedbackType.GetMethod("ConsiderScannedPoint", flags);
     foreach (float t in new[] { 5.02f, 5.045f, 5.075f })
@@ -376,7 +397,7 @@ try
     set(motion, "_contactCount", 3); set(motion, "_contactNext", 3);
     motion.contactOldestTime = mt[0]; motion.contactPreviousTime = mt[1]; motion.contactLatestTime = mt[2];
     contact.centerDirection = UnityEngine.Vector3.back;
-    contact.powerCurve = defaultPowerCurve;
+    motion.powerCurve = defaultPowerCurve;
     for (int pass = 0; pass < 2; pass++)
     {
         float speed = pass == 0 ? 10f : 20f;

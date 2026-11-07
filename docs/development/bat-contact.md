@@ -4,18 +4,55 @@
 It does not itself synchronize contact or arbitrate between clients. BallBehaviour
 synchronizes committed snapshots as described in the
 [ball network prototype](ball-network-prototype.md).
-Place one HomePlate per local batting lane and assign its Ball. Position its
+Place one HomePlate per batting lane and assign its Ball. Position its
 `ContactZone` child around the intended hitting area; `zoneHalfSize` is in that
 child's local coordinates and remains independent of the strike zone. Its
 batting reference direction follows HomePlate toward the pitcher. The old
 standalone contact prefab retains its legacy direction for existing scenes.
-The Bat is resolved
-from the local player's PlayerObject; the contact listener runs after the local
-held Bat's `PostLateUpdate` pose. A missing or ambiguous PlayerObject is retried.
-Multiple HomePlates register with the same local Bat independently. The Bat
-retains pose history while held so an immediately arriving pitch has prior
-samples, but sends contact-pose events only to lanes whose Ball is in a pitch.
-Staging a Ball deactivates only that lane's notifications.
+The local player enters either `BatterBoxLeft` or `BatterBoxRight` to request
+the HomePlate. The boxes share one occupant, and their trigger volumes must not
+overlap the triggers of another HomePlate. The occupant obtains HomePlate
+ownership before publishing their player ID and zone heights. Leaving both
+boxes clears the occupant, without giving up ownership or automatically
+transferring the plate to another player already inside. The owner rejects
+requests while occupied; ownership changes and departures also trigger repair.
+Ownership and synchronized player ID are separate, and neither provides a
+strict first-arrival guarantee during concurrent requests.
+An entry that saw a vacant plate retains its pending claim until the player
+leaves, so an intermediate ownership or occupancy update cannot prevent the
+final owner from confirming a competing claim. A player who entered while the
+plate was occupied has no pending claim and must re-enter to request it.
+An occupant who loses ownership while still inside also retains eligibility if
+ownership later returns; the lost owner cannot serialize while it is away.
+VRChat documents that [player trigger events](https://creators.vrchat.com/worlds/udon/players/player-collisions/)
+can be missed during teleports or very fast movement. This implementation
+does not add continuous position polling to recover missed events. The SDK also
+evaluates [ownership requests](https://creators.vrchat.com/worlds/udon/networking/network-components/)
+on both the requester and current owner, so disagreements and event ordering
+must be exercised in a real multi-client instance.
+
+Only a local player inside a box who is both the published occupant and the
+HomePlate owner can use its Contact and `occupantOnlyObjects`. Assign only local
+presentation or controls to that array, never HomePlate, a BatterBox or Ball.
+The local Bat is resolved from the local player's PlayerObject when occupying;
+a missing or ambiguous PlayerObject is retried. The listener runs after the
+local held Bat's `PostLateUpdate` pose only during its Ball's pitch. The first
+active listener starts fresh pose history, so entering mid-pitch cannot scan an
+earlier swing. A confirmed hit deactivates Contact; Feedback takes over only
+long enough to collect its trail and peak-speed window. Losing occupancy or
+staging the Ball also stops that feedback sampling. Bat pose following and
+visual correction continue independently of contact sampling.
+
+HomePlate uses the local occupant's avatar eye height plus 0.10 m as estimated
+height, with lower and upper edges at 27% and 53.5%. The owner synchronizes
+only the player ID and two edges. Avatar and eye-height changes update future
+pitches; a pitch keeps the strike-zone snapshot taken at release. When vacant
+or the received height is invalid, the configured default height (1.80 m by
+default) supplies the zone. `zoneCenterOffset` remains a separate plate-space
+offset. The old standalone StrikeZone retains its Inspector bottom/top values.
+The SDK's [avatar events](https://creators.vrchat.com/worlds/udon/avatar-events/)
+can report the prefab eye height first and then a persisted scale, so both
+avatar and eye-height events refresh the local occupant's value.
 
 Put the Ball SphereCollider on the VRChat Pickup layer (13), set its Exclude
 Layers to Pickup, and assign the Core Baseball Physic Material. This keeps the
@@ -44,7 +81,7 @@ The provisional zone is a local-space box with 1.5 m half extents. Adjust these
 values to the actual model, lane and play testing; scene instances can override
 the prefab. The Power reference is local Y = 0.71 m, 0.15 m inside the model tip.
 
-`BatContact` exposes `powerCurve` on its UdonBehaviour in the Inspector. Its
+`BatMotion` exposes `powerCurve` on the local Bat's UdonBehaviour in the Inspector. Its
 horizontal axis is reference-point speed in m/s and its vertical axis is raw
 power. Edit keys and tangents directly on the prefab or a prefab instance. The
 initial curve passes through 0 at 2.5 m/s, 0.5 at 10 m/s, 0.75 at 20 m/s and
@@ -57,10 +94,34 @@ inherit the new prefab value; copy the curve from the prefab into that instance
 to make the default visible and editable in its Inspector. A missing value
 uses the runtime default, but a saved empty curve intentionally produces zero.
 
-The curve does not change the Power Cap thresholds. In particular, the wrist
+The curve does not itself change the Power Cap thresholds. In particular, the wrist
 flick test still requires raw power of at least 0.55, so its speed threshold
 depends on the configured curve. Final power remains the lesser of raw power
 and the existing cap.
+
+Local ability code can call `SetBattingPowerCurve(curve)`,
+`SetBattingGeometry(min, max, sweetSpot, gripWidth, barrelWidth, minimumQuality)`,
+`SetBattingTiming(yawDegrees)` and `SetBattingCapSetting(id, value)` on the
+local Bat Motion. They return false for rejected inputs. `ResetBattingSettings()`
+restores the Inspector settings captured before the first accepted change.
+Settings are local and are not synchronized. Cap setting IDs are:
+
+| ID | Field |
+|---:|---|
+| 0 | `invalidWindowSeconds` |
+| 1–2 | `oneHandMovingDistance`, `oneHandStillDistance` |
+| 3–4 | `wristStillDistance`, `wristRotationDegrees` |
+| 5–7 | `pushDistance`, `pushMaximumRotation`, `handSpikeSpeed` |
+| 8–9 | `wristMinimumPower`, `pushMinimumDirectionDot` |
+| 10–13 | `oneHandPowerCap`, `wristPowerCap`, `pushPowerCap`, `spikePowerCap` |
+
+For example:
+
+```csharp
+motion.SetBattingTiming(25f);
+motion.SetBattingGeometry(0.10f, 0.855f, 0.68f, 0.045f, 0.070f, 0.25f);
+motion.ResetBattingSettings();
+```
 
 The scene-independent integration fixture creates and disposes a Unity preview
 scene; it does not require the local development pitcher or Sandbox scene:

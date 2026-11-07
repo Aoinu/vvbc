@@ -4,6 +4,165 @@ using UnityEngine;
 public partial class StrikeZoneBehaviour
 {
     [TsukimiTest]
+    public void OccupantHeightUsesEyeOffsetAndRejectsInvalidValues()
+    {
+        useBatterOccupancy = true;
+        occupantPlayerId = 1;
+        Assert.IsTrue(SetEyeHeight(1.7f));
+        Assert.IsTrue(Mathf.Abs(EffectiveBottom() - 0.486f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(EffectiveTop() - 0.963f) < 0.00001f);
+        Assert.IsFalse(SetEyeHeight(float.NaN));
+        Assert.IsFalse(SetEyeHeight(-1f));
+        Assert.IsTrue(Mathf.Abs(EffectiveTop() - 0.963f) < 0.00001f);
+        topHeightRatio = 0.1f;
+        Assert.IsFalse(SetEyeHeight(1.7f));
+    }
+
+    [TsukimiTest]
+    public void ZoneUsesDefaultWhenUnoccupiedOrSyncIsInvalid()
+    {
+        useBatterOccupancy = true;
+        syncedZoneBottom = 0.5f; syncedZoneTop = 1.1f;
+        occupantPlayerId = -1;
+        Assert.IsTrue(Mathf.Abs(EffectiveBottom() - 0.486f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(EffectiveTop() - 0.963f) < 0.00001f);
+        occupantPlayerId = 2;
+        Assert.AreEqual(0.5f, EffectiveBottom());
+        Assert.AreEqual(1.1f, EffectiveTop());
+        syncedZoneTop = float.NaN;
+        Assert.IsTrue(Mathf.Abs(EffectiveTop() - 0.963f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void OccupiedPlateRejectsAnotherOwnershipRequest()
+    {
+        var first = Mimic.Join();
+        var second = Mimic.Join();
+        occupantPlayerId = -1;
+        Assert.IsTrue(OnOwnershipRequest(second, second));
+        occupantPlayerId = first.playerId;
+        Assert.IsFalse(OnOwnershipRequest(second, second));
+        Assert.IsTrue(OnOwnershipRequest(first, first));
+    }
+
+    [TsukimiTest]
+    public void BoxFlagsRequireBothExitsBeforeReleasing()
+    {
+        var player = Mimic.Join();
+        useBatterOccupancy = true;
+        occupantPlayerId = player.playerId;
+        _insideLeft = true;
+        _insideRight = true;
+        SetBatterBoxInside(true, false);
+        Assert.AreEqual(player.playerId, occupantPlayerId);
+        Assert.IsTrue(IsLocalOccupant());
+        SetBatterBoxInside(false, false);
+        Assert.AreEqual(-1, occupantPlayerId);
+        Assert.IsFalse(IsLocalOccupant());
+    }
+
+    [TsukimiTest]
+    public void WaitingPlayerDoesNotAutomaticallyClaimAfterVacancy()
+    {
+        var owner = Mimic.Join();
+        var waiting = Mimic.Join();
+        useBatterOccupancy = true;
+        occupantPlayerId = owner.playerId;
+        syncedZoneBottom = 0.486f; syncedZoneTop = 0.963f;
+        _insideLeft = true;
+        RequestSerialization();
+        Mimic.Deliver();
+        Mimic.Become(waiting);
+        SetBatterBoxInside(false, true);
+        Assert.AreEqual(owner.playerId, occupantPlayerId);
+        Assert.IsFalse(IsLocalOccupant());
+        Mimic.Become(owner);
+        SetBatterBoxInside(true, false);
+        Mimic.Deliver();
+        Mimic.Become(waiting);
+        Assert.AreEqual(-1, occupantPlayerId);
+        Assert.IsFalse(IsLocalOccupant());
+        Assert.IsFalse(_claimPending);
+    }
+
+    [TsukimiTest]
+    public void LateJoinerReceivesOccupantAndHeight()
+    {
+        var owner = Mimic.Join();
+        occupantPlayerId = owner.playerId;
+        syncedZoneBottom = 0.54f;
+        syncedZoneTop = 1.07f;
+        RequestSerialization();
+        var late = Mimic.Join();
+        Mimic.Become(late);
+        useBatterOccupancy = true;
+        Assert.AreEqual(owner.playerId, occupantPlayerId);
+        Assert.AreEqual(0.54f, EffectiveBottom());
+        Assert.AreEqual(1.07f, EffectiveTop());
+        Assert.IsFalse(IsLocalOccupant());
+    }
+
+    [TsukimiTest]
+    public void OwnershipLossImmediatelyDisablesLocalOccupancy()
+    {
+        var owner = Mimic.Join();
+        var other = Mimic.Join();
+        useBatterOccupancy = true;
+        occupantPlayerId = owner.playerId;
+        _insideLeft = true;
+        _confirmedLocal = true;
+        Assert.IsTrue(IsLocalOccupant());
+        OnOwnershipTransferred(other);
+        Assert.IsFalse(IsLocalOccupant());
+        Assert.IsFalse(_confirmedLocal);
+        Assert.IsTrue(_claimPending);
+    }
+
+    [TsukimiTest]
+    public void PendingClaimSurvivesIntermediateOwnerAndEndsOnExit()
+    {
+        var first = Mimic.Join();
+        var other = Mimic.Join();
+        _insideLeft = true;
+        _claimPending = true;
+        OnOwnershipTransferred(other);
+        Assert.IsTrue(_claimPending);
+        Assert.IsFalse(IsLocalOccupant());
+        occupantPlayerId = other.playerId;
+        OnDeserialization();
+        Assert.IsTrue(_claimPending);
+        Assert.AreNotEqual(first.playerId, occupantPlayerId);
+        SetBatterBoxInside(true, false);
+        Assert.IsFalse(_claimPending);
+    }
+
+    [TsukimiTest]
+    public void LostOwnershipCallbackPreventsClaimWhileOwnerQueryIsStale()
+    {
+        Mimic.Join();
+        _insideLeft = true;
+        _claimPending = true;
+        _ownershipLost = true;
+        CompleteClaim();
+        Assert.AreEqual(-1, occupantPlayerId);
+        Assert.IsTrue(_claimPending);
+        Assert.IsFalse(_confirmedLocal);
+    }
+
+    [TsukimiTest]
+    public void LostOwnershipCallbackPreventsReleaseWhileOwnerQueryIsStale()
+    {
+        var player = Mimic.Join();
+        _insideLeft = true;
+        occupantPlayerId = player.playerId;
+        _ownershipLost = true;
+        SetBatterBoxInside(true, false);
+        Assert.AreEqual(player.playerId, occupantPlayerId);
+        Assert.IsFalse(IsLocalOccupant());
+    }
+
+
+    [TsukimiTest]
     public void AimPointsFollowPlateYawAndZoneDimensions()
     {
         Vector3 origin = new Vector3(5f, 2f, -3f);

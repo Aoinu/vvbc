@@ -52,6 +52,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     private Vector3 _batPosition, _ballPosition, _resultVelocity, _resultSpin;
     private Quaternion _batRotation, _ballRotation;
     private bool _ballRotationValid;
+    private BatMotionBehaviour _feedbackMotion;
 
     public void Start()
     {
@@ -67,6 +68,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
 
     public void OnBallReset()
     {
+        StopFeedbackSampling();
         if (flight != null) ResetForSequence(flight.flightSequence);
         if (contact != null) contact.feedbackTrailActive = false;
         enabled = false;
@@ -74,8 +76,35 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
 
     public void OnFlightStarted()
     {
+        StopFeedbackSampling();
         if (flight != null) ResetForSequence(flight.flightSequence);
     }
+
+    public void OnContactAccessLost()
+    {
+        StopFeedbackSampling();
+        if (contact != null) contact.feedbackTrailActive = false;
+    }
+
+    public void OnContactAccessGained()
+    {
+        if (flight == null || contact == null || contact.motion == null || !flight.flying ||
+            flight.contactConsumed || contact.feedbackTrailActive) return;
+        ResetForSequence(flight.flightSequence);
+        contact.feedbackTrailActive = true;
+        _scanTime = Time.time;
+        _trailNotBefore = Time.time;
+    }
+
+    private void StopFeedbackSampling()
+    {
+        if (_feedbackMotion != null)
+            _feedbackMotion.SetContactListenerActive(GetComponent<VRC.Udon.UdonBehaviour>(), false);
+        _feedbackMotion = null;
+    }
+
+    // After a hit, only this feedback listener needs the remaining swing tail.
+    public void OnBatContactPose() { OnFeedbackBatPose(); }
 
     public void Update()
     {
@@ -90,6 +119,9 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
                 !InZone(flight.body.position)) { _exited = true; _exitTime = Time.time; }
             if (_entered && (!_exited || Time.time <= _exitTime + peakAfterExit)) UpdatePeaks(motion);
         }
+        if (_feedbackMotion != null && (!flight.flying ||
+            (!contact.feedbackTrailActive && (!_entered || (_exited && Time.time > _exitTime + Mathf.Max(0f, peakAfterExit))))))
+            StopFeedbackSampling();
         if (_hasResult && !_shown && _trailReady && Time.time >= _showAt)
         {
             ShowSnapshot();
@@ -100,6 +132,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
 
     private void ResetForSequence(int sequence)
     {
+        StopFeedbackSampling();
         _sequence = sequence;
         _entered = false; _exited = false; _hasClosest = false; _hasResult = false;
         _isContact = false; _shown = false; _distance = float.MaxValue;
@@ -147,6 +180,9 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _yaw = TimingYaw(contact.snapshotX, contact.CenterDirection());
         _resultVelocity = contact.resultVelocity; _resultSpin = contact.resultSpin;
         _trailReady = false; _trailCount = 0; contact.feedbackTrailActive = true;
+        _feedbackMotion = contact.motion;
+        if (_feedbackMotion != null)
+            _feedbackMotion.RegisterContactListener(GetComponent<VRC.Udon.UdonBehaviour>(), true);
         PredictTrailExit();
         if (!_entered) { _entered = true; _entryTime = _time; }
         PlayContact();
@@ -201,12 +237,12 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     {
         Color color = TimingColor(_yaw);
         ShowBatTrail();
-        if (ballRenderer != null && _ballRotationValid && CanMoveVisual(ballPhantom))
+        if (ballRenderer != null && ballPhantom != null && _ballRotationValid && CanMoveVisual(ballPhantom))
         {
             ballPhantom.SetPositionAndRotation(_ballPosition, _ballRotation);
             ballRenderer.material.color = color; ballRenderer.enabled = true;
         }
-        if (contactPointRenderer != null && CanMoveVisual(contactPoint))
+        if (contactPointRenderer != null && contactPoint != null && CanMoveVisual(contactPoint))
         {
             contactPoint.position = _ballPosition;
             contactPoint.localScale = Vector3.one * contactPointDiameter;
