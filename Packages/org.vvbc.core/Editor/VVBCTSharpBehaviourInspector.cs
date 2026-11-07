@@ -102,10 +102,13 @@ namespace VVBC.Editor
             var serialized = new SerializedObject(values);
             serialized.Update();
             var fields = serialized.FindProperty("fields");
+            bool batGeometry = asset.name == "BatMotionBehaviour";
+            if (batGeometry) DrawBatGeometry(fields);
             bool edited = false;
             var groups = new Dictionary<string, bool>(StringComparer.Ordinal);
             foreach (var symbol in cachedSymbols)
             {
+                if (batGeometry && IsBatGeometryField(symbol)) continue;
                 var label = cachedLabels.TryGetValue(symbol, out var foundLabel) ? foundLabel : default;
                 string path = cachedPaths.TryGetValue(symbol, out var foundPath) ? foundPath : null;
                 string groupRoot = string.IsNullOrEmpty(path) ? null : WrittenRoot(path);
@@ -185,8 +188,137 @@ namespace VVBC.Editor
                 PrefabUtility.RecordPrefabInstancePropertyModifications(values);
                 if (values.gameObject.scene.IsValid())
                     UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(values.gameObject.scene);
+                SceneView.RepaintAll();
             }
         }
+
+        private static bool IsBatGeometryField(string symbol)
+        {
+            return symbol == "batLength" || symbol == "radiusCurve" || symbol == "sweetSpotNormalized" ||
+                symbol == "contactStartNormalized" || symbol == "contactEndNormalized" || symbol == "contactMargin";
+        }
+
+        private static void DrawBatGeometry(SerializedProperty fields)
+        {
+            EditorGUILayout.LabelField("Bat Geometry", EditorStyles.boldLabel);
+            if (HasLegacyBatGeometry(fields))
+                EditorGUILayout.HelpBox("Legacy bat geometry values could not be migrated. Correct or remove the old fields through the prefab upgrade path before using this Bat.",
+                    MessageType.Error);
+            SerializedProperty length = FindFieldProperty(fields, "batLength", "singleValue");
+            SerializedProperty curve = FindFieldProperty(fields, "radiusCurve", "curveValue");
+            SerializedProperty sweet = FindFieldProperty(fields, "sweetSpotNormalized", "singleValue");
+            SerializedProperty start = FindFieldProperty(fields, "contactStartNormalized", "singleValue");
+            SerializedProperty end = FindFieldProperty(fields, "contactEndNormalized", "singleValue");
+            SerializedProperty margin = FindFieldProperty(fields, "contactMargin", "singleValue");
+            SerializedProperty quality = FindFieldProperty(fields, "minimumQuality", "singleValue");
+            if (length == null || curve == null || sweet == null || start == null || end == null || margin == null || quality == null)
+            {
+                EditorGUILayout.HelpBox("Bat Geometry authoring fields are incomplete. Run VVBC/T# Prefab Overrides/Upgrade Program Assets and Prefabs.",
+                    MessageType.Error);
+                return;
+            }
+
+            var curveSlot = FindFieldSlot(fields, "radiusCurve");
+            SerializedProperty curveNull = curveSlot != null ? curveSlot.FindPropertyRelative("isNull") : null;
+            float startValue = start.floatValue, endValue = end.floatValue, sweetValue = sweet.floatValue;
+            bool validRange = startValue >= 0f && startValue < endValue && endValue <= 1f &&
+                sweetValue >= startValue && sweetValue <= endValue;
+            bool finiteLength = IsFinite(length.floatValue) && length.floatValue > 0f;
+            bool finiteMargin = IsFinite(margin.floatValue) && margin.floatValue >= 0f;
+            float maximumStart = validRange ? Mathf.Min(sweetValue, endValue - 0.0001f) : 1f;
+            float minimumEnd = validRange ? Mathf.Max(sweetValue, startValue + 0.0001f) : 0f;
+            float minimumSweet = validRange ? startValue : 0f;
+            float maximumSweet = validRange ? endValue : 1f;
+
+            EditorGUI.BeginChangeCheck();
+            float editedLength = EditorGUILayout.FloatField("Bat Length (m)", length.floatValue);
+            if (EditorGUI.EndChangeCheck() && IsFinite(editedLength) && editedLength > 0f)
+                length.floatValue = editedLength;
+
+            EditorGUI.BeginChangeCheck();
+            if (curveNull != null && curveNull.boolValue)
+            {
+                EditorGUILayout.LabelField("Radius Curve (m)", "Not assigned");
+                if (GUILayout.Button("Create default radius curve"))
+                {
+                    curve.animationCurveValue = TSharpPrefabOverrides.CreateDefaultRadiusCurve();
+                    curveNull.boolValue = false;
+                }
+            }
+            else
+            {
+                EditorGUILayout.PropertyField(curve, new GUIContent("Radius Curve (m)"), true);
+                if (curveNull != null && GUILayout.Button("Clear radius curve")) curveNull.boolValue = true;
+            }
+            EditorGUI.EndChangeCheck();
+
+            float startPercent = EditorGUILayout.Slider("Contact Range / Start", startValue * 100f,
+                0f, Mathf.Clamp01(maximumStart) * 100f);
+            float endPercent = EditorGUILayout.Slider("Contact Range / End", endValue * 100f,
+                Mathf.Clamp01(minimumEnd) * 100f, 100f);
+            float sweetPercent = EditorGUILayout.Slider("Sweet Spot", sweetValue * 100f,
+                Mathf.Clamp01(minimumSweet) * 100f, Mathf.Clamp01(maximumSweet) * 100f);
+            if (startPercent != startValue * 100f) start.floatValue = startPercent / 100f;
+            if (endPercent != endValue * 100f) end.floatValue = endPercent / 100f;
+            if (sweetPercent != sweetValue * 100f) sweet.floatValue = sweetPercent / 100f;
+
+            EditorGUI.BeginChangeCheck();
+            float editedMargin = EditorGUILayout.FloatField("Contact Margin (m)", margin.floatValue);
+            if (EditorGUI.EndChangeCheck() && IsFinite(editedMargin) && editedMargin >= 0f)
+                margin.floatValue = editedMargin;
+
+            AnimationCurve radius = curveNull != null && curveNull.boolValue ? null : curve.animationCurveValue;
+            if (!finiteLength || !finiteMargin || !BatGeometry.IsValidBatGeometry(
+                length.floatValue, radius, sweet.floatValue, start.floatValue, end.floatValue,
+                margin.floatValue, quality.floatValue))
+                EditorGUILayout.HelpBox("Bat Geometry is invalid. Contact is disabled for invalid ranges, sweet spots, lengths, margins, or curve values.",
+                    MessageType.Warning);
+            string curveWarning = RadiusCurveWarning(radius);
+            if (!string.IsNullOrEmpty(curveWarning)) EditorGUILayout.HelpBox(curveWarning, MessageType.Warning);
+            GUILayout.Space(4f);
+        }
+
+        private static SerializedProperty FindFieldSlot(SerializedProperty fields, string symbol)
+        {
+            int index = FindSlot(fields, symbol);
+            return index >= 0 ? fields.GetArrayElementAtIndex(index) : null;
+        }
+
+        private static SerializedProperty FindFieldProperty(SerializedProperty fields, string symbol, string propertyName)
+        {
+            SerializedProperty slot = FindFieldSlot(fields, symbol);
+            return slot != null ? slot.FindPropertyRelative(propertyName) : null;
+        }
+
+        private static bool HasLegacyBatGeometry(SerializedProperty fields)
+        {
+            return FindFieldSlot(fields, "minContactX") != null || FindFieldSlot(fields, "maxContactX") != null ||
+                FindFieldSlot(fields, "sweetSpotX") != null || FindFieldSlot(fields, "widthAtGrip") != null ||
+                FindFieldSlot(fields, "widthAtBarrel") != null || FindFieldSlot(fields, "powerReferenceLocalY") != null;
+        }
+
+        private static bool IsFinite(float value)
+        {
+            return !float.IsNaN(value) && value <= float.MaxValue && value >= -float.MaxValue;
+        }
+
+        private static string RadiusCurveWarning(AnimationCurve curve)
+        {
+            if (curve == null || curve.length == 0) return "Radius Curve is empty. Bat contact is disabled.";
+            Keyframe[] keys = curve.keys;
+            bool hasNegative = false;
+            for (int i = 0; i < keys.Length; i++)
+            {
+                Keyframe key = keys[i];
+                if (!IsFinite(key.time) || !IsFinite(key.value) || !IsFinite(key.inTangent) || !IsFinite(key.outTangent))
+                    return "Radius Curve has a NaN or infinite key value or tangent. Bat contact is disabled.";
+                if (key.time < 0f || key.time > 1f)
+                    return "Radius Curve keys must use normalized positions from 0 to 1.";
+                if (key.value < 0f) hasNegative = true;
+            }
+            return hasNegative ? "Negative Radius Curve values are clamped to 0 m at runtime." : null;
+        }
+
 
         private void EnsureFieldMetadata(TsukimiProgramAsset asset, UdonBehaviour behaviour)
         {

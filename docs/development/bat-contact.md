@@ -81,23 +81,58 @@ phantoms at the same origin. Rigidbody `centerOfMass` is not part of this
 frame: with automatic center of mass enabled, PhysX moves it from the model
 root to the Body capsule center (local Y 0.43 m) once the released Bat becomes
 dynamic with its collider enabled, and kinematic re-grabs and respawns keep
-that value. In the packaged Bat, Body, Visual and BatModel share one origin and
-orientation at unit scale, and the model spans local Y 0–0.86 m. A
-replacement model must keep its root at the Body origin, its root-to-tip
-direction along Body local +Y and unit scale, or have the Body and the contact
-geometry values adjusted to match; the contact values are lengths from that
-origin.
+that value. The Bat shape uses the Body local coordinate system, not Rigidbody
+center of mass or the separately corrected `Visual` Transform. Body scale is
+normally one; when it differs, longitudinal distances are converted through its
+Y scale and the Bat radius through its largest transverse scale.
 
-The default contact geometry is provisional and follows the packaged Bat's
-local +Y axis from the model root. The
-valid longitudinal range is 0.10–0.855 m and the sweet spot is 0.68 m. Half
-width increases linearly from 0.045 m to 0.070 m, already describing the
-allowed Ball-center region; do not add the ball radius again. Quality is 1 at
-the sweet spot and falls linearly to 0.25 at each end. Timing allows horizontal
-Bat yaw within 30 degrees of perpendicular to the configured center direction.
-The provisional zone is a local-space box with 1.5 m half extents. Adjust these
-values to the actual model, lane and play testing; scene instances can override
-the prefab. The Power reference is local Y = 0.71 m, 0.15 m inside the model tip.
+The batting shape is independent of Unity's physical Bat Collider. Its origin is
+the Body Transform origin, root is local Y = 0, tip is local Y = `batLength`,
+and `batLength` is in metres. The packaged length is 0.855 m. For a Body local
+position `localY`, the normalized curve position is
+`t = clamp(localY / batLength, 0, 1)`. `radiusCurve` maps `t` to the Bat's
+physical radius in metres; Unity's AnimationCurve interpolation is used, so a
+profile can grow in the middle and narrow toward the tip.
+
+The default `radiusCurve` has keys `(0, 0.0084)`, `(0.100 / 0.855, 0.0084)`
+and `(1, 0.0334)`, with linear tangents. This reproduces the former linear
+allowed widths between 0.10 m and 0.855 m for the packaged 0.0366 m Ball.
+`contactStartNormalized` defaults to `0.100 / 0.855`, `contactEndNormalized`
+to 1.0, and `sweetSpotNormalized` to `0.680 / 0.855` (79.5%). The packaged
+Bat had a saved legacy sweet spot of 0.72 m; migration preserves it as 84.2%
+instead of replacing the saved setting with the new source default. Contact
+range must satisfy `0 <= start < end <= 1`, and the sweet spot must remain
+inside it.
+
+At a candidate point, allowed PlaneY distance is
+`radiusCurve.Evaluate(t) * BatTransverseScale + ballRadiusWorld + contactMargin`.
+`ballRadiusWorld` comes from the target Ball's SphereCollider as
+`collider.radius * max(abs(lossyScale))`; it is added once and is not stored on
+the Bat. `contactMargin` is an independent, nonnegative value in metres and
+defaults to zero. Negative evaluated curve radii clamp to zero. Nonfinite or
+missing curve results and invalid settings reject contact. The evaluator still
+finds the crossing of the existing contact plane and uses the existing sampled
+history, Hermite interpolation, timing gate and confirmation path; the curve is
+not a separate 3D collision test.
+
+Contact Quality remains independent of radius: it is 1.0 at the sweet spot and
+falls linearly to `minimumQuality` at either contact-range end. The curve does
+not affect quality. Timing allows horizontal Bat yaw within 30 degrees of
+perpendicular to the configured center direction. The contact zone remains a
+local-space box with 1.5 m half extents.
+
+In the `BatMotionBehaviour` Inspector, the **Bat Geometry** section edits
+`Bat Length (m)`, the standard Unity `Radius Curve (m)` editor, and Sweet Spot,
+Contact Range Start and End as percentages, plus `Contact Margin (m)`. Invalid
+values are reported and do not produce a hit. Select the Bat root or Body in
+Scene view to see the geometry: cyan wire is the physical radius curve, green
+translucent geometry is the allowed width (only when the linked Ball collider
+is known through a contact component explicitly referencing the selected Bat),
+yellow marks the sweet spot, and white marks range start and end. In Prefab
+Mode, the green shape is omitted when no such Ball is linked.
+The green 3D drawing visualizes the plane allowance; it does not change the
+runtime PlaneY test. No physical Bat collider, Rigidbody, pickup, layer,
+material, model Transform or model scale is changed by these settings.
 
 `BatMotion` exposes `powerCurve` on the local Bat's UdonBehaviour in the Inspector. Its
 horizontal axis is reference-point speed in m/s and its vertical axis is raw
@@ -118,11 +153,15 @@ depends on the configured curve. Final power remains the lesser of raw power
 and the existing cap.
 
 Local ability code can call `SetBattingPowerCurve(curve)`,
-`SetBattingGeometry(min, max, sweetSpot, gripWidth, barrelWidth, minimumQuality)`,
-`SetBattingTiming(yawDegrees)` and `SetBattingCapSetting(id, value)` on the
-local Bat Motion. They return false for rejected inputs. `ResetBattingSettings()`
-restores the Inspector settings captured before the first accepted change.
-Settings are local and are not synchronized. Cap setting IDs are:
+`SetBatGeometry(length, radiusCurve, sweetSpotNormalized, contactStartNormalized,
+contactEndNormalized, contactMargin, minimumQuality)`, `SetBattingTiming(yawDegrees)`
+and `SetBattingCapSetting(id, value)` on the local Bat Motion. Invalid geometry,
+curve, timing or cap inputs return false and leave the previous setting intact.
+The geometry API copies the supplied AnimationCurve. A changed length or sweet
+spot clears contact and measured-speed history so samples from different swing
+reference positions are not combined. `ResetBattingSettings()` restores the
+Inspector settings captured before the first accepted change. Settings are local
+and are not synchronized. Cap setting IDs are:
 
 | ID | Field |
 |---:|---|
@@ -137,9 +176,19 @@ For example:
 
 ```csharp
 motion.SetBattingTiming(25f);
-motion.SetBattingGeometry(0.10f, 0.855f, 0.68f, 0.045f, 0.070f, 0.25f);
+AnimationCurve torpedoRadius = AnimationCurve.Linear(0f, 0.008f, 1f, 0.02f);
+torpedoRadius.AddKey(0.62f, 0.05f);
+motion.SetBatGeometry(0.855f, torpedoRadius, 0.79532f, 0.11696f, 1f, 0f, 0.25f);
 motion.ResetBattingSettings();
 ```
+
+Prefab migration maps the legacy maximum contact position to `batLength`,
+normalizes the saved minimum and sweet spot, and converts the legacy allowed
+widths to physical curve radii by subtracting the actual scaled Ball SphereCollider
+radius. It migrates the Bat prefab's authoring values and processes Prefab
+variants and loaded scene instances through the existing T# authoring-data
+upgrade path. The obsolete `powerReferenceLocalY` value is removed; swing speed
+now follows the normalized sweet spot.
 
 The scene-independent integration fixture creates and disposes a Unity preview
 scene; it does not require the local development pitcher or Sandbox scene:
@@ -147,6 +196,7 @@ scene; it does not require the local development pitcher or Sandbox scene:
 ```powershell
 isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/ContactIntegration.cs.txt
 isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/PowerCurveIntegration.cs.txt
+isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/BatGeometryEditor.cs.txt
 ```
 
 It exercises the C# implementation with synthetic histories. The contact
@@ -155,6 +205,9 @@ and respawn transitions, with automatic and explicit centers of mass, and
 requires the same sweet-spot PlaneX from Contact and Feedback. Run the adjacent
 T# tests on the default Udon path as well; the fixture is not a substitute for
 the generated UdonProgram or ClientSim checks.
+The Editor fixture checks migration from legacy Udon variables, synchronization
+to the new Udon variables, the initial curve for new authoring data, and Bat
+root and Body selection for the Gizmo.
 
 Bat poses are recorded after the held pose is applied, with an upper extrapolation
 limit of 30 ms and a default of 25 ms. Grip/authority changes and unreasonable

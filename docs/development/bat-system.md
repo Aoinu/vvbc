@@ -132,6 +132,32 @@ promotion. Spawn/respawn is a separate kinematic, gravity-off placement; it does
 not immediately make the newly spawned idle Body dynamic. Exact release physics
 and interaction with other objects still require real-client validation.
 
+### Bat geometry and swing reference
+
+`BatMotionBehaviour` owns the batting shape in Body local coordinates: local +Y
+runs from the root at 0 to the tip at `batLength`. The packaged length is
+0.855 m. `radiusCurve` maps normalized position `localY / batLength` to the
+physical Bat radius in metres; it may grow and then narrow. The default curve
+holds 0.0084 m through `0.100 / 0.855` and increases linearly to 0.0334 m at
+the tip. The contact range starts at 11.7% and ends at 100%; the default sweet
+spot is 79.5%. These values affect only sampled batting geometry and do not
+change the model, Rigidbody, or physical Collider transforms.
+
+Contact adds the scaled radius of the Ball's assigned SphereCollider and the
+nonnegative `contactMargin` to the evaluated Bat radius. Ball radius is not
+stored on the Bat. `minimumQuality` still defines the linear falloff from 1.0
+at the sweet spot to the minimum at either contact-range end; the Radius Curve
+does not affect quality. Swing reference velocity is measured at the sweet
+spot. Changing `batLength` or `sweetSpotNormalized` through the runtime API
+clears contact and measured-speed history before recording at the new point.
+The local contact plane remains based on the sampled Body origin and rotation,
+independent of Rigidbody center of mass and the observer's Visual correction.
+
+The packaged Bat previously saved its sweet spot at 0.72 m. Its migration keeps
+that saved value as 84.2% of 0.855 m; newly authored settings use the 0.68 m
+default. See [bat contact](bat-contact.md) for the conversion details and
+Inspector workflow.
+
 ## Synchronization and authority
 
 `BatBehaviour` uses Manual Sync for `isSpawned`, `gripState`, `lowerHand`,

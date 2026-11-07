@@ -340,8 +340,12 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         Vector3 delta = _ballPosition - _core;
         float px = Vector3.Dot(delta, _axis);
         float py = Vector3.Dot(delta, _y);
-        float width = ContactWidth(px, motion.minContactX, motion.maxContactX, motion.widthAtGrip, motion.widthAtBarrel);
-        if (px < motion.minContactX || px > motion.maxContactX || width <= 0.00001f || Mathf.Abs(py) > width) return false;
+        float localY = motion.ContactPlaneDistanceToLocalY(px);
+        if (!motion.IsInsideContactRange(localY) || flight.ballCollider == null) return false;
+        float ballRadius = BatGeometry.EffectiveSphereRadius(
+            flight.ballCollider.radius, flight.ballCollider.transform.lossyScale);
+        float width = motion.ContactWidthAtLocalY(localY, ballRadius);
+        if (width <= 0.00001f || Mathf.Abs(py) > width) return false;
         BallResultSnapshot snapshot = new BallResultSnapshot();
         snapshot.contactPosition = _ballPosition;
         snapshot.batCorePosition = _core;
@@ -354,7 +358,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshot.centerDirection = center.normalized;
         snapshot.worldUp = Vector3.up;
         snapshot.normalizedY = Mathf.Clamp(py / width, -1f, 1f);
-        snapshot.quality = Quality(px, motion.minContactX, motion.maxContactX, motion.sweetSpotX, motion.minimumQuality);
+        snapshot.quality = motion.ContactQualityAtLocalY(localY);
         float rawPower = EvaluateRawPower(_referenceVelocity.magnitude);
         float powerCap = motion.ContactPowerCap(time, center.normalized, rawPower);
         int capReason = motion.contactPowerCapReason;
@@ -416,17 +420,4 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         return Mathf.Abs(Vector3.Dot(horizontal.normalized, center.normalized)) <= Mathf.Sin(yawDegrees * Mathf.Deg2Rad);
     }
 
-    private float ContactWidth(float x, float minContactX, float maxContactX, float widthAtGrip, float widthAtBarrel)
-    {
-        float span = maxContactX - minContactX;
-        if (span <= 0f) return 0f;
-        return Mathf.Lerp(widthAtGrip, widthAtBarrel, Mathf.Clamp01((x - minContactX) / span));
-    }
-
-    private float Quality(float x, float minContactX, float maxContactX, float sweetSpotX, float minimumQuality)
-    {
-        float span = x < sweetSpotX ? sweetSpotX - minContactX : maxContactX - sweetSpotX;
-        if (span <= 0f) return Mathf.Clamp01(minimumQuality);
-        return Mathf.Lerp(1f, Mathf.Clamp01(minimumQuality), Mathf.Clamp01(Mathf.Abs(x - sweetSpotX) / span));
-    }
 }

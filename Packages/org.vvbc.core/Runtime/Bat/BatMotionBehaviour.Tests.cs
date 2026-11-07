@@ -6,30 +6,100 @@ public partial class BatMotionBehaviour
     [TsukimiTest]
     public void BattingGeometryAndTimingRejectInvalidUpdates()
     {
-        Assert.IsFalse(SetBattingGeometry(1f, 0f, 0.5f, 0.1f, 0.1f, 0.5f));
-        Assert.IsFalse(SetBattingGeometry(0f, 1f, 0.5f, 0.1f, 0.1f, float.NaN));
+        float originalLength = batLength;
+        float originalSweetSpot = sweetSpotNormalized;
+        Assert.IsFalse(SetBatGeometry(1f, null, 0.5f, 0f, 1f, 0f, 0.5f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(0.8f, 0.2f, 0.5f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(0f, 1f, 1.1f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(float.NaN, 1f, 0.5f));
         Assert.IsFalse(SetBattingTiming(91f));
         Assert.IsFalse(SetBattingTiming(float.NaN));
         Assert.IsFalse(SetBattingCapSetting(11, 1.1f));
         Assert.IsFalse(SetBattingCapSetting(0, 0f));
-        Assert.AreEqual(0.1f, minContactX);
+        Assert.AreEqual(originalLength, batLength);
+        Assert.AreEqual(originalSweetSpot, sweetSpotNormalized);
         Assert.AreEqual(30f, timingYawDegrees);
     }
 
     [TsukimiTest]
     public void BattingSettingsRestoreInspectorDefaults()
     {
-        minContactX = 0.2f;
-        Assert.IsTrue(SetBattingGeometry(0f, 1f, 0.5f, 0.1f, 0.2f, 0.4f));
+        batLength = 0.855f;
+        radiusCurve = null;
+        sweetSpotNormalized = 0.68f / 0.855f;
+        contactStartNormalized = 0.1f / 0.855f;
+        contactEndNormalized = 1f;
+        contactMargin = 0f;
+        float defaultSweetSpot = sweetSpotNormalized;
+        CaptureBattingDefaults();
+        batLength = 1f; sweetSpotNormalized = 0.5f; contactStartNormalized = 0.1f;
+        contactEndNormalized = 0.9f; contactMargin = 0.01f; minimumQuality = 0.4f;
         Assert.IsTrue(SetBattingTiming(15f));
         Assert.IsTrue(SetBattingCapSetting(11, 0.6f));
-        Assert.AreEqual(0f, minContactX);
+        Assert.AreEqual(1f, batLength);
         Assert.AreEqual(15f, timingYawDegrees);
         Assert.AreEqual(0.6f, wristPowerCap);
         ResetBattingSettings();
-        Assert.AreEqual(0.2f, minContactX);
+        Assert.AreEqual(0.855f, batLength);
+        Assert.AreEqual(defaultSweetSpot, sweetSpotNormalized);
+        Assert.AreEqual(0f, contactMargin);
+        Assert.IsTrue(radiusCurve == null);
+        Assert.AreEqual(0.25f, minimumQuality);
         Assert.AreEqual(30f, timingYawDegrees);
         Assert.AreEqual(0.3f, wristPowerCap);
+    }
+
+    [TsukimiTest]
+    public void BatGeometryConvertsNormalizedPositionsAndScalesWithLength()
+    {
+        Assert.AreEqual(0f, BatGeometry.NormalizedToLocalY(0.855f, 0f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.NormalizedToLocalY(0.855f, 0.5f) - 0.4275f) < 0.00001f);
+        Assert.AreEqual(0.855f, BatGeometry.NormalizedToLocalY(0.855f, 1f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.NormalizedToLocalY(1.2f, 0.5f) - 0.6f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(BatGeometry.LocalYToNormalized(1.2f, 0.6f) - 0.5f) < 0.00001f);
+        Assert.AreEqual(0f, BatGeometry.LocalYToNormalized(1.2f, -1f));
+        Assert.AreEqual(1f, BatGeometry.LocalYToNormalized(1.2f, 2f));
+    }
+
+    [TsukimiTest]
+    public void ContactQualityUsesNormalizedRangeAndSweetSpotAndTracksLength()
+    {
+        float start = 0.1f / 0.855f, sweet = 0.68f / 0.855f;
+        Assert.AreEqual(1f, BatGeometry.ContactQuality(sweet, start, 1f, sweet, 0.25f));
+        Assert.AreEqual(0.25f, BatGeometry.ContactQuality(start, start, 1f, sweet, 0.25f));
+        Assert.AreEqual(0.25f, BatGeometry.ContactQuality(1f, start, 1f, sweet, 0.25f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactQuality((start + sweet) * 0.5f,
+            start, 1f, sweet, 0.25f) - 0.625f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactQuality((sweet + 1f) * 0.5f,
+            start, 1f, sweet, 0.25f) - 0.625f) < 0.00001f);
+        batLength = 1.1f; sweetSpotNormalized = 0.75f;
+        Assert.IsTrue(Mathf.Abs(SweetSpotLocalY() - 0.825f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void GeometryApiRejectsMissingCurveWithoutChangingSettings()
+    {
+        _contactCount = 2; _contactNext = 2; _measuredCount = 1; _measuredNext = 1;
+        int revision = contactHistoryRevision;
+        Assert.IsFalse(SetBatGeometry(0.9f, null, 0.6f, 0.1f, 1f, 0.01f, 0.25f));
+        Assert.AreEqual(0.855f, batLength);
+        Assert.AreEqual(2, _contactCount);
+        Assert.AreEqual(1, _measuredCount);
+        Assert.AreEqual(revision, contactHistoryRevision);
+        Assert.IsTrue(Mathf.Abs(SweetSpotLocalY() - 0.68f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void ContactWidthAddsScaledBallRadiusAndMarginOnce()
+    {
+        batLength = 1f; contactStartNormalized = 0f; contactEndNormalized = 1f;
+        radiusCurve = null;
+        sweetSpotNormalized = 0.5f; contactMargin = 0.005f; minimumQuality = 0.25f;
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactWidthFromRadius(0.01f, 0.0366f, 0.005f, 1f) - 0.0516f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactWidthFromRadius(0.01f, 0.0366f, 0.005f, 2f) - 0.0616f) < 0.00001f);
+        Assert.AreEqual(0.0416f, BatGeometry.ContactWidthFromRadius(-1f, 0.0366f, 0.005f, 1f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.EffectiveSphereRadius(0.0366f, new Vector3(2f, 1f, 1f)) - 0.0732f) < 0.00001f);
+        Assert.AreEqual(-1f, BatGeometry.EffectiveSphereRadius(0.0366f, new Vector3(float.NaN, 1f, 1f)));
     }
 
     [TsukimiTest]

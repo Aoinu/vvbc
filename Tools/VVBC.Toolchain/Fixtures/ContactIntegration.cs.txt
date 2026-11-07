@@ -26,7 +26,52 @@ try
     var body = ballObject.AddComponent<UnityEngine.Rigidbody>();
     var flight = ballObject.AddComponent<BallBehaviour>();
     flight.body = body;
+    var ballCollider = ballObject.AddComponent<UnityEngine.SphereCollider>();
+    ballCollider.radius = 0.0366f;
+    flight.ballCollider = ballCollider;
     var motion = make("Motion").AddComponent<BatMotionBehaviour>();
+    var radiusCurve = UnityEngine.AnimationCurve.Linear(0f, 0.0084f, 1f, 0.0334f);
+    radiusCurve.AddKey(0.1f / 0.855f, 0.0084f);
+    for (int i = 0; i < radiusCurve.length; i++)
+    {
+        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(radiusCurve, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+        UnityEditor.AnimationUtility.SetKeyRightTangentMode(radiusCurve, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+    }
+    motion.radiusCurve = radiusCurve;
+    float startNormalized = 0.1f / 0.855f;
+    for (int i = 0; i <= 20; i++)
+    {
+        float localY = UnityEngine.Mathf.Lerp(0.1f, 0.855f, i / 20f);
+        float previousWidth = UnityEngine.Mathf.Lerp(0.045f, 0.070f, i / 20f);
+        check(UnityEngine.Mathf.Abs(BatGeometry.ContactWidth(radiusCurve, 0.855f, localY, 0.0366f, 0f, 1f) - previousWidth) < 0.00001f,
+            "default width matches legacy interpolation");
+    }
+    var torpedo = UnityEngine.AnimationCurve.Linear(0f, 0.01f, 1f, 0.01f);
+    torpedo.AddKey(0.5f, 0.04f);
+    for (int i = 0; i < torpedo.length; i++)
+    {
+        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(torpedo, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+        UnityEditor.AnimationUtility.SetKeyRightTangentMode(torpedo, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+    }
+    check(UnityEngine.Mathf.Abs(BatGeometry.EvaluateRadius(torpedo, 0.25f) - 0.025f) < 0.00001f &&
+        BatGeometry.EvaluateRadius(torpedo, 0.5f) > BatGeometry.EvaluateRadius(torpedo, 1f), "torpedo interpolation");
+    check(BatGeometry.EvaluateRadius(torpedo, -1f) == BatGeometry.EvaluateRadius(torpedo, 0f) &&
+        BatGeometry.EvaluateRadius(torpedo, 2f) == BatGeometry.EvaluateRadius(torpedo, 1f), "curve coordinate clamps");
+    check(BatGeometry.EvaluateRadius(UnityEngine.AnimationCurve.Linear(0f, -1f, 1f, -1f), 0.5f) == 0f &&
+        float.IsNaN(BatGeometry.EvaluateRadius(torpedo, float.NaN)), "invalid and negative radius safety");
+    check(!motion.SetBatGeometry(float.PositiveInfinity, torpedo, 0.5f, 0f, 1f, 0f, 0.25f) &&
+        !motion.SetBatGeometry(0.855f, torpedo, 0.5f, 0.8f, 0.2f, 0f, 0.25f) &&
+        !motion.SetBatGeometry(0.855f, torpedo, 0.5f, 0f, 1f, -0.1f, 0.25f), "invalid geometry rejected");
+    int revisionBeforeGeometry = motion.contactHistoryRevision;
+    check(motion.SetBatGeometry(1f, torpedo, 0.5f, 0f, 1f, 0.01f, 0.25f) &&
+        UnityEngine.Mathf.Abs(motion.SweetSpotLocalY() - 0.5f) < 0.00001f &&
+        motion.contactHistoryRevision != revisionBeforeGeometry, "length and sweet spot reset history");
+    torpedo.MoveKey(1, new UnityEngine.Keyframe(0.5f, 0.1f));
+    check(UnityEngine.Mathf.Abs(motion.radiusCurve.Evaluate(0.5f) - 0.04f) < 0.00001f, "runtime geometry copies curve");
+    motion.ResetBattingSettings();
+    check(UnityEngine.Mathf.Abs(motion.SweetSpotLocalY() - 0.68f) < 0.00001f &&
+        UnityEngine.Mathf.Abs(motion.radiusCurve.Evaluate(startNormalized) - 0.0084f) < 0.00001f,
+        "reset restores geometry and curve");
     var zone = make("Zone").transform;
     var contact = make("Contact").AddComponent<BatContactBehaviour>();
     contact.motion = motion;
@@ -94,7 +139,15 @@ try
     check(contact.contactSequence == count && flight.contactConsumed, "duplicate contact");
     check(contact.contactPosition == frozenPosition && contact.resultVelocity == frozenVelocity, "snapshot stays frozen");
     float originalQuality = contact.contactQuality;
-    check(motion.SetBattingGeometry(0.10f, 0.855f, 0.68f, 0.045f, 0.070f, 1f), "set Bat geometry");
+    float originalPlaneX = contact.snapshotPlaneX;
+    mr[0] = UnityEngine.Quaternion.AngleAxis(90f, UnityEngine.Vector3.forward); mr[1] = mr[0];
+    seed(-0.35f, -0.75f, 200);
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotPlaneX - originalPlaneX) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.contactQuality - originalQuality) < 0.0001f,
+        "mirrored Bat axis preserves contact position and quality");
+    mr[0] = rotation; mr[1] = rotation;
+    check(motion.SetBatGeometry(0.855f, radiusCurve, 0.68f / 0.855f, 0.1f / 0.855f, 1f, 0f, 1f), "set Bat geometry");
     seed(0.35f, 0.75f, 201);
     contact.OnBatContactPose();
     check(contact.contactValid && contact.contactQuality > originalQuality && contact.contactQuality == 1f,
@@ -240,7 +293,6 @@ try
     var batBody = make("BatBody");
     var batRigid = batBody.AddComponent<UnityEngine.Rigidbody>();
     var batCollider = batBody.AddComponent<UnityEngine.CapsuleCollider>();
-    var ballCollider = ballObject.AddComponent<UnityEngine.SphereCollider>();
     set(motion, "body", batRigid);
     motion.IgnoreBallCollision(ballCollider);
     check(UnityEngine.Physics.GetIgnoreCollision(ballCollider, batCollider), "bat collider pair ignored");
@@ -266,6 +318,27 @@ try
         UnityEngine.Vector3.Distance(motion.contactSampleRootPosition, UnityEngine.Vector3.right * 0.2f) < 0.001f &&
         UnityEngine.Vector3.Distance(motion.contactSamplePosition, UnityEngine.Vector3.right * 0.2f) < 0.001f,
         "contact origin is the bat root, not the offset centre of mass");
+    motion.GetType().GetMethod("ResetContactHistory", System.Reflection.BindingFlags.Instance |
+        System.Reflection.BindingFlags.NonPublic).Invoke(motion, null);
+    batBody.transform.SetPositionAndRotation(UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
+    record.Invoke(motion, new object[] { 3f });
+    batBody.transform.rotation = UnityEngine.Quaternion.AngleAxis(10f, UnityEngine.Vector3.forward);
+    record.Invoke(motion, new object[] { 3.1f });
+    float expectedSweetSpeed = 2f * 0.68f * UnityEngine.Mathf.Sin(5f * UnityEngine.Mathf.Deg2Rad) / 0.1f;
+    check(motion.TryGetMeasuredPeaks(3.1f, 3.1f) &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakReferenceSpeed - expectedSweetSpeed) < 0.001f,
+        "rotation speed uses the sweet-spot position");
+    check(motion.SetBatGeometry(1f, radiusCurve, 0.5f, 0.1f, 1f, 0f, 0.25f) &&
+        !motion.TryGetMeasuredPeaks(3f, 3.1f), "geometry change clears old reference-speed samples");
+    batBody.transform.rotation = UnityEngine.Quaternion.identity;
+    record.Invoke(motion, new object[] { 4f });
+    batBody.transform.rotation = UnityEngine.Quaternion.AngleAxis(10f, UnityEngine.Vector3.forward);
+    record.Invoke(motion, new object[] { 4.1f });
+    float expectedChangedSpeed = 2f * 0.5f * UnityEngine.Mathf.Sin(5f * UnityEngine.Mathf.Deg2Rad) / 0.1f;
+    check(motion.TryGetMeasuredPeaks(4.1f, 4.1f) &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakReferenceSpeed - expectedChangedSpeed) < 0.001f,
+        "length and sweet-spot changes move the velocity reference");
+    motion.ResetBattingSettings();
     motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, 100, null, false, false, false, null);
     check(!motion.TryGetMeasuredPeaks(2f, 3f), "grip change clears measured history");
     mt[0] = -0.03f; mt[1] = 0.01f;

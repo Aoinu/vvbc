@@ -53,6 +53,15 @@ namespace VVBC.Editor
                     : Undo.AddComponent<TSharpPrefabValues>(behaviour.gameObject);
                 values.target = behaviour;
                 values.fields = TSharpPrefabFieldSync.Capture(behaviour);
+                if (behaviour.programSource.name == "BatMotionBehaviour")
+                {
+                    bool legacy = CaptureLegacyBatVariables(values);
+                    if (!legacy && !behaviour.publicVariables.TryGetVariableType("radiusCurve", out _))
+                    {
+                        SetField(values, "radiusCurve", typeof(AnimationCurve), CreateDefaultRadiusCurve());
+                        TSharpPrefabFieldSync.Apply(values, false);
+                    }
+                }
                 EditorUtility.SetDirty(values);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(values);
             }
@@ -194,6 +203,7 @@ namespace VVBC.Editor
         {
             var behaviour = values != null ? values.target : null;
             if (behaviour == null) return false;
+            bool changed = MigrateLegacyBatGeometry(values);
             var sourcePath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(behaviour);
             UdonBehaviour sourceBehaviour = null;
             TSharpPrefabValues sourceValues = null;
@@ -213,7 +223,6 @@ namespace VVBC.Editor
                 ? new Dictionary<string, TSharpPrefabValue>(StringComparer.Ordinal)
                 : sourceValues.fields.Where(field => field != null)
                     .ToDictionary(field => field.symbol, field => field, StringComparer.Ordinal);
-            bool changed = false;
             bool alreadyMigrated = !string.IsNullOrEmpty(values.migrationId) &&
                 (sourceValues == null || values.migrationId != sourceValues.migrationId);
 
@@ -267,6 +276,140 @@ namespace VVBC.Editor
             }
             if (changed) TSharpPrefabFieldSync.Apply(values, false);
             return changed;
+        }
+
+        private static bool MigrateLegacyBatGeometry(TSharpPrefabValues values)
+        {
+            if (values == null || values.target == null || values.target.programSource == null ||
+                values.target.programSource.name != "BatMotionBehaviour" || values.fields == null) return false;
+            bool hasLegacy = values.fields.Any(field => field != null &&
+                (field.symbol == "minContactX" || field.symbol == "maxContactX" || field.symbol == "sweetSpotX" ||
+                 field.symbol == "widthAtGrip" || field.symbol == "widthAtBarrel" || field.symbol == "powerReferenceLocalY"));
+            if (!hasLegacy) return false;
+
+            if (!TryReadLegacyFloat(values, "minContactX", out float minimum) ||
+                !TryReadLegacyFloat(values, "maxContactX", out float maximum) ||
+                !TryReadLegacyFloat(values, "sweetSpotX", out float sweetSpot) ||
+                !TryReadLegacyFloat(values, "widthAtGrip", out float gripWidth) ||
+                !TryReadLegacyFloat(values, "widthAtBarrel", out float barrelWidth) ||
+                !TryGetPackagedBallRadius(out float ballRadius) ||
+                !Finite(minimum) || !Finite(maximum) || !Finite(sweetSpot) ||
+                !Finite(gripWidth) || !Finite(barrelWidth) || minimum < 0f || maximum <= minimum ||
+                sweetSpot < minimum || sweetSpot > maximum || gripWidth < 0f || barrelWidth < 0f)
+                return false;
+
+            float length = maximum;
+            float start = minimum / length;
+            float normalizedSweetSpot = sweetSpot / length;
+            float gripRadius = Mathf.Max(0f, gripWidth - ballRadius);
+            float barrelRadius = Mathf.Max(0f, barrelWidth - ballRadius);
+            AnimationCurve curve = CreateLinearRadiusCurve(start, gripRadius, barrelRadius);
+            float minimumQuality = TryReadLegacyFloat(values, "minimumQuality", out float savedQuality)
+                ? savedQuality : 0.25f;
+            if (!BatGeometry.IsValidBatGeometry(length, curve, normalizedSweetSpot, start, 1f,
+                0f, minimumQuality)) return false;
+
+            SetField(values, "batLength", typeof(float), length);
+            SetField(values, "radiusCurve", typeof(AnimationCurve), curve);
+            SetField(values, "sweetSpotNormalized", typeof(float), normalizedSweetSpot);
+            SetField(values, "contactStartNormalized", typeof(float), start);
+            SetField(values, "contactEndNormalized", typeof(float), 1f);
+            SetField(values, "contactMargin", typeof(float), 0f);
+            values.fields.RemoveAll(field => field != null &&
+                (field.symbol == "minContactX" || field.symbol == "maxContactX" || field.symbol == "sweetSpotX" ||
+                 field.symbol == "widthAtGrip" || field.symbol == "widthAtBarrel" || field.symbol == "powerReferenceLocalY"));
+            string[] oldSymbols = { "minContactX", "maxContactX", "sweetSpotX", "widthAtGrip", "widthAtBarrel", "powerReferenceLocalY" };
+            for (int i = 0; i < oldSymbols.Length; i++) values.target.publicVariables.RemoveVariable(oldSymbols[i]);
+            values.migrationId = Guid.NewGuid().ToString("N");
+            EditorUtility.SetDirty(values);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(values);
+            return true;
+        }
+
+        private static bool CaptureLegacyBatVariables(TSharpPrefabValues values)
+        {
+            string[] symbols = { "minContactX", "maxContactX", "sweetSpotX", "widthAtGrip", "widthAtBarrel", "powerReferenceLocalY" };
+            bool found = false;
+            foreach (string symbol in symbols)
+            {
+                if (!values.target.publicVariables.TryGetVariableType(symbol, out Type type)) continue;
+                found = true;
+                if (type == typeof(float) && values.target.publicVariables.TryGetVariableValue(symbol, out object value) && value is float number)
+                    SetField(values, symbol, typeof(float), number);
+            }
+            return found;
+        }
+
+        private static bool TryReadLegacyFloat(TSharpPrefabValues values, string symbol, out float value)
+        {
+            var slot = values.fields.FirstOrDefault(field => field != null && field.symbol == symbol);
+            if (slot == null || slot.isNull || slot.typeName != typeof(float).FullName)
+            { value = 0f; return false; }
+            value = (float)TSharpPrefabValueCodec.Get(slot, typeof(float));
+            return true;
+        }
+
+        private static bool TryGetPackagedBallRadius(out float radius)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/Ball.prefab");
+            UdonBehaviour ball = prefab != null
+                ? prefab.GetComponentsInChildren<UdonBehaviour>(true)
+                    .FirstOrDefault(value => value.programSource != null && value.programSource.name == "BallBehaviour")
+                : null;
+            SphereCollider collider = null;
+            if (ball != null)
+            {
+                try
+                {
+                    var program = TSharpPrefabFieldSync.Program(ball, out _);
+                    collider = TSharpPrefabFieldSync.Read(ball, program, "ballCollider", typeof(SphereCollider)) as SphereCollider;
+                }
+                catch (InvalidOperationException)
+                {
+                    radius = 0f;
+                    return false;
+                }
+            }
+            if (collider == null) { radius = 0f; return false; }
+            Vector3 scale = collider.transform.lossyScale;
+            radius = BatGeometry.EffectiveSphereRadius(collider.radius, scale);
+            return Finite(radius) && radius >= 0f;
+        }
+
+        internal static AnimationCurve CreateDefaultRadiusCurve()
+        {
+            return CreateLinearRadiusCurve(0.1f / 0.855f, 0.0084f, 0.0334f);
+        }
+
+        private static AnimationCurve CreateLinearRadiusCurve(float start, float startRadius, float endRadius)
+        {
+            AnimationCurve curve = AnimationCurve.Linear(0f, startRadius, 1f, endRadius);
+            if (start > 0f && start < 1f) curve.AddKey(start, startRadius);
+            Keyframe[] keys = curve.keys;
+            for (int i = 0; i < keys.Length; i++)
+            {
+                AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
+                AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.Linear);
+            }
+            curve.preWrapMode = WrapMode.ClampForever;
+            curve.postWrapMode = WrapMode.ClampForever;
+            return curve;
+        }
+
+        private static void SetField(TSharpPrefabValues values, string symbol, Type type, object value)
+        {
+            var slot = values.fields.FirstOrDefault(field => field != null && field.symbol == symbol);
+            if (slot == null)
+            {
+                slot = new TSharpPrefabValue { symbol = symbol };
+                values.fields.Add(slot);
+            }
+            TSharpPrefabValueCodec.Set(slot, type, value);
+        }
+
+        private static bool Finite(float value)
+        {
+            return !float.IsNaN(value) && value <= float.MaxValue && value >= -float.MaxValue;
         }
 
         private static TSharpPrefabValue CloneSlot(TSharpPrefabValue value,

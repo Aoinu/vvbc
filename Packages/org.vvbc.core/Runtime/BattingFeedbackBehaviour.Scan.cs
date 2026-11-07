@@ -6,7 +6,7 @@ public partial class BattingFeedbackBehaviour
     private Vector3 _previousCandidateY;
     private bool _hasPreviousCandidateY;
     private Quaternion _candidateBatRotation;
-    private float _candidateX, _candidateYValue, _candidateWidth;
+    private float _candidateX, _candidateYValue, _candidateWidth, _candidateBallRadius;
     private int _scanPoints;
     private float _scanLeftTime, _scanLeftDistance, _scanMiddleTime, _scanMiddleDistance;
 
@@ -50,7 +50,7 @@ public partial class BattingFeedbackBehaviour
     private void ConsiderScannedPoint(BatMotionBehaviour motion, float time)
     {
         float distance = CandidateDistance(motion);
-        ConsiderCandidate(motion, time);
+        ConsiderCandidate(motion, time, distance);
         if (_scanPoints > 0 && time <= _scanMiddleTime) return;
         if (_scanPoints >= 2 && _scanMiddleDistance <= _scanLeftDistance && _scanMiddleDistance <= distance)
             RefineClosest(motion, _scanLeftTime, time);
@@ -67,10 +67,10 @@ public partial class BattingFeedbackBehaviour
             float b = (left + 2f * right) / 3f;
             if (!SampleCandidate(motion, a) || !InZone(_candidateBall)) return;
             float da = CandidateDistance(motion);
-            ConsiderCandidate(motion, a);
+            ConsiderCandidate(motion, a, da);
             if (!SampleCandidate(motion, b) || !InZone(_candidateBall)) return;
             float db = CandidateDistance(motion);
-            ConsiderCandidate(motion, b);
+            ConsiderCandidate(motion, b, db);
             if (da <= db) right = b; else left = a;
         }
     }
@@ -110,10 +110,13 @@ public partial class BattingFeedbackBehaviour
         Vector3 delta = _candidateBall - _candidateCore;
         _candidateX = Vector3.Dot(delta, _candidateAxis);
         _candidateYValue = Vector3.Dot(delta, _candidateY);
-        float span = motion.maxContactX - motion.minContactX;
-        if (span <= 0f) return false;
-        _candidateWidth = Mathf.Lerp(motion.widthAtGrip, motion.widthAtBarrel,
-            Mathf.Clamp01((_candidateX - motion.minContactX) / span));
+        if (flight.ballCollider == null) return false;
+        _candidateBallRadius = BatGeometry.EffectiveSphereRadius(
+            flight.ballCollider.radius, flight.ballCollider.transform.lossyScale);
+        float localY = motion.ContactPlaneDistanceToLocalY(_candidateX);
+        if (float.IsNaN(localY) || localY > float.MaxValue || localY < -float.MaxValue) return false;
+        localY = Mathf.Clamp(localY, motion.ContactStartLocalY(), motion.ContactEndLocalY());
+        _candidateWidth = motion.ContactWidthAtLocalY(localY, _candidateBallRadius);
         return _candidateWidth > 0f;
     }
 
@@ -127,27 +130,45 @@ public partial class BattingFeedbackBehaviour
         return rx * rx + ry * ry;
     }
 
-    // The valid region is the trapezoid in the existing contact plane.
+    // Approximate the curve-defined boundary in the existing contact plane.
     private float CandidateDistance(BatMotionBehaviour motion)
     {
         Vector2 p = new Vector2(_candidateX, _candidateYValue);
-        float minX = motion.minContactX, maxX = motion.maxContactX;
-        float minW = motion.widthAtGrip, maxW = motion.widthAtBarrel;
+        float startY = motion.ContactStartLocalY(), endY = motion.ContactEndLocalY();
+        float minX = motion.PlaneDistanceFromLocalY(startY), maxX = motion.PlaneDistanceFromLocalY(endY);
+        float minW = motion.ContactWidthAtLocalY(startY, _candidateBallRadius);
+        float maxW = motion.ContactWidthAtLocalY(endY, _candidateBallRadius);
         float planar = 0f;
-        if (_candidateX < minX || _candidateX > maxX || Mathf.Abs(_candidateYValue) > _candidateWidth)
+        float clampedLocalY = Mathf.Clamp(motion.ContactPlaneDistanceToLocalY(_candidateX), startY, endY);
+        float widthAtX = motion.ContactWidthAtLocalY(clampedLocalY, _candidateBallRadius);
+        if (_candidateX < minX || _candidateX > maxX || Mathf.Abs(_candidateYValue) > widthAtX)
         {
             Vector2 a = new Vector2(minX, -minW), b = new Vector2(minX, minW);
             Vector2 c = new Vector2(maxX, maxW), d = new Vector2(maxX, -maxW);
-            planar = Mathf.Min(Mathf.Min(SegmentDistanceSquared(p, a, b), SegmentDistanceSquared(p, b, c)),
-                Mathf.Min(SegmentDistanceSquared(p, c, d), SegmentDistanceSquared(p, d, a)));
+            planar = Mathf.Min(SegmentDistanceSquared(p, a, b), SegmentDistanceSquared(p, c, d));
+            float previousX = minX;
+            float previousWidth = minW;
+            for (int i = 1; i <= 16; i++)
+            {
+                float x = Mathf.Lerp(minX, maxX, i / 16f);
+                float localY = motion.ContactPlaneDistanceToLocalY(x);
+                float width = motion.ContactWidthAtLocalY(localY, _candidateBallRadius);
+                Vector2 lowerA = new Vector2(previousX, -previousWidth);
+                Vector2 lowerB = new Vector2(x, -width);
+                Vector2 upperA = new Vector2(previousX, previousWidth);
+                Vector2 upperB = new Vector2(x, width);
+                planar = Mathf.Min(planar, Mathf.Min(SegmentDistanceSquared(p, lowerA, lowerB),
+                    SegmentDistanceSquared(p, upperA, upperB)));
+                previousX = x;
+                previousWidth = width;
+            }
         }
         float normal = Vector3.Dot(_candidateBall - _candidateCore, _candidateNormal);
         return Mathf.Sqrt(planar + normal * normal);
     }
 
-    private void ConsiderCandidate(BatMotionBehaviour motion, float time)
+    private void ConsiderCandidate(BatMotionBehaviour motion, float time, float distance)
     {
-        float distance = CandidateDistance(motion);
         if (_hasClosest && distance >= _distance) return;
         _hasClosest = true; _distance = distance; _time = time;
         _batPosition = motion.contactSampleRootPosition; _batRotation = _candidateBatRotation; _ballPosition = _candidateBall;

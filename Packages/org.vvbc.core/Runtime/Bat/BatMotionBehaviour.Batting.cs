@@ -2,15 +2,69 @@ using UnityEngine;
 
 public partial class BatMotionBehaviour
 {
+    [Header("Bat Geometry")]
+    public float batLength = 0.855f;
+    public AnimationCurve radiusCurve;
+    public float sweetSpotNormalized = 0.680f / 0.855f;
+    public float contactStartNormalized = 0.100f / 0.855f;
+    public float contactEndNormalized = 1f;
+    public float contactMargin;
+
     [Header("Batting")]
     public AnimationCurve powerCurve;
-    public float minContactX = 0.10f;
-    public float maxContactX = 0.855f;
-    public float sweetSpotX = 0.68f;
-    public float widthAtGrip = 0.045f;
-    public float widthAtBarrel = 0.070f;
     public float minimumQuality = 0.25f;
     public float timingYawDegrees = 30f;
+
+    public float SweetSpotLocalY() { return BatGeometry.NormalizedToLocalY(batLength, sweetSpotNormalized); }
+    public float ContactStartLocalY() { return BatGeometry.NormalizedToLocalY(batLength, contactStartNormalized); }
+    public float ContactEndLocalY() { return BatGeometry.NormalizedToLocalY(batLength, contactEndNormalized); }
+
+    public float ContactPlaneDistanceToLocalY(float distance)
+    {
+        float scale = body != null ? Mathf.Abs(body.transform.lossyScale.y) : 1f;
+        if (!BatGeometry.Finite(distance) || !BatGeometry.Finite(scale) || scale <= 0.000001f) return float.NaN;
+        return distance / scale;
+    }
+
+    public float PlaneDistanceFromLocalY(float localY)
+    {
+        float scale = body != null ? Mathf.Abs(body.transform.lossyScale.y) : 1f;
+        if (!BatGeometry.Finite(localY) || !BatGeometry.Finite(scale) || scale <= 0.000001f) return float.NaN;
+        return localY * scale;
+    }
+
+    public float ContactWidthAtLocalY(float localY, float ballRadiusWorld)
+    {
+        if (!GeometrySettingsValid() || !BatGeometry.Finite(localY) ||
+            !BatGeometry.Finite(ballRadiusWorld) || ballRadiusWorld < 0f) return 0f;
+        float radialScale = 1f;
+        if (body != null)
+        {
+            Vector3 scale = body.transform.lossyScale;
+            radialScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
+            if (!BatGeometry.Finite(radialScale) || radialScale <= 0.000001f) return 0f;
+        }
+        return BatGeometry.ContactWidth(radiusCurve, batLength, localY, ballRadiusWorld, contactMargin, radialScale);
+    }
+
+    public bool IsInsideContactRange(float localY)
+    {
+        if (!GeometrySettingsValid() || !BatGeometry.Finite(localY)) return false;
+        return localY >= ContactStartLocalY() && localY <= ContactEndLocalY();
+    }
+
+    public float ContactQualityAtLocalY(float localY)
+    {
+        if (!GeometrySettingsValid() || !BatGeometry.Finite(localY)) return 0f;
+        return BatGeometry.ContactQuality(BatGeometry.LocalYToNormalized(batLength, localY), contactStartNormalized,
+            contactEndNormalized, sweetSpotNormalized, minimumQuality);
+    }
+
+    private bool GeometrySettingsValid()
+    {
+        return BatGeometry.IsValidGeometrySettings(batLength, radiusCurve, sweetSpotNormalized,
+            contactStartNormalized, contactEndNormalized, contactMargin, minimumQuality);
+    }
 
     public float EvaluateRawPower(float speed)
     {
@@ -43,8 +97,9 @@ public partial class BatMotionBehaviour
 
     private bool _battingDefaultsCaptured;
     private AnimationCurve _defaultPowerCurve;
-    private float _defaultMinContactX, _defaultMaxContactX, _defaultSweetSpotX;
-    private float _defaultWidthAtGrip, _defaultWidthAtBarrel, _defaultMinimumQuality, _defaultTimingYaw;
+    private AnimationCurve _defaultRadiusCurve;
+    private float _defaultBatLength, _defaultSweetSpotNormalized, _defaultContactStartNormalized;
+    private float _defaultContactEndNormalized, _defaultContactMargin, _defaultMinimumQuality, _defaultTimingYaw;
     private readonly float[] _defaultCapSettings = new float[14];
 
     public void Start() { CaptureBattingDefaults(); }
@@ -52,10 +107,11 @@ public partial class BatMotionBehaviour
     private void CaptureBattingDefaults()
     {
         if (_battingDefaultsCaptured) return;
-        _defaultPowerCurve = powerCurve;
-        _defaultMinContactX = minContactX; _defaultMaxContactX = maxContactX;
-        _defaultSweetSpotX = sweetSpotX; _defaultWidthAtGrip = widthAtGrip;
-        _defaultWidthAtBarrel = widthAtBarrel; _defaultMinimumQuality = minimumQuality;
+        _defaultPowerCurve = CloneCurve(powerCurve);
+        _defaultBatLength = batLength; _defaultRadiusCurve = CloneCurve(radiusCurve);
+        _defaultSweetSpotNormalized = sweetSpotNormalized;
+        _defaultContactStartNormalized = contactStartNormalized; _defaultContactEndNormalized = contactEndNormalized;
+        _defaultContactMargin = contactMargin; _defaultMinimumQuality = minimumQuality;
         _defaultTimingYaw = timingYawDegrees;
         _defaultCapSettings[0] = invalidWindowSeconds;
         _defaultCapSettings[1] = oneHandMovingDistance; _defaultCapSettings[2] = oneHandStillDistance;
@@ -77,16 +133,16 @@ public partial class BatMotionBehaviour
         return true;
     }
 
-    public bool SetBattingGeometry(float minimum, float maximum, float sweetSpot,
-        float gripWidth, float barrelWidth, float quality)
+    public bool SetBatGeometry(float length, AnimationCurve curve, float sweetSpot,
+        float contactStart, float contactEnd, float margin, float quality)
     {
-        if (!ContactFinite(minimum) || !ContactFinite(maximum) || !ContactFinite(sweetSpot) ||
-            !ContactFinite(gripWidth) || !ContactFinite(barrelWidth) || !ContactFinite(quality) ||
-            maximum <= minimum || sweetSpot < minimum || sweetSpot > maximum ||
-            gripWidth <= 0f || barrelWidth <= 0f || quality < 0f || quality > 1f) return false;
+        if (!BatGeometry.IsValidBatGeometry(length, curve, sweetSpot, contactStart, contactEnd, margin, quality)) return false;
         CaptureBattingDefaults();
-        minContactX = minimum; maxContactX = maximum; sweetSpotX = sweetSpot;
-        widthAtGrip = gripWidth; widthAtBarrel = barrelWidth; minimumQuality = quality;
+        bool measurementPointChanged = batLength != length || sweetSpotNormalized != sweetSpot;
+        batLength = length; radiusCurve = CloneCurve(curve);
+        sweetSpotNormalized = sweetSpot; contactStartNormalized = contactStart;
+        contactEndNormalized = contactEnd; contactMargin = margin; minimumQuality = quality;
+        if (measurementPointChanged) ResetContactHistory();
         return true;
     }
 
@@ -131,11 +187,20 @@ public partial class BatMotionBehaviour
     public void ResetBattingSettings()
     {
         CaptureBattingDefaults();
-        powerCurve = _defaultPowerCurve;
-        minContactX = _defaultMinContactX; maxContactX = _defaultMaxContactX;
-        sweetSpotX = _defaultSweetSpotX; widthAtGrip = _defaultWidthAtGrip;
-        widthAtBarrel = _defaultWidthAtBarrel; minimumQuality = _defaultMinimumQuality;
+        powerCurve = CloneCurve(_defaultPowerCurve);
+        bool measurementPointChanged = batLength != _defaultBatLength || sweetSpotNormalized != _defaultSweetSpotNormalized;
+        batLength = _defaultBatLength; radiusCurve = CloneCurve(_defaultRadiusCurve);
+        sweetSpotNormalized = _defaultSweetSpotNormalized;
+        contactStartNormalized = _defaultContactStartNormalized; contactEndNormalized = _defaultContactEndNormalized;
+        contactMargin = _defaultContactMargin; minimumQuality = _defaultMinimumQuality;
+        if (measurementPointChanged) ResetContactHistory();
         timingYawDegrees = _defaultTimingYaw;
         for (int i = 0; i < _defaultCapSettings.Length; i++) ApplyBattingCapSetting(i, _defaultCapSettings[i]);
+    }
+
+    private AnimationCurve CloneCurve(AnimationCurve curve)
+    {
+        if (curve == null) return null;
+        return new AnimationCurve(curve.keys) { preWrapMode = curve.preWrapMode, postWrapMode = curve.postWrapMode };
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using VRC.Udon;
@@ -6,6 +7,13 @@ using VRC.Udon;
 [InitializeOnLoad]
 public static class BattingZoneGizmos
 {
+    private const int BatLengthSegments = 32;
+    private const int BatRadialSegments = 12;
+    private const int BatContactFillSegments = 16;
+    private static readonly Vector3[] BatLinePoints = new Vector3[BatLengthSegments + 1];
+    private static readonly Vector3[] BatRingPoints = new Vector3[BatRadialSegments + 1];
+    private static readonly HashSet<int> DrawnBatIds = new HashSet<int>();
+
     static BattingZoneGizmos() { SceneView.duringSceneGui += OnSceneGUI; }
 
     private static bool IsProgram(UdonBehaviour behaviour, string name)
@@ -23,6 +31,7 @@ public static class BattingZoneGizmos
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || Camera.current == null ||
             Camera.current.cameraType != CameraType.SceneView) return;
+        if (IsProgram(behaviour, "BatMotionBehaviour")) return;
         if (IsProgram(behaviour, "BatContactBehaviour"))
         {
             Transform zone = Read<Transform>(behaviour, "contactZone", null);
@@ -93,7 +102,11 @@ public static class BattingZoneGizmos
     private static void OnSceneGUI(SceneView scene)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+        DrawnBatIds.Clear();
         foreach (GameObject selected in Selection.gameObjects)
+        {
+            UdonBehaviour bat = FindBatMotion(selected.transform);
+            if (bat != null && DrawnBatIds.Add(bat.GetInstanceID())) DrawBatGeometry(bat);
         foreach (UdonBehaviour behaviour in selected.GetComponents<UdonBehaviour>())
         {
             if (!IsProgram(behaviour, "StrikeZoneBehaviour")) continue;
@@ -112,5 +125,145 @@ public static class BattingZoneGizmos
             offset += new Vector2(Vector3.Dot(delta, right), delta.y);
             VVBC.Editor.HomePlateConnections.SetVector2(behaviour, "zoneCenterOffset", offset);
         }
+        }
+    }
+
+    private static UdonBehaviour FindBatMotion(Transform selected)
+    {
+        foreach (UdonBehaviour candidate in selected.GetComponentsInChildren<UdonBehaviour>(true))
+            if (IsProgram(candidate, "BatMotionBehaviour")) return candidate;
+        for (Transform current = selected.parent; current != null; current = current.parent)
+            foreach (UdonBehaviour candidate in current.GetComponentsInChildren<UdonBehaviour>(true))
+            {
+                if (!IsProgram(candidate, "BatMotionBehaviour")) continue;
+                Rigidbody body = Read<Rigidbody>(candidate, "body", null);
+                if (body != null && (selected == body.transform || selected.IsChildOf(body.transform))) return candidate;
+            }
+        return null;
+    }
+
+    private static void DrawBatGeometry(UdonBehaviour behaviour)
+    {
+        Rigidbody body = Read<Rigidbody>(behaviour, "body", null);
+        if (body == null) return;
+        Transform root = body.transform;
+        AnimationCurve curve = Read<AnimationCurve>(behaviour, "radiusCurve", null);
+        float length = Read(behaviour, "batLength", 0.855f);
+        float sweetSpot = Read(behaviour, "sweetSpotNormalized", 0.680f / 0.855f);
+        float contactStart = Read(behaviour, "contactStartNormalized", 0.100f / 0.855f);
+        float contactEnd = Read(behaviour, "contactEndNormalized", 1f);
+        float margin = Read(behaviour, "contactMargin", 0f);
+        float quality = Read(behaviour, "minimumQuality", 0.25f);
+        if (!BatGeometry.IsValidBatGeometry(length, curve, sweetSpot, contactStart,
+            contactEnd, margin, quality)) return;
+
+        Color previous = Handles.color;
+        float radialScale = Mathf.Max(Mathf.Abs(root.lossyScale.x), Mathf.Abs(root.lossyScale.z));
+        float startY = BatGeometry.NormalizedToLocalY(length, contactStart);
+        float endY = BatGeometry.NormalizedToLocalY(length, contactEnd);
+        float ballRadius;
+        bool showContact = TryGetRelatedBallRadius(behaviour, out ballRadius);
+
+        Handles.color = new Color(0.15f, 0.85f, 1f, 1f);
+        for (int side = 0; side < BatRadialSegments; side++)
+        {
+            float angle = side * Mathf.PI * 2f / BatRadialSegments;
+            float cos = Mathf.Cos(angle), sin = Mathf.Sin(angle);
+            for (int i = 0; i <= BatLengthSegments; i++)
+            {
+                float t = i / (float)BatLengthSegments;
+                float y = BatGeometry.NormalizedToLocalY(length, t);
+                float radius = BatGeometry.EvaluateRadius(curve, t);
+                BatLinePoints[i] = root.TransformPoint(new Vector3(cos * radius, y, sin * radius));
+            }
+            Handles.DrawAAPolyLine(1.5f, BatLinePoints);
+        }
+        for (int i = 0; i <= BatLengthSegments; i++)
+        {
+            float t = i / (float)BatLengthSegments;
+            float y = BatGeometry.NormalizedToLocalY(length, t);
+            float radius = BatGeometry.EvaluateRadius(curve, t);
+            DrawBatRing(root, y, radius);
+        }
+
+        if (showContact && radialScale > 0.000001f)
+        {
+            Handles.color = new Color(0.1f, 1f, 0.2f, 0.55f);
+            for (int side = 0; side < BatRadialSegments; side++)
+            {
+                float angle = side * Mathf.PI * 2f / BatRadialSegments;
+                float cos = Mathf.Cos(angle), sin = Mathf.Sin(angle);
+                for (int i = 0; i <= BatLengthSegments; i++)
+                {
+                    float y = Mathf.Lerp(startY, endY, i / (float)BatLengthSegments);
+                    float width = BatGeometry.ContactWidth(curve, length, y, ballRadius,
+                        margin, radialScale);
+                    Vector3 center = root.TransformPoint(new Vector3(0f, y, 0f));
+                    BatLinePoints[i] = center + root.rotation * new Vector3(cos * width, 0f, sin * width);
+                }
+                Handles.DrawAAPolyLine(1.5f, BatLinePoints);
+            }
+            for (int i = 0; i <= BatContactFillSegments; i++)
+            {
+                float y = Mathf.Lerp(startY, endY, i / (float)BatContactFillSegments);
+                float width = BatGeometry.ContactWidth(curve, length, y, ballRadius,
+                    margin, radialScale);
+                Vector3 center = root.TransformPoint(new Vector3(0f, y, 0f));
+                Handles.color = new Color(0.1f, 1f, 0.2f, 0.075f);
+                Handles.DrawSolidDisc(center, root.up, width);
+                Handles.color = new Color(0.1f, 1f, 0.2f, 0.55f);
+                DrawWorldBatRing(root, y, width);
+            }
+        }
+
+        Handles.color = Color.yellow;
+        float sweetY = BatGeometry.NormalizedToLocalY(length, sweetSpot);
+        DrawBatRing(root, sweetY, BatGeometry.EvaluateRadius(curve, sweetSpot));
+        Handles.color = Color.white;
+        DrawBatRing(root, startY, BatGeometry.EvaluateRadius(curve, contactStart));
+        DrawBatRing(root, endY, BatGeometry.EvaluateRadius(curve, contactEnd));
+        Handles.color = previous;
+    }
+
+    private static void DrawBatRing(Transform root, float localY, float radius)
+    {
+        for (int i = 0; i <= BatRadialSegments; i++)
+        {
+            float angle = i * Mathf.PI * 2f / BatRadialSegments;
+            BatRingPoints[i] = root.TransformPoint(new Vector3(Mathf.Cos(angle) * radius,
+                localY, Mathf.Sin(angle) * radius));
+        }
+        Handles.DrawAAPolyLine(1.5f, BatRingPoints);
+    }
+
+    private static void DrawWorldBatRing(Transform root, float localY, float radius)
+    {
+        Vector3 center = root.TransformPoint(new Vector3(0f, localY, 0f));
+        for (int i = 0; i <= BatRadialSegments; i++)
+        {
+            float angle = i * Mathf.PI * 2f / BatRadialSegments;
+            BatRingPoints[i] = center + root.rotation * new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
+        }
+        Handles.DrawAAPolyLine(1.5f, BatRingPoints);
+    }
+
+    private static bool TryGetRelatedBallRadius(UdonBehaviour motion, out float radius)
+    {
+        UdonBehaviour[] behaviours = Object.FindObjectsOfType<UdonBehaviour>(true);
+        SphereCollider found = null;
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            UdonBehaviour contact = behaviours[i];
+            if (!IsProgram(contact, "BatContactBehaviour") || contact.gameObject.scene != motion.gameObject.scene ||
+                Read<UdonBehaviour>(contact, "motion", null) != motion) continue;
+            UdonBehaviour flight = Read<UdonBehaviour>(contact, "flight", null);
+            SphereCollider collider = flight != null ? Read<SphereCollider>(flight, "ballCollider", null) : null;
+            if (collider == null) continue;
+            if (found != null && found != collider) { radius = 0f; return false; }
+            found = collider;
+        }
+        if (found == null) { radius = 0f; return false; }
+        radius = BatGeometry.EffectiveSphereRadius(found.radius, found.transform.lossyScale);
+        return radius >= 0f && !float.IsNaN(radius) && radius <= float.MaxValue;
     }
 }

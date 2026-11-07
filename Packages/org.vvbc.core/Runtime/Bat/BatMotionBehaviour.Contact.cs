@@ -6,8 +6,6 @@ public partial class BatMotionBehaviour
 {
     private const int ContactHistoryCapacity = 32;
     private const int MeasuredHistoryCapacity = 128;
-    // Local +Y is the root-to-tip direction of the packaged Bat model.
-    [SerializeField] private float powerReferenceLocalY = 0.71f;
     [SerializeField] private float contactMaxLinearSpeed = 100f;
     [SerializeField] private float contactMaxAngularSpeed = 125f;
     [SerializeField] private float contactMaxSampleGap = 0.15f;
@@ -149,7 +147,7 @@ public partial class BatMotionBehaviour
         // collider state when the released Bat becomes dynamic.
         Vector3 core = body.transform.position;
         Quaternion rotation = body.transform.rotation;
-        Vector3 reference = body.transform.TransformPoint(new Vector3(0f, powerReferenceLocalY, 0f));
+        Vector3 reference = body.transform.TransformPoint(new Vector3(0f, SweetSpotLocalY(), 0f));
         if (!ContactFinite(time) || !ContactFiniteVector(core) || !ContactFiniteVector(reference) ||
             !ContactFinite(rotation.x) || !ContactFinite(rotation.y) ||
             !ContactFinite(rotation.z) || !ContactFinite(rotation.w) || Quaternion.Dot(rotation, rotation) < 0.0001f)
