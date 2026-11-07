@@ -75,7 +75,6 @@ public partial class BattingFeedbackBehaviour
         _poseCores[0] = Vector3.zero; _poseCores[1] = Vector3.right * 2f;
         _poseVelocities[0] = Vector3.right * 2f; _poseVelocities[1] = Vector3.right * 2f;
         _poseRotations[0] = Quaternion.identity; _poseRotations[1] = Quaternion.identity;
-        _poseOffsets[0] = Vector3.up; _poseOffsets[1] = Vector3.up;
         _poseSegments[1] = 1;
         Assert.IsFalse(SampleSavedPose(1.5f));
         Assert.IsFalse(SampleSavedPose(0.9f));

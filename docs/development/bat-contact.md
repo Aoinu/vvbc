@@ -70,8 +70,26 @@ Keep `groundLayers` on BallBehaviour configured for ground and mound surfaces,
 and bind the existing strike observer as described in
 [batting pitcher setup](batting-pitcher.md).
 
+Contact geometry is measured in a frame fixed to the Bat model. `BatOrigin` is
+the Bat Motion `body` Transform position, and `BatAxis` is that Transform's
+local +Y, from root to tip. For a Ball center `P`, `PlaneX = Dot(P - BatOrigin,
+BatAxis)`; PlaneY and the contact plane normal keep the orthonormal basis built
+from BatAxis and the incoming Ball direction. The Bat origin, its sampled
+velocity and the Bat angular velocity also form the rigid-body reference used
+for the contact-point velocity in the Ball result, and Feedback places its
+phantoms at the same origin. Rigidbody `centerOfMass` is not part of this
+frame: with automatic center of mass enabled, PhysX moves it from the model
+root to the Body capsule center (local Y 0.43 m) once the released Bat becomes
+dynamic with its collider enabled, and kinematic re-grabs and respawns keep
+that value. In the packaged Bat, Body, Visual and BatModel share one origin and
+orientation at unit scale, and the model spans local Y 0–0.86 m. A
+replacement model must keep its root at the Body origin, its root-to-tip
+direction along Body local +Y and unit scale, or have the Body and the contact
+geometry values adjusted to match; the contact values are lengths from that
+origin.
+
 The default contact geometry is provisional and follows the packaged Bat's
-local +Y axis. With its held Rigidbody center of mass at the model origin, the
+local +Y axis from the model root. The
 valid longitudinal range is 0.10–0.855 m and the sweet spot is 0.68 m. Half
 width increases linearly from 0.045 m to 0.070 m, already describing the
 allowed Ball-center region; do not add the ball radius again. Quality is 1 at
@@ -131,13 +149,16 @@ isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/ContactIn
 isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/PowerCurveIntegration.cs.txt
 ```
 
-It exercises the C# implementation with synthetic histories. Run the adjacent
+It exercises the C# implementation with synthetic histories. The contact
+fixture also records Bat poses from a Rigidbody through grab, release, re-grab
+and respawn transitions, with automatic and explicit centers of mass, and
+requires the same sweet-spot PlaneX from Contact and Feedback. Run the adjacent
 T# tests on the default Udon path as well; the fixture is not a substitute for
 the generated UdonProgram or ClientSim checks.
 
 Bat poses are recorded after the held pose is applied, with an upper extrapolation
 limit of 30 ms and a default of 25 ms. Grip/authority changes and unreasonable
-pose differences reset the history. Ball position and Bat core position use
+pose differences reset the history. Ball position and Bat origin position use
 Hermite reconstruction; candidate roots are considered in time order. At a
 legal contact the Ball result and pre-impact values are copied and the flight
 generation is consumed. If contact time is ahead of fixed physics time, only

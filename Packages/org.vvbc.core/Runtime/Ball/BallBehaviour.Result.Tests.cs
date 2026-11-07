@@ -24,6 +24,39 @@ public partial class BallBehaviour
     }
 
     [TsukimiTest]
+    public void ResultDependsOnContactPointVelocityNotOnBatReferencePoint()
+    {
+        // One rigid Bat, translating and rotating, described from its root and
+        // from a point 0.43 m along its axis: the contact point moves the same.
+        BallResultSnapshot s = ResultExample();
+        Vector3 omega = new Vector3(4f, 25f, -3f);
+        Vector3 root = new Vector3(0.2f, 1f, -0.1f);
+        Vector3 rootVelocity = new Vector3(1.5f, 0.5f, 6f);
+        Vector3 axis = s.axisX;
+        s.contactPosition = root + axis * 0.68f + s.axisY * 0.01f;
+        s.batCorePosition = root;
+        s.batCoreVelocity = rootVelocity;
+        s.batAngularVelocity = omega;
+        BallResult fromRoot = BallResultMath.Calculate(s);
+        Vector3 offset = root + axis * 0.43f;
+        s.batCorePosition = offset;
+        s.batCoreVelocity = rootVelocity + Vector3.Cross(omega, offset - root);
+        BallResult fromOffset = BallResultMath.Calculate(s);
+        Vector3 expected = rootVelocity + Vector3.Cross(omega, s.contactPosition - root);
+        Vector3 viaOffset = s.batCoreVelocity + Vector3.Cross(omega, s.contactPosition - offset);
+        Assert.IsTrue((expected - viaOffset).magnitude < 0.0001f);
+        Assert.IsTrue(fromRoot.valid && fromOffset.valid);
+        Assert.IsTrue((fromRoot.linearVelocity - fromOffset.linearVelocity).magnitude < 0.0001f);
+        Assert.IsTrue((fromRoot.angularVelocity - fromOffset.angularVelocity).magnitude < 0.0001f);
+        // The contact-point velocity, not the reference velocity alone, sets the
+        // attack angle: ignoring rotation changes the result.
+        s.batCorePosition = root;
+        s.batCoreVelocity = rootVelocity;
+        s.batAngularVelocity = Vector3.zero;
+        Assert.IsTrue((BallResultMath.Calculate(s).linearVelocity - fromRoot.linearVelocity).magnitude > 0.01f);
+    }
+
+    [TsukimiTest]
     public void ResultAxisReversalPreservesPhysicalOutput()
     {
         BallResultSnapshot s = ResultExample();

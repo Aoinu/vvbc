@@ -3,10 +3,10 @@ using UnityEngine;
 public partial class BattingFeedbackBehaviour
 {
     // Pitch-local copies of measured Bat samples. They outlive Motion's 32-slot ring.
+    // Cores are the Bat contact origin, which is also the phantom root.
     private float[] _poseTimes = new float[128];
     private Vector3[] _poseCores = new Vector3[128];
     private Vector3[] _poseVelocities = new Vector3[128];
-    private Vector3[] _poseOffsets = new Vector3[128];
     private Vector3[] _poseOmegas = new Vector3[128];
     private Quaternion[] _poseRotations = new Quaternion[128];
     private int[] _poseSegments = new int[128];
@@ -206,8 +206,6 @@ public partial class BattingFeedbackBehaviour
         _poseCores[_poseCount] = motion.contactSamplePosition;
         _poseVelocities[_poseCount] = motion.contactSampleVelocity;
         _poseRotations[_poseCount] = motion.contactSampleRotation;
-        _poseOffsets[_poseCount] = Quaternion.Inverse(motion.contactSampleRotation) *
-            (motion.contactSamplePosition - motion.contactSampleRootPosition);
         _poseOmegas[_poseCount] = motion.contactSampleAngularVelocity;
         _poseSegments[_poseCount] = _poseSegment;
         _poseCount++;
@@ -217,15 +215,15 @@ public partial class BattingFeedbackBehaviour
     {
         int size = _poseTimes.Length * 2;
         float[] times = new float[size]; Vector3[] cores = new Vector3[size];
-        Vector3[] velocities = new Vector3[size]; Vector3[] offsets = new Vector3[size];
+        Vector3[] velocities = new Vector3[size];
         Vector3[] omegas = new Vector3[size]; Quaternion[] rotations = new Quaternion[size];
         int[] segments = new int[size];
         for (int i = 0; i < _poseCount; i++)
         {
             times[i] = _poseTimes[i]; cores[i] = _poseCores[i]; velocities[i] = _poseVelocities[i];
-            offsets[i] = _poseOffsets[i]; omegas[i] = _poseOmegas[i]; rotations[i] = _poseRotations[i]; segments[i] = _poseSegments[i];
+            omegas[i] = _poseOmegas[i]; rotations[i] = _poseRotations[i]; segments[i] = _poseSegments[i];
         }
-        _poseTimes = times; _poseCores = cores; _poseVelocities = velocities; _poseOffsets = offsets;
+        _poseTimes = times; _poseCores = cores; _poseVelocities = velocities;
         _poseOmegas = omegas; _poseRotations = rotations; _poseSegments = segments;
     }
 
@@ -304,9 +302,8 @@ public partial class BattingFeedbackBehaviour
             if (_poseSegments[previous] != _poseSegments[i]) return false;
             float dt = _poseTimes[i] - _poseTimes[previous];
             float u = dt > 0f ? (time - _poseTimes[previous]) / dt : 0f;
-            Vector3 core = dt > 0f ? TrailHermite(_poseCores[previous], _poseVelocities[previous], _poseCores[i], _poseVelocities[i], dt, u) : _poseCores[i];
+            _savedPosition = dt > 0f ? TrailHermite(_poseCores[previous], _poseVelocities[previous], _poseCores[i], _poseVelocities[i], dt, u) : _poseCores[i];
             _savedRotation = Quaternion.Slerp(_poseRotations[previous], _poseRotations[i], u);
-            _savedPosition = core - _savedRotation * Vector3.Lerp(_poseOffsets[previous], _poseOffsets[i], u);
             return true;
         }
         int last = _poseCount - 1;
@@ -316,7 +313,7 @@ public partial class BattingFeedbackBehaviour
         if (elapsed < 0f || elapsed > Mathf.Clamp(contact.maxExtrapolation, 0f, 0.03f)) return false;
         Vector3 omega = _poseOmegas[last]; float speed = omega.magnitude;
         _savedRotation = speed > 0.00001f ? Quaternion.AngleAxis(speed * elapsed * Mathf.Rad2Deg, omega / speed) * _poseRotations[last] : _poseRotations[last];
-        _savedPosition = _poseCores[last] + _poseVelocities[last] * elapsed - _savedRotation * _poseOffsets[last];
+        _savedPosition = _poseCores[last] + _poseVelocities[last] * elapsed;
         return true;
     }
 

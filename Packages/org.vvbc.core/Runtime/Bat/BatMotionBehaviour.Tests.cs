@@ -91,16 +91,23 @@ public partial class BatMotionBehaviour
     }
 
     [TsukimiTest]
-    public void ContactHistoryPreservesRootOffsetFromTheRecordedCore()
+    public void ContactOriginIsTheRecordedBatRootForRotatedAndExtrapolatedSamples()
     {
+        // Equal sample times take the exact-sample path. Interpolation with
+        // rotation is covered by the Unity contact integration fixture.
         _contactCount = 2; _contactNext = 2;
         _contactTimes[0] = 1f; _contactTimes[1] = 1f;
         _contactPositions[0] = new Vector3(1f, 2f, 3f); _contactPositions[1] = _contactPositions[0];
-        _contactRotations[0] = Quaternion.identity; _contactRotations[1] = Quaternion.identity;
-        _contactCoreOffsets[0] = new Vector3(0f, 0.4f, 0f); _contactCoreOffsets[1] = _contactCoreOffsets[0];
+        // 40 degrees about +Y.
+        _contactRotations[0] = new Quaternion(0f, 0.3420201f, 0f, 0.9396926f);
+        _contactRotations[1] = _contactRotations[0];
+        _contactVelocities[0] = Vector3.right * 5f; _contactVelocities[1] = Vector3.right * 5f;
         Assert.IsTrue(TrySampleContactPose(1f, 0f));
-        Assert.IsTrue(Mathf.Abs(contactSampleRootPosition.y - 1.6f) < 0.0001f);
-        Assert.IsTrue(Mathf.Abs(contactSamplePosition.y - 2f) < 0.0001f);
+        Assert.IsTrue((contactSamplePosition - new Vector3(1f, 2f, 3f)).magnitude < 0.0001f);
+        Assert.IsTrue(contactSampleRootPosition == contactSamplePosition);
+        Assert.IsTrue(TrySampleContactPose(1.02f, 0.025f));
+        Assert.IsTrue((contactSamplePosition - new Vector3(1.1f, 2f, 3f)).magnitude < 0.0001f);
+        Assert.IsTrue(contactSampleRootPosition == contactSamplePosition);
     }
 
     [TsukimiTest]

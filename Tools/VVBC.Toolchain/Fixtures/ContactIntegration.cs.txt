@@ -263,8 +263,9 @@ try
         UnityEngine.Mathf.Abs(motion.measuredPeakAngularSpeed - 90f) < 0.01f,
         "measured reference speed and angular speed use frame differences in m/s and degrees/s");
     check(motion.TrySampleContactPose(2.1f, 0f) &&
-        UnityEngine.Vector3.Distance(motion.contactSampleRootPosition, UnityEngine.Vector3.right * 0.2f) < 0.001f,
-        "feedback retains the actual bat root when the core is offset");
+        UnityEngine.Vector3.Distance(motion.contactSampleRootPosition, UnityEngine.Vector3.right * 0.2f) < 0.001f &&
+        UnityEngine.Vector3.Distance(motion.contactSamplePosition, UnityEngine.Vector3.right * 0.2f) < 0.001f,
+        "contact origin is the bat root, not the offset centre of mass");
     motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, 100, null, false, false, false, null);
     check(!motion.TryGetMeasuredPeaks(2f, 3f), "grip change clears measured history");
     mt[0] = -0.03f; mt[1] = 0.01f;
@@ -422,7 +423,109 @@ try
             UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(expectedRaw, expectedCap)) < 0.0001f &&
             contact.snapshotPowerCapReason == (pass == 0 ? 0 : 2), "raw power crosses unchanged wrist cap gate");
     }
-    return "PASS contact integration: time, roots, snapshot, flight, extrapolation, reset, strike, collision and discontinuity";
+    // Contact geometry follows the Bat model, not the Rigidbody centre of mass.
+    // The Body matches the packaged Bat: its origin is the model root and its
+    // capsule spans local +Y. Poses go through RecordContactPose and the real
+    // grip transitions; PhysX recomputes the automatic centre of mass.
+    var geometryBat = make("GeometryBat");
+    var geometryRigid = geometryBat.AddComponent<UnityEngine.Rigidbody>();
+    geometryRigid.isKinematic = true; geometryRigid.useGravity = false;
+    var geometryCollider = geometryBat.AddComponent<UnityEngine.CapsuleCollider>();
+    geometryCollider.direction = 1; geometryCollider.center = UnityEngine.Vector3.up * 0.43f;
+    geometryCollider.height = 0.85f; geometryCollider.radius = 0.035f; geometryCollider.enabled = false;
+    set(motion, "body", geometryRigid);
+    motion.ResetBattingSettings();
+    motion.powerCurve = defaultPowerCurve;
+    contact.centerDirection = UnityEngine.Vector3.back;
+    var physics = scene.GetPhysicsScene();
+    int geometryRevision = 500; int geometrySequence = 600;
+    var planeXs = new System.Collections.Generic.List<float>();
+    System.Func<UnityEngine.Vector3, UnityEngine.Quaternion, UnityEngine.Vector3, UnityEngine.Quaternion, string, float> hitSweetSpot =
+        (rootA, rotationA, rootB, rotationB, label) =>
+    {
+        // A grip transition starts a fresh history, as on every grab.
+        motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, ++geometryRevision, null, false, false, false, null);
+        geometryBat.transform.SetPositionAndRotation(rootA, rotationA);
+        record.Invoke(motion, new object[] { start });
+        geometryBat.transform.SetPositionAndRotation(rootB, rotationB);
+        record.Invoke(motion, new object[] { end });
+        float middle = (start + end) * 0.5f;
+        var middleRoot = UnityEngine.Vector3.Lerp(rootA, rootB, 0.5f);
+        var middleRotation = UnityEngine.Quaternion.Slerp(rotationA, rotationB, 0.5f);
+        var point = middleRoot + middleRotation * (UnityEngine.Vector3.up * 0.68f);
+        var ballVelocity = UnityEngine.Vector3.forward * 20f;
+        bt[0] = start; bt[1] = end;
+        bp[0] = point + ballVelocity * (start - middle); bp[1] = point + ballVelocity * (end - middle);
+        bv[0] = ballVelocity; bv[1] = ballVelocity;
+        set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+        set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+        set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+        flight.oldestMotionTime = start; flight.latestMotionTime = end; flight.flightSequence = ++geometrySequence;
+        flight.contactConsumed = false; flight.flying = true;
+        body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+        set(contact, "_sequence", -1);
+        // Miss feedback evaluates the same geometry from the same history.
+        check((bool)sampleCandidate.Invoke(feedback, new object[] { motion, middle }) &&
+            UnityEngine.Mathf.Abs((float)feedbackType.GetField("_candidateX", flags).GetValue(feedback) - 0.68f) < 0.001f,
+            label + ": feedback plane X=" + feedbackType.GetField("_candidateX", flags).GetValue(feedback));
+        contact.OnBatContactPose();
+        check(contact.contactValid, label + ": contact accepted");
+        float planeX = contact.snapshotPlaneX;
+        check(UnityEngine.Mathf.Abs(planeX - 0.68f) < 0.001f && UnityEngine.Mathf.Abs(contact.contactQuality - 1f) < 0.002f,
+            label + ": sweet spot plane X=" + planeX + " quality=" + contact.contactQuality +
+            " centre of mass=" + geometryRigid.centerOfMass);
+        var contactRoot = UnityEngine.Vector3.Lerp(rootA, rootB, (contact.contactTime - start) / (end - start));
+        check(contact.snapshotBatRootPosition == contact.snapshotBatCorePosition &&
+            UnityEngine.Vector3.Distance(contact.snapshotBatRootPosition, contactRoot) < 0.0005f &&
+            UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(contact.contactPosition - contact.snapshotBatRootPosition,
+                contact.snapshotX) - planeX) < 0.0001f, label + ": snapshot root is the contact origin");
+        feedback.OnContactConfirmed();
+        check((UnityEngine.Vector3)feedbackType.GetField("_batPosition", flags).GetValue(feedback) == contact.snapshotBatRootPosition,
+            label + ": contact feedback places the phantom at the contact origin");
+        planeXs.Add(planeX);
+        return planeX;
+    };
+    var batBase = UnityEngine.Quaternion.AngleAxis(-90f, UnityEngine.Vector3.forward);
+    var homeRoot = zone.position + UnityEngine.Vector3.left * 0.6f;
+    check(geometryRigid.centerOfMass.sqrMagnitude < 0.000001f, "first grab starts with the centre of mass at the root");
+    hitSweetSpot(homeRoot, batBase, homeRoot, batBase, "first grab");
+    // Release: the dynamic Bat enables its collider and PhysX moves the
+    // automatic centre of mass to the capsule centre.
+    motion.StopMotion();
+    geometryRigid.isKinematic = false; geometryCollider.enabled = true;
+    physics.Simulate(0.02f);
+    check(UnityEngine.Mathf.Abs(geometryRigid.centerOfMass.y - 0.43f) < 0.001f,
+        "released Bat moves the automatic centre of mass, com=" + geometryRigid.centerOfMass);
+    geometryRigid.isKinematic = true; geometryCollider.enabled = false;
+    physics.Simulate(0.02f);
+    check(UnityEngine.Mathf.Abs(geometryRigid.centerOfMass.y - 0.43f) < 0.001f,
+        "re-grabbed kinematic Bat keeps the moved centre of mass, com=" + geometryRigid.centerOfMass);
+    hitSweetSpot(homeRoot, batBase, homeRoot, batBase, "re-grab");
+    // Respawn while idle at another pose, then grab again.
+    motion.StopMotion();
+    geometryCollider.enabled = true;
+    var respawnRoot = homeRoot + new UnityEngine.Vector3(0.1f, -0.2f, 0.3f);
+    var respawnRotation = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up) *
+        UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.forward) * batBase;
+    geometryBat.transform.SetPositionAndRotation(respawnRoot, respawnRotation);
+    physics.Simulate(0.02f);
+    geometryCollider.enabled = false;
+    hitSweetSpot(respawnRoot, respawnRotation, respawnRoot, respawnRotation, "respawn, translated and rotated");
+    // Explicit centres of mass give the same plane X for the same local point.
+    foreach (float comY in new[] { 0f, 0.35f, 0.43f })
+    {
+        geometryRigid.centerOfMass = UnityEngine.Vector3.up * comY;
+        hitSweetSpot(homeRoot, batBase, homeRoot, batBase, "centre of mass y=" + comY);
+    }
+    geometryRigid.ResetCenterOfMass();
+    // A swinging Bat: translation toward the ball and roll about its own axis
+    // exercise Hermite position and slerped rotation between samples.
+    var rolled = batBase * UnityEngine.Quaternion.AngleAxis(25f, UnityEngine.Vector3.up);
+    hitSweetSpot(homeRoot + UnityEngine.Vector3.forward * 0.1f, batBase, homeRoot + UnityEngine.Vector3.back * 0.1f, rolled, "swinging Bat");
+    float minimumPlaneX = float.MaxValue, maximumPlaneX = -float.MaxValue;
+    foreach (float x in planeXs) { minimumPlaneX = UnityEngine.Mathf.Min(minimumPlaneX, x); maximumPlaneX = UnityEngine.Mathf.Max(maximumPlaneX, x); }
+    check(maximumPlaneX - minimumPlaneX < 0.001f, "plane X spread across grip, respawn and centre of mass=" + (maximumPlaneX - minimumPlaneX));
+    return "PASS contact integration: time, roots, snapshot, flight, extrapolation, reset, strike, collision, discontinuity and centre-of-mass-independent geometry";
 }
 finally
 {

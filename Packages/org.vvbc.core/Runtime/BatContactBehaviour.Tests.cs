@@ -64,6 +64,16 @@ public partial class BatContactBehaviour
     }
 
     [TsukimiTest]
+    public void QualityPeaksAtSweetSpotAndFallsLinearlyToBothEnds()
+    {
+        Assert.IsTrue(Mathf.Abs(Quality(0.68f, 0.1f, 0.855f, 0.68f, 0.25f) - 1f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(Quality(0.1f, 0.1f, 0.855f, 0.68f, 0.25f) - 0.25f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(Quality(0.855f, 0.1f, 0.855f, 0.68f, 0.25f) - 0.25f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(Quality(0.39f, 0.1f, 0.855f, 0.68f, 0.25f) - 0.625f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(Quality(0.7675f, 0.1f, 0.855f, 0.68f, 0.25f) - 0.625f) < 0.0001f);
+    }
+
+    [TsukimiTest]
     public void ContactCurvesRemapPhysicalPositionWhenAxisIsReversed()
     {
         float position = 0.32f;

@@ -30,11 +30,11 @@ try
     System.Action<bool,string> check = (ok,label) => { if (!ok) throw new Exception("Batting trail: " + label); };
     float[] bt = new float[64], mt = new float[32];
     Vector3[] bp = new Vector3[64], bv = new Vector3[64], spin = new Vector3[64];
-    Vector3[] mp = new Vector3[32], mv = new Vector3[32], mo = new Vector3[32], omega = new Vector3[32], referenceVelocity = new Vector3[32];
+    Vector3[] mp = new Vector3[32], mv = new Vector3[32], omega = new Vector3[32], referenceVelocity = new Vector3[32];
     Quaternion[] mr = new Quaternion[32];
     set(flight,"_times",bt); set(flight,"_positions",bp); set(flight,"_velocities",bv); set(flight,"_angularVelocities",spin);
     set(motion,"_contactTimes",mt); set(motion,"_contactPositions",mp); set(motion,"_contactVelocities",mv);
-    set(motion,"_contactCoreOffsets",mo); set(motion,"_contactAngularVelocities",omega); set(motion,"_contactRotations",mr);
+    set(motion,"_contactAngularVelocities",omega); set(motion,"_contactRotations",mr);
     set(motion,"_contactReferenceVelocities",referenceVelocity);
     float start = Mathf.Max(10f, Time.time + 1f); float dt = 0.02f;
     for (int n = 0; n <= 90; n++)
@@ -42,7 +42,7 @@ try
         float time = start + n * dt; int bi = n % 64, mi = n % 32;
         bt[bi] = time; bp[bi] = new Vector3(0f, 0f, -2f + 0.04f * n); bv[bi] = Vector3.forward * 2f;
         mt[mi] = time; mp[mi] = new Vector3(n * 0.01f, 1f, 0f); mv[mi] = Vector3.right * 0.5f;
-        mo[mi] = new Vector3(0f, 0.3f, 0f); mr[mi] = Quaternion.Euler(0f, n * 0.5f, -90f);
+        mr[mi] = Quaternion.Euler(0f, n * 0.5f, -90f);
         referenceVelocity[mi] = Vector3.right * 10f;
         int bc = Mathf.Min(n + 1, 64), mc = Mathf.Min(n + 1, 32);
         set(flight,"_sampleCount",bc); set(flight,"_nextSample",(bi + 1) % 64);
@@ -65,7 +65,8 @@ try
     {
         float n = 25f + 50f * i / 6f;
         Quaternion expectedRotation = Quaternion.Euler(0f, n * 0.5f, -90f);
-        Vector3 expected = new Vector3(n * 0.01f, 1f, 0f) - expectedRotation * new Vector3(0f, 0.3f, 0f);
+        // The recorded contact origin is the Bat root that each phantom uses.
+        Vector3 expected = new Vector3(n * 0.01f, 1f, 0f);
         check(valid[i] && Vector3.Distance(positions[i], expected) < 0.002f && Quaternion.Angle(rotations[i], expectedRotation) < 0.1f, "pose " + i);
         check(i == 0 || colors[i] != colors[0], "independent timing color " + i);
     }
@@ -97,7 +98,8 @@ try
     var single = (Vector3[])get(feedback, "_trailPositions");
     var singleRotation = Quaternion.Euler(0f, 25f, -90f);
     check((int)get(feedback, "_trailCount") == 1 && ((bool[])get(feedback, "_trailValid"))[0] &&
-        Vector3.Distance(single[0], new Vector3(0.5f, 1f, 0f) - singleRotation * new Vector3(0f, 0.3f, 0f)) < 0.002f, "single reference time");
+        Vector3.Distance(single[0], new Vector3(0.5f, 1f, 0f)) < 0.002f &&
+        Quaternion.Angle(((Quaternion[])get(feedback, "_trailRotations"))[0], singleRotation) < 0.1f, "single reference time");
     feedback.phantomCount = 7;
     // Exercise the public contact notification using the already-captured
     // incoming trajectory, after more than one Motion ring's worth of samples.
@@ -143,7 +145,7 @@ try
             float t = fastStart + n * frame; int bi = n % 64, mi = n % 32;
             bt[bi] = t; bp[bi] = new Vector3(0f, 0f, -2f + velocity * n * frame); bv[bi] = Vector3.forward * velocity;
             mt[mi] = t; mp[mi] = new Vector3(n * frame, 1f, 0f); mv[mi] = Vector3.right;
-            mo[mi] = Vector3.zero; mr[mi] = Quaternion.Euler(0f, n * 2f, -90f); referenceVelocity[mi] = Vector3.right * 10f;
+            mr[mi] = Quaternion.Euler(0f, n * 2f, -90f); referenceVelocity[mi] = Vector3.right * 10f;
             int bc = Mathf.Min(n + 1, 64), mc = Mathf.Min(n + 1, 32);
             set(flight,"_sampleCount",bc); set(flight,"_nextSample",(bi + 1) % 64);
             flight.oldestMotionTime = bt[(bi + 1 - bc + 64) % 64]; flight.latestMotionTime = t;

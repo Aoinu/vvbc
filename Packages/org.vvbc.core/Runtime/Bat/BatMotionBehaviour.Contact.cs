@@ -13,7 +13,6 @@ public partial class BatMotionBehaviour
     [SerializeField] private float contactMaxSampleGap = 0.15f;
     private readonly float[] _contactTimes = new float[ContactHistoryCapacity];
     private readonly Vector3[] _contactPositions = new Vector3[ContactHistoryCapacity];
-    private readonly Vector3[] _contactCoreOffsets = new Vector3[ContactHistoryCapacity];
     private readonly Quaternion[] _contactRotations = new Quaternion[ContactHistoryCapacity];
     private readonly Vector3[] _contactVelocities = new Vector3[ContactHistoryCapacity];
     private readonly Vector3[] _contactAngularVelocities = new Vector3[ContactHistoryCapacity];
@@ -42,6 +41,8 @@ public partial class BatMotionBehaviour
     public float contactOldestTime;
     public int contactRevision;
     public int contactHistoryRevision;
+    // Contact origin (Body root) and its velocity. The root field remains for
+    // Feedback phantom placement and is the same point.
     public Vector3 contactSamplePosition;
     public Vector3 contactSampleRootPosition;
     public Quaternion contactSampleRotation;
@@ -142,9 +143,11 @@ public partial class BatMotionBehaviour
     private void RecordContactPose(float time)
     {
         if (body == null) return;
-        // The driven Transform has just moved in PostLateUpdate; convert the
-        // local COM through that pose instead of reading a stale physics pose.
-        Vector3 core = body.transform.TransformPoint(body.centerOfMass);
+        // The driven Transform has just moved in PostLateUpdate. Contact uses the
+        // Body origin, fixed at the model root, as its geometric origin; it is
+        // independent of Rigidbody.centerOfMass, which PhysX recomputes from the
+        // collider state when the released Bat becomes dynamic.
+        Vector3 core = body.transform.position;
         Quaternion rotation = body.transform.rotation;
         Vector3 reference = body.transform.TransformPoint(new Vector3(0f, powerReferenceLocalY, 0f));
         if (!ContactFinite(time) || !ContactFiniteVector(core) || !ContactFiniteVector(reference) ||
@@ -192,7 +195,6 @@ public partial class BatMotionBehaviour
         if (measured) RecordMeasuredSpeed(time, referenceVelocity.magnitude, angularVelocity.magnitude * Mathf.Rad2Deg);
         _contactTimes[_contactNext] = time;
         _contactPositions[_contactNext] = core;
-        _contactCoreOffsets[_contactNext] = Quaternion.Inverse(rotation) * (core - body.transform.position);
         _contactRotations[_contactNext] = rotation;
         _contactVelocities[_contactNext] = velocity;
         _contactAngularVelocities[_contactNext] = angularVelocity;
@@ -287,7 +289,7 @@ public partial class BatMotionBehaviour
             {
                 contactSamplePosition = _contactPositions[current];
                 contactSampleRotation = _contactRotations[current];
-                contactSampleRootPosition = contactSamplePosition - contactSampleRotation * _contactCoreOffsets[current];
+                contactSampleRootPosition = contactSamplePosition;
                 contactSampleVelocity = _contactVelocities[current];
                 contactSampleAngularVelocity = _contactAngularVelocities[current];
                 contactSampleReferenceVelocity = _contactReferenceVelocities[current];
@@ -303,8 +305,7 @@ public partial class BatMotionBehaviour
                 (-6f * u2 + 6f * u) * _contactPositions[current] +
                 (3f * u2 - 2f * u) * dt * _contactVelocities[current]) / dt;
             contactSampleRotation = Quaternion.Slerp(_contactRotations[previous], _contactRotations[current], u);
-            contactSampleRootPosition = contactSamplePosition - contactSampleRotation *
-                Vector3.Lerp(_contactCoreOffsets[previous], _contactCoreOffsets[current], u);
+            contactSampleRootPosition = contactSamplePosition;
             contactSampleAngularVelocity = Vector3.Lerp(_contactAngularVelocities[previous], _contactAngularVelocities[current], u);
             contactSampleReferenceVelocity = Vector3.Lerp(_contactReferenceVelocities[previous], _contactReferenceVelocities[current], u);
             return true;
@@ -320,7 +321,7 @@ public partial class BatMotionBehaviour
         contactSampleRotation = speed > 0.00001f
             ? Quaternion.AngleAxis(speed * elapsed * Mathf.Rad2Deg, contactSampleAngularVelocity / speed) * _contactRotations[lastIndex]
             : _contactRotations[lastIndex];
-        contactSampleRootPosition = contactSamplePosition - contactSampleRotation * _contactCoreOffsets[lastIndex];
+        contactSampleRootPosition = contactSamplePosition;
         return true;
     }
 
