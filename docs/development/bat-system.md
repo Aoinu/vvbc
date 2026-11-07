@@ -242,3 +242,14 @@ The optional local Ball integration records a separate driven-pose history
 after the held Bat pose update. Contact uses that physical Body history rather
 than remote visual correction or the Rigidbody's held velocity. Its setup,
 limits and validation steps are in [bat contact](bat-contact.md).
+
+## Bat contact sound and haptics
+
+The Body's existing `FeedbackImpactAudioBehaviour` owns drop audio, contact
+audio and local haptics. Assign a contact clip and adjust its volume and pitch
+ranges and haptic settings there. `Body/Contact Audio` has a separate spatial
+AudioSource from `Body/Drop Audio`, so the two effects do not interrupt each
+other. Remote hits use the synchronized player's Bat and do not vibrate the
+observer. The package does not supply clips. See
+[batting feedback](batting-feedback.md) and the
+[Ball network prototype](ball-network-prototype.md).

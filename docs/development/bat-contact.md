@@ -250,3 +250,11 @@ starting values, not validated anti-cheat thresholds.
    test ground/wall contact close to the hit. Repeat with multiple clients to
    characterize the existing Bat sync and visual correction and the Ball's
    snapshot ownership transitions.
+
+## Confirmed contact effects
+
+After the Ball accepts a computed result, Contact plays the local Bat's contact
+sound and VR haptics using the held-hand snapshot. It passes the local batter ID
+and `Clamp01(snapshot.power * snapshot.quality)` with the result to Ball before
+ownership can change. The optional feedback listener only consumes practice
+measurements and visuals; it is not required for the effects or synchronization.

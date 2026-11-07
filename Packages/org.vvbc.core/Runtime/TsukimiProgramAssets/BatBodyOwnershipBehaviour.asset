@@ -60,7 +60,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 568b711f6ef752044bce3def95d2814d, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 7d8458ebcc3fda900118d0216725c6d85f74776b442beea4a9c6a244cc6d76e0
+  sourceFingerprint: 0e54cf38a645d253b65399ce67f4cf4b673a809ed10aa3135317230dae4501a0
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []

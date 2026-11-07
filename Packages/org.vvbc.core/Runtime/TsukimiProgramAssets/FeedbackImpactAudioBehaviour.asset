@@ -22,64 +22,183 @@ MonoBehaviour:
     10\n    .export maximumSpeed\n    minimumVolume: %SystemSingle, 0.35\n    .export
     minimumVolume\n    maximumVolume: %SystemSingle, 1\n    .export maximumVolume\n   
     pitch: %SystemSingle, 1\n    .export pitch\n    cooldown: %SystemSingle, 0.1\n   
-    .export cooldown\n    _nextImpactTime: %SystemSingle, 0\n    __refl_typeid: %SystemInt64,
-    null\n    __refl_typename: %SystemString, \"FeedbackImpactAudioBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    onCollisionEnterOther: %UnityEngineCollision,
-    null\n    __OnCollisionEnter___t0: %SystemBoolean, null\n    __OnCollisionEnter___t1:
-    %SystemBoolean, null\n    __OnCollisionEnter___t2: %SystemBoolean, null\n   
-    __OnCollisionEnter___t3: %SystemBoolean, null\n    __OnCollisionEnter___t4: %SystemBoolean,
-    null\n    __OnCollisionEnter___t5: %SystemBoolean, null\n    __OnCollisionEnter___t6:
-    %SystemBoolean, null\n    __OnCollisionEnter___t7: %SystemBoolean, null\n   
-    __OnCollisionEnter_point: %UnityEngineContactPoint, null\n    __OnCollisionEnter_speed:
-    %SystemSingle, 0\n    __OnCollisionEnter_volume: %SystemSingle, 0\n    __OnCollisionEnter___t8:
+    .export cooldown\n    contactAudio: %UnityEngineAudioSource, null\n    .export
+    contactAudio\n    contactClip: %UnityEngineAudioClip, null\n    .export contactClip\n   
+    contactMinVolume: %SystemSingle, 0.45\n    .export contactMinVolume\n    contactMaxVolume:
+    %SystemSingle, 1\n    .export contactMaxVolume\n    contactMinPitch: %SystemSingle,
+    0.8\n    .export contactMinPitch\n    contactMaxPitch: %SystemSingle, 1.2\n   
+    .export contactMaxPitch\n    hapticDuration: %SystemSingle, 0.08\n    .export
+    hapticDuration\n    hapticAmplitude: %SystemSingle, 0.5\n    .export hapticAmplitude\n   
+    hapticFrequency: %SystemSingle, 0.5\n    .export hapticFrequency\n    remoteContactStrength:
+    %SystemSingle, 0\n    .export remoteContactStrength\n    _nextImpactTime: %SystemSingle,
+    0\n    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString,
+    \"FeedbackImpactAudioBehaviour\"\n    __refl_typeids: %SystemInt64Array, null\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_p_0: %SystemSingle, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_p_1:
+    %SystemInt32, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___t0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t1: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t2: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t3: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl_t2: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl5__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl_t3: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl6__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __PlayRemoteContact___inl1__strength: %SystemSingle, 0\n    __PlayRemoteContact___inl1____t0:
+    %SystemBoolean, null\n    __PlayRemoteContact___inl1____t1: %UnityEngineAudioSource,
+    null\n    __PlayRemoteContact___inl1____t2: %UnityEngineAudioSource, null\n   
+    __PlayRemoteContact___inl1____t3: %UnityEngineAudioSource, null\n    __PlayRemoteContact___inl_t4:
+    %SystemSingle, 0\n    __PlayRemoteContact___inl7__strength: %SystemSingle, 0\n   
+    __PlayRemoteContact___inl_t5: %SystemSingle, 0\n    __PlayRemoteContact___inl8__strength:
+    %SystemSingle, 0\n    __PlayRemoteContact_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    onCollisionEnterOther: %UnityEngineCollision, null\n    __OnCollisionEnter___t0:
+    %SystemBoolean, null\n    __OnCollisionEnter___t1: %SystemBoolean, null\n   
+    __OnCollisionEnter___t2: %SystemBoolean, null\n    __OnCollisionEnter___t3: %SystemBoolean,
+    null\n    __OnCollisionEnter___t4: %SystemBoolean, null\n    __OnCollisionEnter___t5:
+    %SystemBoolean, null\n    __OnCollisionEnter___t6: %SystemBoolean, null\n   
+    __OnCollisionEnter___t7: %SystemBoolean, null\n    __OnCollisionEnter_point:
+    %UnityEngineContactPoint, null\n    __OnCollisionEnter_speed: %SystemSingle,
+    0\n    __OnCollisionEnter_volume: %SystemSingle, 0\n    __OnCollisionEnter___t8:
     %UnityEngineAudioSource, null\n    __OnCollisionEnter___t9: %UnityEngineAudioSource,
-    null\n    __OnCollisionEnter___t10: %UnityEngineAudioSource, null\n    __OnCollisionEnter___inl0__speed:
-    %SystemSingle, 0\n    __OnCollisionEnter___inl0__minimum: %SystemSingle, 0\n   
-    __OnCollisionEnter___inl0__maximum: %SystemSingle, 0\n    __OnCollisionEnter___inl0__lowVolume:
-    %SystemSingle, 0\n    __OnCollisionEnter___inl0__highVolume: %SystemSingle, 0\n   
-    __OnCollisionEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean,
-    null\n    __const_1: %UnityEngineContactPoint, null\n    __const_2: %SystemSingle,
-    0\n    __const_3: %UnityEngineAudioSource, null\n    __const_4: %SystemObject,
-    null\n    __OnCollisionEnter_intnl_1: %SystemInt32, 0\n    __const_5: %SystemInt32,
-    0\n    __const_6: %UnityEngineObject, null\n    __OnCollisionEnter_intnl_5: %SystemSingle,
-    0\n    __const_7: %SystemInt32, 1\n    __OnCollisionEnter_intnl_10: %UnityEngineGameObject,
-    null\n    __OnCollisionEnter_intnl_11: %SystemInt32, 0\n    __OnCollisionEnter_intnl_12:
+    null\n    __OnCollisionEnter___t10: %UnityEngineAudioSource, null\n    __OnCollisionEnter___inl4__speed:
+    %SystemSingle, 0\n    __OnCollisionEnter___inl4__minimum: %SystemSingle, 0\n   
+    __OnCollisionEnter___inl4__maximum: %SystemSingle, 0\n    __OnCollisionEnter___inl4__lowVolume:
+    %SystemSingle, 0\n    __OnCollisionEnter___inl4__highVolume: %SystemSingle, 0\n   
+    __OnCollisionEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %VRCSDKBaseVRCPlayerApi,
+    null\n    __const_1: %SystemBoolean, null\n    __const_2: %SystemSingle, 0\n   
+    __const_3: %UnityEngineAudioSource, null\n    __const_4: %UnityEngineObject,
+    null\n    __const_5: %SystemObject, null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_7:
+    %SystemBoolean, null\n    __const_6: %SystemInt32, 1\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_9:
+    %SystemInt32, 0\n    __const_7: %SystemInt32, 0\n    __const_8: %VRCSDKBaseVRC_PickupPickupHand,
+    null\n    __const_9: %SystemInt32, 2\n    __const_10: %VRCSDKBaseVRC_PickupPickupHand,
+    null\n    __const_11: %UnityEngineContactPoint, null\n    __OnCollisionEnter_intnl_5:
+    %SystemSingle, 0\n    __OnCollisionEnter_intnl_10: %UnityEngineGameObject, null\n   
+    __OnCollisionEnter_intnl_11: %SystemInt32, 0\n    __OnCollisionEnter_intnl_12:
     %SystemInt32, 0\n    __OnCollisionEnter_intnl_15: %VRCSDKBaseVRCPlayerApi, null\n   
-    __const_8: %UnityEngineGameObject, this\n    __OnCollisionEnter_intnl_18: %SystemBoolean,
-    null\n    __OnCollisionEnter_intnl_21: %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_22:
-    %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_28: %SystemSingle, 0\n   
-    __OnCollisionEnter_intnl_29: %SystemSingle, 0\n.data_end\n.code_start\n    .export
-    _onCollisionEnter\n    _onCollisionEnter:\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t0\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t1\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t2\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t3\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t5\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t6\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t7\n        COPY\n        PUSH, __const_1\n        PUSH,
-    __OnCollisionEnter_point\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __OnCollisionEnter_speed\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __OnCollisionEnter_volume\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __OnCollisionEnter___inl0__speed\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__minimum\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__maximum\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__lowVolume\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__highVolume\n        COPY\n        PUSH, onCollisionEnterOther\n       
-    PUSH, __const_4\n        PUSH, __OnCollisionEnter___t4\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    __const_12: %UnityEngineGameObject, this\n    __OnCollisionEnter_intnl_21: %UnityEngineVector3,
+    null\n    __OnCollisionEnter_intnl_22: %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_28:
+    %SystemSingle, 0\n    __OnCollisionEnter_intnl_29: %SystemSingle, 0\n.data_end\n.code_start\n   
+    .export PlayLocalContact__SystemSingle_SystemInt32\n    PlayLocalContact__SystemSingle_SystemInt32:\n       
+    PUSH, __const_0\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_0\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    COPY\n        PUSH, contactAudio\n        PUSH, __const_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L0\n        JUMP, __PlayLocalContact__SystemSingle_SystemInt32_L1\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L0:\n        PUSH, contactClip\n       
+    PUSH, __const_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L1:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L2\n        JUMP,
+    __PlayLocalContact__SystemSingle_SystemInt32_L3\n    __PlayLocalContact__SystemSingle_SystemInt32_L2:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    EXTERN, \"UnityEngineMathf.__Clamp01__SystemSingle__SystemSingle\"\n        PUSH,
+    contactAudio\n        PUSH, contactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
+    PUSH, contactMinVolume\n        PUSH, contactMaxVolume\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n        EXTERN,
+    \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n       
+    EXTERN, \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\n       
+    PUSH, contactMinPitch\n        PUSH, contactMaxPitch\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n        EXTERN,
+    \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n       
+    EXTERN, \"UnityEngineAudioSource.__set_pitch__SystemSingle__SystemVoid\"\n       
+    PUSH, contactAudio\n        EXTERN, \"UnityEngineAudioSource.__Play__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L3:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n        PUSH, __const_5\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L4\n        JUMP, __PlayLocalContact__SystemSingle_SystemInt32_L5\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L4:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__IsUserInVR__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L5:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L7\n        JUMP_INDIRECT,
+    __PlayLocalContact__SystemSingle_SystemInt32_retjump\n    __PlayLocalContact__SystemSingle_SystemInt32_L7:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_1\n        PUSH, __const_6\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L9\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_8\n        PUSH, hapticDuration\n        PUSH, hapticAmplitude\n       
+    PUSH, hapticFrequency\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__PlayHapticEventInHand__VRCSDKBaseVRC_PickupPickupHand_SystemSingle_SystemSingle_SystemSingle__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L9:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_1\n       
+    PUSH, __const_9\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L11\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_10\n        PUSH, hapticDuration\n        PUSH, hapticAmplitude\n       
+    PUSH, hapticFrequency\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__PlayHapticEventInHand__VRCSDKBaseVRC_PickupPickupHand_SystemSingle_SystemSingle_SystemSingle__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L11:\n        JUMP_INDIRECT, __PlayLocalContact__SystemSingle_SystemInt32_retjump\n   
+    .export PlayRemoteContact\n    PlayRemoteContact:\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl_t4\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl_t5\n        COPY\n        PUSH, remoteContactStrength\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        COPY\n        PUSH, contactAudio\n       
+    PUSH, __const_4\n        PUSH, __PlayRemoteContact___inl1____t0\n        EXTERN,
+    \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayRemoteContact___inl1____t0\n        JUMP_IF_FALSE, __PlayRemoteContact_L0\n       
+    JUMP, __PlayRemoteContact_L1\n    __PlayRemoteContact_L0:\n        PUSH, contactClip\n       
+    PUSH, __const_4\n        PUSH, __PlayRemoteContact___inl1____t0\n        EXTERN,
+    \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
+    __PlayRemoteContact_L1:\n        PUSH, __PlayRemoteContact___inl1____t0\n       
+    JUMP_IF_FALSE, __PlayRemoteContact_L2\n        JUMP, __PlayRemoteContact_L3\n   
+    __PlayRemoteContact_L2:\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        EXTERN, \"UnityEngineMathf.__Clamp01__SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, contactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
+    PUSH, contactMinVolume\n        PUSH, contactMaxVolume\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact___inl_t4\n        EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl_t4\n        EXTERN,
+    \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\n        PUSH,
+    contactMinPitch\n        PUSH, contactMaxPitch\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact___inl_t5\n        EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl_t5\n        EXTERN,
+    \"UnityEngineAudioSource.__set_pitch__SystemSingle__SystemVoid\"\n        PUSH,
+    contactAudio\n        EXTERN, \"UnityEngineAudioSource.__Play__SystemVoid\"\n   
+    __PlayRemoteContact_L3:\n        JUMP_INDIRECT, __PlayRemoteContact_retjump\n   
+    .export _onCollisionEnter\n    _onCollisionEnter:\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t1\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t2\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t3\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t5\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t6\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t7\n        COPY\n        PUSH, __const_11\n       
+    PUSH, __OnCollisionEnter_point\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter_speed\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter_volume\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__speed\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__minimum\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__lowVolume\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__highVolume\n        COPY\n        PUSH, onCollisionEnterOther\n       
+    PUSH, __const_5\n        PUSH, __OnCollisionEnter___t4\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter___t4\n        JUMP_IF_FALSE, __OnCollisionEnter_L0\n       
     JUMP, __OnCollisionEnter_L1\n    __OnCollisionEnter_L0:\n        PUSH, onCollisionEnterOther\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        EXTERN, \"UnityEngineCollision.__get_contactCount__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter___t4\n       
-    EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n   
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        EXTERN, \"UnityEngineCollision.__get_contactCount__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __OnCollisionEnter___t4\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n   
     __OnCollisionEnter_L1:\n        PUSH, __OnCollisionEnter___t4\n        PUSH,
     __OnCollisionEnter___t3\n        COPY\n        PUSH, __OnCollisionEnter___t4\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L2\n        JUMP, __OnCollisionEnter_L3\n   
-    __OnCollisionEnter_L2:\n        PUSH, impactAudio\n        PUSH, __const_6\n       
+    __OnCollisionEnter_L2:\n        PUSH, impactAudio\n        PUSH, __const_4\n       
     PUSH, __OnCollisionEnter___t3\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
     __OnCollisionEnter_L3:\n        PUSH, __OnCollisionEnter___t3\n        PUSH,
     __OnCollisionEnter___t2\n        COPY\n        PUSH, __OnCollisionEnter___t3\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L4\n        JUMP, __OnCollisionEnter_L5\n   
-    __OnCollisionEnter_L4:\n        PUSH, impactClip\n        PUSH, __const_6\n       
+    __OnCollisionEnter_L4:\n        PUSH, impactClip\n        PUSH, __const_4\n       
     PUSH, __OnCollisionEnter___t2\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
     __OnCollisionEnter_L5:\n        PUSH, __OnCollisionEnter___t2\n        PUSH,
     __OnCollisionEnter___t1\n        COPY\n        PUSH, __OnCollisionEnter___t2\n       
@@ -91,20 +210,20 @@ MonoBehaviour:
     __OnCollisionEnter_L7:\n        PUSH, __OnCollisionEnter___t1\n        PUSH,
     __OnCollisionEnter___t0\n        COPY\n        PUSH, __OnCollisionEnter___t1\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L8\n        JUMP, __OnCollisionEnter_L9\n   
-    __OnCollisionEnter_L8:\n        PUSH, impactLayers\n        PUSH, __OnCollisionEnter_intnl_1\n       
-    EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, __OnCollisionEnter_intnl_1\n       
-    PUSH, __const_5\n        PUSH, __OnCollisionEnter___t5\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    __OnCollisionEnter_L8:\n        PUSH, impactLayers\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    PUSH, __const_7\n        PUSH, __OnCollisionEnter___t5\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter___t5\n        JUMP_IF_FALSE, __OnCollisionEnter_L11\n       
-    PUSH, impactLayers\n        PUSH, __OnCollisionEnter_intnl_1\n        EXTERN,
-    \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, onCollisionEnterOther\n       
+    PUSH, impactLayers\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, onCollisionEnterOther\n       
     PUSH, __OnCollisionEnter_intnl_10\n        EXTERN, \"UnityEngineCollision.__get_gameObject__UnityEngineGameObject\"\n       
     PUSH, __OnCollisionEnter_intnl_10\n        PUSH, __OnCollisionEnter_intnl_11\n       
-    EXTERN, \"UnityEngineGameObject.__get_layer__SystemInt32\"\n        PUSH, __const_7\n       
+    EXTERN, \"UnityEngineGameObject.__get_layer__SystemInt32\"\n        PUSH, __const_6\n       
     PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __OnCollisionEnter_intnl_12\n       
     EXTERN, \"SystemInt32.__op_LeftShift__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        PUSH, __OnCollisionEnter_intnl_12\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __OnCollisionEnter_intnl_12\n       
     PUSH, __OnCollisionEnter_intnl_11\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter___t5\n       
+    PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter___t5\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n   
     __OnCollisionEnter_L11:\n        PUSH, __OnCollisionEnter___t5\n        PUSH,
     __OnCollisionEnter___t0\n        COPY\n    __OnCollisionEnter_L9:\n        PUSH,
@@ -113,20 +232,20 @@ MonoBehaviour:
     PUSH, requireLocalOwner\n        PUSH, __OnCollisionEnter___t6\n        COPY\n       
     PUSH, requireLocalOwner\n        JUMP_IF_FALSE, __OnCollisionEnter_L15\n       
     PUSH, __OnCollisionEnter_intnl_15\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
-    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_4\n        PUSH, __OnCollisionEnter___t7\n       
+    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter___t7\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter___t7\n        JUMP_IF_FALSE, __OnCollisionEnter_L16\n       
     JUMP, __OnCollisionEnter_L17\n    __OnCollisionEnter_L16:\n        PUSH, __OnCollisionEnter_intnl_15\n       
     EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
-    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_8\n        PUSH, __OnCollisionEnter_intnl_18\n       
+    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_12\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n       
     EXTERN, \"VRCSDKBaseNetworking.__IsOwner__VRCSDKBaseVRCPlayerApi_UnityEngineGameObject__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        PUSH, __OnCollisionEnter___t7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        PUSH, __OnCollisionEnter___t7\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
     __OnCollisionEnter_L17:\n        PUSH, __OnCollisionEnter___t7\n        PUSH,
     __OnCollisionEnter___t6\n        COPY\n    __OnCollisionEnter_L15:\n        PUSH,
     __OnCollisionEnter___t6\n        JUMP_IF_FALSE, __OnCollisionEnter_L19\n       
     JUMP_INDIRECT, __OnCollisionEnter_retjump\n    __OnCollisionEnter_L19:\n       
-    PUSH, onCollisionEnterOther\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter_point\n       
+    PUSH, onCollisionEnterOther\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter_point\n       
     EXTERN, \"UnityEngineCollision.__GetContact__SystemInt32__UnityEngineContactPoint\"\n       
     PUSH, onCollisionEnterOther\n        PUSH, __OnCollisionEnter_intnl_21\n       
     EXTERN, \"UnityEngineCollision.__get_relativeVelocity__UnityEngineVector3\"\n       
@@ -136,37 +255,39 @@ MonoBehaviour:
     PUSH, __OnCollisionEnter_intnl_5\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_5\n        PUSH, __OnCollisionEnter_speed\n       
     EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n        PUSH,
-    __OnCollisionEnter_speed\n        PUSH, __OnCollisionEnter___inl0__speed\n       
-    COPY\n        PUSH, minimumSpeed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
-    COPY\n        PUSH, maximumSpeed\n        PUSH, __OnCollisionEnter___inl0__maximum\n       
-    COPY\n        PUSH, minimumVolume\n        PUSH, __OnCollisionEnter___inl0__lowVolume\n       
-    COPY\n        PUSH, maximumVolume\n        PUSH, __OnCollisionEnter___inl0__highVolume\n       
+    __OnCollisionEnter_speed\n        PUSH, __OnCollisionEnter___inl4__speed\n       
+    COPY\n        PUSH, minimumSpeed\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
+    COPY\n        PUSH, maximumSpeed\n        PUSH, __OnCollisionEnter___inl4__maximum\n       
+    COPY\n        PUSH, minimumVolume\n        PUSH, __OnCollisionEnter___inl4__lowVolume\n       
+    COPY\n        PUSH, maximumVolume\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
     COPY\n        PUSH, __OnCollisionEnter_speed\n        PUSH, minimumSpeed\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        JUMP_IF_FALSE, __OnCollisionEnter_L20\n       
-    PUSH, __const_2\n        PUSH, __OnCollisionEnter_volume\n        COPY\n       
-    JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L20:\n        PUSH, __OnCollisionEnter___inl0__maximum\n       
-    PUSH, __OnCollisionEnter___inl0__minimum\n        PUSH, __OnCollisionEnter_intnl_18\n       
-    EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        JUMP_IF_FALSE, __OnCollisionEnter_L22\n       
-    PUSH, __OnCollisionEnter___inl0__highVolume\n        PUSH, __OnCollisionEnter_volume\n       
-    COPY\n        JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L22:\n       
-    PUSH, __OnCollisionEnter___inl0__speed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
-    PUSH, __OnCollisionEnter_intnl_5\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __OnCollisionEnter___inl0__maximum\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __OnCollisionEnter_L20\n        PUSH, __const_2\n        PUSH, __OnCollisionEnter_volume\n       
+    COPY\n        JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L20:\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __OnCollisionEnter_L22\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
+    PUSH, __OnCollisionEnter_volume\n        COPY\n        JUMP, __OnCollisionEnter_L23\n   
+    __OnCollisionEnter_L22:\n        PUSH, __OnCollisionEnter___inl4__speed\n       
+    PUSH, __OnCollisionEnter___inl4__minimum\n        PUSH, __OnCollisionEnter_intnl_5\n       
+    EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
     PUSH, __OnCollisionEnter_intnl_28\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_5\n        PUSH, __OnCollisionEnter_intnl_28\n       
     PUSH, __OnCollisionEnter_intnl_29\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __OnCollisionEnter___inl0__lowVolume\n        PUSH, __OnCollisionEnter___inl0__highVolume\n       
+    PUSH, __OnCollisionEnter___inl4__lowVolume\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
     PUSH, __OnCollisionEnter_intnl_29\n        PUSH, __OnCollisionEnter_volume\n       
     EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n   
     __OnCollisionEnter_L23:\n        PUSH, __OnCollisionEnter_speed\n        PUSH,
-    minimumSpeed\n        PUSH, __OnCollisionEnter_intnl_18\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        JUMP_IF_FALSE, __OnCollisionEnter_L25\n       
-    JUMP_INDIRECT, __OnCollisionEnter_retjump\n    __OnCollisionEnter_L25:\n       
-    PUSH, __OnCollisionEnter_intnl_5\n        EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n       
-    PUSH, __const_2\n        PUSH, cooldown\n        PUSH, __OnCollisionEnter_intnl_28\n       
-    EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
+    minimumSpeed\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n       
+    EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __OnCollisionEnter_L25\n        JUMP_INDIRECT, __OnCollisionEnter_retjump\n   
+    __OnCollisionEnter_L25:\n        PUSH, __OnCollisionEnter_intnl_5\n        EXTERN,
+    \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, __const_2\n       
+    PUSH, cooldown\n        PUSH, __OnCollisionEnter_intnl_28\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_5\n        PUSH, __OnCollisionEnter_intnl_28\n       
     PUSH, _nextImpactTime\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, impactAudio\n        PUSH, impactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
@@ -177,13 +298,29 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 01561310a372b624e8c68e2c895a06e7, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: d7e0f00bf2dccdbbfc6b9974b410e951111f96ccc634f6ba5a9ba2ee89ba0619
+  sourceFingerprint: fe8d6edd8ed36577c3c26db3017f624a428d2bc6f5019d3894c8a3f5c3c17abf
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
   generatedGpuMaterials: []
   declaredBehaviourSyncMode: 1
-  fieldLabels: []
+  fieldLabels:
+  - symbol: contactAudio
+    header: Bat Contact
+    tooltip: 
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: remoteContactStrength
+    header: 
+    tooltip: 
+    hidden: 1
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
   inspectorFields:
   - impactAudio
   - impactClip
@@ -195,7 +332,27 @@ MonoBehaviour:
   - maximumVolume
   - pitch
   - cooldown
+  - contactAudio
+  - contactClip
+  - contactMinVolume
+  - contactMaxVolume
+  - contactMinPitch
+  - contactMaxPitch
+  - hapticDuration
+  - hapticAmplitude
+  - hapticFrequency
+  - remoteContactStrength
   inspectorPaths:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -214,37 +371,82 @@ MonoBehaviour:
     10\n    .export maximumSpeed\n    minimumVolume: %SystemSingle, 0.35\n    .export
     minimumVolume\n    maximumVolume: %SystemSingle, 1\n    .export maximumVolume\n   
     pitch: %SystemSingle, 1\n    .export pitch\n    cooldown: %SystemSingle, 0.1\n   
-    .export cooldown\n    _nextImpactTime: %SystemSingle, 0\n    __refl_typeid: %SystemInt64,
-    null\n    __refl_typename: %SystemString, \"FeedbackImpactAudioBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    onCollisionEnterOther: %UnityEngineCollision,
-    null\n    __OnCollisionEnter___t0: %SystemBoolean, null\n    __OnCollisionEnter___t1:
-    %SystemBoolean, null\n    __OnCollisionEnter___t2: %SystemBoolean, null\n   
-    __OnCollisionEnter___t3: %SystemBoolean, null\n    __OnCollisionEnter___t4: %SystemBoolean,
-    null\n    __OnCollisionEnter___t5: %SystemBoolean, null\n    __OnCollisionEnter___t6:
-    %SystemBoolean, null\n    __OnCollisionEnter___t7: %SystemBoolean, null\n   
-    __OnCollisionEnter_point: %UnityEngineContactPoint, null\n    __OnCollisionEnter_speed:
-    %SystemSingle, 0\n    __OnCollisionEnter_volume: %SystemSingle, 0\n    __OnCollisionEnter___t8:
+    .export cooldown\n    contactAudio: %UnityEngineAudioSource, null\n    .export
+    contactAudio\n    contactClip: %UnityEngineAudioClip, null\n    .export contactClip\n   
+    contactMinVolume: %SystemSingle, 0.45\n    .export contactMinVolume\n    contactMaxVolume:
+    %SystemSingle, 1\n    .export contactMaxVolume\n    contactMinPitch: %SystemSingle,
+    0.8\n    .export contactMinPitch\n    contactMaxPitch: %SystemSingle, 1.2\n   
+    .export contactMaxPitch\n    hapticDuration: %SystemSingle, 0.08\n    .export
+    hapticDuration\n    hapticAmplitude: %SystemSingle, 0.5\n    .export hapticAmplitude\n   
+    hapticFrequency: %SystemSingle, 0.5\n    .export hapticFrequency\n    remoteContactStrength:
+    %SystemSingle, 0\n    .export remoteContactStrength\n    _nextImpactTime: %SystemSingle,
+    0\n    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString,
+    \"FeedbackImpactAudioBehaviour\"\n    __refl_typeids: %SystemInt64Array, null\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_p_0: %SystemSingle, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_p_1:
+    %SystemInt32, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___t0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t1: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t2: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t3: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl_t2: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl5__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl_t3: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl6__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __PlayRemoteContact___inl1__strength: %SystemSingle, 0\n    __PlayRemoteContact___inl1____t0:
+    %SystemBoolean, null\n    __PlayRemoteContact___inl1____t1: %UnityEngineAudioSource,
+    null\n    __PlayRemoteContact___inl1____t2: %UnityEngineAudioSource, null\n   
+    __PlayRemoteContact___inl1____t3: %UnityEngineAudioSource, null\n    __PlayRemoteContact___inl_t4:
+    %SystemSingle, 0\n    __PlayRemoteContact___inl7__strength: %SystemSingle, 0\n   
+    __PlayRemoteContact___inl_t5: %SystemSingle, 0\n    __PlayRemoteContact___inl8__strength:
+    %SystemSingle, 0\n    __PlayRemoteContact_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    onCollisionEnterOther: %UnityEngineCollision, null\n    __OnCollisionEnter___t0:
+    %SystemBoolean, null\n    __OnCollisionEnter___t1: %SystemBoolean, null\n   
+    __OnCollisionEnter___t2: %SystemBoolean, null\n    __OnCollisionEnter___t3: %SystemBoolean,
+    null\n    __OnCollisionEnter___t4: %SystemBoolean, null\n    __OnCollisionEnter___t5:
+    %SystemBoolean, null\n    __OnCollisionEnter___t6: %SystemBoolean, null\n   
+    __OnCollisionEnter___t7: %SystemBoolean, null\n    __OnCollisionEnter_point:
+    %UnityEngineContactPoint, null\n    __OnCollisionEnter_speed: %SystemSingle,
+    0\n    __OnCollisionEnter_volume: %SystemSingle, 0\n    __OnCollisionEnter___t8:
     %UnityEngineAudioSource, null\n    __OnCollisionEnter___t9: %UnityEngineAudioSource,
-    null\n    __OnCollisionEnter___t10: %UnityEngineAudioSource, null\n    __OnCollisionEnter___inl0__speed:
-    %SystemSingle, 0\n    __OnCollisionEnter___inl0__minimum: %SystemSingle, 0\n   
-    __OnCollisionEnter___inl0__maximum: %SystemSingle, 0\n    __OnCollisionEnter___inl0__lowVolume:
-    %SystemSingle, 0\n    __OnCollisionEnter___inl0__highVolume: %SystemSingle, 0\n   
-    __OnCollisionEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean,
-    null\n    __const_1: %UnityEngineContactPoint, null\n    __const_2: %SystemSingle,
-    0\n    __const_3: %UnityEngineAudioSource, null\n    __const_4: %SystemObject,
-    null\n    __OnCollisionEnter_intnl_0: %SystemBoolean, null\n    __OnCollisionEnter_intnl_1:
-    %SystemInt32, 0\n    __const_5: %SystemInt32, 0\n    __OnCollisionEnter_intnl_2:
-    %SystemBoolean, null\n    __const_6: %UnityEngineObject, null\n    __OnCollisionEnter_intnl_3:
-    %SystemBoolean, null\n    __OnCollisionEnter_intnl_4: %SystemBoolean, null\n   
-    __OnCollisionEnter_intnl_5: %SystemSingle, 0\n    __OnCollisionEnter_intnl_6:
-    %SystemBoolean, null\n    __OnCollisionEnter_intnl_7: %SystemInt32, 0\n    __OnCollisionEnter_intnl_8:
-    %SystemBoolean, null\n    __OnCollisionEnter_intnl_9: %SystemInt32, 0\n    __const_7:
-    %SystemInt32, 1\n    __OnCollisionEnter_intnl_10: %UnityEngineGameObject, null\n   
+    null\n    __OnCollisionEnter___t10: %UnityEngineAudioSource, null\n    __OnCollisionEnter___inl4__speed:
+    %SystemSingle, 0\n    __OnCollisionEnter___inl4__minimum: %SystemSingle, 0\n   
+    __OnCollisionEnter___inl4__maximum: %SystemSingle, 0\n    __OnCollisionEnter___inl4__lowVolume:
+    %SystemSingle, 0\n    __OnCollisionEnter___inl4__highVolume: %SystemSingle, 0\n   
+    __OnCollisionEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %VRCSDKBaseVRCPlayerApi,
+    null\n    __const_1: %SystemBoolean, null\n    __const_2: %SystemSingle, 0\n   
+    __const_3: %UnityEngineAudioSource, null\n    __const_4: %UnityEngineObject,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_1: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_2: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_3: %SystemSingle, 0\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_intnl_4: %SystemSingle, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_5:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_5: %SystemObject, null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_6:
+    %SystemBoolean, null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_7:
+    %SystemBoolean, null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_8:
+    %SystemBoolean, null\n    __const_6: %SystemInt32, 1\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_9:
+    %SystemInt32, 0\n    __const_7: %SystemInt32, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_10:
+    %SystemBoolean, null\n    __const_8: %VRCSDKBaseVRC_PickupPickupHand, null\n   
+    __const_9: %SystemInt32, 2\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_11:
+    %SystemInt32, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_12: %SystemBoolean,
+    null\n    __const_10: %VRCSDKBaseVRC_PickupPickupHand, null\n    __PlayRemoteContact_intnl_0:
+    %SystemBoolean, null\n    __PlayRemoteContact_intnl_1: %SystemBoolean, null\n   
+    __PlayRemoteContact_intnl_2: %SystemSingle, 0\n    __PlayRemoteContact_intnl_3:
+    %SystemSingle, 0\n    __PlayRemoteContact_intnl_4: %SystemSingle, 0\n    __const_11:
+    %UnityEngineContactPoint, null\n    __OnCollisionEnter_intnl_0: %SystemBoolean,
+    null\n    __OnCollisionEnter_intnl_1: %SystemInt32, 0\n    __OnCollisionEnter_intnl_2:
+    %SystemBoolean, null\n    __OnCollisionEnter_intnl_3: %SystemBoolean, null\n   
+    __OnCollisionEnter_intnl_4: %SystemBoolean, null\n    __OnCollisionEnter_intnl_5:
+    %SystemSingle, 0\n    __OnCollisionEnter_intnl_6: %SystemBoolean, null\n    __OnCollisionEnter_intnl_7:
+    %SystemInt32, 0\n    __OnCollisionEnter_intnl_8: %SystemBoolean, null\n    __OnCollisionEnter_intnl_9:
+    %SystemInt32, 0\n    __OnCollisionEnter_intnl_10: %UnityEngineGameObject, null\n   
     __OnCollisionEnter_intnl_11: %SystemInt32, 0\n    __OnCollisionEnter_intnl_12:
     %SystemInt32, 0\n    __OnCollisionEnter_intnl_13: %SystemInt32, 0\n    __OnCollisionEnter_intnl_14:
     %SystemBoolean, null\n    __OnCollisionEnter_intnl_15: %VRCSDKBaseVRCPlayerApi,
     null\n    __OnCollisionEnter_intnl_16: %SystemBoolean, null\n    __OnCollisionEnter_intnl_17:
-    %VRCSDKBaseVRCPlayerApi, null\n    __const_8: %UnityEngineGameObject, this\n   
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_12: %UnityEngineGameObject, this\n   
     __OnCollisionEnter_intnl_18: %SystemBoolean, null\n    __OnCollisionEnter_intnl_19:
     %SystemBoolean, null\n    __OnCollisionEnter_intnl_20: %UnityEngineContactPoint,
     null\n    __OnCollisionEnter_intnl_21: %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_22:
@@ -256,44 +458,179 @@ MonoBehaviour:
     %SystemSingle, 0\n    __OnCollisionEnter_intnl_31: %SystemBoolean, null\n   
     __OnCollisionEnter_intnl_32: %SystemSingle, 0\n    __OnCollisionEnter_intnl_33:
     %SystemSingle, 0\n    __OnCollisionEnter_intnl_34: %SystemSingle, 0\n.data_end\n.code_start\n   
-    .export _onCollisionEnter\n    _onCollisionEnter:\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t0\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t1\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t2\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t3\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t4\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t5\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t6\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __OnCollisionEnter___t7\n        COPY\n        PUSH, __const_1\n       
+    .export PlayLocalContact__SystemSingle_SystemInt32\n    PlayLocalContact__SystemSingle_SystemInt32:\n       
+    PUSH, __const_0\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t1\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t2\n       
+    COPY\n        PUSH, __const_3\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t3\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl5__strength\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl6__strength\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_0\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    COPY\n        PUSH, contactAudio\n        PUSH, __const_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_0\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L0\n        JUMP,
+    __PlayLocalContact__SystemSingle_SystemInt32_L1\n    __PlayLocalContact__SystemSingle_SystemInt32_L0:\n       
+    PUSH, contactClip\n        PUSH, __const_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_1\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_1\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    COPY\n    __PlayLocalContact__SystemSingle_SystemInt32_L1:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L2\n        JUMP,
+    __PlayLocalContact__SystemSingle_SystemInt32_L3\n    __PlayLocalContact__SystemSingle_SystemInt32_L2:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_2\n        EXTERN, \"UnityEngineMathf.__Clamp01__SystemSingle__SystemSingle\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    COPY\n        PUSH, contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t1\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t1\n       
+    PUSH, contactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t2\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl5__strength\n       
+    COPY\n        PUSH, contactMinVolume\n        PUSH, contactMaxVolume\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl5__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_3\n        EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_3\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t2\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n        EXTERN,
+    \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\n        PUSH,
+    contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t3\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl6__strength\n       
+    COPY\n        PUSH, contactMinPitch\n        PUSH, contactMaxPitch\n        PUSH,
+    __PlayLocalContact__SystemSingle_SystemInt32___inl6__strength\n        PUSH,
+    __PlayLocalContact__SystemSingle_SystemInt32_intnl_4\n        EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t3\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n        EXTERN,
+    \"UnityEngineAudioSource.__set_pitch__SystemSingle__SystemVoid\"\n        PUSH,
+    contactAudio\n        EXTERN, \"UnityEngineAudioSource.__Play__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L3:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_5\n       
+    EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_5\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_5\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_6\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_6\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L4\n        JUMP,
+    __PlayLocalContact__SystemSingle_SystemInt32_L5\n    __PlayLocalContact__SystemSingle_SystemInt32_L4:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__IsUserInVR__SystemBoolean\"\n        PUSH,
+    __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_8\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_8\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    COPY\n    __PlayLocalContact__SystemSingle_SystemInt32_L5:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L7\n        JUMP_INDIRECT,
+    __PlayLocalContact__SystemSingle_SystemInt32_retjump\n    __PlayLocalContact__SystemSingle_SystemInt32_L7:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_1\n        PUSH, __const_6\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_10\n        EXTERN,
+    \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_10\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L9\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_8\n        PUSH, hapticDuration\n        PUSH, hapticAmplitude\n       
+    PUSH, hapticFrequency\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__PlayHapticEventInHand__VRCSDKBaseVRC_PickupPickupHand_SystemSingle_SystemSingle_SystemSingle__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L9:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_1\n       
+    PUSH, __const_9\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_11\n       
+    EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_11\n        PUSH, __const_7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_12\n        EXTERN,
+    \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_12\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L11\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_10\n        PUSH, hapticDuration\n        PUSH, hapticAmplitude\n       
+    PUSH, hapticFrequency\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__PlayHapticEventInHand__VRCSDKBaseVRC_PickupPickupHand_SystemSingle_SystemSingle_SystemSingle__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L11:\n        JUMP_INDIRECT, __PlayLocalContact__SystemSingle_SystemInt32_retjump\n   
+    .export PlayRemoteContact\n    PlayRemoteContact:\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __PlayRemoteContact___inl1____t0\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PlayRemoteContact___inl1____t1\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PlayRemoteContact___inl1____t2\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __PlayRemoteContact___inl1____t3\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl_t4\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl7__strength\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl_t5\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl8__strength\n        COPY\n        PUSH, remoteContactStrength\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        COPY\n        PUSH, contactAudio\n       
+    PUSH, __const_4\n        PUSH, __PlayRemoteContact_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayRemoteContact_intnl_0\n        PUSH, __PlayRemoteContact___inl1____t0\n       
+    COPY\n        PUSH, __PlayRemoteContact___inl1____t0\n        JUMP_IF_FALSE,
+    __PlayRemoteContact_L0\n        JUMP, __PlayRemoteContact_L1\n    __PlayRemoteContact_L0:\n       
+    PUSH, contactClip\n        PUSH, __const_4\n        PUSH, __PlayRemoteContact_intnl_1\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayRemoteContact_intnl_1\n        PUSH, __PlayRemoteContact___inl1____t0\n       
+    COPY\n    __PlayRemoteContact_L1:\n        PUSH, __PlayRemoteContact___inl1____t0\n       
+    JUMP_IF_FALSE, __PlayRemoteContact_L2\n        JUMP, __PlayRemoteContact_L3\n   
+    __PlayRemoteContact_L2:\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact_intnl_2\n        EXTERN, \"UnityEngineMathf.__Clamp01__SystemSingle__SystemSingle\"\n       
+    PUSH, __PlayRemoteContact_intnl_2\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    COPY\n        PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl1____t1\n       
+    COPY\n        PUSH, __PlayRemoteContact___inl1____t1\n        PUSH, contactClip\n       
+    EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl1____t2\n        COPY\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        PUSH, __PlayRemoteContact___inl7__strength\n       
+    COPY\n        PUSH, contactMinVolume\n        PUSH, contactMaxVolume\n       
+    PUSH, __PlayRemoteContact___inl7__strength\n        PUSH, __PlayRemoteContact_intnl_3\n       
+    EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __PlayRemoteContact_intnl_3\n        PUSH, __PlayRemoteContact___inl_t4\n       
+    COPY\n        PUSH, __PlayRemoteContact___inl1____t2\n        PUSH, __PlayRemoteContact___inl_t4\n       
+    EXTERN, \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl1____t3\n        COPY\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        PUSH, __PlayRemoteContact___inl8__strength\n       
+    COPY\n        PUSH, contactMinPitch\n        PUSH, contactMaxPitch\n        PUSH,
+    __PlayRemoteContact___inl8__strength\n        PUSH, __PlayRemoteContact_intnl_4\n       
+    EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __PlayRemoteContact_intnl_4\n        PUSH, __PlayRemoteContact___inl_t5\n       
+    COPY\n        PUSH, __PlayRemoteContact___inl1____t3\n        PUSH, __PlayRemoteContact___inl_t5\n       
+    EXTERN, \"UnityEngineAudioSource.__set_pitch__SystemSingle__SystemVoid\"\n       
+    PUSH, contactAudio\n        EXTERN, \"UnityEngineAudioSource.__Play__SystemVoid\"\n   
+    __PlayRemoteContact_L3:\n        JUMP_INDIRECT, __PlayRemoteContact_retjump\n   
+    .export _onCollisionEnter\n    _onCollisionEnter:\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t1\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t2\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t3\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t4\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t5\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t6\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t7\n        COPY\n        PUSH, __const_11\n       
     PUSH, __OnCollisionEnter_point\n        COPY\n        PUSH, __const_2\n       
     PUSH, __OnCollisionEnter_speed\n        COPY\n        PUSH, __const_2\n       
     PUSH, __OnCollisionEnter_volume\n        COPY\n        PUSH, __const_3\n       
     PUSH, __OnCollisionEnter___t8\n        COPY\n        PUSH, __const_3\n       
     PUSH, __OnCollisionEnter___t9\n        COPY\n        PUSH, __const_3\n       
     PUSH, __OnCollisionEnter___t10\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__speed\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__minimum\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__maximum\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__lowVolume\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__highVolume\n        COPY\n        PUSH, onCollisionEnterOther\n       
-    PUSH, __const_4\n        PUSH, __OnCollisionEnter_intnl_0\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __OnCollisionEnter___inl4__speed\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__minimum\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__lowVolume\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__highVolume\n        COPY\n        PUSH, onCollisionEnterOther\n       
+    PUSH, __const_5\n        PUSH, __OnCollisionEnter_intnl_0\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_0\n        PUSH, __OnCollisionEnter___t4\n       
     COPY\n        PUSH, __OnCollisionEnter___t4\n        JUMP_IF_FALSE, __OnCollisionEnter_L0\n       
     JUMP, __OnCollisionEnter_L1\n    __OnCollisionEnter_L0:\n        PUSH, onCollisionEnterOther\n       
     PUSH, __OnCollisionEnter_intnl_1\n        EXTERN, \"UnityEngineCollision.__get_contactCount__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter_intnl_2\n       
+    PUSH, __OnCollisionEnter_intnl_1\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter_intnl_2\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_2\n        PUSH, __OnCollisionEnter___t4\n       
     COPY\n    __OnCollisionEnter_L1:\n        PUSH, __OnCollisionEnter___t4\n       
     PUSH, __OnCollisionEnter___t3\n        COPY\n        PUSH, __OnCollisionEnter___t3\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L2\n        JUMP, __OnCollisionEnter_L3\n   
-    __OnCollisionEnter_L2:\n        PUSH, impactAudio\n        PUSH, __const_6\n       
+    __OnCollisionEnter_L2:\n        PUSH, impactAudio\n        PUSH, __const_4\n       
     PUSH, __OnCollisionEnter_intnl_3\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_3\n        PUSH, __OnCollisionEnter___t3\n       
     COPY\n    __OnCollisionEnter_L3:\n        PUSH, __OnCollisionEnter___t3\n       
     PUSH, __OnCollisionEnter___t2\n        COPY\n        PUSH, __OnCollisionEnter___t2\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L4\n        JUMP, __OnCollisionEnter_L5\n   
-    __OnCollisionEnter_L4:\n        PUSH, impactClip\n        PUSH, __const_6\n       
+    __OnCollisionEnter_L4:\n        PUSH, impactClip\n        PUSH, __const_4\n       
     PUSH, __OnCollisionEnter_intnl_4\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_4\n        PUSH, __OnCollisionEnter___t2\n       
     COPY\n    __OnCollisionEnter_L5:\n        PUSH, __OnCollisionEnter___t2\n       
@@ -309,19 +646,19 @@ MonoBehaviour:
     JUMP_IF_FALSE, __OnCollisionEnter_L8\n        JUMP, __OnCollisionEnter_L9\n   
     __OnCollisionEnter_L8:\n        PUSH, impactLayers\n        PUSH, __OnCollisionEnter_intnl_7\n       
     EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, __OnCollisionEnter_intnl_7\n       
-    PUSH, __const_5\n        PUSH, __OnCollisionEnter_intnl_8\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_7\n        PUSH, __OnCollisionEnter_intnl_8\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_8\n        PUSH, __OnCollisionEnter___t5\n       
     COPY\n        PUSH, __OnCollisionEnter___t5\n        JUMP_IF_FALSE, __OnCollisionEnter_L11\n       
     PUSH, impactLayers\n        PUSH, __OnCollisionEnter_intnl_9\n        EXTERN,
     \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, onCollisionEnterOther\n       
     PUSH, __OnCollisionEnter_intnl_10\n        EXTERN, \"UnityEngineCollision.__get_gameObject__UnityEngineGameObject\"\n       
     PUSH, __OnCollisionEnter_intnl_10\n        PUSH, __OnCollisionEnter_intnl_11\n       
-    EXTERN, \"UnityEngineGameObject.__get_layer__SystemInt32\"\n        PUSH, __const_7\n       
+    EXTERN, \"UnityEngineGameObject.__get_layer__SystemInt32\"\n        PUSH, __const_6\n       
     PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __OnCollisionEnter_intnl_12\n       
     EXTERN, \"SystemInt32.__op_LeftShift__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __OnCollisionEnter_intnl_9\n        PUSH, __OnCollisionEnter_intnl_12\n       
     PUSH, __OnCollisionEnter_intnl_13\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_13\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter_intnl_14\n       
+    PUSH, __OnCollisionEnter_intnl_13\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter_intnl_14\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_14\n        PUSH, __OnCollisionEnter___t5\n       
     COPY\n    __OnCollisionEnter_L11:\n        PUSH, __OnCollisionEnter___t5\n       
@@ -331,13 +668,13 @@ MonoBehaviour:
     PUSH, requireLocalOwner\n        PUSH, __OnCollisionEnter___t6\n        COPY\n       
     PUSH, __OnCollisionEnter___t6\n        JUMP_IF_FALSE, __OnCollisionEnter_L15\n       
     PUSH, __OnCollisionEnter_intnl_15\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
-    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_4\n        PUSH, __OnCollisionEnter_intnl_16\n       
+    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter_intnl_16\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_16\n        PUSH, __OnCollisionEnter___t7\n       
     COPY\n        PUSH, __OnCollisionEnter___t7\n        JUMP_IF_FALSE, __OnCollisionEnter_L16\n       
     JUMP, __OnCollisionEnter_L17\n    __OnCollisionEnter_L16:\n        PUSH, __OnCollisionEnter_intnl_17\n       
     EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
-    PUSH, __OnCollisionEnter_intnl_17\n        PUSH, __const_8\n        PUSH, __OnCollisionEnter_intnl_18\n       
+    PUSH, __OnCollisionEnter_intnl_17\n        PUSH, __const_12\n        PUSH, __OnCollisionEnter_intnl_18\n       
     EXTERN, \"VRCSDKBaseNetworking.__IsOwner__VRCSDKBaseVRCPlayerApi_UnityEngineGameObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_18\n        PUSH, __OnCollisionEnter_intnl_19\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
@@ -346,7 +683,7 @@ MonoBehaviour:
     PUSH, __OnCollisionEnter___t6\n        COPY\n    __OnCollisionEnter_L15:\n       
     PUSH, __OnCollisionEnter___t6\n        JUMP_IF_FALSE, __OnCollisionEnter_L19\n       
     JUMP_INDIRECT, __OnCollisionEnter_retjump\n    __OnCollisionEnter_L19:\n       
-    PUSH, onCollisionEnterOther\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter_intnl_20\n       
+    PUSH, onCollisionEnterOther\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter_intnl_20\n       
     EXTERN, \"UnityEngineCollision.__GetContact__SystemInt32__UnityEngineContactPoint\"\n       
     PUSH, __OnCollisionEnter_intnl_20\n        PUSH, __OnCollisionEnter_point\n       
     COPY\n        PUSH, onCollisionEnterOther\n        PUSH, __OnCollisionEnter_intnl_21\n       
@@ -358,28 +695,28 @@ MonoBehaviour:
     PUSH, __OnCollisionEnter_intnl_23\n        PUSH, __OnCollisionEnter_intnl_24\n       
     EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n        PUSH,
     __OnCollisionEnter_intnl_24\n        PUSH, __OnCollisionEnter_speed\n       
-    COPY\n        PUSH, __OnCollisionEnter_speed\n        PUSH, __OnCollisionEnter___inl0__speed\n       
-    COPY\n        PUSH, minimumSpeed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
-    COPY\n        PUSH, maximumSpeed\n        PUSH, __OnCollisionEnter___inl0__maximum\n       
-    COPY\n        PUSH, minimumVolume\n        PUSH, __OnCollisionEnter___inl0__lowVolume\n       
-    COPY\n        PUSH, maximumVolume\n        PUSH, __OnCollisionEnter___inl0__highVolume\n       
-    COPY\n        PUSH, __OnCollisionEnter___inl0__speed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
+    COPY\n        PUSH, __OnCollisionEnter_speed\n        PUSH, __OnCollisionEnter___inl4__speed\n       
+    COPY\n        PUSH, minimumSpeed\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
+    COPY\n        PUSH, maximumSpeed\n        PUSH, __OnCollisionEnter___inl4__maximum\n       
+    COPY\n        PUSH, minimumVolume\n        PUSH, __OnCollisionEnter___inl4__lowVolume\n       
+    COPY\n        PUSH, maximumVolume\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
+    COPY\n        PUSH, __OnCollisionEnter___inl4__speed\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
     PUSH, __OnCollisionEnter_intnl_25\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_25\n        JUMP_IF_FALSE, __OnCollisionEnter_L20\n       
     PUSH, __const_2\n        PUSH, __OnCollisionEnter_volume\n        COPY\n       
-    JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L20:\n        PUSH, __OnCollisionEnter___inl0__maximum\n       
-    PUSH, __OnCollisionEnter___inl0__minimum\n        PUSH, __OnCollisionEnter_intnl_26\n       
+    JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L20:\n        PUSH, __OnCollisionEnter___inl4__maximum\n       
+    PUSH, __OnCollisionEnter___inl4__minimum\n        PUSH, __OnCollisionEnter_intnl_26\n       
     EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter_intnl_26\n        JUMP_IF_FALSE, __OnCollisionEnter_L22\n       
-    PUSH, __OnCollisionEnter___inl0__highVolume\n        PUSH, __OnCollisionEnter_volume\n       
+    PUSH, __OnCollisionEnter___inl4__highVolume\n        PUSH, __OnCollisionEnter_volume\n       
     COPY\n        JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L22:\n       
-    PUSH, __OnCollisionEnter___inl0__speed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
+    PUSH, __OnCollisionEnter___inl4__speed\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
     PUSH, __OnCollisionEnter_intnl_27\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __OnCollisionEnter___inl0__maximum\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
     PUSH, __OnCollisionEnter_intnl_28\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_27\n        PUSH, __OnCollisionEnter_intnl_28\n       
     PUSH, __OnCollisionEnter_intnl_29\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __OnCollisionEnter___inl0__lowVolume\n        PUSH, __OnCollisionEnter___inl0__highVolume\n       
+    PUSH, __OnCollisionEnter___inl4__lowVolume\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
     PUSH, __OnCollisionEnter_intnl_29\n        PUSH, __OnCollisionEnter_intnl_30\n       
     EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_30\n        PUSH, __OnCollisionEnter_volume\n       
@@ -411,64 +748,183 @@ MonoBehaviour:
     10\n    .export maximumSpeed\n    minimumVolume: %SystemSingle, 0.35\n    .export
     minimumVolume\n    maximumVolume: %SystemSingle, 1\n    .export maximumVolume\n   
     pitch: %SystemSingle, 1\n    .export pitch\n    cooldown: %SystemSingle, 0.1\n   
-    .export cooldown\n    _nextImpactTime: %SystemSingle, 0\n    __refl_typeid: %SystemInt64,
-    null\n    __refl_typename: %SystemString, \"FeedbackImpactAudioBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    onCollisionEnterOther: %UnityEngineCollision,
-    null\n    __OnCollisionEnter___t0: %SystemBoolean, null\n    __OnCollisionEnter___t1:
-    %SystemBoolean, null\n    __OnCollisionEnter___t2: %SystemBoolean, null\n   
-    __OnCollisionEnter___t3: %SystemBoolean, null\n    __OnCollisionEnter___t4: %SystemBoolean,
-    null\n    __OnCollisionEnter___t5: %SystemBoolean, null\n    __OnCollisionEnter___t6:
-    %SystemBoolean, null\n    __OnCollisionEnter___t7: %SystemBoolean, null\n   
-    __OnCollisionEnter_point: %UnityEngineContactPoint, null\n    __OnCollisionEnter_speed:
-    %SystemSingle, 0\n    __OnCollisionEnter_volume: %SystemSingle, 0\n    __OnCollisionEnter___t8:
+    .export cooldown\n    contactAudio: %UnityEngineAudioSource, null\n    .export
+    contactAudio\n    contactClip: %UnityEngineAudioClip, null\n    .export contactClip\n   
+    contactMinVolume: %SystemSingle, 0.45\n    .export contactMinVolume\n    contactMaxVolume:
+    %SystemSingle, 1\n    .export contactMaxVolume\n    contactMinPitch: %SystemSingle,
+    0.8\n    .export contactMinPitch\n    contactMaxPitch: %SystemSingle, 1.2\n   
+    .export contactMaxPitch\n    hapticDuration: %SystemSingle, 0.08\n    .export
+    hapticDuration\n    hapticAmplitude: %SystemSingle, 0.5\n    .export hapticAmplitude\n   
+    hapticFrequency: %SystemSingle, 0.5\n    .export hapticFrequency\n    remoteContactStrength:
+    %SystemSingle, 0\n    .export remoteContactStrength\n    _nextImpactTime: %SystemSingle,
+    0\n    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString,
+    \"FeedbackImpactAudioBehaviour\"\n    __refl_typeids: %SystemInt64Array, null\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_p_0: %SystemSingle, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_p_1:
+    %SystemInt32, 0\n    __PlayLocalContact__SystemSingle_SystemInt32_player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___t0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0: %SystemBoolean,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t1: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t2: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl0____t3: %UnityEngineAudioSource,
+    null\n    __PlayLocalContact__SystemSingle_SystemInt32___inl_t2: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl5__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl_t3: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32___inl6__strength: %SystemSingle,
+    0\n    __PlayLocalContact__SystemSingle_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __PlayRemoteContact___inl1__strength: %SystemSingle, 0\n    __PlayRemoteContact___inl1____t0:
+    %SystemBoolean, null\n    __PlayRemoteContact___inl1____t1: %UnityEngineAudioSource,
+    null\n    __PlayRemoteContact___inl1____t2: %UnityEngineAudioSource, null\n   
+    __PlayRemoteContact___inl1____t3: %UnityEngineAudioSource, null\n    __PlayRemoteContact___inl_t4:
+    %SystemSingle, 0\n    __PlayRemoteContact___inl7__strength: %SystemSingle, 0\n   
+    __PlayRemoteContact___inl_t5: %SystemSingle, 0\n    __PlayRemoteContact___inl8__strength:
+    %SystemSingle, 0\n    __PlayRemoteContact_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    onCollisionEnterOther: %UnityEngineCollision, null\n    __OnCollisionEnter___t0:
+    %SystemBoolean, null\n    __OnCollisionEnter___t1: %SystemBoolean, null\n   
+    __OnCollisionEnter___t2: %SystemBoolean, null\n    __OnCollisionEnter___t3: %SystemBoolean,
+    null\n    __OnCollisionEnter___t4: %SystemBoolean, null\n    __OnCollisionEnter___t5:
+    %SystemBoolean, null\n    __OnCollisionEnter___t6: %SystemBoolean, null\n   
+    __OnCollisionEnter___t7: %SystemBoolean, null\n    __OnCollisionEnter_point:
+    %UnityEngineContactPoint, null\n    __OnCollisionEnter_speed: %SystemSingle,
+    0\n    __OnCollisionEnter_volume: %SystemSingle, 0\n    __OnCollisionEnter___t8:
     %UnityEngineAudioSource, null\n    __OnCollisionEnter___t9: %UnityEngineAudioSource,
-    null\n    __OnCollisionEnter___t10: %UnityEngineAudioSource, null\n    __OnCollisionEnter___inl0__speed:
-    %SystemSingle, 0\n    __OnCollisionEnter___inl0__minimum: %SystemSingle, 0\n   
-    __OnCollisionEnter___inl0__maximum: %SystemSingle, 0\n    __OnCollisionEnter___inl0__lowVolume:
-    %SystemSingle, 0\n    __OnCollisionEnter___inl0__highVolume: %SystemSingle, 0\n   
-    __OnCollisionEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %SystemBoolean,
-    null\n    __const_1: %UnityEngineContactPoint, null\n    __const_2: %SystemSingle,
-    0\n    __const_3: %UnityEngineAudioSource, null\n    __const_4: %SystemObject,
-    null\n    __OnCollisionEnter_intnl_1: %SystemInt32, 0\n    __const_5: %SystemInt32,
-    0\n    __const_6: %UnityEngineObject, null\n    __OnCollisionEnter_intnl_5: %SystemSingle,
-    0\n    __const_7: %SystemInt32, 1\n    __OnCollisionEnter_intnl_10: %UnityEngineGameObject,
-    null\n    __OnCollisionEnter_intnl_11: %SystemInt32, 0\n    __OnCollisionEnter_intnl_12:
+    null\n    __OnCollisionEnter___t10: %UnityEngineAudioSource, null\n    __OnCollisionEnter___inl4__speed:
+    %SystemSingle, 0\n    __OnCollisionEnter___inl4__minimum: %SystemSingle, 0\n   
+    __OnCollisionEnter___inl4__maximum: %SystemSingle, 0\n    __OnCollisionEnter___inl4__lowVolume:
+    %SystemSingle, 0\n    __OnCollisionEnter___inl4__highVolume: %SystemSingle, 0\n   
+    __OnCollisionEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    __const_0: %VRCSDKBaseVRCPlayerApi,
+    null\n    __const_1: %SystemBoolean, null\n    __const_2: %SystemSingle, 0\n   
+    __const_3: %UnityEngineAudioSource, null\n    __const_4: %UnityEngineObject,
+    null\n    __const_5: %SystemObject, null\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_7:
+    %SystemBoolean, null\n    __const_6: %SystemInt32, 1\n    __PlayLocalContact__SystemSingle_SystemInt32_intnl_9:
+    %SystemInt32, 0\n    __const_7: %SystemInt32, 0\n    __const_8: %VRCSDKBaseVRC_PickupPickupHand,
+    null\n    __const_9: %SystemInt32, 2\n    __const_10: %VRCSDKBaseVRC_PickupPickupHand,
+    null\n    __const_11: %UnityEngineContactPoint, null\n    __OnCollisionEnter_intnl_5:
+    %SystemSingle, 0\n    __OnCollisionEnter_intnl_10: %UnityEngineGameObject, null\n   
+    __OnCollisionEnter_intnl_11: %SystemInt32, 0\n    __OnCollisionEnter_intnl_12:
     %SystemInt32, 0\n    __OnCollisionEnter_intnl_15: %VRCSDKBaseVRCPlayerApi, null\n   
-    __const_8: %UnityEngineGameObject, this\n    __OnCollisionEnter_intnl_18: %SystemBoolean,
-    null\n    __OnCollisionEnter_intnl_21: %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_22:
-    %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_28: %SystemSingle, 0\n   
-    __OnCollisionEnter_intnl_29: %SystemSingle, 0\n.data_end\n.code_start\n    .export
-    _onCollisionEnter\n    _onCollisionEnter:\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t0\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t1\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t2\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t3\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t5\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t6\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __OnCollisionEnter___t7\n        COPY\n        PUSH, __const_1\n        PUSH,
-    __OnCollisionEnter_point\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __OnCollisionEnter_speed\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __OnCollisionEnter_volume\n        COPY\n        PUSH, __const_2\n        PUSH,
-    __OnCollisionEnter___inl0__speed\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__minimum\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__maximum\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__lowVolume\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __OnCollisionEnter___inl0__highVolume\n        COPY\n        PUSH, onCollisionEnterOther\n       
-    PUSH, __const_4\n        PUSH, __OnCollisionEnter___t4\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    __const_12: %UnityEngineGameObject, this\n    __OnCollisionEnter_intnl_21: %UnityEngineVector3,
+    null\n    __OnCollisionEnter_intnl_22: %UnityEngineVector3, null\n    __OnCollisionEnter_intnl_28:
+    %SystemSingle, 0\n    __OnCollisionEnter_intnl_29: %SystemSingle, 0\n.data_end\n.code_start\n   
+    .export PlayLocalContact__SystemSingle_SystemInt32\n    PlayLocalContact__SystemSingle_SystemInt32:\n       
+    PUSH, __const_0\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n       
+    COPY\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_0\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    COPY\n        PUSH, contactAudio\n        PUSH, __const_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L0\n        JUMP, __PlayLocalContact__SystemSingle_SystemInt32_L1\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L0:\n        PUSH, contactClip\n       
+    PUSH, __const_4\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L1:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0____t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L2\n        JUMP,
+    __PlayLocalContact__SystemSingle_SystemInt32_L3\n    __PlayLocalContact__SystemSingle_SystemInt32_L2:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    EXTERN, \"UnityEngineMathf.__Clamp01__SystemSingle__SystemSingle\"\n        PUSH,
+    contactAudio\n        PUSH, contactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
+    PUSH, contactMinVolume\n        PUSH, contactMaxVolume\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n        EXTERN,
+    \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t2\n       
+    EXTERN, \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\n       
+    PUSH, contactMinPitch\n        PUSH, contactMaxPitch\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl0__strength\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n        EXTERN,
+    \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___inl_t3\n       
+    EXTERN, \"UnityEngineAudioSource.__set_pitch__SystemSingle__SystemVoid\"\n       
+    PUSH, contactAudio\n        EXTERN, \"UnityEngineAudioSource.__Play__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L3:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n        PUSH, __const_5\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L4\n        JUMP, __PlayLocalContact__SystemSingle_SystemInt32_L5\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L4:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__IsUserInVR__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L5:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32___t0\n       
+    JUMP_IF_FALSE, __PlayLocalContact__SystemSingle_SystemInt32_L7\n        JUMP_INDIRECT,
+    __PlayLocalContact__SystemSingle_SystemInt32_retjump\n    __PlayLocalContact__SystemSingle_SystemInt32_L7:\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_1\n        PUSH, __const_6\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L9\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_8\n        PUSH, hapticDuration\n        PUSH, hapticAmplitude\n       
+    PUSH, hapticFrequency\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__PlayHapticEventInHand__VRCSDKBaseVRC_PickupPickupHand_SystemSingle_SystemSingle_SystemSingle__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L9:\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_p_1\n       
+    PUSH, __const_9\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __PlayLocalContact__SystemSingle_SystemInt32_L11\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_player\n       
+    PUSH, __const_10\n        PUSH, hapticDuration\n        PUSH, hapticAmplitude\n       
+    PUSH, hapticFrequency\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__PlayHapticEventInHand__VRCSDKBaseVRC_PickupPickupHand_SystemSingle_SystemSingle_SystemSingle__SystemVoid\"\n   
+    __PlayLocalContact__SystemSingle_SystemInt32_L11:\n        JUMP_INDIRECT, __PlayLocalContact__SystemSingle_SystemInt32_retjump\n   
+    .export PlayRemoteContact\n    PlayRemoteContact:\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl_t4\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __PlayRemoteContact___inl_t5\n        COPY\n        PUSH, remoteContactStrength\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        COPY\n        PUSH, contactAudio\n       
+    PUSH, __const_4\n        PUSH, __PlayRemoteContact___inl1____t0\n        EXTERN,
+    \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __PlayRemoteContact___inl1____t0\n        JUMP_IF_FALSE, __PlayRemoteContact_L0\n       
+    JUMP, __PlayRemoteContact_L1\n    __PlayRemoteContact_L0:\n        PUSH, contactClip\n       
+    PUSH, __const_4\n        PUSH, __PlayRemoteContact___inl1____t0\n        EXTERN,
+    \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
+    __PlayRemoteContact_L1:\n        PUSH, __PlayRemoteContact___inl1____t0\n       
+    JUMP_IF_FALSE, __PlayRemoteContact_L2\n        JUMP, __PlayRemoteContact_L3\n   
+    __PlayRemoteContact_L2:\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact___inl1__strength\n        EXTERN, \"UnityEngineMathf.__Clamp01__SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, contactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
+    PUSH, contactMinVolume\n        PUSH, contactMaxVolume\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact___inl_t4\n        EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl_t4\n        EXTERN,
+    \"UnityEngineAudioSource.__set_volume__SystemSingle__SystemVoid\"\n        PUSH,
+    contactMinPitch\n        PUSH, contactMaxPitch\n        PUSH, __PlayRemoteContact___inl1__strength\n       
+    PUSH, __PlayRemoteContact___inl_t5\n        EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, contactAudio\n        PUSH, __PlayRemoteContact___inl_t5\n        EXTERN,
+    \"UnityEngineAudioSource.__set_pitch__SystemSingle__SystemVoid\"\n        PUSH,
+    contactAudio\n        EXTERN, \"UnityEngineAudioSource.__Play__SystemVoid\"\n   
+    __PlayRemoteContact_L3:\n        JUMP_INDIRECT, __PlayRemoteContact_retjump\n   
+    .export _onCollisionEnter\n    _onCollisionEnter:\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t1\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t2\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t3\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t5\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t6\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnCollisionEnter___t7\n        COPY\n        PUSH, __const_11\n       
+    PUSH, __OnCollisionEnter_point\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter_speed\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter_volume\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__speed\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__minimum\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__lowVolume\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnCollisionEnter___inl4__highVolume\n        COPY\n        PUSH, onCollisionEnterOther\n       
+    PUSH, __const_5\n        PUSH, __OnCollisionEnter___t4\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter___t4\n        JUMP_IF_FALSE, __OnCollisionEnter_L0\n       
     JUMP, __OnCollisionEnter_L1\n    __OnCollisionEnter_L0:\n        PUSH, onCollisionEnterOther\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        EXTERN, \"UnityEngineCollision.__get_contactCount__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter___t4\n       
-    EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n   
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        EXTERN, \"UnityEngineCollision.__get_contactCount__SystemInt32\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __const_7\n       
+    PUSH, __OnCollisionEnter___t4\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n   
     __OnCollisionEnter_L1:\n        PUSH, __OnCollisionEnter___t4\n        PUSH,
     __OnCollisionEnter___t3\n        COPY\n        PUSH, __OnCollisionEnter___t4\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L2\n        JUMP, __OnCollisionEnter_L3\n   
-    __OnCollisionEnter_L2:\n        PUSH, impactAudio\n        PUSH, __const_6\n       
+    __OnCollisionEnter_L2:\n        PUSH, impactAudio\n        PUSH, __const_4\n       
     PUSH, __OnCollisionEnter___t3\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
     __OnCollisionEnter_L3:\n        PUSH, __OnCollisionEnter___t3\n        PUSH,
     __OnCollisionEnter___t2\n        COPY\n        PUSH, __OnCollisionEnter___t3\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L4\n        JUMP, __OnCollisionEnter_L5\n   
-    __OnCollisionEnter_L4:\n        PUSH, impactClip\n        PUSH, __const_6\n       
+    __OnCollisionEnter_L4:\n        PUSH, impactClip\n        PUSH, __const_4\n       
     PUSH, __OnCollisionEnter___t2\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n   
     __OnCollisionEnter_L5:\n        PUSH, __OnCollisionEnter___t2\n        PUSH,
     __OnCollisionEnter___t1\n        COPY\n        PUSH, __OnCollisionEnter___t2\n       
@@ -480,20 +936,20 @@ MonoBehaviour:
     __OnCollisionEnter_L7:\n        PUSH, __OnCollisionEnter___t1\n        PUSH,
     __OnCollisionEnter___t0\n        COPY\n        PUSH, __OnCollisionEnter___t1\n       
     JUMP_IF_FALSE, __OnCollisionEnter_L8\n        JUMP, __OnCollisionEnter_L9\n   
-    __OnCollisionEnter_L8:\n        PUSH, impactLayers\n        PUSH, __OnCollisionEnter_intnl_1\n       
-    EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, __OnCollisionEnter_intnl_1\n       
-    PUSH, __const_5\n        PUSH, __OnCollisionEnter___t5\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    __OnCollisionEnter_L8:\n        PUSH, impactLayers\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    PUSH, __const_7\n        PUSH, __OnCollisionEnter___t5\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter___t5\n        JUMP_IF_FALSE, __OnCollisionEnter_L11\n       
-    PUSH, impactLayers\n        PUSH, __OnCollisionEnter_intnl_1\n        EXTERN,
-    \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, onCollisionEnterOther\n       
+    PUSH, impactLayers\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n       
+    EXTERN, \"UnityEngineLayerMask.__get_value__SystemInt32\"\n        PUSH, onCollisionEnterOther\n       
     PUSH, __OnCollisionEnter_intnl_10\n        EXTERN, \"UnityEngineCollision.__get_gameObject__UnityEngineGameObject\"\n       
     PUSH, __OnCollisionEnter_intnl_10\n        PUSH, __OnCollisionEnter_intnl_11\n       
-    EXTERN, \"UnityEngineGameObject.__get_layer__SystemInt32\"\n        PUSH, __const_7\n       
+    EXTERN, \"UnityEngineGameObject.__get_layer__SystemInt32\"\n        PUSH, __const_6\n       
     PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __OnCollisionEnter_intnl_12\n       
     EXTERN, \"SystemInt32.__op_LeftShift__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_1\n        PUSH, __OnCollisionEnter_intnl_12\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_9\n        PUSH, __OnCollisionEnter_intnl_12\n       
     PUSH, __OnCollisionEnter_intnl_11\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter___t5\n       
+    PUSH, __OnCollisionEnter_intnl_11\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter___t5\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n   
     __OnCollisionEnter_L11:\n        PUSH, __OnCollisionEnter___t5\n        PUSH,
     __OnCollisionEnter___t0\n        COPY\n    __OnCollisionEnter_L9:\n        PUSH,
@@ -502,20 +958,20 @@ MonoBehaviour:
     PUSH, requireLocalOwner\n        PUSH, __OnCollisionEnter___t6\n        COPY\n       
     PUSH, requireLocalOwner\n        JUMP_IF_FALSE, __OnCollisionEnter_L15\n       
     PUSH, __OnCollisionEnter_intnl_15\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
-    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_4\n        PUSH, __OnCollisionEnter___t7\n       
+    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter___t7\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __OnCollisionEnter___t7\n        JUMP_IF_FALSE, __OnCollisionEnter_L16\n       
     JUMP, __OnCollisionEnter_L17\n    __OnCollisionEnter_L16:\n        PUSH, __OnCollisionEnter_intnl_15\n       
     EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
-    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_8\n        PUSH, __OnCollisionEnter_intnl_18\n       
+    PUSH, __OnCollisionEnter_intnl_15\n        PUSH, __const_12\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n       
     EXTERN, \"VRCSDKBaseNetworking.__IsOwner__VRCSDKBaseVRCPlayerApi_UnityEngineGameObject__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        PUSH, __OnCollisionEnter___t7\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        PUSH, __OnCollisionEnter___t7\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
     __OnCollisionEnter_L17:\n        PUSH, __OnCollisionEnter___t7\n        PUSH,
     __OnCollisionEnter___t6\n        COPY\n    __OnCollisionEnter_L15:\n        PUSH,
     __OnCollisionEnter___t6\n        JUMP_IF_FALSE, __OnCollisionEnter_L19\n       
     JUMP_INDIRECT, __OnCollisionEnter_retjump\n    __OnCollisionEnter_L19:\n       
-    PUSH, onCollisionEnterOther\n        PUSH, __const_5\n        PUSH, __OnCollisionEnter_point\n       
+    PUSH, onCollisionEnterOther\n        PUSH, __const_7\n        PUSH, __OnCollisionEnter_point\n       
     EXTERN, \"UnityEngineCollision.__GetContact__SystemInt32__UnityEngineContactPoint\"\n       
     PUSH, onCollisionEnterOther\n        PUSH, __OnCollisionEnter_intnl_21\n       
     EXTERN, \"UnityEngineCollision.__get_relativeVelocity__UnityEngineVector3\"\n       
@@ -525,37 +981,39 @@ MonoBehaviour:
     PUSH, __OnCollisionEnter_intnl_5\n        EXTERN, \"UnityEngineVector3.__Dot__UnityEngineVector3_UnityEngineVector3__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_5\n        PUSH, __OnCollisionEnter_speed\n       
     EXTERN, \"UnityEngineMathf.__Abs__SystemSingle__SystemSingle\"\n        PUSH,
-    __OnCollisionEnter_speed\n        PUSH, __OnCollisionEnter___inl0__speed\n       
-    COPY\n        PUSH, minimumSpeed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
-    COPY\n        PUSH, maximumSpeed\n        PUSH, __OnCollisionEnter___inl0__maximum\n       
-    COPY\n        PUSH, minimumVolume\n        PUSH, __OnCollisionEnter___inl0__lowVolume\n       
-    COPY\n        PUSH, maximumVolume\n        PUSH, __OnCollisionEnter___inl0__highVolume\n       
+    __OnCollisionEnter_speed\n        PUSH, __OnCollisionEnter___inl4__speed\n       
+    COPY\n        PUSH, minimumSpeed\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
+    COPY\n        PUSH, maximumSpeed\n        PUSH, __OnCollisionEnter___inl4__maximum\n       
+    COPY\n        PUSH, minimumVolume\n        PUSH, __OnCollisionEnter___inl4__lowVolume\n       
+    COPY\n        PUSH, maximumVolume\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
     COPY\n        PUSH, __OnCollisionEnter_speed\n        PUSH, minimumSpeed\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        JUMP_IF_FALSE, __OnCollisionEnter_L20\n       
-    PUSH, __const_2\n        PUSH, __OnCollisionEnter_volume\n        COPY\n       
-    JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L20:\n        PUSH, __OnCollisionEnter___inl0__maximum\n       
-    PUSH, __OnCollisionEnter___inl0__minimum\n        PUSH, __OnCollisionEnter_intnl_18\n       
-    EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        JUMP_IF_FALSE, __OnCollisionEnter_L22\n       
-    PUSH, __OnCollisionEnter___inl0__highVolume\n        PUSH, __OnCollisionEnter_volume\n       
-    COPY\n        JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L22:\n       
-    PUSH, __OnCollisionEnter___inl0__speed\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
-    PUSH, __OnCollisionEnter_intnl_5\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __OnCollisionEnter___inl0__maximum\n        PUSH, __OnCollisionEnter___inl0__minimum\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __OnCollisionEnter_L20\n        PUSH, __const_2\n        PUSH, __OnCollisionEnter_volume\n       
+    COPY\n        JUMP, __OnCollisionEnter_L23\n    __OnCollisionEnter_L20:\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __OnCollisionEnter_L22\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
+    PUSH, __OnCollisionEnter_volume\n        COPY\n        JUMP, __OnCollisionEnter_L23\n   
+    __OnCollisionEnter_L22:\n        PUSH, __OnCollisionEnter___inl4__speed\n       
+    PUSH, __OnCollisionEnter___inl4__minimum\n        PUSH, __OnCollisionEnter_intnl_5\n       
+    EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __OnCollisionEnter___inl4__maximum\n        PUSH, __OnCollisionEnter___inl4__minimum\n       
     PUSH, __OnCollisionEnter_intnl_28\n        EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_5\n        PUSH, __OnCollisionEnter_intnl_28\n       
     PUSH, __OnCollisionEnter_intnl_29\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __OnCollisionEnter___inl0__lowVolume\n        PUSH, __OnCollisionEnter___inl0__highVolume\n       
+    PUSH, __OnCollisionEnter___inl4__lowVolume\n        PUSH, __OnCollisionEnter___inl4__highVolume\n       
     PUSH, __OnCollisionEnter_intnl_29\n        PUSH, __OnCollisionEnter_volume\n       
     EXTERN, \"UnityEngineMathf.__Lerp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n   
     __OnCollisionEnter_L23:\n        PUSH, __OnCollisionEnter_speed\n        PUSH,
-    minimumSpeed\n        PUSH, __OnCollisionEnter_intnl_18\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
-    PUSH, __OnCollisionEnter_intnl_18\n        JUMP_IF_FALSE, __OnCollisionEnter_L25\n       
-    JUMP_INDIRECT, __OnCollisionEnter_retjump\n    __OnCollisionEnter_L25:\n       
-    PUSH, __OnCollisionEnter_intnl_5\n        EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n       
-    PUSH, __const_2\n        PUSH, cooldown\n        PUSH, __OnCollisionEnter_intnl_28\n       
-    EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
+    minimumSpeed\n        PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n       
+    EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __PlayLocalContact__SystemSingle_SystemInt32_intnl_7\n        JUMP_IF_FALSE,
+    __OnCollisionEnter_L25\n        JUMP_INDIRECT, __OnCollisionEnter_retjump\n   
+    __OnCollisionEnter_L25:\n        PUSH, __OnCollisionEnter_intnl_5\n        EXTERN,
+    \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, __const_2\n       
+    PUSH, cooldown\n        PUSH, __OnCollisionEnter_intnl_28\n        EXTERN, \"UnityEngineMathf.__Max__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __OnCollisionEnter_intnl_5\n        PUSH, __OnCollisionEnter_intnl_28\n       
     PUSH, _nextImpactTime\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, impactAudio\n        PUSH, impactClip\n        EXTERN, \"UnityEngineAudioSource.__set_clip__UnityEngineAudioClip__SystemVoid\"\n       
@@ -566,14 +1024,18 @@ MonoBehaviour:
   optBeforeInject:
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=4537760259714570252\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=4537760259714570252"
+  - "=__const_8\tEnumConst\t=VRCSDKBaseVRC_PickupPickupHand\t0\t\tInt32:=1\t\t\t"
+  - "=__const_10\tEnumConst\t=VRCSDKBaseVRC_PickupPickupHand\t0\t\tInt32:=2\t\t\t"
   optAfterInject:
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=4537760259714570252\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=4537760259714570252"
+  - "=__const_8\tEnumConst\t=VRCSDKBaseVRC_PickupPickupHand\t0\t\tInt32:=1\t\t\t"
+  - "=__const_10\tEnumConst\t=VRCSDKBaseVRC_PickupPickupHand\t0\t\tInt32:=2\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 39
-  optExternAfter: 39
-  optInsnBefore: 320
-  optInsnAfter: 260
-  optBytesBefore: 2364
-  optBytesAfter: 1964
+  optExternBefore: 67
+  optExternAfter: 67
+  optInsnBefore: 583
+  optInsnAfter: 412
+  optBytesBefore: 4288
+  optBytesAfter: 3148
   optStage: ran

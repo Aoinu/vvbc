@@ -84,7 +84,7 @@ public partial class BallBehaviour
         Assert.IsFalse(contactConsumed);
         Assert.IsFalse(_contactPending);
         Assert.IsFalse(ApplyContactResult(4, 1f, Vector3.zero, Vector3.zero,
-            Vector3.zero, Vector3.forward, Vector3.zero));
+            Vector3.zero, Vector3.forward, Vector3.zero, 1, 0.5f));
     }
 
     [TsukimiTest]

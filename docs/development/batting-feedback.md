@@ -27,17 +27,20 @@ physics. The existing strike-zone Ball Phantom remains a separate component.
    Keep the phantom and marker objects free of colliders. The phantom materials
    should support transparency. Inspector colors include their alpha values.
    Place the feedback root outside Collider and Rigidbody hierarchies: movable
-   phantom and contact-audio targets in a physics hierarchy are rejected so a
+   phantom targets in a physics hierarchy are rejected so a
    bad reference cannot move physics objects.
 4. Ball bounce and wind are handled by the Ball prefab's BallBehaviour and
    its `Audio/Bounce` and `Audio/Wind` sources. Configure `impactLayers`,
    thresholds, cooldown, wind speeds and volumes there. An empty impact mask
    accepts all layers. Reset stops both sources.
-5. The Bat prefab keeps its independent impact UdonBehaviour on its Body.
-   Its default threshold is 1 m/s and it only plays for the local owner.
-6. In the ignored local Sandbox, assign `bat_contact.mp3` to feedback's
-   `contactClip`, `jet.ogg` to BallBehaviour's `windClip`, `ball_bounce.wav`
-   to its `impactClip`, and `bat_drop.mp3` to the Bat impact's `impactClip`.
+5. The Bat prefab's Body impact Behaviour owns both drop and contact effects.
+   Its drop threshold is 1 m/s and it only plays for the local owner. Assign
+   the Bat `contactClip` and `impactClip`, and BallBehaviour's `windClip` and
+   `impactClip` in the Inspector. Contact volume, pitch and haptic duration,
+   amplitude and frequency are configured on the Bat Behaviour, independently
+   of this optional practice feedback.
+6. In a local Sandbox, suitable example assignments are `bat_contact.mp3`,
+   `bat_drop.mp3`, `jet.ogg` and `ball_bounce.wav`, respectively.
    The package contains no clips; unset clips are skipped safely. Wind is a
    one-shot and does not restart until reset clears its clip.
 
@@ -72,14 +75,16 @@ cannot establish the cause without listening to the actual clips in VRChat.
 
 | Sound | Prefab / GameObject | Min / Max distance | Dynamic volume controls |
 | --- | --- | --- | --- |
-| Bat contact | `BattingFeedback.prefab` / `Contact Audio` | 1 / 350 m | feedback `contactMinVolume` 0.45, `contactMaxVolume` 1 |
+| Bat contact | `Bat.prefab` / `Body/Contact Audio` | 1 / 350 m | Bat impact `contactMinVolume` 0.45, `contactMaxVolume` 1 |
 | Ball impact | `Ball.prefab` / `Audio/Bounce` | 1 / 250 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
 | Bat drop / impact | `Bat.prefab` / `Body/Drop Audio` | 1 / 250 m | Body impact `minimumVolume` 0.35, `maximumVolume` 1 |
 | Flight wind | `Ball.prefab` / `Audio/Wind` | 1 / 200 m | Ball `windMaxVolume` 0.35 |
 
-Contact playback is driven by local feedback, not a broadcast event: increasing
-its range does not by itself make a hit play on other clients. Verify remote
-listeners separately when using the shared Ball prototype.
+Bat Contact plays the local Bat's contact sound and held-hand haptics after a
+confirmed hit. Ball Hit snapshots carry the batter ID and strength to other
+clients, which play the sound on that player's Bat; no extra position stream or
+network event is used. Practice feedback is optional. See the
+[network prototype](ball-network-prototype.md) for freshness and client checks.
 
 The existing wind follows **ball flight speed**, not bat swing speed: it starts
 at `windStartSpeed` 20 m/s and reaches `windMaxVolume` at `windMaxSpeed` 40 m/s.
@@ -89,7 +94,7 @@ reset clears its clip. Contact volume and pitch interpolate using
 component of relative collision velocity, interpolating from minimum to maximum
 volume between `minimumSpeed` and `maximumSpeed`; below threshold it does not
 play. Its layer filter, optional local-owner filter and cooldown are unchanged.
-Reset stops the Ball wind and impact sources; feedback stops contact audio.
+Reset stops the Ball wind and impact sources; Bat contact playback is independent.
 
 Each source uses Spatial Blend 3D, Custom Volume Rolloff and its own editable
 **AudioSource > 3D Sound Settings > Volume** curve. The initial curve holds near

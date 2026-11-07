@@ -20,8 +20,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public Transform contactPoint;
     public Renderer contactPointRenderer;
     public Text metrics;
-    public AudioSource contactAudio;
-    public AudioClip contactClip;
     public float displayDelay = 1f;
     public float missSwingSpeed = 5f;
     public float peakBeforeEntry = 0.3f;
@@ -34,13 +32,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     public Color contactPointColor = Color.white;
     public Color missPointColor = Color.magenta;
     public float contactPointDiameter = 0.03f;
-    public float contactMinVolume = 0.45f;
-    public float contactMaxVolume = 1f;
-    public float contactMinPitch = 0.8f;
-    public float contactMaxPitch = 1.2f;
-    public float hapticDuration = 0.08f;
-    public float hapticAmplitude = 0.5f;
-    public float hapticFrequency = 0.5f;
 
     private int _sequence = -1;
     private bool _entered, _exited, _hasClosest, _hasResult, _isContact, _shown, _metricsDirty;
@@ -142,7 +133,6 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _hasPreviousCandidateY = false;
         ResetTrail();
         ClearPresentation();
-        if (contactAudio != null) contactAudio.Stop();
     }
 
     private void ClearPresentation()
@@ -185,31 +175,10 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
             _feedbackMotion.RegisterContactListener(GetComponent<VRC.Udon.UdonBehaviour>(), true);
         PredictTrailExit();
         if (!_entered) { _entered = true; _entryTime = _time; }
-        PlayContact();
-        Vibrate(contact.snapshotHeldHands);
-    }
-
-    private void PlayContact()
-    {
-        if (contactAudio == null || contactClip == null || !CanMoveVisual(contactAudio.transform)) return;
-        float strength = Mathf.Clamp01(_power * _quality);
-        contactAudio.transform.position = _ballPosition;
-        contactAudio.clip = contactClip;
-        contactAudio.volume = Mathf.Lerp(contactMinVolume, contactMaxVolume, strength);
-        contactAudio.pitch = Mathf.Lerp(contactMinPitch, contactMaxPitch, strength);
-        contactAudio.Play();
-    }
-
-    private void Vibrate(int hands)
-    {
-        VRCPlayerApi player = Networking.LocalPlayer;
-        if (player == null || !player.IsUserInVR()) return;
-        if ((hands & 1) != 0) player.PlayHapticEventInHand(VRC_Pickup.PickupHand.Left, hapticDuration, hapticAmplitude, hapticFrequency);
-        if ((hands & 2) != 0) player.PlayHapticEventInHand(VRC_Pickup.PickupHand.Right, hapticDuration, hapticAmplitude, hapticFrequency);
     }
 
     // Never move a transform that could move a Rigidbody or Collider, even if
-    // a consumer accidentally assigns a physics object to a visual/audio slot.
+    // a consumer accidentally assigns a physics object to a visual slot.
     private bool CanMoveVisual(Transform value)
     {
         return value != null && value.GetComponentInParent<Rigidbody>() == null &&

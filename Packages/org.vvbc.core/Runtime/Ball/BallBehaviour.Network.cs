@@ -16,6 +16,8 @@ public partial class BallBehaviour
     [UdonSynced] private Vector3 _velocity;
     [UdonSynced] private Vector3 _spin;
     [UdonSynced] private double _serverTime;
+    [UdonSynced] private int _batterId;
+    [UdonSynced] private float _hitStrength;
 
     private const int StageState = 1;
     private const int PitchState = 2;
@@ -31,6 +33,8 @@ public partial class BallBehaviour
     public float serializationRetrySeconds = 1f;
     [Tooltip("Delay before checking a pending ownership transfer, in seconds. Default 1.")]
     public float ownershipCheckSeconds = 1f;
+    [Tooltip("Maximum age of a remote hit sound, in seconds. Default 0.75.")]
+    public float maximumHitAudioAge = 0.75f;
     private int _acceptedSequence;
     private int _acceptedKind;
     private bool _pending;
@@ -38,9 +42,13 @@ public partial class BallBehaviour
     private int _pendingKind;
     private Vector3 _networkPendingPosition, _networkPendingVelocity, _networkPendingSpin;
     private double _pendingServerTime;
+    private int _pendingBatterId;
+    private float _pendingHitStrength;
     private int _publishedSequence, _publishedKind;
     private Vector3 _publishedPosition, _publishedVelocity, _publishedSpin;
     private double _publishedServerTime;
+    private int _publishedBatterId;
+    private float _publishedHitStrength;
     private int _serializationRetries;
 
     public bool IsLocalOwner()
@@ -63,6 +71,17 @@ public partial class BallBehaviour
     // A single snapshot is kept before SetOwner, which can invoke callbacks inline.
     public void QueueState(int kind, Vector3 position, Vector3 velocity, Vector3 spin, double serverTime)
     {
+        QueueSnapshot(kind, position, velocity, spin, serverTime, -1, 0f);
+    }
+
+    public void QueueHit(Vector3 position, Vector3 velocity, Vector3 spin, double serverTime, int batterId, float strength)
+    {
+        QueueSnapshot(HitState, position, velocity, spin, serverTime, batterId, Mathf.Clamp01(strength));
+    }
+
+    private void QueueSnapshot(int kind, Vector3 position, Vector3 velocity, Vector3 spin, double serverTime,
+        int batterId, float strength)
+    {
         if (Networking.LocalPlayer == null) return;
         _pending = true;
         _pendingBaseSequence = _acceptedSequence;
@@ -71,6 +90,8 @@ public partial class BallBehaviour
         _networkPendingVelocity = velocity;
         _networkPendingSpin = spin;
         _pendingServerTime = serverTime;
+        _pendingBatterId = batterId;
+        _pendingHitStrength = strength;
         if (IsLocalOwner()) PublishPending();
         else
         {
@@ -109,6 +130,8 @@ public partial class BallBehaviour
         _publishedVelocity = _networkPendingVelocity;
         _publishedSpin = _networkPendingSpin;
         _publishedServerTime = _pendingServerTime;
+        _publishedBatterId = _pendingBatterId;
+        _publishedHitStrength = _pendingHitStrength;
         _serializationRetries = 0;
         _pending = false;
         CopyPublished();
@@ -136,6 +159,8 @@ public partial class BallBehaviour
         _velocity = _publishedVelocity;
         _spin = _publishedSpin;
         _serverTime = _publishedServerTime;
+        _batterId = _publishedBatterId;
+        _hitStrength = _publishedHitStrength;
     }
 
     public override void OnPreSerialization()
@@ -173,18 +198,58 @@ public partial class BallBehaviour
             Stage(_position);
             return;
         }
-        if ((_kind != PitchState && _kind != HitState) || body == null) return;
+        if (_kind != PitchState && _kind != HitState) return;
+        if (body == null && (_kind != HitState || _batterId <= 0)) return;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _serverTime);
-        if (!CanCatchUp(elapsed, Time.fixedDeltaTime))
+        if (body != null)
         {
-            Debug.LogWarning("BallNetwork: snapshot age outside catch-up range: " + elapsed);
-            if (body != null) Stage(body.position);
-            return;
+            if (!CanCatchUp(elapsed, Time.fixedDeltaTime))
+            {
+                Debug.LogWarning("BallNetwork: snapshot age outside catch-up range: " + elapsed);
+                Stage(body.position);
+            }
+            else
+            {
+                BallFlightState state = AdvanceSnapshot(_position, _velocity, _spin, Physics.gravity,
+                    dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
+                if (_kind == HitState) ApplyRemoteHit(state.position, state.velocity, _spin);
+                else Launch(state.position, state.velocity, _spin);
+            }
         }
-        BallFlightState state = AdvanceSnapshot(_position, _velocity, _spin, Physics.gravity,
-            dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
-        if (_kind == HitState) ApplyRemoteHit(state.position, state.velocity, _spin);
-        else Launch(state.position, state.velocity, _spin);
+        VRCPlayerApi localPlayer = Networking.LocalPlayer;
+        if (_kind == HitState && localPlayer != null && ShouldPlayHitAudio(_batterId, localPlayer.playerId, elapsed))
+            PlayRemoteHitAudio(_batterId, _hitStrength);
+    }
+
+    private bool ShouldPlayHitAudio(int batterId, int localId, double elapsed)
+    {
+        return batterId > 0 && batterId != localId && elapsed >= 0.0 && elapsed <= Mathf.Max(0f, maximumHitAudioAge);
+    }
+
+    private void PlayRemoteHitAudio(int batterId, float strength)
+    {
+        VRCPlayerApi player = VRCPlayerApi.GetPlayerById(batterId);
+        if (!Utilities.IsValid(player)) return;
+        GameObject[] objects = Networking.GetPlayerObjects(player);
+        if (objects == null) return;
+        UdonBehaviour bat = null;
+        for (int i = 0; i < objects.Length; i++)
+        {
+            if (objects[i] == null) continue;
+            Component[] candidates = objects[i].GetComponentsInChildren(typeof(UdonBehaviour), true);
+            for (int j = 0; j < candidates.Length; j++)
+            {
+                UdonBehaviour candidate = (UdonBehaviour)candidates[j];
+                if (candidate == null || candidate.GetProgramVariableType("vvbcBatContactEffects") == null) continue;
+                if (bat != null) return;
+                bat = candidate;
+            }
+        }
+        if (bat == null || !Networking.IsOwner(player, bat.gameObject)) return;
+        UdonBehaviour effects = (UdonBehaviour)bat.GetProgramVariable("vvbcBatContactEffects");
+        if (effects == null || effects == bat || !effects.transform.IsChildOf(bat.transform)) return;
+        effects.SetProgramVariable("remoteContactStrength", strength);
+        effects.SendCustomEvent("PlayRemoteContact");
     }
 
     private bool CanCatchUp(double elapsed, float step)

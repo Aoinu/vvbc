@@ -125,7 +125,7 @@ public partial class BallBehaviour
     // The incoming values are preserved for the strike observer; Launch is not
     // used because it would start a new pitch and overwrite the strike state.
     public bool ApplyContactResult(int sequence, float time, Vector3 position,
-        Vector3 incomingVelocity, Vector3 incomingSpin, Vector3 velocity, Vector3 spin)
+        Vector3 incomingVelocity, Vector3 incomingSpin, Vector3 velocity, Vector3 spin, int batterId, float strength)
     {
         if (!flying || body == null || body.isKinematic || contactConsumed || sequence != flightSequence ||
             !Finite(time) || !FiniteVector(position) || !FiniteVector(incomingVelocity) ||
@@ -144,7 +144,7 @@ public partial class BallBehaviour
         if (motionObserver != null) motionObserver.NotifyContact(time, position, incomingVelocity, incomingSpin);
         if (Time.fixedTime >= time) ApplyPendingContact(Time.fixedTime);
         double eventTime = VRC.SDKBase.Networking.GetServerTimeInSeconds() - (Time.time - time);
-        QueueState(3, position, velocity, spin, eventTime);
+        QueueHit(position, velocity, spin, eventTime, batterId, strength);
         return true;
     }
 

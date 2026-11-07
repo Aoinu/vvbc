@@ -398,7 +398,7 @@ try
     var canMoveVisual = feedbackType.GetMethod("CanMoveVisual", flags);
     check(!(bool)canMoveVisual.Invoke(feedback, new object[] { batBody.transform }) &&
         (bool)canMoveVisual.Invoke(feedback, new object[] { zone }),
-        "feedback rejects physics transforms as visual or movable audio targets");
+        "feedback rejects physics transforms as visual targets");
     check((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback) == contact.contactPosition &&
         (UnityEngine.Vector3)feedbackType.GetField("_batPosition", flags).GetValue(feedback) == contact.snapshotBatRootPosition,
         "contact feedback copies the accepted snapshot");

@@ -17,7 +17,53 @@ public partial class FeedbackImpactAudioBehaviour : TsukimiBehaviour
     public float maximumVolume = 1f;
     public float pitch = 1f;
     public float cooldown = 0.1f;
+    [Header("Bat Contact")]
+    public AudioSource contactAudio;
+    public AudioClip contactClip;
+    public float contactMinVolume = 0.45f;
+    public float contactMaxVolume = 1f;
+    public float contactMinPitch = 0.8f;
+    public float contactMaxPitch = 1.2f;
+    public float hapticDuration = 0.08f;
+    public float hapticAmplitude = 0.5f;
+    public float hapticFrequency = 0.5f;
+    [HideInInspector] public float remoteContactStrength;
     private float _nextImpactTime;
+
+    public void PlayLocalContact(float strength, int hands)
+    {
+        PlayContact(strength);
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (player == null || !player.IsUserInVR()) return;
+        if ((hands & 1) != 0) player.PlayHapticEventInHand(VRC_Pickup.PickupHand.Left, hapticDuration, hapticAmplitude, hapticFrequency);
+        if ((hands & 2) != 0) player.PlayHapticEventInHand(VRC_Pickup.PickupHand.Right, hapticDuration, hapticAmplitude, hapticFrequency);
+    }
+
+    public void PlayRemoteContact()
+    {
+        PlayContact(remoteContactStrength);
+    }
+
+    private void PlayContact(float strength)
+    {
+        if (contactAudio == null || contactClip == null) return;
+        strength = Mathf.Clamp01(strength);
+        contactAudio.clip = contactClip;
+        contactAudio.volume = ContactVolume(strength);
+        contactAudio.pitch = ContactPitch(strength);
+        contactAudio.Play();
+    }
+
+
+    private float ContactVolume(float strength)
+    {
+        return Mathf.Lerp(contactMinVolume, contactMaxVolume, strength);
+    }
+
+    private float ContactPitch(float strength)
+    {
+        return Mathf.Lerp(contactMinPitch, contactMaxPitch, strength);
+    }
 
     public void OnCollisionEnter(Collision collision)
     {

@@ -35,12 +35,12 @@ try
     int sequence = ball.flightSequence;
     float time = UnityEngine.Time.fixedTime;
     if (!ball.ApplyContactResult(sequence, time, UnityEngine.Vector3.up, UnityEngine.Vector3.forward * 30f,
-        UnityEngine.Vector3.left * 200f, UnityEngine.Vector3.right * 10f, UnityEngine.Vector3.up * 10f))
+        UnityEngine.Vector3.left * 200f, UnityEngine.Vector3.right * 10f, UnityEngine.Vector3.up * 10f, 1, 0.5f))
         throw new System.Exception("Hit rejected");
     if (!ball.contactConsumed || UnityEngine.Vector3.Distance(body.velocity, UnityEngine.Vector3.right * 10f) > 0.001f)
         throw new System.Exception("Hit application failed");
     if (ball.ApplyContactResult(sequence, time, UnityEngine.Vector3.up, UnityEngine.Vector3.zero,
-        UnityEngine.Vector3.zero, UnityEngine.Vector3.right, UnityEngine.Vector3.zero))
+        UnityEngine.Vector3.zero, UnityEngine.Vector3.right, UnityEngine.Vector3.zero, 1, 0.5f))
         throw new System.Exception("Duplicate hit accepted");
     ball.Stage(UnityEngine.Vector3.zero);
     if (ball.flying || !body.isKinematic || collider.enabled || renderer.enabled ||

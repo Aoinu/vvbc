@@ -92,6 +92,8 @@ public partial class BallBehaviour
         _networkPendingVelocity = Vector3.right;
         _networkPendingSpin = Vector3.forward;
         _pendingServerTime = 4.0;
+        _pendingBatterId = 27;
+        _pendingHitStrength = 0.65f;
         PublishPending();
         Assert.AreEqual(0, _sequence);
         Assert.IsTrue(_pending);
@@ -99,9 +101,43 @@ public partial class BallBehaviour
         Assert.AreEqual(1, _sequence);
         Assert.AreEqual(3, _kind);
         Assert.AreEqual(Vector3.right, _velocity);
+        Assert.AreEqual(27, _batterId);
+        Assert.AreEqual(0.65f, _hitStrength);
+        _batterId = 0; _hitStrength = 0f;
+        OnPreSerialization();
+        Assert.AreEqual(27, _batterId);
+        Assert.AreEqual(0.65f, _hitStrength);
         Assert.IsFalse(_pending);
         OnOwnershipTransferred(hitter);
         Assert.AreEqual(1, _sequence);
+    }
+
+    [TsukimiTest]
+    public void HitMetadataIsPublishedAndClearedByPitchAndStage()
+    {
+        Mimic.Join();
+        QueueHit(Vector3.one, Vector3.right, Vector3.up, 42.0, 17, 1.5f);
+        Assert.AreEqual(17, _batterId);
+        Assert.AreEqual(1f, _hitStrength);
+        Assert.AreEqual(42.0, _serverTime);
+        QueueState(2, Vector3.zero, Vector3.right, Vector3.zero, 43.0);
+        Assert.AreEqual(-1, _batterId);
+        Assert.AreEqual(0f, _hitStrength);
+        QueueHit(Vector3.one, Vector3.right, Vector3.up, 44.0, 17, 0.4f);
+        QueueState(1, Vector3.zero, Vector3.zero, Vector3.zero, 45.0);
+        Assert.AreEqual(-1, _batterId);
+        Assert.AreEqual(0f, _hitStrength);
+    }
+
+    [TsukimiTest]
+    public void AudioAgeAndBatterAreIndependentOfCatchup()
+    {
+        Assert.IsTrue(ShouldPlayHitAudio(12, 13, 0.75));
+        Assert.IsFalse(ShouldPlayHitAudio(12, 13, 0.751));
+        Assert.IsFalse(ShouldPlayHitAudio(12, 12, 0.1));
+        Assert.IsFalse(ShouldPlayHitAudio(0, 13, 0.1));
+        Assert.IsFalse(ShouldPlayHitAudio(12, 13, -0.01));
+        Assert.IsTrue(CanCatchUp(1.0, 0.02f));
     }
 
     [TsukimiTest]

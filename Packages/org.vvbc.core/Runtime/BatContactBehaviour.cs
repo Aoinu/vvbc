@@ -375,8 +375,14 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (!result.valid) return false;
         feedbackCandidateTime = time;
         if (feedbackListener != null) feedbackListener.SendCustomEvent("OnFeedbackPreContact");
+        VRCPlayerApi localPlayer = Networking.LocalPlayer;
+        int batterId = localPlayer != null ? localPlayer.playerId : -1;
+        float strength = Mathf.Clamp01(snapshot.power * snapshot.quality);
+        BatBehaviour bat = motion.GetComponentInParent<BatBehaviour>();
+        FeedbackImpactAudioBehaviour effects = bat != null ? bat.GetComponentInChildren<FeedbackImpactAudioBehaviour>(true) : null;
         if (!flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
-            result.linearVelocity, result.angularVelocity)) return false;
+            result.linearVelocity, result.angularVelocity, batterId, strength)) return false;
+        if (effects != null) effects.PlayLocalContact(strength, heldHands);
         contactTime = time;
         contactPitchSequence = _sequence;
         contactSequence++;
