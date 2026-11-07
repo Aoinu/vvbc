@@ -6,7 +6,7 @@ PhysicMaterial:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Baseball
+  m_Name: Ball
   dynamicFriction: 0.35
   staticFriction: 0.45
   bounciness: 0.58
