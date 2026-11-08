@@ -32,12 +32,6 @@ jobs:
         # gates. Hosted CI does not install or redistribute the proprietary compiler.
         run: python Tools/VVBC.Toolchain/toolchain.py check
 
-      - name: Performance budget static validation (does NOT measure performance)
-        # Checks budgets.json, the generated scenario tests and that every reviewed Unity-API stub
-        # rule still matches the current production sources. Measuring steps/externs needs the
-        # licensed Tsukimi compiler; see .github/workflows/performance.yml.
-        run: python Tools/VVBC.Toolchain/perf/run.py --check
-
       - name: Check whitespace errors
         run: |
           git diff --check

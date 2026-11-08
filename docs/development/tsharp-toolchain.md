@@ -168,7 +168,7 @@ failed/blocked validation, never green results.
 ## CI and distribution boundary
 
 Hosted CI runs package metadata/asmdef checks, meaningful Python tooling tests,
-development dependency boundary checks, the Performance Budget static validation and whitespace checks. It neither
+development dependency boundary checks and whitespace checks. It neither
 installs nor redistributes Tsukimi. Actual Unity/T# execution remains a required
 local gate until licensed runners and permitted compiler installation are
 configured. Static checks do not establish T# compile or UdonProgram success.
@@ -179,10 +179,8 @@ Tsukimi-generated AI/MCP/skill settings remain local and ignored.
 Performance regressions in Bat Motion, Bat Contact and Batting Feedback are gated by
 Udon step/extern budgets: `pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1`
 (see `Tools/VVBC.Toolchain/perf/README.md`; budgets are in `perf/budgets.json` and change only
-through reviewed edits). It needs the installed Tsukimi package but no Unity Editor. Hosted CI runs only
-its static validation (`perf/run.py --check`, unit tests); the measurement itself runs in
-`.github/workflows/performance.yml` on a self-hosted runner. Run it locally for runtime changes that touch
-these Behaviours. Steps/externs are not CPU time. Profiler/CostLimit/CallLimit remain available for
+through reviewed edits). It is a local-only gate: it needs the installed Tsukimi package but no Unity
+Editor, and is not run by CI. Run it for runtime changes that touch these Behaviours. Steps/externs are not CPU time. Profiler/CostLimit/CallLimit remain available for
 other measured budgets. Runtime fixes are made
 in package T# source, followed by all relevant gates. No manual Export, sync,
 hash receipts, fresh output comparison or UdonSharp compatibility is required.

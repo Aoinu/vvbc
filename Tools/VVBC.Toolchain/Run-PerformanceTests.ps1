@@ -4,14 +4,14 @@
 #   pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1 -Scenario feedback_c4_90fps
 #   pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1 -Check      # static checks only, measures nothing
 #   pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1 -Propose    # also print measured values
-#   pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1 -CompilerRoot D:/runner/tsukimi-project
+#   pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1 -CompilerRoot D:/other/project
 # Requires Python 3.11+, .NET 8+ (dotnet) and the installed com.tsukimicode.udon-tools package. No Unity Editor is needed.
 param(
     [string[]]$Scenario = @(),
     [switch]$Check,
     [switch]$Propose,
     # Project folder that provides the licensed Tsukimi package (Packages/com.tsukimicode.udon-tools).
-    # Defaults to this checkout; CI runners point it at a pre-provisioned project.
+    # Defaults to this checkout; use it to measure another checkout (e.g. a worktree) with --root.
     [string]$CompilerRoot = $env:VVBC_COMPILER_ROOT
 )
 $ErrorActionPreference = 'Stop'

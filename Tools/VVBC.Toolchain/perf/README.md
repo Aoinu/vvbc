@@ -37,8 +37,7 @@ python Tools/VVBC.Toolchain/perf/run.py                                  # same,
 
 Requirements: Python 3.11+, .NET 8+ (`dotnet`) and the installed `com.tsukimicode.udon-tools` 0.10.1
 package. **No Unity Editor is needed**; the runner uses the package's MCP server (`Server~/TsukimiCode.Mcp.dll`).
-`-CompilerRoot`/`VVBC_COMPILER_ROOT` points to another project that provides the package (CI runners,
-or measuring a second checkout such as a worktree: `--root <worktree> --compiler-root <main project>`).
+`-CompilerRoot`/`VVBC_COMPILER_ROOT` points to another project that provides the package (e.g. measuring a second checkout such as a worktree: `--root <worktree> --compiler-root <main project>`).
 
 Exit codes: `0` all active scenarios within budget; `1` budget exceeded; `2` error (scenario not run or
 not measurable, tool failure, invalid budget file, stale stub rule); `3` environment mismatch (different
@@ -124,10 +123,31 @@ So absolute numbers are for the harness, not for VRChat; **comparisons across co
 because the same stubs apply to both. A regression inside a stand-in-replaced call (e.g. making a curve
 evaluate more expensive) is not seen; a regression in how often it is called is.
 
-Every rule must match exactly the reviewed number of times. If a production edit touches a stubbed
-call site, the run fails with `Stub rule "..." matched N time(s), expected M` (also in CI via
-`run.py --check`). Review the rule and `harness/PerfUnity.cs`, then update `RULES` in the same change.
+Every rule has an exact reviewed match count (a total, or per file for rules that also appear in files no scenario
+executes; those declare why extra matches there are tolerated). Extra matches in a measured file or a vanished
+stubbed call both fail the run. If a production edit touches a stubbed
+call site, the run fails with `Stub rule "..." matched N time(s), expected M` (also with
+`-Check`). Review the rule and `harness/PerfUnity.cs`, then update `RULES` in the same change.
 Production changes outside those call sites need no harness change.
+
+## Validity of the baseline (checked at `2c6511a`)
+
+- Setup is subtracted: the base test (`m0`) records the identical Motion/Ball history, only the run test adds the
+  production call, so cost = that call alone. `*_warm` = (scan after a second frame) - (the same without the
+  scan), so cold-cache initialization (outline build, geometry preparation) and steady-state cost are separate.
+  For `feedback_c4_90fps`: cold 1.41 M steps, warm 0.90 M, so initialization is about 0.5 M of the cold frame.
+- Stub influence is small: replacing every stand-in (Slerp, curves, TransformPoint, ...) by a constant changed
+  `feedback_c4_90fps` by -2.5 % steps (1.414 M -> 1.379 M) and `contact_hit_90fps` by -2.8 %. The cost is the
+  production code itself.
+- Same harness, same scenarios, `58b5c0a` (before the Scan optimization) versus `2c6511a`: `feedback_c1_90fps`
+  223 k -> 93 k steps, `c2` 1.82 M -> 0.60 M, `c3` 451 k -> 221 k, `c4` 5.51 M -> 1.41 M, `c4_warm` 3.54 M -> 0.90 M,
+  `c5` 4.12 M -> 1.10 M (-58 % to -75 %). Contact and Motion scenarios are identical at both commits (those
+  files did not change). Older commits need extra comparison-only stub rules; they are not supported by
+  `RULES`, which target the current sources.
+- Open lead (not a regression): after the cache is built, `CandidateDistance` for a point outside the bat region
+  costs about 34 k steps / 7.9 k externs per call, roughly three times the cost of its 16 segment tests measured in
+  isolation (about 10 k / 2 k); the first call costs about 130 k steps. The cause (T# code generation for the
+  loop, or genuine work) is not identified.
 
 ## Adding or changing a scenario
 
@@ -148,15 +168,9 @@ a failing run pass without that explanation. `limits` may not exceed `absoluteLi
 ceiling needs an explicit justification. Re-record **all** baselines in one reviewed change when the Tsukimi
 version changes (exit code 3 until then).
 
-## CI
+## Local only
 
-- `validate.yml` (hosted, every PR and push to `main`): unit tests of this gate (`tests/test_perf.py`:
-  pass at/below the limit, fail over steps/externs, missing/unrun/unmeasurable scenarios, invalid budgets,
-  environment mismatch, stale stub rules) and `run.py --check` (budgets valid, generated scenario tests
-  complete, all stub rules match current production). **This does not measure performance.**
-- `performance.yml` (self-hosted runner labelled `self-hosted, windows, vvbc-tsukimi`): runs the real
-  measurement on PRs from this repository (never forks), on `main` and on demand. Hosted runners cannot run it
-  because the proprietary Tsukimi compiler cannot be installed or redistributed there. Without a registered
-  runner the job stays queued; it is never reported green unmeasured. Runner setup: Windows, Python 3.11+,
-  .NET 8+, a project folder with the licensed `com.tsukimicode.udon-tools` 0.10.1 (set `VVBC_COMPILER_ROOT`),
-  read-only checkout token, no secrets, no fork PRs.
+This gate runs locally; no CI workflow runs it (the proprietary Tsukimi compiler cannot be installed on
+hosted runners). Run it before merging runtime changes to the Bat/Ball/Feedback Behaviours. Its Python unit
+tests (`tests/test_perf.py`) run with the other toolchain tests, and `-Check` validates budgets, generated
+scenario tests and stub rules without the compiler (it measures nothing).

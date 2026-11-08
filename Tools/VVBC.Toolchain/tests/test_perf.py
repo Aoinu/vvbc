@@ -362,6 +362,44 @@ class HarnessStubRuleTests(unittest.TestCase):
         with self.assertRaises(harness.HarnessError):
             harness.apply_rules({'A.cs': 'foo foo'}, rules)
 
+    def test_no_rule_is_unchecked(self):
+        for r in harness.RULES:
+            self.assertIsNotNone(r['count'], r['name'])
+            if isinstance(r['count'], dict):
+                self.assertTrue(r['others'] or r['files'] is not None, r['name'])
+
+    def production_texts(self):
+        return {p.name: p.read_text(encoding='utf-8-sig') for p in harness.production_sources(ROOT)}
+
+    def test_new_time_use_in_a_measured_file_is_detected(self):
+        texts = self.production_texts()
+        scan = 'BattingFeedbackBehaviour.Scan.cs'
+        texts[scan] = texts[scan].replace('private bool InZone(', 'private float PerfProbe() { return Time.time; } private bool InZone(', 1)
+        with self.assertRaises(harness.HarnessError) as caught:
+            harness.apply_rules(texts)
+        self.assertIn('Time.time', str(caught.exception))
+
+    def test_vanished_stubbed_call_is_detected(self):
+        texts = self.production_texts()
+        history = 'BallBehaviour.History.cs'
+        texts[history] = texts[history].replace('Quaternion.Slerp(', 'Quaternion.SlerpUnclamped(', 1)
+        with self.assertRaises(harness.HarnessError):
+            harness.apply_rules(texts)
+
+    def test_unlisted_file_match_is_tolerated_only_when_declared(self):
+        texts = {'A.cs': 'Time.time', 'B.cs': 'Time.time'}
+        strict = [harness.rule('t', 'Time.time', 'X', {'A.cs': 1})]
+        with self.assertRaises(harness.HarnessError):
+            harness.apply_rules(texts, strict)
+        declared = [harness.rule('t', 'Time.time', 'X', {'A.cs': 1}, others='B is never executed')]
+        harness.apply_rules(texts, declared)
+
+    def test_new_match_in_a_motion_hot_file_is_detected(self):
+        texts = self.production_texts()
+        texts['BatMotionBehaviour.cs'] += ' // body.transform.position '
+        with self.assertRaises(harness.HarnessError):
+            harness.apply_rules(texts)
+
     def test_harness_compiles_current_production_not_a_copy(self):
         sources, _ = harness.build(ROOT, [])
         production = (ROOT / harness.RUNTIME / 'BattingFeedbackBehaviour.Scan.cs').read_text(encoding='utf-8-sig')
