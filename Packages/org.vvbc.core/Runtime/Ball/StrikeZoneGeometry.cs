@@ -35,4 +35,13 @@ public static class StrikeZoneGeometry
         float dy = Mathf.Max(Mathf.Max(bottom - y, y - top), 0f);
         return dx * dx + dy * dy <= radius * radius;
     }
+
+    // Corners run bottom-left, top-left, top-right, bottom-right, bottom-left (closed).
+    public static Vector3 FramePoint(Vector3 origin, Vector3 forward, float width,
+        float bottom, float top, Vector2 offset, int index)
+    {
+        float side = (index == 2 || index == 3) ? 0.5f : -0.5f;
+        float y = (index == 1 || index == 2) ? top : bottom;
+        return origin + Right(forward) * (offset.x + side * width) + Vector3.up * (offset.y + y);
+    }
 }

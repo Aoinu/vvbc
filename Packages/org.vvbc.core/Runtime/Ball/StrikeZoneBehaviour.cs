@@ -12,6 +12,8 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
     [Header("Home Plate")]
     [Tooltip("The physical Ball assigned to this HomePlate.")]
     public BallBehaviour ball;
+    [Tooltip("Optional strike zone outline refreshed when the effective zone may change.")]
+    public StrikeZoneFrameBehaviour frame;
     [Tooltip("Plate depth in metres, from the rear tip toward the pitcher.")]
     public float plateDepth = 0.4318f;
     [Header("Strike Zone")]
@@ -179,7 +181,11 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
         float oldBottom = syncedZoneBottom;
         float oldTop = syncedZoneTop;
         if (!SetEyeHeight(player.GetAvatarEyeHeightAsMeters())) return;
-        if (oldBottom != syncedZoneBottom || oldTop != syncedZoneTop) RequestSerialization();
+        if (oldBottom != syncedZoneBottom || oldTop != syncedZoneTop)
+        {
+            RequestSerialization();
+            if (frame != null) frame.Refresh();
+        }
     }
 
     private bool SetHeight(float height)
@@ -230,6 +236,7 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
             for (int i = 0; i < occupantOnlyObjects.Length; i++)
                 if (occupantOnlyObjects[i] != null) occupantOnlyObjects[i].SetActive(active);
         if (contactListener != null) contactListener.SendCustomEvent("OnOccupancyChanged");
+        if (frame != null) frame.Refresh();
     }
 
     public void Snapshot()
