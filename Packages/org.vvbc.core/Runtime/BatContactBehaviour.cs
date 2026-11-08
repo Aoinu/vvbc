@@ -56,7 +56,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public Vector3 snapshotBatCoreVelocity;
     public Vector3 snapshotBatAngularVelocity;
     public Vector3 snapshotX, snapshotY, snapshotN;
-    public float snapshotPlaneX, snapshotPlaneY, snapshotNormalizedY;
+    public float snapshotPlaneX, snapshotPlaneY, snapshotNormalizedX, snapshotNormalizedY;
     public Vector3 snapshotIncomingVelocity, snapshotIncomingSpin;
     public Quaternion snapshotBallRotation;
     public bool snapshotBallRotationValid;
@@ -396,7 +396,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshotBatCoreVelocity = snapshot.batCoreVelocity;
         snapshotBatAngularVelocity = snapshot.batAngularVelocity;
         snapshotX = snapshot.axisX; snapshotY = snapshot.axisY; snapshotN = snapshot.normal;
-        snapshotPlaneX = px; snapshotPlaneY = py; snapshotNormalizedY = snapshot.normalizedY;
+        snapshotPlaneX = px; snapshotPlaneY = py; snapshotNormalizedX = motion.NormalizedContactXAtLocalY(localY);
+        snapshotNormalizedY = snapshot.normalizedY;
         snapshotIncomingVelocity = snapshot.incomingVelocity;
         snapshotIncomingSpin = _ballSpin;
         snapshotBallRotation = ballRotation;

@@ -16,6 +16,18 @@ public static class BatGeometry
         return Mathf.Clamp01(localY / length);
     }
 
+    // Unclamped so feedback can show misses beyond either contact endpoint.
+    public static float NormalizedContactX(float length, float localY, float start, float sweetSpot, float end)
+    {
+        if (!Finite(length) || length <= 0f || !Finite(localY) ||
+            !ValidContactRange(start, end, sweetSpot)) return float.NaN;
+        float x = localY / length;
+        if (!Finite(x)) return float.NaN;
+        float result = x < sweetSpot ? (x - sweetSpot) / (sweetSpot - start) :
+            (x - sweetSpot) / (end - sweetSpot);
+        return Finite(result) ? result : float.NaN;
+    }
+
     public static float EvaluateRadius(AnimationCurve curve, float normalized)
     {
         if (curve == null || curve.length == 0 || !Finite(normalized)) return float.NaN;
@@ -88,7 +100,7 @@ public static class BatGeometry
     public static bool ValidContactRange(float start, float end, float sweetSpot)
     {
         return Finite(start) && Finite(end) && Finite(sweetSpot) &&
-            start >= 0f && start < end && end <= 1f && sweetSpot >= start && sweetSpot <= end;
+            start >= 0f && start < sweetSpot && sweetSpot < end && end <= 1f;
     }
 
     public static bool Finite(float value)

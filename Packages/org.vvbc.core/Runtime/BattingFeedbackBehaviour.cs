@@ -37,7 +37,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     private bool _entered, _exited, _hasClosest, _hasResult, _isContact, _shown, _metricsDirty;
     private float _scanTime, _entryTime, _exitTime, _showAt;
     private float _distance = float.MaxValue;
-    private float _time, _speed, _angular, _rawPower, _powerCap, _power, _yaw, _planeX, _planeY, _normalizedY;
+    private float _time, _speed, _angular, _rawPower, _powerCap, _power, _yaw, _planeX, _planeY, _normalizedX, _normalizedY;
     private float _peakSpeed, _peakAngular, _quality;
     private int _capReason;
     private Vector3 _batPosition, _ballPosition, _resultVelocity, _resultSpin;
@@ -166,7 +166,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _rawPower = contact.snapshotRawPower; _powerCap = contact.snapshotPowerCap;
         _capReason = contact.snapshotPowerCapReason; _power = contact.finalBatPower;
         _planeX = contact.snapshotPlaneX; _planeY = contact.snapshotPlaneY;
-        _normalizedY = contact.snapshotNormalizedY; _quality = contact.contactQuality;
+        _normalizedX = contact.snapshotNormalizedX; _normalizedY = contact.snapshotNormalizedY; _quality = contact.contactQuality;
         _yaw = TimingYaw(contact.snapshotX, contact.CenterDirection());
         _resultVelocity = contact.resultVelocity; _resultSpin = contact.resultSpin;
         _trailReady = false; _trailCount = 0; contact.feedbackTrailActive = true;
@@ -257,6 +257,11 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     }
     private float SpinRpm(Vector3 spin) { return spin.magnitude * 60f / (2f * Mathf.PI); }
 
+    private string FormatNormalizedX(float value)
+    {
+        return BatGeometry.Finite(value) ? value.ToString("F3") : "—";
+    }
+
     private void UpdateMetrics()
     {
         if (metrics == null) return;
@@ -275,7 +280,8 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
             "%\nCap: " + (_powerCap * 100f).ToString("F1") + "% (" + CapReason(_capReason) + ")\nFinal: " +
             (_power * 100f).ToString("F1") + "%\n\nCONTACT\n" + result + "  Quality: " + quality +
             "\nPlane X: " + (_planeX * 100f).ToString("F1") + " cm  Y: " + (_planeY * 100f).ToString("F1") +
-            " cm\nNormalized Y: " + _normalizedY.ToString("F2") + "  Yaw: " + _yaw.ToString("F1") +
+            " cm\nNormalized X: " + FormatNormalizedX(_normalizedX) + "  Y: " + _normalizedY.ToString("F2") +
+            "\nYaw: " + _yaw.ToString("F1") +
             "°\nTime: " + _time.ToString("F3") + "  Closest: " + distance + "\n\nBALL RESULT\nExit: " + ball;
     }
 }

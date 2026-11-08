@@ -62,6 +62,30 @@ public partial class BatMotionBehaviour
     }
 
     [TsukimiTest]
+    public void NormalizedContactXUsesAsymmetricSweetSpotWithoutClamping()
+    {
+        batLength = 2f; contactStartNormalized = 0.1f; sweetSpotNormalized = 0.7f; contactEndNormalized = 0.9f;
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(0.2f) + 1f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(1.4f)) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(1.8f) - 1f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(0.8f) + 0.5f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(1.6f) - 0.5f) < 0.00001f);
+        Assert.IsTrue(NormalizedContactXAtLocalY(0f) < -1f);
+        Assert.IsTrue(NormalizedContactXAtLocalY(2f) > 1f);
+    }
+
+    [TsukimiTest]
+    public void NormalizedContactXRejectsInvalidGeometryAndNonFiniteResults()
+    {
+        Assert.IsFalse(BatGeometry.ValidContactRange(0.2f, 1f, 0.2f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(0f, 0.8f, 0.8f));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(1f, 0.2f, 0.2f, 0.2f, 1f)));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(0f, 0.2f, 0f, 0.5f, 1f)));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(1f, float.PositiveInfinity, 0f, 0.5f, 1f)));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(float.Epsilon, float.MaxValue, 0f, 0.5f, 1f)));
+    }
+
+    [TsukimiTest]
     public void ContactQualityUsesNormalizedRangeAndSweetSpotAndTracksLength()
     {
         float start = 0.1f / 0.855f, sweet = 0.68f / 0.855f;

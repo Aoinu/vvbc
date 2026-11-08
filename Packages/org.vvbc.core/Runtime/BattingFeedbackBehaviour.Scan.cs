@@ -241,6 +241,7 @@ public partial class BattingFeedbackBehaviour
         _capReason = motion.contactPowerCapReason;
         _power = Mathf.Min(_rawPower, _powerCap);
         _planeX = _candidateX; _planeY = _candidateYValue;
+        _normalizedX = motion.NormalizedContactXAtLocalY(motion.ContactPlaneDistanceToLocalY(_candidateX));
         _normalizedY = _candidateYValue / _candidateWidth;
         _yaw = TimingYaw(_candidateAxis, contact.CenterDirection());
     }

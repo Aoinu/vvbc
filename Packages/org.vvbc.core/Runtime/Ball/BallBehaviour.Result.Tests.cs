@@ -71,16 +71,39 @@ public partial class BallBehaviour
     }
 
     [TsukimiTest]
+    public void ResultPlaneOffsetLowersTopContactAndRaisesBottomWithoutChangingSpeedOrSpin()
+    {
+        BallResultSnapshot s = ResultExample();
+        s.sprayScale = 0f; s.batCoreVelocity = Vector3.forward * 5f; s.batAngularVelocity = Vector3.zero;
+        s.normalizedY = 0f;
+        BallResult center = BallResultMath.Calculate(s);
+        s.normalizedY = 1f; // axisY points down: the bat strikes the upper side of the ball.
+        BallResult top = BallResultMath.Calculate(s);
+        s.normalizedY = -1f;
+        BallResult bottom = BallResultMath.Calculate(s);
+        Assert.IsTrue(center.valid && top.valid && bottom.valid);
+        Assert.IsTrue(top.linearVelocity.y < 0f && bottom.linearVelocity.y > 0f);
+        Assert.IsTrue(Mathf.Abs(center.linearVelocity.normalized.y - Mathf.Sin(12f * Mathf.Deg2Rad)) < 0.0001f);
+        float speed = 8f + 37f * s.power * s.quality;
+        Assert.IsTrue(Mathf.Abs(top.linearVelocity.magnitude - speed) < 0.001f);
+        Assert.IsTrue(Mathf.Abs(bottom.linearVelocity.magnitude - speed) < 0.001f);
+        Assert.IsTrue((top.angularVelocity + s.axisX * (2000f * 2f * Mathf.PI / 60f)).magnitude < 0.001f);
+        Assert.IsTrue((bottom.angularVelocity - s.axisX * (2000f * 2f * Mathf.PI / 60f)).magnitude < 0.001f);
+        Assert.IsTrue(center.angularVelocity.magnitude < 0.0001f);
+    }
+
+    [TsukimiTest]
     public void ResultUsesWorldAxesInSpecifiedRotationOrder()
     {
         BallResultSnapshot s = ResultExample();
+        s.normalizedY = 0.8f;
         BallResult actual = BallResultMath.Calculate(s);
         Vector3 reflected = s.incomingVelocity - 2f * Vector3.Dot(s.incomingVelocity, s.normal) * s.normal;
         float spray = Mathf.Atan2(Vector3.Dot(s.axisY, Vector3.Cross(s.centerDirection, reflected.normalized)),
             Vector3.Dot(s.centerDirection, reflected.normalized)) * Mathf.Rad2Deg;
         Vector3 localVelocity = s.batCoreVelocity + Vector3.Cross(s.batAngularVelocity, s.contactPosition - s.batCorePosition);
         float attack = Mathf.Atan2(localVelocity.y, new Vector2(localVelocity.x, localVelocity.z).magnitude) * Mathf.Rad2Deg;
-        float launch = -38f * s.normalizedY - (12f + 0.35f * attack);
+        float launch = 38f * s.normalizedY - (12f + 0.35f * attack);
         float sr = spray * Mathf.Deg2Rad;
         float lr = launch * Mathf.Deg2Rad;
         Vector3 expected = new Vector3(-Mathf.Sin(sr), -Mathf.Sin(lr) * Mathf.Cos(sr), Mathf.Cos(lr) * Mathf.Cos(sr));
@@ -171,7 +194,7 @@ public partial class BallBehaviour
         Assert.IsTrue(Mathf.Abs(a.angularVelocity.magnitude - 2000f * 2f * Mathf.PI / 60f) < 0.001f);
         Assert.IsTrue((a.angularVelocity + b.angularVelocity).magnitude < 0.001f);
         Assert.IsTrue(Vector3.Cross(a.angularVelocity, s.axisX).magnitude < 0.0001f);
-        Assert.IsTrue(a.linearVelocity.y > 0f && b.linearVelocity.y < 0f);
+        Assert.IsTrue(a.linearVelocity.y < 0f && b.linearVelocity.y > 0f);
     }
 
     [TsukimiTest]

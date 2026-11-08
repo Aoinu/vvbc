@@ -31,6 +31,14 @@ public partial class BattingFeedbackBehaviour
     }
 
     [TsukimiTest]
+    public void NormalizedXFormatsFiniteValuesAndInvalidMeasurements()
+    {
+        Assert.IsTrue(FormatNormalizedX(0.1254f) == "0.125");
+        Assert.IsTrue(FormatNormalizedX(float.NaN) == "—");
+        Assert.IsTrue(FormatNormalizedX(float.PositiveInfinity) == "—");
+    }
+
+    [TsukimiTest]
     public void SegmentDistanceFindsInteriorAndEnds()
     {
         Assert.IsTrue(Mathf.Abs(SegmentDistanceSquared(new Vector2(0.5f, 2f), Vector2.zero, Vector2.right) - 4f) < 0.0001f);

@@ -33,6 +33,12 @@ public partial class BatMotionBehaviour
         return localY * scale;
     }
 
+    public float NormalizedContactXAtLocalY(float localY)
+    {
+        return BatGeometry.NormalizedContactX(batLength, localY, contactStartNormalized,
+            sweetSpotNormalized, contactEndNormalized);
+    }
+
     public float ContactWidthAtLocalY(float localY, float ballRadiusWorld)
     {
         if (!GeometrySettingsValid() || !BatGeometry.Finite(localY) ||

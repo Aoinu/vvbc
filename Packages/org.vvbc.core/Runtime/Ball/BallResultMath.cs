@@ -91,7 +91,7 @@ public static class BallResultMath
         float attack = contactVelocity.sqrMagnitude < 0.01f ? 0f :
             Mathf.Clamp(Mathf.Atan2(vertical, (contactVelocity - vertical * up).magnitude) * Mathf.Rad2Deg, -25f, 25f);
         float yn = Mathf.Clamp(s.normalizedY, -1f, 1f);
-        float launch = -38f * yn + Vector3.Dot(y, up) * (12f + 0.35f * attack);
+        float launch = 38f * yn + Vector3.Dot(y, up) * (12f + 0.35f * attack);
         Vector3 direction = Rotate(Rotate(center, y, spray * s.sprayScale), x, launch * s.launchScale);
         if (!FiniteVector(direction) || direction.sqrMagnitude < 0.00000001f) return result;
         result.linearVelocity = direction.normalized * (8f + 37f * Mathf.Clamp01(s.power) * Mathf.Clamp01(s.quality));
