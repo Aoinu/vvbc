@@ -84,18 +84,23 @@ next preparation.
   baked root pose when late), release, and cycle ready. Events ignore themselves
   when their target time has not arrived, so a leftover event cannot disturb a newer
   pitch. Finished motions are not played.
-- The current Owner launches the ball at the release time through
-  `BallBehaviour.QueueState`, advancing the flight by the lateness. A new Owner
-  re-checks the release when it takes over, but only within the Ball's catch-up window
-  and not when the ball is already flying.
+- Every client launches its local ball flight at the shared release time with
+  `BallBehaviour.LaunchPitchLocal`, advancing it by the lateness. Only the Owner then
+  publishes the formal Pitch snapshot, carrying the same release time, so receivers
+  and the Ball's own publication do not launch it again; a Stage older than that pitch
+  cannot reset the flight. A new Owner publishes the Pitch only while the Ball
+  still holds the Stage.
 - Cycle ready is the later of release + `resetSeconds` and motion start +
   `motionSeconds`. At that time every client returns to the idle pose and the
   Owner prepares the next pitch.
 - Ownership changes only drop the Owner's unfinished preparation. The motion,
   release schedule and ball flight continue. A new Owner waits
-  `ownerSettleSeconds` before reserving a pitch. A pitcher that sees stale ids
-  ignores them.
-- Update runs only while the aim solver iterates; there is no polling for sync.
+  `ownerSettleSeconds` and until it has received a synced state before reserving a
+  pitch. Schedules are ordered by start time rather than id, so an id reused from
+  stale state is still accepted when newer, and repeats are ignored.
+- The Behaviour is never disabled (a disabled Udon Behaviour may not run delayed
+  events); `Update` returns at once unless the aim solver is iterating. Delayed
+  events that run early re-arm themselves for the remaining time.
 
 `PitchSettingsBehaviour` drafts edits locally and commits them once after
 `commitDelaySeconds` of quiet (slider drag, click and keyboard all raise

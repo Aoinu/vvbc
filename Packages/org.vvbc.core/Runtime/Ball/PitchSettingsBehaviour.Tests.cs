@@ -12,14 +12,14 @@ public partial class PitchSettingsBehaviour
     }
 
     [TsukimiTest]
-    public void ConsecutiveEditsShareOneCommit()
+    public void CommitWaitsForTheLastEdit()
     {
-        applying = false;
-        draftMask = 0;
-        ToggleCourse(1);
-        Assert.IsTrue(commitScheduled);
-        ToggleCourse(2);
-        Assert.AreEqual(6, draftMask);
-        Assert.IsTrue(commitScheduled);
+        commitDelaySeconds = 0.5f;
+        lastEditTime = 10f;
+        Assert.IsTrue(CommitRemaining(10.2f) > 0.29f);
+        Assert.IsTrue(CommitRemaining(10.5f) <= 0.01f);
+        // a later edit pushes the commit back
+        lastEditTime = 10.4f;
+        Assert.IsTrue(CommitRemaining(10.5f) > 0.39f);
     }
 }

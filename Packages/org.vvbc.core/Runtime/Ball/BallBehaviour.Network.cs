@@ -50,6 +50,9 @@ public partial class BallBehaviour
     private int _publishedBatterId;
     private float _publishedHitStrength;
     private int _serializationRetries;
+    // Release time of a pitch this client already launched from the shared schedule.
+    private double _localPitchTime;
+    private bool _hasLocalPitch;
 
     public bool IsLocalOwner()
     {
@@ -61,6 +64,38 @@ public partial class BallBehaviour
     {
         return !_pending && _publishedSequence == _acceptedSequence &&
             _acceptedKind == StageState && _publishedKind == StageState && IsLocalOwner();
+    }
+
+    public bool StageAccepted()
+    {
+        return !_pending && _acceptedKind == StageState;
+    }
+
+    // Starts the local flight at the shared release time, caught up by the lateness.
+    // The formal Pitch snapshot carrying the same release time then does not restart it.
+    public bool LaunchPitchLocal(Vector3 position, Vector3 velocity, Vector3 spin, double releaseTime)
+    {
+        if (body == null) return false;
+        double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), releaseTime);
+        if (elapsed < 0.0) elapsed = 0.0;
+        if (!CanCatchUp(elapsed, Time.fixedDeltaTime)) return false;
+        BallFlightState state = AdvanceSnapshot(position, velocity, spin, Physics.gravity,
+            dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
+        _localPitchTime = releaseTime;
+        _hasLocalPitch = true;
+        Launch(state.position, state.velocity, spin);
+        return true;
+    }
+
+    private bool IsLocalPitch(double releaseTime)
+    {
+        return _hasLocalPitch && Mathf.Abs((float)Networking.CalculateServerDeltaTime(releaseTime, _localPitchTime)) < 0.001f;
+    }
+
+    // A Stage older than the pitch already launched here must not reset that flight.
+    private bool StageBeforeLocalPitch(double stageTime)
+    {
+        return _hasLocalPitch && Networking.CalculateServerDeltaTime(stageTime, _localPitchTime) < 0.0;
     }
 
     public bool AwaitingStage()
@@ -141,7 +176,7 @@ public partial class BallBehaviour
         }
         else if (_publishedKind == PitchState)
         {
-            Launch(_publishedPosition, _publishedVelocity, _publishedSpin);
+            if (!IsLocalPitch(_publishedServerTime)) Launch(_publishedPosition, _publishedVelocity, _publishedSpin);
         }
         RequestSerialization();
     }
@@ -195,10 +230,11 @@ public partial class BallBehaviour
         _pending = false;
         if (_kind == StageState)
         {
-            Stage(_position);
+            if (!StageBeforeLocalPitch(_serverTime)) Stage(_position);
             return;
         }
         if (_kind != PitchState && _kind != HitState) return;
+        if (_kind == PitchState && IsLocalPitch(_serverTime)) return;
         if (body == null && (_kind != HitState || _batterId <= 0)) return;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _serverTime);
         if (body != null)

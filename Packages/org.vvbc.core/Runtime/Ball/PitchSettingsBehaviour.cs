@@ -29,6 +29,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     public Color unselectedColor = new Color(0.19f, 0.22f, 0.27f, 1f);
     private bool applying;
     private bool commitScheduled;
+    private float lastEditTime;
     private int draftMask;
     private int draftType;
 
@@ -47,7 +48,9 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     // The pitcher's synced settings or Owner changed: show them without re-triggering a commit.
     public void _OnPitcherStateChanged()
     {
-        if (pitcher == null || commitScheduled) return;
+        if (pitcher == null) return;
+        RefreshOwner();
+        if (commitScheduled) return;
         applying = true;
         if (speedSlider != null) speedSlider.value = pitcher.speedKmh;
         if (spinSlider != null) spinSlider.value = pitcher.spinRpm;
@@ -72,14 +75,27 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     {
         if (applying) return;
         Refresh();
+        lastEditTime = Time.time;
         if (commitScheduled) return;
         commitScheduled = true;
         SendCustomEventDelayedSeconds(nameof(_Commit), Mathf.Max(0.05f, commitDelaySeconds));
     }
 
+    // Seconds still to wait so that the commit comes commitDelaySeconds after the last edit.
+    private float CommitRemaining(float now)
+    {
+        return Mathf.Max(0.05f, commitDelaySeconds) - (now - lastEditTime);
+    }
+
     public void _Commit()
     {
         if (!commitScheduled) return;
+        float remaining = CommitRemaining(Time.time);
+        if (remaining > 0.01f)
+        {
+            SendCustomEventDelayedSeconds(nameof(_Commit), remaining);
+            return;
+        }
         commitScheduled = false;
         if (pitcher == null) return;
         pitcher.SubmitSettings(speedSlider != null ? speedSlider.value : pitcher.speedKmh,

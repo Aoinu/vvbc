@@ -14,21 +14,43 @@ public partial class BattingPitcherBehaviour
     }
 
     [TsukimiTest]
-    public void DuplicateAndOlderPitchIdsAreNotApplied()
+    public void DuplicateAndOlderSchedulesAreNotApplied()
     {
         SetSyncedPitch(3, 10.0);
-        Assert.IsTrue(AcceptPitch());
+        Assert.IsTrue(AcceptPitch(1f));
         Assert.AreEqual(3, _appliedId);
         Assert.AreEqual(10.0, _appliedStart);
-        SetSyncedPitch(3, 20.0);
-        Assert.IsFalse(AcceptPitch());
+        // same schedule again, and an older one
+        Assert.IsFalse(AcceptPitch(0f));
+        Assert.IsFalse(AcceptPitch(-5f));
         Assert.AreEqual(10.0, _appliedStart);
-        SetSyncedPitch(2, 30.0);
-        Assert.IsFalse(AcceptPitch());
-        Assert.AreEqual(3, _appliedId);
-        SetSyncedPitch(4, 40.0);
-        Assert.IsTrue(AcceptPitch());
-        Assert.AreEqual(40.0, _appliedStart);
+        // uninitialised snapshot (id 0) is never applied
+        SetSyncedPitch(0, 99.0);
+        Assert.IsFalse(AcceptPitch(1f));
+    }
+
+    [TsukimiTest]
+    public void ReusedIdAfterOwnerChangeIsAcceptedWhenItsScheduleIsNewer()
+    {
+        SetSyncedPitch(5, 10.0);
+        Assert.IsTrue(AcceptPitch(1f));
+        // a new Owner with stale state reuses id 5 for a later pitch
+        SetSyncedPitch(5, 30.0);
+        Assert.IsTrue(AcceptPitch(20f));
+        Assert.AreEqual(30.0, _appliedStart);
+    }
+
+    [TsukimiTest]
+    public void NewOwnerWithoutSyncedStateIsHeldAndHasNothingToRelease()
+    {
+        Mimic.Join();
+        _ownerReady = false;
+        _stateKnown = false;
+        Assert.IsFalse(CanPrepare());
+        Assert.AreEqual(0, _appliedId);
+        TryRelease();
+        Assert.AreEqual(0, _releasedId);
+        Assert.AreEqual(0, _localLaunchId);
     }
 
     [TsukimiTest]
@@ -56,7 +78,7 @@ public partial class BattingPitcherBehaviour
     public void OwnershipTransferKeepsTheCommittedPitchAndDropsOwnerWork()
     {
         SetSyncedPitch(7, 50.0);
-        Assert.IsTrue(AcceptPitch());
+        Assert.IsTrue(AcceptPitch(1f));
         _ownerReady = true;
         _preparing = true;
         _reserving = true;
@@ -86,7 +108,7 @@ public partial class BattingPitcherBehaviour
     {
         Mimic.Join();
         SetSyncedPitch(2, 10.0);
-        Assert.IsTrue(AcceptPitch());
+        Assert.IsTrue(AcceptPitch(1f));
         SubmitSettings(150f, 3000f, 6f, 5, 2);
         Assert.AreEqual(150f, speedKmh);
         Assert.AreEqual(5, courseMask);
