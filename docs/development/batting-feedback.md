@@ -64,6 +64,68 @@ its other overrides. The runtime Udon inspector exposes `trailRequested`,
 interruption or unavailable measured times can leave only part of the trail;
 no per-frame diagnostic logs are emitted.
 
+## Practice Scan geometry
+
+Within one synchronous Scan, feedback snapshots the Bat geometry and Body scale
+and the Ball collider radius. Before zone entry, an outside sample cannot change
+Scan state, so its width is deferred. Boundary samples and all samples that can
+enter or exit the zone still evaluate the actual radius curve and reject invalid
+values. The width is reused for the inside test and feedback normalization.
+The range ends and, when needed, all 17 vertices of the 16-segment contour are
+computed once using the validated snapshot and reused for closest-point
+refinement. Symmetric upper and lower segments are compared by reflecting the
+point about the Bat axis.
+
+The contour is reused across Scans while its inputs are unchanged. For each
+active Scan, feedback measures Ball radius, and Motion validates the settings
+and captures Body scale. Its revision changes when the curve, length, contact range, axial or radial
+scale, Ball radius, or margin changes. An independent curve snapshot is compared
+by value, including wrap modes, so replacing a curve or editing keys on the same
+instance is detected. The initial Inspector curve copy made for reset also
+serves as the first comparison snapshot. A changed curve is cloned only when
+needed. Invalid settings reject samples; restoring valid settings rechecks the
+revision before a cached contour can be used. Sweet Spot and minimum Quality are
+validated but do not invalidate the contour when changed to valid values.
+
+The 17 contour vertices are generated lazily on the first outside-distance
+query after an input change. This keeps their original floating-point conversion
+through the current axial scale, including nonuniform scale; their world widths
+include the current radial scale, Ball radius and margin. No contour work is
+added to Pickup. No gameplay contact, Power or Quality calculation uses this
+feedback-only cache. No new prefab settings are required.
+
+The editor and T# diagnostics do not measure VRChat CPU time. Repeat the client
+checks below with changing shape and scale, low frame rates and hitches; validate
+pickup and grip lifecycle separately with real clients.
+
+For the existing `D:/Workspaces/VVBC/diag` diagnostic worktree, run
+`python Tools/VVBC.Toolchain/Diagnostics/scan_ab.py`. It extracts the current
+feedback distance and Bat snapshot code and compares it with the 58b5c0a
+replica under identical synthetic inputs at 90, 60, 30 and 15 fps and 200/500 ms
+hitches. Results go to the ignored `.state/scan-opt/` directory. The test runner
+cases used for cost measurements intentionally fail to expose counters; the
+separate geometry and Scan regression cases must pass. Curve evaluation is a
+linear array stub, not Unity's `AnimationCurve`; the native curve equality and
+clone costs, pose interpolation, zone transforms and cross-Behaviour dispatch
+are not measured. Mode `4` includes first-use contour creation; `4warm` repeats
+the same input after building the contour. Use
+`isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Diagnostics/geometry_comparison.cs`
+for the additional in-Editor comparison with real curves. Run
+`isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Diagnostics/cache_comparison.cs`
+to compare settings changes and reset. The accompanying
+`scan_state_comparison.cs` checks zone entry, exit and direction history with
+valid and invalid shapes. `scan_ab_unity.cs` loads the 58b5c0a source from the
+existing diagnostic worktree, compiles a separate baseline Behaviour in memory,
+and compares the real Unity Scan state and display text on identical histories.
+These checks do not replace ClientSim, VRChat or CPU profiling.
+
+For the diagnostic's 90 fps inputs, the 58b5c0a replica and current code
+respectively measured: C1 27,983 / 3,359 steps and 2,198 / 326 externs;
+C2 489,934 / 56,842 steps and 42,406 / 5,991 externs; C3 95,797 / 14,709
+steps and 7,270 / 1,176 externs; C4 1,465,012 / 126,082 steps and 115,761 /
+11,798 externs; C5 1,145,026 / 104,492 steps and 92,664 / 10,197 externs.
+These are runner instruction/extern counts for the replica, not CPU time.
+
 ## 3D audio settings and tuning
 
 These are initial values for client listening, not a loudness guarantee. The

@@ -47,6 +47,73 @@ public partial class BatMotionBehaviour
         return BatGeometry.ContactWidth(radiusCurve, batLength, localY, ballRadiusWorld, contactMargin, radialScale);
     }
 
+    // A feedback Scan is synchronous. Snapshot validated inputs once for its
+    // samples; direct field and in-place curve changes are observed next Scan.
+    private bool _feedbackGeometryValid;
+    private float _feedbackLength, _feedbackStartY, _feedbackEndY, _feedbackMargin;
+    private float _feedbackAxisScale, _feedbackRadialScale, _feedbackBallRadius;
+    private AnimationCurve _feedbackRadiusCurve, _feedbackCurveSnapshot;
+    private bool _feedbackShapeKnown;
+    private int _feedbackGeometryRevision;
+
+    public int FeedbackGeometryRevision() { return _feedbackGeometryRevision; }
+
+    public void PrepareFeedbackGeometry(float ballRadiusWorld)
+    {
+        _feedbackGeometryValid = false;
+        if (!GeometrySettingsValid() || !BatGeometry.Finite(ballRadiusWorld) || ballRadiusWorld < 0f) return;
+        Vector3 scale = body != null ? body.transform.lossyScale : Vector3.one;
+        float axial = Mathf.Abs(scale.y);
+        float radial = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z));
+        if (!BatGeometry.Finite(axial) || axial <= 0.000001f ||
+            !BatGeometry.Finite(radial) || radial <= 0.000001f) return;
+        float startY = ContactStartLocalY(), endY = ContactEndLocalY();
+        bool curveChanged = _feedbackCurveSnapshot == null ||
+            !radiusCurve.Equals(_feedbackCurveSnapshot) ||
+            radiusCurve.preWrapMode != _feedbackCurveSnapshot.preWrapMode ||
+            radiusCurve.postWrapMode != _feedbackCurveSnapshot.postWrapMode;
+        if (!_feedbackShapeKnown || curveChanged || _feedbackLength != batLength || _feedbackStartY != startY ||
+            _feedbackEndY != endY || _feedbackMargin != contactMargin || _feedbackAxisScale != axial ||
+            _feedbackRadialScale != radial || _feedbackBallRadius != ballRadiusWorld)
+        {
+            if (curveChanged) _feedbackCurveSnapshot = CloneCurve(radiusCurve);
+            _feedbackShapeKnown = true;
+            _feedbackGeometryRevision++;
+        }
+        _feedbackLength = batLength; _feedbackRadiusCurve = radiusCurve;
+        _feedbackStartY = startY; _feedbackEndY = endY;
+        _feedbackMargin = contactMargin; _feedbackAxisScale = axial;
+        _feedbackRadialScale = radial; _feedbackBallRadius = ballRadiusWorld;
+        _feedbackGeometryValid = true;
+    }
+
+    public float FeedbackSampleWidth(float planeDistance)
+    {
+        if (!_feedbackGeometryValid || !BatGeometry.Finite(planeDistance)) return 0f;
+        float localY = planeDistance / _feedbackAxisScale;
+        if (!BatGeometry.Finite(localY)) return 0f;
+        localY = Mathf.Clamp(localY, _feedbackStartY, _feedbackEndY);
+        return FeedbackLocalWidth(localY);
+    }
+
+    // Contour vertices must retain the original x / axialScale rounding; unlike
+    // a candidate position they are not clamped to the contact range first.
+    public float FeedbackOutlineWidth(float planeDistance)
+    {
+        if (!_feedbackGeometryValid || !BatGeometry.Finite(planeDistance)) return 0f;
+        float localY = planeDistance / _feedbackAxisScale;
+        if (!BatGeometry.Finite(localY)) return 0f;
+        return FeedbackLocalWidth(localY);
+    }
+
+    private float FeedbackLocalWidth(float localY)
+    {
+        float normalized = Mathf.Clamp01(localY / _feedbackLength);
+        float radius = _feedbackRadiusCurve.Evaluate(normalized);
+        if (!BatGeometry.Finite(radius)) return 0f;
+        return Mathf.Max(0f, radius) * _feedbackRadialScale + _feedbackBallRadius + _feedbackMargin;
+    }
+
     public bool IsInsideContactRange(float localY)
     {
         if (!GeometrySettingsValid() || !BatGeometry.Finite(localY)) return false;
@@ -102,7 +169,13 @@ public partial class BatMotionBehaviour
     private float _defaultContactEndNormalized, _defaultContactMargin, _defaultMinimumQuality, _defaultTimingYaw;
     private readonly float[] _defaultCapSettings = new float[14];
 
-    public void Start() { CaptureBattingDefaults(); }
+    public void Start()
+    {
+        CaptureBattingDefaults();
+        // The captured default is an independent curve and can also detect
+        // in-place edits without allocating a second copy on the first Scan.
+        _feedbackCurveSnapshot = _defaultRadiusCurve;
+    }
 
     private void CaptureBattingDefaults()
     {

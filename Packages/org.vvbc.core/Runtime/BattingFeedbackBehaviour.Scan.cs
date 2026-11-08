@@ -7,6 +7,15 @@ public partial class BattingFeedbackBehaviour
     private bool _hasPreviousCandidateY;
     private Quaternion _candidateBatRotation;
     private float _candidateX, _candidateYValue, _candidateWidth, _candidateBallRadius;
+    private bool _scanHasBallCollider;
+    // Motion's revision changes when any contour input changes, including edits
+    // to keys in the same AnimationCurve instance.
+    private readonly float[] _outlineX = new float[17];
+    private readonly float[] _outlineWidth = new float[17];
+    private bool _outlineReady, _outlineEndsReady, _outlineFinite;
+    private BatMotionBehaviour _outlineMotion;
+    private int _outlineRevision;
+    private float _outlineMinX, _outlineMaxX, _outlineMinWidth, _outlineMaxWidth;
     private int _scanPoints;
     private float _scanLeftTime, _scanLeftDistance, _scanMiddleTime, _scanMiddleDistance;
 
@@ -16,6 +25,19 @@ public partial class BattingFeedbackBehaviour
         float start = Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime);
         if (_scanTime > start) start = _scanTime;
         float end = Mathf.Min(motion.contactLatestTime, flight.latestMotionTime + Mathf.Clamp(contact.maxExtrapolation, 0f, 0.03f));
+        if (end > start && !_exited && !flight.contactConsumed)
+        {
+            _scanHasBallCollider = flight.ballCollider != null;
+            _candidateBallRadius = _scanHasBallCollider
+                ? BatGeometry.EffectiveSphereRadius(flight.ballCollider.radius, flight.ballCollider.transform.lossyScale) : -1f;
+            motion.PrepareFeedbackGeometry(_candidateBallRadius);
+            int revision = motion.FeedbackGeometryRevision();
+            if (_outlineMotion != motion || _outlineRevision != revision)
+            {
+                _outlineReady = false; _outlineEndsReady = false;
+                _outlineMotion = motion; _outlineRevision = revision;
+            }
+        }
         while (end > start && !_exited && !flight.contactConsumed)
         {
             float boundary = motion.NextContactSampleTime(start, end);
@@ -26,6 +48,10 @@ public partial class BattingFeedbackBehaviour
                 float time = Mathf.Lerp(start, boundary, i / 8f);
                 if (!SampleCandidate(motion, time)) continue;
                 bool inside = InZone(_candidateBall);
+                // Before entry an outside sample cannot update Scan state. Its
+                // direction is still computed above for the same fallback path.
+                if (!inside && !_entered) continue;
+                if (!CandidateWidthValid(motion)) continue;
                 if (inside && !_entered)
                 {
                     _entered = true;
@@ -40,7 +66,7 @@ public partial class BattingFeedbackBehaviour
                 }
                 if (inside) ConsiderScannedPoint(motion, time);
             }
-            if (!_exited && SampleCandidate(motion, boundary))
+            if (!_exited && SampleCandidate(motion, boundary) && CandidateWidthValid(motion))
             { _previousCandidateY = _candidateY; _hasPreviousCandidateY = true; }
             _scanTime = boundary;
             start = boundary;
@@ -65,10 +91,10 @@ public partial class BattingFeedbackBehaviour
         {
             float a = (2f * left + right) / 3f;
             float b = (left + 2f * right) / 3f;
-            if (!SampleCandidate(motion, a) || !InZone(_candidateBall)) return;
+            if (!SampleCandidate(motion, a) || !InZone(_candidateBall) || !CandidateWidthValid(motion)) return;
             float da = CandidateDistance(motion);
             ConsiderCandidate(motion, a, da);
-            if (!SampleCandidate(motion, b) || !InZone(_candidateBall)) return;
+            if (!SampleCandidate(motion, b) || !InZone(_candidateBall) || !CandidateWidthValid(motion)) return;
             float db = CandidateDistance(motion);
             ConsiderCandidate(motion, b, db);
             if (da <= db) right = b; else left = a;
@@ -110,13 +136,12 @@ public partial class BattingFeedbackBehaviour
         Vector3 delta = _candidateBall - _candidateCore;
         _candidateX = Vector3.Dot(delta, _candidateAxis);
         _candidateYValue = Vector3.Dot(delta, _candidateY);
-        if (flight.ballCollider == null) return false;
-        _candidateBallRadius = BatGeometry.EffectiveSphereRadius(
-            flight.ballCollider.radius, flight.ballCollider.transform.lossyScale);
-        float localY = motion.ContactPlaneDistanceToLocalY(_candidateX);
-        if (float.IsNaN(localY) || localY > float.MaxValue || localY < -float.MaxValue) return false;
-        localY = Mathf.Clamp(localY, motion.ContactStartLocalY(), motion.ContactEndLocalY());
-        _candidateWidth = motion.ContactWidthAtLocalY(localY, _candidateBallRadius);
+        return _scanHasBallCollider;
+    }
+
+    private bool CandidateWidthValid(BatMotionBehaviour motion)
+    {
+        _candidateWidth = motion.FeedbackSampleWidth(_candidateX);
         return _candidateWidth > 0f;
     }
 
@@ -130,35 +155,70 @@ public partial class BattingFeedbackBehaviour
         return rx * rx + ry * ry;
     }
 
+    private float SegmentDistanceSquaredScalars(float px, float py, float ax, float ay, float bx, float by)
+    {
+        float dx = bx - ax, dy = by - ay;
+        float ox = px - ax, oy = py - ay;
+        float length = dx * dx + dy * dy;
+        float t = length > 0f ? Mathf.Clamp01((ox * dx + oy * dy) / length) : 0f;
+        float rx = ox - t * dx, ry = oy - t * dy;
+        return rx * rx + ry * ry;
+    }
+
     // Approximate the curve-defined boundary in the existing contact plane.
     private float CandidateDistance(BatMotionBehaviour motion)
     {
-        Vector2 p = new Vector2(_candidateX, _candidateYValue);
-        float startY = motion.ContactStartLocalY(), endY = motion.ContactEndLocalY();
-        float minX = motion.PlaneDistanceFromLocalY(startY), maxX = motion.PlaneDistanceFromLocalY(endY);
-        float minW = motion.ContactWidthAtLocalY(startY, _candidateBallRadius);
-        float maxW = motion.ContactWidthAtLocalY(endY, _candidateBallRadius);
+        float px = _candidateX, py = _candidateYValue;
+        if (!_outlineEndsReady)
+        {
+            float startY = motion.ContactStartLocalY(), endY = motion.ContactEndLocalY();
+            _outlineMinX = motion.PlaneDistanceFromLocalY(startY);
+            _outlineMaxX = motion.PlaneDistanceFromLocalY(endY);
+            _outlineMinWidth = motion.ContactWidthAtLocalY(startY, _candidateBallRadius);
+            _outlineMaxWidth = motion.ContactWidthAtLocalY(endY, _candidateBallRadius);
+            _outlineEndsReady = true;
+        }
+        float minX = _outlineMinX, maxX = _outlineMaxX;
+        float minW = _outlineMinWidth, maxW = _outlineMaxWidth;
         float planar = 0f;
-        float clampedLocalY = Mathf.Clamp(motion.ContactPlaneDistanceToLocalY(_candidateX), startY, endY);
-        float widthAtX = motion.ContactWidthAtLocalY(clampedLocalY, _candidateBallRadius);
+        // CandidateWidthValid has already evaluated this exact clamped position.
+        float widthAtX = _candidateWidth;
         if (_candidateX < minX || _candidateX > maxX || Mathf.Abs(_candidateYValue) > widthAtX)
         {
-            Vector2 a = new Vector2(minX, -minW), b = new Vector2(minX, minW);
-            Vector2 c = new Vector2(maxX, maxW), d = new Vector2(maxX, -maxW);
-            planar = Mathf.Min(SegmentDistanceSquared(p, a, b), SegmentDistanceSquared(p, c, d));
-            float previousX = minX;
-            float previousWidth = minW;
+            planar = Mathf.Min(SegmentDistanceSquaredScalars(px, py, minX, -minW, minX, minW),
+                SegmentDistanceSquaredScalars(px, py, maxX, maxW, maxX, -maxW));
+            if (!_outlineReady)
+            {
+                _outlineMinX = minX; _outlineMaxX = maxX;
+                _outlineMinWidth = minW; _outlineMaxWidth = maxW;
+                _outlineX[0] = minX; _outlineWidth[0] = minW;
+                _outlineFinite = BatGeometry.Finite(minX) && BatGeometry.Finite(minW);
+                for (int i = 1; i <= 16; i++)
+                {
+                    float x = Mathf.Lerp(minX, maxX, i / 16f);
+                    _outlineX[i] = x;
+                    _outlineWidth[i] = motion.FeedbackOutlineWidth(x);
+                    if (!BatGeometry.Finite(x) || !BatGeometry.Finite(_outlineWidth[i])) _outlineFinite = false;
+                }
+                _outlineReady = true;
+            }
+            float previousX = _outlineX[0];
+            float previousWidth = _outlineWidth[0];
+            float reflectedY = Mathf.Abs(py);
+            bool canReflect = _outlineFinite && BatGeometry.Finite(py);
             for (int i = 1; i <= 16; i++)
             {
-                float x = Mathf.Lerp(minX, maxX, i / 16f);
-                float localY = motion.ContactPlaneDistanceToLocalY(x);
-                float width = motion.ContactWidthAtLocalY(localY, _candidateBallRadius);
-                Vector2 lowerA = new Vector2(previousX, -previousWidth);
-                Vector2 lowerB = new Vector2(x, -width);
-                Vector2 upperA = new Vector2(previousX, previousWidth);
-                Vector2 upperB = new Vector2(x, width);
-                planar = Mathf.Min(planar, Mathf.Min(SegmentDistanceSquared(p, lowerA, lowerB),
-                    SegmentDistanceSquared(p, upperA, upperB)));
+                float x = _outlineX[i];
+                float width = _outlineWidth[i];
+                // The contour is symmetric and widths are nonnegative. Reflecting
+                // the point selects the closer of each mirrored segment pair.
+                if (canReflect)
+                    planar = Mathf.Min(planar, SegmentDistanceSquaredScalars(px, reflectedY,
+                        previousX, previousWidth, x, width));
+                else
+                    planar = Mathf.Min(planar, Mathf.Min(
+                        SegmentDistanceSquaredScalars(px, py, previousX, -previousWidth, x, -width),
+                        SegmentDistanceSquaredScalars(px, py, previousX, previousWidth, x, width)));
                 previousX = x;
                 previousWidth = width;
             }

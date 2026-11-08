@@ -37,6 +37,27 @@ public partial class BattingFeedbackBehaviour
         Assert.IsTrue(Mathf.Abs(SegmentDistanceSquared(new Vector2(2f, 0f), Vector2.zero, Vector2.right) - 1f) < 0.0001f);
     }
 
+    [TsukimiTest(maxSteps: 10000000)]
+    public void ReflectedScalarSegmentMatchesBothOriginalSides()
+    {
+        // Nonnegative endpoints cover tapers in either direction, zero radii,
+        // end projections and points above, below and between both contours.
+        for (int a = 0; a <= 3; a++)
+        for (int b = 0; b <= 3; b++)
+        for (int x = -2; x <= 6; x++)
+        for (int y = -5; y <= 5; y++)
+        {
+            float wa = a * 0.031f, wb = b * 0.027f;
+            Vector2 p = new Vector2(x * 0.2f, y * 0.039f);
+            Vector2 upperA = new Vector2(0f, wa), upperB = new Vector2(0.8f, wb);
+            Vector2 lowerA = new Vector2(0f, -wa), lowerB = new Vector2(0.8f, -wb);
+            float oldDistance = Mathf.Min(SegmentDistanceSquared(p, upperA, upperB),
+                SegmentDistanceSquared(p, lowerA, lowerB));
+            float newDistance = SegmentDistanceSquaredScalars(p.x, Mathf.Abs(p.y), 0f, wa, 0.8f, wb);
+            Assert.IsTrue(Mathf.Abs(oldDistance - newDistance) < 0.000001f);
+        }
+    }
+
     [TsukimiTest]
     public void BallResultUnitsAndWorldAnglesUseFinalVelocity()
     {

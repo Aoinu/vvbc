@@ -103,6 +103,22 @@ public partial class BatMotionBehaviour
     }
 
     [TsukimiTest]
+    public void FeedbackGeometryRejectsInvalidInputsAndClearsPreviousSnapshot()
+    {
+        _feedbackGeometryValid = true;
+        radiusCurve = null;
+        PrepareFeedbackGeometry(0.0366f);
+        Assert.IsFalse(_feedbackGeometryValid);
+        Assert.AreEqual(0f, FeedbackSampleWidth(0.5f));
+        Assert.AreEqual(0f, FeedbackOutlineWidth(0.5f));
+        _feedbackGeometryValid = true;
+        PrepareFeedbackGeometry(float.NaN);
+        Assert.IsFalse(_feedbackGeometryValid);
+        Assert.AreEqual(0f, FeedbackSampleWidth(float.NaN));
+        Assert.AreEqual(0f, FeedbackOutlineWidth(float.NaN));
+    }
+
+    [TsukimiTest]
     public void FeedbackHandsReflectOnlyLocallyHeldGrips()
     {
         _mode = LocalHeld; lowerHand = BatGripConstants.HandLeft; upperHand = BatGripConstants.HandNone;
