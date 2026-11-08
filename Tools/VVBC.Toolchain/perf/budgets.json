@@ -1,0 +1,2117 @@
+{
+  "schema": 1,
+  "environment": {
+    "tsukimiVersion": "0.10.1",
+    "measurementMethod": "Tsukimi MCP test runner, default Udon path (steps = instructions, externs = extern calls), run minus setup",
+    "recordedAt": "2026-11-08",
+    "recordedAgainstProductionCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+    "note": "Steps and externs are Udon instruction and extern counts from the Tsukimi test runner, not CPU time. Production sources are compiled with the reviewed stub rules in perf/harness.py."
+  },
+  "scenarios": [
+    {
+      "id": "feedback_c1_90fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, 1 frame at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 92987,
+        "externs": 18739
+      },
+      "limits": {
+        "steps": 120884,
+        "externs": 24361
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 139481,
+        "externs": 28109
+      }
+    },
+    {
+      "id": "feedback_c1_60fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, 1 frame at 60 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 60,
+        "frames": 1
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 168627,
+        "externs": 35521
+      },
+      "limits": {
+        "steps": 219216,
+        "externs": 46178
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 252941,
+        "externs": 53282
+      }
+    },
+    {
+      "id": "feedback_c1_30fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, 1 frame at 30 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 30,
+        "frames": 1
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 245771,
+        "externs": 52451
+      },
+      "limits": {
+        "steps": 319503,
+        "externs": 68187
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 368657,
+        "externs": 78677
+      }
+    },
+    {
+      "id": "feedback_c1_15fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, 1 frame at 15 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 15,
+        "frames": 1
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 323657,
+        "externs": 69508
+      },
+      "limits": {
+        "steps": 420755,
+        "externs": 90361
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 485486,
+        "externs": 104262
+      }
+    },
+    {
+      "id": "feedback_c1_backlog200ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, backlog of 18 frames (0.2 s pause) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1501691,
+        "externs": 322211
+      },
+      "limits": {
+        "steps": 1952199,
+        "externs": 418875
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2252537,
+        "externs": 483317
+      }
+    },
+    {
+      "id": "feedback_c1_backlog500ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, backlog of 45 frames (0.5 s pause, history overflows) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 90,
+        "frames": 45
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1501691,
+        "externs": 322211
+      },
+      "limits": {
+        "steps": 1952199,
+        "externs": 418875
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2252537,
+        "externs": 483317
+      }
+    },
+    {
+      "id": "feedback_c1_90fps_warm",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C1 ball outside the contact zone, second consecutive frame at 90 fps (outline cache warm)",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": false,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": false,
+        "hasClosest": false
+      },
+      "measure": {
+        "base": "m3",
+        "run": "m2"
+      },
+      "baseline": {
+        "steps": 169133,
+        "externs": 35621
+      },
+      "limits": {
+        "steps": 219873,
+        "externs": 46308
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 253700,
+        "externs": 53432
+      }
+    },
+    {
+      "id": "feedback_c2_90fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, 1 frame at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 600823,
+        "externs": 135581
+      },
+      "limits": {
+        "steps": 781070,
+        "externs": 176256
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 901235,
+        "externs": 203372
+      }
+    },
+    {
+      "id": "feedback_c2_60fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, 1 frame at 60 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 60,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1088409,
+        "externs": 247401
+      },
+      "limits": {
+        "steps": 1414932,
+        "externs": 321622
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 1632614,
+        "externs": 371102
+      }
+    },
+    {
+      "id": "feedback_c2_30fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, 1 frame at 30 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 30,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1576893,
+        "externs": 359257
+      },
+      "limits": {
+        "steps": 2049961,
+        "externs": 467035
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2365340,
+        "externs": 538886
+      }
+    },
+    {
+      "id": "feedback_c2_15fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, 1 frame at 15 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 15,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 2065831,
+        "externs": 471192
+      },
+      "limits": {
+        "steps": 2685581,
+        "externs": 612550
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 3098747,
+        "externs": 706788
+      }
+    },
+    {
+      "id": "feedback_c2_backlog200ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, backlog of 18 frames (0.2 s pause) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 9130553,
+        "externs": 2074853
+      },
+      "limits": {
+        "steps": 11869719,
+        "externs": 2697309
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 13695830,
+        "externs": 3112280
+      }
+    },
+    {
+      "id": "feedback_c2_backlog500ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, backlog of 45 frames (0.5 s pause, history overflows) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 45
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 9238819,
+        "externs": 2092305
+      },
+      "limits": {
+        "steps": 12010465,
+        "externs": 2719997
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 13858229,
+        "externs": 3138458
+      }
+    },
+    {
+      "id": "feedback_c2_90fps_warm",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C2 ball in zone, outside the batting region, second consecutive frame at 90 fps (outline cache warm)",
+      "params": {
+        "y0": 0.25,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m3",
+        "run": "m2"
+      },
+      "baseline": {
+        "steps": 999494,
+        "externs": 227064
+      },
+      "limits": {
+        "steps": 1299343,
+        "externs": 295184
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 1499241,
+        "externs": 340596
+      }
+    },
+    {
+      "id": "feedback_c3_90fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, 1 frame at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 221194,
+        "externs": 46370
+      },
+      "limits": {
+        "steps": 287553,
+        "externs": 60281
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 331791,
+        "externs": 69555
+      }
+    },
+    {
+      "id": "feedback_c3_60fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, 1 frame at 60 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 60,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 406461,
+        "externs": 87162
+      },
+      "limits": {
+        "steps": 528400,
+        "externs": 113311
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 609692,
+        "externs": 130743
+      }
+    },
+    {
+      "id": "feedback_c3_30fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, 1 frame at 30 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 30,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 592626,
+        "externs": 127990
+      },
+      "limits": {
+        "steps": 770414,
+        "externs": 166387
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 888939,
+        "externs": 191985
+      }
+    },
+    {
+      "id": "feedback_c3_15fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, 1 frame at 15 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 15,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 779245,
+        "externs": 168897
+      },
+      "limits": {
+        "steps": 1013019,
+        "externs": 219567
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 1168868,
+        "externs": 253346
+      }
+    },
+    {
+      "id": "feedback_c3_backlog200ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, backlog of 18 frames (0.2 s pause) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 3611501,
+        "externs": 778166
+      },
+      "limits": {
+        "steps": 4694952,
+        "externs": 1011616
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 5417252,
+        "externs": 1167249
+      }
+    },
+    {
+      "id": "feedback_c3_backlog500ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, backlog of 45 frames (0.5 s pause, history overflows) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 45
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 3719767,
+        "externs": 795618
+      },
+      "limits": {
+        "steps": 4835698,
+        "externs": 1034304
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 5579651,
+        "externs": 1193427
+      }
+    },
+    {
+      "id": "feedback_c3_90fps_warm",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C3 ball in zone, inside the batting region, second consecutive frame at 90 fps (outline cache warm)",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "n0": 0.3,
+        "vn": -1.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m3",
+        "run": "m2"
+      },
+      "baseline": {
+        "steps": 394856,
+        "externs": 85008
+      },
+      "limits": {
+        "steps": 513313,
+        "externs": 110511
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 592284,
+        "externs": 127512
+      }
+    },
+    {
+      "id": "feedback_c4_90fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), 1 frame at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1414261,
+        "externs": 285077
+      },
+      "limits": {
+        "steps": 1838540,
+        "externs": 370601
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2121392,
+        "externs": 427616
+      }
+    },
+    {
+      "id": "feedback_c4_60fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), 1 frame at 60 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 60,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1728648,
+        "externs": 364782
+      },
+      "limits": {
+        "steps": 2247243,
+        "externs": 474217
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2592972,
+        "externs": 547173
+      }
+    },
+    {
+      "id": "feedback_c4_30fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), 1 frame at 30 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 30,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1855638,
+        "externs": 415735
+      },
+      "limits": {
+        "steps": 2412330,
+        "externs": 540456
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2783457,
+        "externs": 623603
+      }
+    },
+    {
+      "id": "feedback_c4_15fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), 1 frame at 15 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 15,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 2281259,
+        "externs": 513463
+      },
+      "limits": {
+        "steps": 2965637,
+        "externs": 667502
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 3421889,
+        "externs": 770195
+      }
+    },
+    {
+      "id": "feedback_c4_backlog200ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), backlog of 18 frames (0.2 s pause) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 9351918,
+        "externs": 2111262
+      },
+      "limits": {
+        "steps": 12157494,
+        "externs": 2744641
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 14027877,
+        "externs": 3166893
+      }
+    },
+    {
+      "id": "feedback_c4_backlog500ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), backlog of 45 frames (0.5 s pause, history overflows) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 45
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 8148847,
+        "externs": 1871387
+      },
+      "limits": {
+        "steps": 10593502,
+        "externs": 2432804
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 12223271,
+        "externs": 2807081
+      }
+    },
+    {
+      "id": "feedback_c4_90fps_warm",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C4 normal swing crossing the ball (closest-point search), second consecutive frame at 90 fps (outline cache warm)",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m3",
+        "run": "m2"
+      },
+      "baseline": {
+        "steps": 896693,
+        "externs": 205297
+      },
+      "limits": {
+        "steps": 1165701,
+        "externs": 266887
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 1345040,
+        "externs": 307946
+      }
+    },
+    {
+      "id": "feedback_c5_90fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, 1 frame at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1104759,
+        "externs": 229184
+      },
+      "limits": {
+        "steps": 1436187,
+        "externs": 297940
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 1657139,
+        "externs": 343776
+      }
+    },
+    {
+      "id": "feedback_c5_60fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, 1 frame at 60 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 60,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1452652,
+        "externs": 316760
+      },
+      "limits": {
+        "steps": 1888448,
+        "externs": 411788
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2178978,
+        "externs": 475140
+      }
+    },
+    {
+      "id": "feedback_c5_30fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, 1 frame at 30 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 30,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1731787,
+        "externs": 391774
+      },
+      "limits": {
+        "steps": 2251324,
+        "externs": 509307
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 2597681,
+        "externs": 587661
+      }
+    },
+    {
+      "id": "feedback_c5_15fps",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, 1 frame at 15 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 15,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 2156237,
+        "externs": 489299
+      },
+      "limits": {
+        "steps": 2803109,
+        "externs": 636089
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 3234356,
+        "externs": 733949
+      }
+    },
+    {
+      "id": "feedback_c5_backlog200ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, backlog of 18 frames (0.2 s pause) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 8870155,
+        "externs": 2016593
+      },
+      "limits": {
+        "steps": 11531202,
+        "externs": 2621571
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 13305233,
+        "externs": 3024890
+      }
+    },
+    {
+      "id": "feedback_c5_backlog500ms",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, backlog of 45 frames (0.5 s pause, history overflows) at 90 fps, cold Scan",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 45
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 8148835,
+        "externs": 1871384
+      },
+      "limits": {
+        "steps": 10593486,
+        "externs": 2432800
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 12223253,
+        "externs": 2807076
+      }
+    },
+    {
+      "id": "feedback_c5_90fps_warm",
+      "component": "BattingFeedbackBehaviour",
+      "function": "Scan",
+      "driver": "feedback-scan",
+      "description": "C5 fast swing crossing the ball, second consecutive frame at 90 fps (outline cache warm)",
+      "params": {
+        "y0": 0.0,
+        "vy": 40.0,
+        "n0": 0.02,
+        "vn": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "entered": true,
+        "hasClosest": true
+      },
+      "measure": {
+        "base": "m3",
+        "run": "m2"
+      },
+      "baseline": {
+        "steps": 896693,
+        "externs": 205297
+      },
+      "limits": {
+        "steps": 1165701,
+        "externs": 266887
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "absoluteLimits": {
+        "steps": 1345040,
+        "externs": 307946
+      }
+    },
+    {
+      "id": "contact_out_of_zone_90fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Ball outside the contact zone, 1 frame at 90 fps",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": -0.5,
+        "tilt": 80.0,
+        "zone": false,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": false,
+        "enteredZone": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 49090,
+        "externs": 9189
+      },
+      "limits": {
+        "steps": 63817,
+        "externs": 11946
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 73635,
+        "externs": 13784
+      }
+    },
+    {
+      "id": "contact_zone_entry_90fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Ball inside the zone, not yet at the bat plane, 1 frame at 90 fps",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": -0.04,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": false,
+        "enteredZone": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 49258,
+        "externs": 9229
+      },
+      "limits": {
+        "steps": 64036,
+        "externs": 11998
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 73887,
+        "externs": 13844
+      }
+    },
+    {
+      "id": "contact_reject_width_90fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Bat plane crossed outside the bat width (no contact), 1 frame at 90 fps",
+      "params": {
+        "y0": 0.3,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": 0.005556,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": false,
+        "enteredZone": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 120512,
+        "externs": 22085
+      },
+      "limits": {
+        "steps": 156666,
+        "externs": 28711
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 180768,
+        "externs": 33128
+      }
+    },
+    {
+      "id": "contact_reject_timing_90fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Bat plane crossed with a vertical bat (timing yaw rejects), 1 frame at 90 fps",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": 0.005556,
+        "tilt": 0.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": false,
+        "enteredZone": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 108590,
+        "externs": 19722
+      },
+      "limits": {
+        "steps": 141167,
+        "externs": 25639
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 162885,
+        "externs": 29583
+      }
+    },
+    {
+      "id": "contact_hit_90fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Bat plane crossed on the bat: contact accepted, 1 frame at 90 fps",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": 0.005556,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": true,
+        "opportunityEnded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 136074,
+        "externs": 25798
+      },
+      "limits": {
+        "steps": 176897,
+        "externs": 33538
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 204111,
+        "externs": 38697
+      }
+    },
+    {
+      "id": "contact_hit_swing_90fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Moving bat meets the ball: contact accepted, 1 frame at 90 fps",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "speed": 30.0,
+        "crossSeconds": 0.005556,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": true,
+        "opportunityEnded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 136149,
+        "externs": 25811
+      },
+      "limits": {
+        "steps": 176994,
+        "externs": 33555
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 204224,
+        "externs": 38717
+      }
+    },
+    {
+      "id": "contact_hit_30fps",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Contact accepted from a 30 fps frame",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "speed": 30.0,
+        "crossSeconds": 0.016667,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 30,
+        "frames": 1
+      },
+      "expect": {
+        "contactValid": true,
+        "opportunityEnded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 170660,
+        "externs": 34560
+      },
+      "limits": {
+        "steps": 221858,
+        "externs": 44928
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 255990,
+        "externs": 51840
+      }
+    },
+    {
+      "id": "contact_hit_backlog200ms",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Contact accepted after a 0.2 s pause (18 frames in one call)",
+      "params": {
+        "y0": 0.0,
+        "vy": 20.0,
+        "speed": 30.0,
+        "crossSeconds": 0.1,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "contactValid": true,
+        "opportunityEnded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 284660,
+        "externs": 56630
+      },
+      "limits": {
+        "steps": 370058,
+        "externs": 73619
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 426990,
+        "externs": 84945
+      }
+    },
+    {
+      "id": "contact_out_of_zone_backlog200ms",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Ball outside the zone after a 0.2 s pause (multi-segment scan)",
+      "params": {
+        "y0": 0.0,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": -0.5,
+        "tilt": 80.0,
+        "zone": false,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "contactValid": false,
+        "enteredZone": false
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 791688,
+        "externs": 157257
+      },
+      "limits": {
+        "steps": 1029195,
+        "externs": 204435
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 1187532,
+        "externs": 235886
+      }
+    },
+    {
+      "id": "contact_reject_width_backlog200ms",
+      "component": "BatContactBehaviour",
+      "function": "OnBatContactPose",
+      "driver": "contact-pose",
+      "description": "Crossing outside the bat width after a 0.2 s pause",
+      "params": {
+        "y0": 0.3,
+        "vy": 0.0,
+        "speed": 30.0,
+        "crossSeconds": 0.1,
+        "tilt": 80.0,
+        "zone": true,
+        "fps": 90,
+        "frames": 18
+      },
+      "expect": {
+        "contactValid": false,
+        "enteredZone": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 594291,
+        "externs": 118461
+      },
+      "limits": {
+        "steps": 772579,
+        "externs": 154000
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "absoluteLimits": {
+        "steps": 891437,
+        "externs": 177692
+      }
+    },
+    {
+      "id": "motion_first_pickup",
+      "component": "BatMotionBehaviour",
+      "function": "Configure",
+      "driver": "motion-pose",
+      "description": "First pickup: Configure(LocalHeld, one hand) from Inactive",
+      "params": {
+        "kind": "pickup",
+        "grip": 1,
+        "speed": 0.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "gripState": 1
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1303,
+        "externs": 148
+      },
+      "limits": {
+        "steps": 1694,
+        "externs": 193
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 1955,
+        "externs": 222
+      }
+    },
+    {
+      "id": "motion_second_pickup",
+      "component": "BatMotionBehaviour",
+      "function": "Configure",
+      "driver": "motion-pose",
+      "description": "Second pickup after a completed hold (history reset)",
+      "params": {
+        "kind": "second_pickup",
+        "grip": 1,
+        "speed": 0.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "gripState": 1
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1367,
+        "externs": 164
+      },
+      "limits": {
+        "steps": 1778,
+        "externs": 214
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 2051,
+        "externs": 246
+      }
+    },
+    {
+      "id": "motion_grip_two_hand",
+      "component": "BatMotionBehaviour",
+      "function": "Configure",
+      "driver": "motion-pose",
+      "description": "One-hand hold becomes two-hand hold",
+      "params": {
+        "kind": "two_hand",
+        "grip": 1,
+        "speed": 0.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "gripState": 2
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1733,
+        "externs": 235
+      },
+      "limits": {
+        "steps": 2253,
+        "externs": 306
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 2600,
+        "externs": 353
+      }
+    },
+    {
+      "id": "motion_grip_lock",
+      "component": "BatMotionBehaviour",
+      "function": "Configure",
+      "driver": "motion-pose",
+      "description": "One-hand hold becomes Lock Grip (CaptureLockOffset)",
+      "params": {
+        "kind": "lock",
+        "grip": 1,
+        "speed": 0.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "gripState": 3,
+        "lockCaptured": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1717,
+        "externs": 200
+      },
+      "limits": {
+        "steps": 2233,
+        "externs": 260
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 2576,
+        "externs": 300
+      }
+    },
+    {
+      "id": "motion_drop",
+      "component": "BatMotionBehaviour",
+      "function": "StopMotion",
+      "driver": "motion-pose",
+      "description": "Drop: ReleaseVelocity + StopMotion",
+      "params": {
+        "kind": "drop",
+        "grip": 1,
+        "speed": 0.0,
+        "fps": 90
+      },
+      "expect": {
+        "inactive": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 1094,
+        "externs": 244
+      },
+      "limits": {
+        "steps": 1423,
+        "externs": 318
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 1641,
+        "externs": 366
+      }
+    },
+    {
+      "id": "motion_frame_one_hand_idle_90fps",
+      "component": "BatMotionBehaviour",
+      "function": "PostLateUpdate",
+      "driver": "motion-pose",
+      "description": "Held one hand, almost still, one PostLateUpdate frame at 90 fps",
+      "params": {
+        "kind": "frame",
+        "grip": 1,
+        "speed": 0.5,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "recorded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 31834,
+        "externs": 7387
+      },
+      "limits": {
+        "steps": 41385,
+        "externs": 9604
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 47751,
+        "externs": 11081
+      }
+    },
+    {
+      "id": "motion_frame_one_hand_swing_90fps",
+      "component": "BatMotionBehaviour",
+      "function": "PostLateUpdate",
+      "driver": "motion-pose",
+      "description": "Held one hand, normal swing (6 m/s hand), one PostLateUpdate frame at 90 fps",
+      "params": {
+        "kind": "frame",
+        "grip": 1,
+        "speed": 6.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "recorded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 31834,
+        "externs": 7387
+      },
+      "limits": {
+        "steps": 41385,
+        "externs": 9604
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 47751,
+        "externs": 11081
+      }
+    },
+    {
+      "id": "motion_frame_one_hand_fast_swing_90fps",
+      "component": "BatMotionBehaviour",
+      "function": "PostLateUpdate",
+      "driver": "motion-pose",
+      "description": "Held one hand, fast swing (14 m/s hand), one PostLateUpdate frame at 90 fps",
+      "params": {
+        "kind": "frame",
+        "grip": 1,
+        "speed": 14.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "recorded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 31834,
+        "externs": 7387
+      },
+      "limits": {
+        "steps": 41385,
+        "externs": 9604
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 47751,
+        "externs": 11081
+      }
+    },
+    {
+      "id": "motion_frame_two_hand_swing_90fps",
+      "component": "BatMotionBehaviour",
+      "function": "PostLateUpdate",
+      "driver": "motion-pose",
+      "description": "Held two hands, normal swing, one PostLateUpdate frame at 90 fps",
+      "params": {
+        "kind": "frame",
+        "grip": 2,
+        "speed": 6.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "recorded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 32069,
+        "externs": 7433
+      },
+      "limits": {
+        "steps": 41690,
+        "externs": 9663
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 48104,
+        "externs": 11150
+      }
+    },
+    {
+      "id": "motion_frame_locked_swing_90fps",
+      "component": "BatMotionBehaviour",
+      "function": "PostLateUpdate",
+      "driver": "motion-pose",
+      "description": "Lock Grip, normal swing, one PostLateUpdate frame at 90 fps",
+      "params": {
+        "kind": "frame",
+        "grip": 3,
+        "speed": 6.0,
+        "fps": 90
+      },
+      "expect": {
+        "held": true,
+        "recorded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 31695,
+        "externs": 7355
+      },
+      "limits": {
+        "steps": 41204,
+        "externs": 9562
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 47543,
+        "externs": 11033
+      }
+    },
+    {
+      "id": "motion_frame_one_hand_swing_30fps",
+      "component": "BatMotionBehaviour",
+      "function": "PostLateUpdate",
+      "driver": "motion-pose",
+      "description": "Held one hand, normal swing, one PostLateUpdate frame at 30 fps",
+      "params": {
+        "kind": "frame",
+        "grip": 1,
+        "speed": 6.0,
+        "fps": 30
+      },
+      "expect": {
+        "held": true,
+        "recorded": true
+      },
+      "measure": {
+        "base": "m0",
+        "run": "m1"
+      },
+      "baseline": {
+        "steps": 31834,
+        "externs": 7387
+      },
+      "limits": {
+        "steps": 41385,
+        "externs": 9604
+      },
+      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "absoluteLimits": {
+        "steps": 47751,
+        "externs": 11081
+      }
+    }
+  ]
+}

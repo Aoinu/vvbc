@@ -1,0 +1,58 @@
+name: Performance budget (Udon steps / externs)
+
+# Measures the production VVBC T# code with the licensed Tsukimi compiler and fails when a scenario
+# exceeds its budget in Tools/VVBC.Toolchain/perf/budgets.json.
+#
+# This job needs a self-hosted runner that has the licensed Tsukimi 0.10.1 package, which hosted
+# runners cannot have (the compiler is proprietary and must not be redistributed). Until such a runner
+# exists the job stays queued/pending: it is never reported as passed without having measured anything.
+# Do not mark this check as "required" before the runner is registered.
+#
+# Security: untrusted code must never reach the self-hosted runner. Pull requests from forks are
+# excluded, the token has read-only repository access and no secrets are used.
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: performance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  performance-budget:
+    name: Performance budget
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, windows, vvbc-tsukimi]
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run performance budget tests
+        shell: pwsh
+        # VVBC_COMPILER_ROOT: a project on the runner that has Packages/com.tsukimicode.udon-tools 0.10.1.
+        run: pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1
+
+      - name: Publish report
+        if: always()
+        shell: pwsh
+        run: |
+          $report = 'Tools/VVBC.Toolchain/.state/perf/report.md'
+          if (Test-Path $report) { Get-Content $report | Add-Content $env:GITHUB_STEP_SUMMARY }
+          else { "Performance report was not produced." | Add-Content $env:GITHUB_STEP_SUMMARY }
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: Tools/VVBC.Toolchain/.state/perf/
+          if-no-files-found: warn
