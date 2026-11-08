@@ -1,8 +1,10 @@
 using Tsukimi;
 using UnityEngine;
 using UnityEngine.UI;
+using VRC.SDKBase;
+using VRC.Udon;
 
-// The UI only changes next-cycle settings on the local pitcher.
+// Edits are drafted locally; a coalesced commit asks the pitcher to take Ownership and sync them.
 public partial class PitchSettingsBehaviour : TsukimiBehaviour
 {
     public BattingPitcherBehaviour pitcher;
@@ -12,6 +14,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     public Text speedText;
     public Text spinText;
     public Text resetText;
+    public Text ownerText;
     public Image[] courseIndicators = new Image[0];
     public Image[] pitchIndicators = new Image[0];
     public float minSpeedKmh = 60f;
@@ -20,32 +23,72 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     public float maxSpinRpm = 4000f;
     public float minResetSeconds = 3f;
     public float maxResetSeconds = 15f;
+    [Tooltip("Quiet time after the last edit before the settings are committed, in seconds.")]
+    public float commitDelaySeconds = 0.5f;
     public Color selectedColor = new Color(0.18f, 0.65f, 0.95f, 1f);
     public Color unselectedColor = new Color(0.19f, 0.22f, 0.27f, 1f);
-    private bool initializing;
+    private bool applying;
+    private bool commitScheduled;
+    private int draftMask;
+    private int draftType;
 
     private void Start()
     {
         if (pitcher == null) return;
-        initializing = true;
-        if (speedSlider != null) { speedSlider.minValue = minSpeedKmh; speedSlider.maxValue = maxSpeedKmh; speedSlider.value = pitcher.speedKmh; }
-        if (spinSlider != null) { spinSlider.minValue = minSpinRpm; spinSlider.maxValue = maxSpinRpm; spinSlider.value = pitcher.spinRpm; }
-        if (resetSlider != null) { resetSlider.minValue = minResetSeconds; resetSlider.maxValue = maxResetSeconds; resetSlider.value = pitcher.resetSeconds; }
-        initializing = false;
-        Refresh();
+        applying = true;
+        if (speedSlider != null) { speedSlider.minValue = minSpeedKmh; speedSlider.maxValue = maxSpeedKmh; }
+        if (spinSlider != null) { spinSlider.minValue = minSpinRpm; spinSlider.maxValue = maxSpinRpm; }
+        if (resetSlider != null) { resetSlider.minValue = minResetSeconds; resetSlider.maxValue = maxResetSeconds; }
+        applying = false;
+        pitcher.RegisterSettingsListener(GetComponent<UdonBehaviour>());
+        _OnPitcherStateChanged();
     }
 
-    public void _SpeedChanged() { if (!initializing && pitcher != null && speedSlider != null) { pitcher.speedKmh = speedSlider.value; Refresh(); } }
-    public void _SpinChanged() { if (!initializing && pitcher != null && spinSlider != null) { pitcher.spinRpm = spinSlider.value; Refresh(); } }
-    public void _ResetChanged() { if (!initializing && pitcher != null && resetSlider != null) { pitcher.resetSeconds = resetSlider.value; Refresh(); } }
-
-    private void ToggleCourse(int index)
+    // The pitcher's synced settings or Owner changed: show them without re-triggering a commit.
+    public void _OnPitcherStateChanged()
     {
-        if (pitcher == null) return;
-        pitcher.courseMask = pitcher.courseMask ^ (1 << index);
+        if (pitcher == null || commitScheduled) return;
+        applying = true;
+        if (speedSlider != null) speedSlider.value = pitcher.speedKmh;
+        if (spinSlider != null) spinSlider.value = pitcher.spinRpm;
+        if (resetSlider != null) resetSlider.value = pitcher.resetSeconds;
+        applying = false;
+        draftMask = pitcher.courseMask;
+        draftType = pitcher.pitchType;
         Refresh();
     }
-    private void SelectPitch(int index) { if (pitcher != null) { pitcher.pitchType = index; Refresh(); } }
+
+    public override void OnPlayerLeft(VRCPlayerApi player)
+    {
+        RefreshOwner();
+    }
+
+    // Slider changes come from drag, click and keyboard alike; the commit waits for the edits to settle.
+    public void _SpeedChanged() { Edited(); }
+    public void _SpinChanged() { Edited(); }
+    public void _ResetChanged() { Edited(); }
+
+    private void Edited()
+    {
+        if (applying) return;
+        Refresh();
+        if (commitScheduled) return;
+        commitScheduled = true;
+        SendCustomEventDelayedSeconds(nameof(_Commit), Mathf.Max(0.05f, commitDelaySeconds));
+    }
+
+    public void _Commit()
+    {
+        if (!commitScheduled) return;
+        commitScheduled = false;
+        if (pitcher == null) return;
+        pitcher.SubmitSettings(speedSlider != null ? speedSlider.value : pitcher.speedKmh,
+            spinSlider != null ? spinSlider.value : pitcher.spinRpm,
+            resetSlider != null ? resetSlider.value : pitcher.resetSeconds, draftMask, draftType);
+    }
+
+    private void ToggleCourse(int index) { draftMask = draftMask ^ (1 << index); Edited(); }
+    private void SelectPitch(int index) { draftType = index; Edited(); }
     public void _Course0() { ToggleCourse(0); } public void _Course1() { ToggleCourse(1); } public void _Course2() { ToggleCourse(2); }
     public void _Course3() { ToggleCourse(3); } public void _Course4() { ToggleCourse(4); } public void _Course5() { ToggleCourse(5); }
     public void _Course6() { ToggleCourse(6); } public void _Course7() { ToggleCourse(7); } public void _Course8() { ToggleCourse(8); }
@@ -53,15 +96,23 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     public void _Pitch3() { SelectPitch(3); } public void _Pitch4() { SelectPitch(4); } public void _Pitch5() { SelectPitch(5); }
     public void _Pitch6() { SelectPitch(6); }
 
+    public void RefreshOwner()
+    {
+        if (ownerText == null || pitcher == null) return;
+        VRCPlayerApi owner = Networking.GetOwner(pitcher.gameObject);
+        ownerText.text = "Owner: " + (Utilities.IsValid(owner) ? owner.displayName : "-");
+    }
+
     public void Refresh()
     {
         if (pitcher == null) return;
-        if (speedText != null) speedText.text = Mathf.RoundToInt(pitcher.speedKmh) + " km/h";
-        if (spinText != null) spinText.text = Mathf.RoundToInt(pitcher.spinRpm) + " rpm";
-        if (resetText != null) resetText.text = pitcher.resetSeconds.ToString("F1") + " s";
+        if (speedText != null && speedSlider != null) speedText.text = Mathf.RoundToInt(speedSlider.value) + " km/h";
+        if (spinText != null && spinSlider != null) spinText.text = Mathf.RoundToInt(spinSlider.value) + " rpm";
+        if (resetText != null && resetSlider != null) resetText.text = resetSlider.value.ToString("F1") + " s";
         for (int i = 0; i < courseIndicators.Length && i < 9; i++)
-            if (courseIndicators[i] != null) courseIndicators[i].color = (pitcher.courseMask & (1 << i)) != 0 ? selectedColor : unselectedColor;
+            if (courseIndicators[i] != null) courseIndicators[i].color = (draftMask & (1 << i)) != 0 ? selectedColor : unselectedColor;
         for (int i = 0; i < pitchIndicators.Length && i < 7; i++)
-            if (pitchIndicators[i] != null) pitchIndicators[i].color = pitcher.pitchType == i ? selectedColor : unselectedColor;
+            if (pitchIndicators[i] != null) pitchIndicators[i].color = draftType == i ? selectedColor : unselectedColor;
+        RefreshOwner();
     }
 }

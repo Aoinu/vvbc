@@ -9,7 +9,7 @@ a dependency of `org.vvbc.core`.
 On `HumanoidVisual`, configure the `BattingPitcherBehaviour` Udon component:
 
 - `speedKmh`, `spinRpm`, and `resetSeconds` set the next cycle. Reset time is
-  measured from release, not from the start of the animation.
+  measured from release; the next pitch also waits for the motion to end.
 - The 3-by-3 course buttons are arranged from the batter's view: columns run
   from batter-left to batter-right and rows run from high to low. Width and
   height are in metres. `courseColumn` and `courseRow` show the course chosen
@@ -56,14 +56,52 @@ prevents motion accumulating across pitches while preserving the placed parent
 transform. The return to the set position can be visible if the clip's ending
 pose differs from its beginning.
 
-The copied clip sends `_OnPitchRelease` via `SendCustomEvent` at 2.0 seconds
-of its 5.2-second motion. The controller's two existing states are retained,
-but their automatic transitions are removed so the Behaviour controls when a
-new motion begins. If the animation is replaced, update its release event,
-the fixed `ReleasePoint`, and `minimumReleaseNormalizedTime` together. The
-event needs to be on the same GameObject as the Animator and pitcher Udon
-component. The minimum time rejects events arriving before the current motion
-reaches the release portion; the clip is played without overlapping transitions.
+The ball release no longer depends on the clip. The pitcher releases at the
+synced release time (`releaseOffsetSeconds` after the motion start); an Animation
+Event on the clip is not used and the old `_OnPitchRelease` event was removed, so
+delete it from copied clips. The controller's two states keep their automatic
+transitions removed. If the animation is replaced, update `releaseOffsetSeconds`,
+the fixed `ReleasePoint`, and run **Tools > VVBC > Pitcher > Bake Root Motion**
+with the pitcher Udon component selected (Edit Mode). The bake stores the clip
+length and the animator's local pose every `rootMotionStep` seconds so a client
+that receives a schedule late can jump to the middle of the clip.
+
+## Network synchronization
+
+`BattingPitcherBehaviour` is Manual sync and the only synchronized state. It syncs
+the settings (speed, spin, course mask, pitch type, reset seconds) and a committed
+pitch snapshot (id, start, release and ready server times, release position,
+velocity and spin). Settings never alter a committed snapshot; they apply at the
+next preparation.
+
+- The Owner stages the ball, solves the aim, writes a snapshot starting
+  `leadSeconds` ahead and calls `RequestSerialization`. The Owner starts that pitch
+  only after `OnPostSerialization` succeeds for that snapshot's id and Owner epoch.
+  A failed send retries a bounded number of times with fresh times and a new id;
+  after the limit the next preparation is retried later.
+- Every client, on receiving a new id, arms three delayed events from server
+  time: motion start (plays `Pitching` from the elapsed position, restoring the
+  baked root pose when late), release, and cycle ready. Events ignore themselves
+  when their target time has not arrived, so a leftover event cannot disturb a newer
+  pitch. Finished motions are not played.
+- The current Owner launches the ball at the release time through
+  `BallBehaviour.QueueState`, advancing the flight by the lateness. A new Owner
+  re-checks the release when it takes over, but only within the Ball's catch-up window
+  and not when the ball is already flying.
+- Cycle ready is the later of release + `resetSeconds` and motion start +
+  `motionSeconds`. At that time every client returns to the idle pose and the
+  Owner prepares the next pitch.
+- Ownership changes only drop the Owner's unfinished preparation. The motion,
+  release schedule and ball flight continue. A new Owner waits
+  `ownerSettleSeconds` before reserving a pitch. A pitcher that sees stale ids
+  ignores them.
+- Update runs only while the aim solver iterates; there is no polling for sync.
+
+`PitchSettingsBehaviour` drafts edits locally and commits them once after
+`commitDelaySeconds` of quiet (slider drag, click and keyboard all raise
+`onValueChanged`; Udon has no pointer-up event). The commit takes pitcher Ownership and
+writes the settings. The Owner name is read from `Networking.GetOwner` and is
+refreshed on state changes, Ownership transfer and player leave.
 
 The scene-independent Ball integration fixture uses a disposable Unity preview
 scene. Run the following to check Stage, Pitch, Hit, reset and snapshot

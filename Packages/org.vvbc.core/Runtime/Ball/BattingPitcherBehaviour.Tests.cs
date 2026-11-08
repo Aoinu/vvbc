@@ -4,68 +4,97 @@ using VRC.SDKBase;
 
 public partial class BattingPitcherBehaviour
 {
-    [TsukimiTest]
-    public void PitchControllerFollowsOwnershipTransfer()
+    private void SetSyncedPitch(int id, double start)
     {
-        VRCPlayerApi first = Mimic.Join();
-        VRCPlayerApi second = Mimic.Join();
-        Mimic.Become(first);
-        _isPitchController = true;
-        _controllerStarted = true;
-        Networking.SetOwner(second, gameObject);
-        Assert.IsFalse(_isPitchController);
-        Assert.IsFalse(_controllerStarted);
-        Mimic.Become(second);
-        Assert.IsTrue(_isPitchController);
+        _pitchId = id;
+        _startTime = start;
+        _releaseTime = start + 2.0;
+        _readyTime = start + 5.2;
+        _releaseVelocity = Vector3.forward;
     }
 
     [TsukimiTest]
-    public void ReleaseIsAcceptedOnceAndResetDeadlineUsesSnapshot()
+    public void DuplicateAndOlderPitchIdsAreNotApplied()
     {
-        phase = PitchMotion;
-        pitchSequence = 7;
-        _solvingSequence = 7;
-        _resetSnapshot = 3f;
-        Assert.IsTrue(AcceptRelease(10f, 0.385f));
-        Assert.AreEqual(FollowThrough, phase);
-        Assert.IsFalse(AcceptRelease(10.1f, 0.385f));
-        resetSeconds = 12f;
-        Assert.IsFalse(ResetDue(12.99f));
-        Assert.IsTrue(ResetDue(13f));
+        SetSyncedPitch(3, 10.0);
+        Assert.IsTrue(AcceptPitch());
+        Assert.AreEqual(3, _appliedId);
+        Assert.AreEqual(10.0, _appliedStart);
+        SetSyncedPitch(3, 20.0);
+        Assert.IsFalse(AcceptPitch());
+        Assert.AreEqual(10.0, _appliedStart);
+        SetSyncedPitch(2, 30.0);
+        Assert.IsFalse(AcceptPitch());
+        Assert.AreEqual(3, _appliedId);
+        SetSyncedPitch(4, 40.0);
+        Assert.IsTrue(AcceptPitch());
+        Assert.AreEqual(40.0, _appliedStart);
     }
 
     [TsukimiTest]
-    public void OldSolverGenerationAndEventsOutsideMotionAreRejected()
+    public void EventsForAnEarlierScheduleAreNotDue()
     {
-        pitchSequence = 8;
-        _solvingSequence = 7;
-        phase = PitchMotion;
-        Assert.IsFalse(AcceptRelease(1f, 0.385f));
-        _solvingSequence = 8;
-        phase = Preparing;
-        Assert.IsFalse(AcceptRelease(1f, 0.385f));
-        phase = FollowThrough;
-        Assert.IsFalse(AcceptRelease(1f, 0.385f));
+        // A leftover event of an older pitch sees the newer pitch still ahead.
+        Assert.IsFalse(IsDue(-2f));
+        Assert.IsFalse(IsDue(-0.5f));
+        Assert.IsTrue(IsDue(-0.01f));
+        Assert.IsTrue(IsDue(0.5f));
     }
 
     [TsukimiTest]
-    public void ReleaseOutsidePitchWindowCannotStartNewCycleEarly()
+    public void ReadyOffsetWaitsForBothResetAndMotionEnd()
     {
-        pitchSequence = 9;
-        _solvingSequence = 9;
-        phase = PitchMotion;
-        Assert.IsFalse(AcceptRelease(1f, 0.1f));
-        Assert.IsTrue(AcceptRelease(2f, 0.385f));
+        // release 2 + reset 3 = 5 is earlier than the 5.2 s motion
+        Assert.AreEqual(5.2f, ReadyOffset(2f, 3f, 5.2f));
+        // a long reset wins over the motion length
+        Assert.AreEqual(14f, ReadyOffset(2f, 12f, 5.2f));
+        // reset is clamped to 0.1 s
+        Assert.AreEqual(5f, ReadyOffset(2f, 0f, 5f));
     }
 
     [TsukimiTest]
-    public void ResetCannotHappenBeforeARelease()
+    public void OwnershipTransferKeepsTheCommittedPitchAndDropsOwnerWork()
     {
-        phase = PitchMotion;
-        _released = false;
-        Assert.IsFalse(ResetDue(100f));
-        phase = FollowThrough;
-        Assert.IsFalse(ResetDue(100f));
+        SetSyncedPitch(7, 50.0);
+        Assert.IsTrue(AcceptPitch());
+        _ownerReady = true;
+        _preparing = true;
+        _reserving = true;
+        int epoch = _ownerEpoch;
+        DropOwnerWork();
+        Assert.AreEqual(7, _appliedId);
+        Assert.AreEqual(50.0, _appliedStart);
+        Assert.AreEqual(Vector3.forward, _appliedVelocity);
+        Assert.IsFalse(_preparing);
+        Assert.IsFalse(_reserving);
+        Assert.IsFalse(_ownerReady);
+        Assert.IsFalse(CanPrepare());
+        Assert.IsTrue(_ownerEpoch != epoch);
+    }
+
+    [TsukimiTest]
+    public void OldSendCompletionDoesNotChangeANewOwnersControl()
+    {
+        Assert.IsTrue(ReservationCurrent(true, 4, 4, true));
+        Assert.IsFalse(ReservationCurrent(true, 4, 5, true));
+        Assert.IsFalse(ReservationCurrent(true, 4, 4, false));
+        Assert.IsFalse(ReservationCurrent(false, 4, 4, true));
+    }
+
+    [TsukimiTest]
+    public void SettingsChangeLeavesTheCommittedPitchAlone()
+    {
+        Mimic.Join();
+        SetSyncedPitch(2, 10.0);
+        Assert.IsTrue(AcceptPitch());
+        SubmitSettings(150f, 3000f, 6f, 5, 2);
+        Assert.AreEqual(150f, speedKmh);
+        Assert.AreEqual(5, courseMask);
+        Assert.AreEqual(2, pitchType);
+        Assert.AreEqual(Vector3.forward, _appliedVelocity);
+        Assert.AreEqual(2, _appliedId);
+        Assert.AreEqual(10.0, _appliedStart);
+        Assert.AreEqual(2, _pitchId);
     }
 
     [TsukimiTest]
@@ -80,5 +109,4 @@ public partial class BattingPitcherBehaviour
         Assert.AreEqual(4, SelectCourse(0, 0));
         Assert.AreEqual(0, CountCourses(1 << 12));
     }
-
 }

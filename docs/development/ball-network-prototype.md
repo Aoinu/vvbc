@@ -72,6 +72,6 @@ flight, not collisions that happened before reception. Ownership transfer and
 network delivery can fail or be delayed. A transfer still pending after one
 second and serialization that fails repeatedly are logged. The sequence and
 state priority reject duplicates and common reset/hit races; concurrent writers
-and missing updates still require validation in real clients. Pitcher animation
-is driven by its owner and is not itself synchronized by this prototype. Late
+and missing updates still require validation in real clients. Pitcher motion
+and release timing are synchronized as described in [batting pitcher](batting-pitcher.md). Late
 joiners are not guaranteed to reconstruct a flight already in progress.
