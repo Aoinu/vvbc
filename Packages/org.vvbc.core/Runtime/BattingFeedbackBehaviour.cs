@@ -129,7 +129,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _isContact = false; _shown = false; _distance = float.MaxValue;
         _metricsDirty = false;
         _scanTime = 0f; _peakSpeed = 0f; _peakAngular = 0f;
-        _scanPoints = 0;
+        _scanPoints = 0; _scanPending = false; _bestPending = false; _warmStage = 0;
         _hasPreviousCandidateY = false;
         ResetTrail();
         ClearPresentation();
@@ -174,6 +174,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         if (_feedbackMotion != null)
             _feedbackMotion.RegisterContactListener(GetComponent<VRC.Udon.UdonBehaviour>(), true);
         PredictTrailExit();
+        contact.feedbackPoseWanted = _trailEntered;
         if (!_entered) { _entered = true; _entryTime = _time; }
     }
 

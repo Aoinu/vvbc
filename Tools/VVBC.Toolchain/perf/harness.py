@@ -70,7 +70,7 @@ RULES = [
     rule('Time.fixedDeltaTime', r'\bTime\.fixedDeltaTime\b', 'PerfUnity.FixedStep()',
          {'BallBehaviour.History.cs': 1}, regex=True, others=UNEXECUTED),
     rule('Physics.gravity', r'\bPhysics\.gravity\b', 'PerfUnity.Gravity()',
-         {'BallBehaviour.History.cs': 1}, regex=True, others=UNEXECUTED),
+         {'BallBehaviour.History.cs': 2}, regex=True, others=UNEXECUTED),
     rule('Quaternion.ToAngleAxis', 'delta.ToAngleAxis(out angle, out axis);',
          'angle = PerfUnity.AngleOf(delta); axis = PerfUnity.AxisOf(delta);', 1, files=['BatKinematics.cs']),
     # Bat Motion: the held Rigidbody transform becomes harness fields.
@@ -121,6 +121,14 @@ RULES = [
          'PerfUnity.HandOff(batterId, strength)', 1, files=['BatContactBehaviour.cs']),
     rule('Contact bat effects lookup', 'BatBehaviour bat = motion.GetComponentInParent<BatBehaviour>();', 'BatBehaviour bat = null;', 1,
          files=['BatContactBehaviour.cs']),
+    # Broad phase: the Transform wrapper is replaced by the box-local core with the identity-rotation harness zone.
+    rule('Contact broad phase zone', 'flight.ContactPathOutsideBox(start, boundary, maxExtrapolation, contactZone, zoneHalfSize)',
+         'flight.ContactPathOutsideLocalBox(start, boundary, maxExtrapolation, perfZoneCenter, Quaternion.identity, Vector3.one, zoneHalfSize, PerfUnity.Gravity())',
+         1, files=['BatContactBehaviour.cs']),
+    rule('Feedback broad phase zone',
+         'flight.ContactPathOutsideBox(start, boundary, contact.maxExtrapolation, contact.contactZone, contact.zoneHalfSize)',
+         'flight.ContactPathOutsideLocalBox(start, boundary, contact.maxExtrapolation, contact.perfZoneCenter, Quaternion.identity, Vector3.one, contact.zoneHalfSize, PerfUnity.Gravity())',
+         {'BattingFeedbackBehaviour.Scan.cs': 1, 'BattingFeedbackBehaviour.Trail.cs': 1}, others='no other file calls the broad phase'),
     # Ball collider / contact zone Transform (feedback).
     rule('Feedback ball collider presence', 'flight.ballCollider != null', 'flight.perfBallRadius > 0f', 1,
          files=['BattingFeedbackBehaviour.Scan.cs']),

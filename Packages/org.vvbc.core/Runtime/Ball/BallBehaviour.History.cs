@@ -161,4 +161,85 @@ public partial class BallBehaviour
         sampledVelocity = state.velocity;
         return FiniteVector(sampledPosition) && FiniteVector(sampledVelocity) && FiniteVector(sampledAngularVelocity);
     }
+
+    // Broad phase for contact scanning. Returns true only when the sampled ball
+    // path over [start, end] provably stays outside the box (box-local half
+    // extents); false means "unknown", so callers must run the exact scan.
+    // A Hermite interval inside one history segment is a cubic Bezier whose
+    // convex hull bounds it. The extrapolated tail is bounded by a speed limit.
+    public bool ContactPathOutsideBox(float start, float end, float maxExtrapolation, Transform box, Vector3 half)
+    {
+        if (box == null) return false;
+        Vector3 scale = box.lossyScale;
+        if (!(Mathf.Abs(scale.x) > 0.000001f) || !(Mathf.Abs(scale.y) > 0.000001f) ||
+            !(Mathf.Abs(scale.z) > 0.000001f)) return false;
+        return ContactPathOutsideLocalBox(start, end, maxExtrapolation, box.position, Quaternion.Inverse(box.rotation),
+            new Vector3(1f / scale.x, 1f / scale.y, 1f / scale.z), half, Physics.gravity);
+    }
+
+    // Box-local point = Scale(inverseRotation * (p - center), inverseScale).
+    public bool ContactPathOutsideLocalBox(float start, float end, float maxExtrapolation, Vector3 center,
+        Quaternion inverseRotation, Vector3 inverseScale, Vector3 half, Vector3 gravity)
+    {
+        if (_sampleCount == 0 || !Finite(start) || !Finite(end) || !Finite(maxExtrapolation) ||
+            end < start || !FiniteVector(half)) return false;
+        int first = (_nextSample - _sampleCount + HistoryCapacity) % HistoryCapacity;
+        if (start < _times[first]) return false;
+        int last = (_nextSample - 1 + HistoryCapacity) % HistoryCapacity;
+        float hx = half.x + 0.01f, hy = half.y + 0.01f, hz = half.z + 0.01f;
+        if (start >= _times[last])
+        {
+            float elapsed = end - _times[last];
+            if (elapsed < 0f || elapsed > Mathf.Min(Mathf.Max(0f, maxExtrapolation), 0.03f)) return false;
+            Vector3 v0 = _velocities[last];
+            float speed = v0.magnitude;
+            float limit = 2f * speed + 10f;
+            float accel = gravity.magnitude + dragCoefficient * limit * limit +
+                magnusCoefficient * _angularVelocities[last].magnitude * limit;
+            if (!Finite(accel) || accel * elapsed > limit - speed) return false;
+            float maxInverse = Mathf.Max(Mathf.Abs(inverseScale.x), Mathf.Max(Mathf.Abs(inverseScale.y), Mathf.Abs(inverseScale.z)));
+            float radius = limit * elapsed * maxInverse + 0.01f;
+            Vector3 local = BoxLocal(_positions[last], center, inverseRotation, inverseScale);
+            return Mathf.Abs(local.x) - radius > hx || Mathf.Abs(local.y) - radius > hy || Mathf.Abs(local.z) - radius > hz;
+        }
+        for (int i = _sampleCount - 1; i >= 0; i--)
+        {
+            int current = (first + i) % HistoryCapacity;
+            if (start > _times[current]) continue;
+            int previous = i == 0 ? current : (current - 1 + HistoryCapacity) % HistoryCapacity;
+            if (start < _times[previous]) continue;
+            float dt = _times[current] - _times[previous];
+            if (!(dt > 0f) || end > _times[current]) return false;
+            Vector3 p0 = _positions[previous], p1 = _positions[current];
+            Vector3 m0 = dt * _velocities[previous], m1 = dt * _velocities[current];
+            float ua = (start - _times[previous]) / dt, ub = (end - _times[previous]) / dt;
+            float a2 = ua * ua, a3 = a2 * ua, b2 = ub * ub, b3 = b2 * ub;
+            Vector3 pa = (2f * a3 - 3f * a2 + 1f) * p0 + (a3 - 2f * a2 + ua) * m0 +
+                (-2f * a3 + 3f * a2) * p1 + (a3 - a2) * m1;
+            Vector3 pb = (2f * b3 - 3f * b2 + 1f) * p0 + (b3 - 2f * b2 + ub) * m0 +
+                (-2f * b3 + 3f * b2) * p1 + (b3 - b2) * m1;
+            Vector3 da = (6f * a2 - 6f * ua) * p0 + (3f * a2 - 4f * ua + 1f) * m0 +
+                (-6f * a2 + 6f * ua) * p1 + (3f * a2 - 2f * ua) * m1;
+            Vector3 db = (6f * b2 - 6f * ub) * p0 + (3f * b2 - 4f * ub + 1f) * m0 +
+                (-6f * b2 + 6f * ub) * p1 + (3f * b2 - 2f * ub) * m1;
+            float s = (ub - ua) / 3f;
+            Vector3 q0 = BoxLocal(pa, center, inverseRotation, inverseScale);
+            Vector3 q1 = BoxLocal(pa + s * da, center, inverseRotation, inverseScale);
+            Vector3 q2 = BoxLocal(pb - s * db, center, inverseRotation, inverseScale);
+            Vector3 q3 = BoxLocal(pb, center, inverseRotation, inverseScale);
+            if (!FiniteVector(q0) || !FiniteVector(q1) || !FiniteVector(q2) || !FiniteVector(q3)) return false;
+            return (q0.x > hx && q1.x > hx && q2.x > hx && q3.x > hx) ||
+                (q0.x < -hx && q1.x < -hx && q2.x < -hx && q3.x < -hx) ||
+                (q0.y > hy && q1.y > hy && q2.y > hy && q3.y > hy) ||
+                (q0.y < -hy && q1.y < -hy && q2.y < -hy && q3.y < -hy) ||
+                (q0.z > hz && q1.z > hz && q2.z > hz && q3.z > hz) ||
+                (q0.z < -hz && q1.z < -hz && q2.z < -hz && q3.z < -hz);
+        }
+        return false;
+    }
+
+    private Vector3 BoxLocal(Vector3 point, Vector3 center, Quaternion inverseRotation, Vector3 inverseScale)
+    {
+        return Vector3.Scale(inverseRotation * (point - center), inverseScale);
+    }
 }

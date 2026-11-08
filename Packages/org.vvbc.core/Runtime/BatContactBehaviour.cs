@@ -33,12 +33,16 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private Vector3 _previousY;
     private Vector3 _centerDirectionSnapshot;
     private bool _hasPreviousY;
+    private bool _pendingY;
+    private float _pendingYTime;
     private Vector3 _ballPosition, _ballVelocity, _ballSpin;
     private Vector3 _core, _coreVelocity, _batOmega, _axis, _y, _normal, _referenceVelocity;
     private Quaternion _rotation;
     private float _planeValue;
     [HideInInspector] public float feedbackCandidateTime;
     [HideInInspector] public bool feedbackTrailActive;
+    // Set by Feedback: bat poses are only worth forwarding while its trail is entered.
+    [HideInInspector] public bool feedbackPoseWanted;
     public float contactTime;
     public Vector3 contactPosition;
     public Vector3 resultVelocity;
@@ -168,7 +172,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         contactValid = false;
         _enteredZone = false;
         _opportunityEnded = false;
-        _hasPreviousY = false;
+        _hasPreviousY = false; _pendingY = false;
     }
 
     public void OnBallPitchStarted()
@@ -197,7 +201,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             if (motion != null) motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
             return;
         }
-        if (feedbackTrailActive && feedbackListener != null && flight != null && flight.flying)
+        if (feedbackTrailActive && feedbackPoseWanted && feedbackListener != null && flight != null && flight.flying)
             feedbackListener.SendCustomEvent("OnFeedbackBatPose");
         if (flight == null || motion == null || contactZone == null || !flight.flying || flight.contactConsumed) return;
         _centerDirectionSnapshot = CenterDirection();
@@ -214,7 +218,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             _scannedUntil = Mathf.Max(motion.contactPreviousTime, _activationTime);
             _enteredZone = false;
             _opportunityEnded = false;
-            _hasPreviousY = false;
+            _hasPreviousY = false; _pendingY = false;
             _historyRevision = motion.contactHistoryRevision;
         }
         if (_opportunityEnded) return;
@@ -222,7 +226,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         {
             _historyRevision = motion.contactHistoryRevision;
             _scannedUntil = Mathf.Max(motion.contactOldestTime, _activationTime);
-            _hasPreviousY = false;
+            _hasPreviousY = false; _pendingY = false;
         }
         float start = Mathf.Max(_scannedUntil, Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime));
         float end = Mathf.Min(motion.contactLatestTime, flight.latestMotionTime + Mathf.Clamp(maxExtrapolation, 0f, 0.03f));
@@ -231,6 +235,21 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             float boundary = motion.NextContactSampleTime(start, end);
             boundary = flight.NextMotionSampleTime(start, boundary);
             if (boundary <= start) return;
+            // Broad phase: before the first zone entry, a path provably outside
+            // the zone has no candidate and no state change. Only the direction
+            // history of the last skipped interval is rebuilt later.
+            if (!_enteredZone && flight.ContactPathOutsideBox(start, boundary, maxExtrapolation, contactZone, zoneHalfSize))
+            {
+                _pendingY = true; _pendingYTime = boundary;
+                _scannedUntil = boundary;
+                start = boundary;
+                continue;
+            }
+            if (_pendingY)
+            {
+                _pendingY = false;
+                if (Evaluate(_pendingYTime)) { _previousY = _y; _hasPreviousY = true; }
+            }
             if (ScanInterval(start, boundary)) return;
             _scannedUntil = boundary;
             start = boundary;

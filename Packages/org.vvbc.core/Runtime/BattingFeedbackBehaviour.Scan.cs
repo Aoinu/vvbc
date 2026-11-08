@@ -17,6 +17,10 @@ public partial class BattingFeedbackBehaviour
     private int _outlineRevision;
     private float _outlineMinX, _outlineMaxX, _outlineMinWidth, _outlineMaxWidth;
     private int _scanPoints;
+    private bool _scanPending, _bestPending;
+    private int _outlineBuilt, _warmStage;
+    private float _bestTime;
+    private float _scanPendingTime;
     private float _scanLeftTime, _scanLeftDistance, _scanMiddleTime, _scanMiddleDistance;
 
     private void Scan(BatMotionBehaviour motion)
@@ -25,24 +29,40 @@ public partial class BattingFeedbackBehaviour
         float start = Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime);
         if (_scanTime > start) start = _scanTime;
         float end = Mathf.Min(motion.contactLatestTime, flight.latestMotionTime + Mathf.Clamp(contact.maxExtrapolation, 0f, 0.03f));
-        if (end > start && !_exited && !flight.contactConsumed)
-        {
-            _scanHasBallCollider = flight.ballCollider != null;
-            _candidateBallRadius = _scanHasBallCollider
-                ? BatGeometry.EffectiveSphereRadius(flight.ballCollider.radius, flight.ballCollider.transform.lossyScale) : -1f;
-            motion.PrepareFeedbackGeometry(_candidateBallRadius);
-            int revision = motion.FeedbackGeometryRevision();
-            if (_outlineMotion != motion || _outlineRevision != revision)
-            {
-                _outlineReady = false; _outlineEndsReady = false;
-                _outlineMotion = motion; _outlineRevision = revision;
-            }
-        }
+        bool prepared = false;
+        int processed = 0;
         while (end > start && !_exited && !flight.contactConsumed)
         {
             float boundary = motion.NextContactSampleTime(start, end);
             boundary = flight.NextMotionSampleTime(start, boundary);
             if (boundary <= start) return;
+            // Broad phase: a ball path provably outside the zone cannot enter it
+            // or change Scan state. Only the direction history is kept equivalent.
+            if (!_entered && flight.ContactPathOutsideBox(start, boundary, contact.maxExtrapolation, contact.contactZone, contact.zoneHalfSize))
+            {
+                _scanPending = true; _scanPendingTime = boundary;
+                _scanTime = boundary;
+                start = boundary;
+                WarmScanStep(motion);
+                continue;
+            }
+            // Feedback is not gameplay: inside the zone one interval per call keeps the
+            // frame cost flat. The rest waits in the history; it is not deferred when
+            // the backlog is long or the oldest samples are close to leaving the rings.
+            if (processed >= 1 && end - start <= 0.1f &&
+                start - Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime) > 0.1f) break;
+            processed++;
+            if (!prepared)
+            {
+                prepared = true;
+                PrepareScanGeometry(motion);
+            }
+            if (_scanPending)
+            {
+                _scanPending = false;
+                if (SampleCandidate(motion, _scanPendingTime) && CandidateWidthValid(motion))
+                { _previousCandidateY = _candidateY; _hasPreviousCandidateY = true; }
+            }
             for (int i = 0; i <= 8; i++)
             {
                 float time = Mathf.Lerp(start, boundary, i / 8f);
@@ -61,15 +81,76 @@ public partial class BattingFeedbackBehaviour
                 if (!inside && _entered)
                 {
                     _exited = true; _exitTime = time;
+                    FlushBest(motion);
                     FinalizeMiss(Time.time);
                     break;
                 }
                 if (inside) ConsiderScannedPoint(motion, time);
             }
+            FlushBest(motion);
             if (!_exited && SampleCandidate(motion, boundary) && CandidateWidthValid(motion))
             { _previousCandidateY = _candidateY; _hasPreviousCandidateY = true; }
             _scanTime = boundary;
             start = boundary;
+        }
+    }
+
+    private void EnsureOutlineEnds(BatMotionBehaviour motion)
+    {
+        if (_outlineEndsReady) return;
+        float startY = motion.ContactStartLocalY(), endY = motion.ContactEndLocalY();
+        _outlineMinX = motion.PlaneDistanceFromLocalY(startY);
+        _outlineMaxX = motion.PlaneDistanceFromLocalY(endY);
+        _outlineMinWidth = motion.ContactWidthAtLocalY(startY, _candidateBallRadius);
+        _outlineMaxWidth = motion.ContactWidthAtLocalY(endY, _candidateBallRadius);
+        _outlineEndsReady = true;
+    }
+
+    // Vertices 1..upTo are built in order; the work can be split across frames.
+    private void BuildOutline(BatMotionBehaviour motion, int upTo)
+    {
+        if (_outlineReady) return;
+        if (_outlineBuilt == 0)
+        {
+            _outlineX[0] = _outlineMinX; _outlineWidth[0] = _outlineMinWidth;
+            _outlineFinite = BatGeometry.Finite(_outlineMinX) && BatGeometry.Finite(_outlineMinWidth);
+            _outlineBuilt = 1;
+        }
+        while (_outlineBuilt <= upTo && _outlineBuilt <= 16)
+        {
+            int i = _outlineBuilt;
+            float x = Mathf.Lerp(_outlineMinX, _outlineMaxX, i / 16f);
+            _outlineX[i] = x;
+            _outlineWidth[i] = motion.FeedbackOutlineWidth(x);
+            if (!BatGeometry.Finite(x) || !BatGeometry.Finite(_outlineWidth[i])) _outlineFinite = false;
+            _outlineBuilt++;
+        }
+        if (_outlineBuilt > 16) _outlineReady = true;
+    }
+
+    // One stage per skipped Scan while the ball approaches, so the zone-entry
+    // frame finds the geometry and contour ready.
+    private void WarmScanStep(BatMotionBehaviour motion)
+    {
+        if (_warmStage >= 6) return;
+        int stage = _warmStage++;
+        if (stage == 0) PrepareScanGeometry(motion);
+        else if (!motion.FeedbackGeometryIsValid()) return;
+        else if (stage == 1) EnsureOutlineEnds(motion);
+        else BuildOutline(motion, (stage - 1) * 4);
+    }
+
+    private void PrepareScanGeometry(BatMotionBehaviour motion)
+    {
+        _scanHasBallCollider = flight.ballCollider != null;
+        _candidateBallRadius = _scanHasBallCollider
+            ? BatGeometry.EffectiveSphereRadius(flight.ballCollider.radius, flight.ballCollider.transform.lossyScale) : -1f;
+        motion.PrepareFeedbackGeometry(_candidateBallRadius);
+        int revision = motion.FeedbackGeometryRevision();
+        if (_outlineMotion != motion || _outlineRevision != revision)
+        {
+            _outlineReady = false; _outlineEndsReady = false; _outlineBuilt = 0;
+            _outlineMotion = motion; _outlineRevision = revision;
         }
     }
 
@@ -169,15 +250,7 @@ public partial class BattingFeedbackBehaviour
     private float CandidateDistance(BatMotionBehaviour motion)
     {
         float px = _candidateX, py = _candidateYValue;
-        if (!_outlineEndsReady)
-        {
-            float startY = motion.ContactStartLocalY(), endY = motion.ContactEndLocalY();
-            _outlineMinX = motion.PlaneDistanceFromLocalY(startY);
-            _outlineMaxX = motion.PlaneDistanceFromLocalY(endY);
-            _outlineMinWidth = motion.ContactWidthAtLocalY(startY, _candidateBallRadius);
-            _outlineMaxWidth = motion.ContactWidthAtLocalY(endY, _candidateBallRadius);
-            _outlineEndsReady = true;
-        }
+        if (!_outlineEndsReady) EnsureOutlineEnds(motion);
         float minX = _outlineMinX, maxX = _outlineMaxX;
         float minW = _outlineMinWidth, maxW = _outlineMaxWidth;
         float planar = 0f;
@@ -187,25 +260,61 @@ public partial class BattingFeedbackBehaviour
         {
             planar = Mathf.Min(SegmentDistanceSquaredScalars(px, py, minX, -minW, minX, minW),
                 SegmentDistanceSquaredScalars(px, py, maxX, maxW, maxX, -maxW));
-            if (!_outlineReady)
+            if (!_outlineReady) BuildOutline(motion, 16);
+            planar = ContourPlanar(px, py, minX, maxX, planar);
+        }
+        float normal = Vector3.Dot(_candidateBall - _candidateCore, _candidateNormal);
+        return Mathf.Sqrt(planar + normal * normal);
+    }
+
+    // Squared planar distance to the 17-vertex contour, min'd into planar.
+    private float ContourPlanar(float px, float py, float minX, float maxX, float planar)
+    {
+        float reflectedY = Mathf.Abs(py);
+        bool canReflect = _outlineFinite && BatGeometry.Finite(py);
+        if (canReflect && BatGeometry.Finite(px) && maxX > minX)
+        {
+            // Same minimum as testing all 16 segments: segments are visited
+            // outward from the one nearest px and a side stops once its
+            // x gap alone exceeds the best squared distance (with margin
+            // for rounding), because it can no longer be smaller.
+            int center = (int)Mathf.Floor((px - minX) / (maxX - minX) * 16f) + 1;
+            if (center < 1) center = 1;
+            if (center > 16) center = 16;
+            planar = Mathf.Min(planar, SegmentDistanceSquaredScalars(px, reflectedY,
+                _outlineX[center - 1], _outlineWidth[center - 1], _outlineX[center], _outlineWidth[center]));
+            int lo = center - 1, hi = center + 1;
+            while (lo >= 1 || hi <= 16)
             {
-                _outlineMinX = minX; _outlineMaxX = maxX;
-                _outlineMinWidth = minW; _outlineMaxWidth = maxW;
-                _outlineX[0] = minX; _outlineWidth[0] = minW;
-                _outlineFinite = BatGeometry.Finite(minX) && BatGeometry.Finite(minW);
-                for (int i = 1; i <= 16; i++)
+                float limit = planar * 1.001f + 0.000000001f;
+                if (hi <= 16)
                 {
-                    float x = Mathf.Lerp(minX, maxX, i / 16f);
-                    _outlineX[i] = x;
-                    _outlineWidth[i] = motion.FeedbackOutlineWidth(x);
-                    if (!BatGeometry.Finite(x) || !BatGeometry.Finite(_outlineWidth[i])) _outlineFinite = false;
+                    float gap = _outlineX[hi - 1] - px;
+                    if (gap > 0f && gap * gap > limit) hi = 17;
+                    else
+                    {
+                        planar = Mathf.Min(planar, SegmentDistanceSquaredScalars(px, reflectedY,
+                            _outlineX[hi - 1], _outlineWidth[hi - 1], _outlineX[hi], _outlineWidth[hi]));
+                        hi++;
+                    }
                 }
-                _outlineReady = true;
+                if (lo >= 1)
+                {
+                    float gap = px - _outlineX[lo];
+                    if (gap > 0f && gap * gap > limit) lo = 0;
+                    else
+                    {
+                        planar = Mathf.Min(planar, SegmentDistanceSquaredScalars(px, reflectedY,
+                            _outlineX[lo - 1], _outlineWidth[lo - 1], _outlineX[lo], _outlineWidth[lo]));
+                        lo--;
+                    }
+                }
             }
+        }
+        else
+        {
             float previousX = _outlineX[0];
             float previousWidth = _outlineWidth[0];
-            float reflectedY = Mathf.Abs(py);
-            bool canReflect = _outlineFinite && BatGeometry.Finite(py);
             for (int i = 1; i <= 16; i++)
             {
                 float x = _outlineX[i];
@@ -223,14 +332,24 @@ public partial class BattingFeedbackBehaviour
                 previousWidth = width;
             }
         }
-        float normal = Vector3.Dot(_candidateBall - _candidateCore, _candidateNormal);
-        return Mathf.Sqrt(planar + normal * normal);
+        return planar;
     }
 
+    // Search only tracks the best (time, distance). The heavy metrics are
+    // rebuilt once per interval by FlushBest from the same deterministic samples.
     private void ConsiderCandidate(BatMotionBehaviour motion, float time, float distance)
     {
         if (_hasClosest && distance >= _distance) return;
-        _hasClosest = true; _distance = distance; _time = time;
+        _hasClosest = true; _distance = distance; _bestTime = time; _bestPending = true;
+    }
+
+    private void FlushBest(BatMotionBehaviour motion)
+    {
+        if (!_bestPending) return;
+        _bestPending = false;
+        float time = _bestTime;
+        if (!SampleCandidate(motion, time) || !CandidateWidthValid(motion)) return;
+        _time = time;
         _batPosition = motion.contactSampleRootPosition; _batRotation = _candidateBatRotation; _ballPosition = _candidateBall;
         _ballRotationValid = flight.TrySampleFeedbackRotation(time, contact.maxExtrapolation);
         if (_ballRotationValid) _ballRotation = flight.sampledRotation;

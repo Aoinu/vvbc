@@ -35,6 +35,7 @@ public partial class BattingFeedbackBehaviour
         _trailEndKnown = false; _trailReady = false;
         _trailScanTime = 0f; _trailNotBefore = 0f; _trailEntry = 0f; _trailExit = 0f; _trailCount = 0;
         _poseGap = false;
+        if (contact != null) contact.feedbackPoseWanted = false;
         trailRequested = 0; trailAvailable = 0; trailPoseSamples = 0; trailValid = 0; trailRendered = 0;
         trailEntry = 0f; trailExit = 0f; trailLastPoseTime = 0f; trailRejectionReason = "";
         if (contact != null) contact.feedbackTrailActive = contact.motion != null && flight != null && flight.flying && !flight.contactConsumed;
@@ -56,9 +57,18 @@ public partial class BattingFeedbackBehaviour
         if (flight == null || contact == null || _sequence != flight.flightSequence || flight.contactConsumed) return;
         ScanPitchZone(contact.feedbackCandidateTime);
         if (_trailEntered && contact.motion != null) CapturePoses(contact.motion);
+        contact.feedbackPoseWanted = _trailEntered && !_trailReady;
     }
 
+    // Contact only forwards bat poses while a trail is entered and unfinished;
+    // zone entry itself is found here every frame from the ball history.
     private void UpdateTrail()
+    {
+        UpdateTrailCore();
+        if (contact != null) contact.feedbackPoseWanted = _trailEntered && !_trailReady;
+    }
+
+    private void UpdateTrailCore()
     {
         if (_trailReady || flight == null || contact == null || contact.motion == null || !flight.flying) return;
         BatMotionBehaviour motion = contact.motion;
@@ -109,6 +119,8 @@ public partial class BattingFeedbackBehaviour
         {
             float boundary = flight.NextMotionSampleTime(start, limit);
             if (boundary <= start) return;
+            if (!_trailInside && flight.ContactPathOutsideBox(start, boundary, contact.maxExtrapolation, contact.contactZone, contact.zoneHalfSize))
+            { _trailScanTime = boundary; start = boundary; continue; }
             float left = start;
             for (int i = 1; i <= 8; i++)
             {
@@ -231,7 +243,7 @@ public partial class BattingFeedbackBehaviour
     {
         if (_trailReady) return;
         _trailReady = true;
-        if (contact != null) contact.feedbackTrailActive = false;
+        if (contact != null) { contact.feedbackTrailActive = false; contact.feedbackPoseWanted = false; }
         trailRequested = phantomCount; trailPoseSamples = _poseCount;
         trailEntry = _trailEntry; trailExit = _trailExit;
         trailLastPoseTime = _poseCount > 0 ? _poseTimes[_poseCount - 1] : 0f;
@@ -289,14 +301,26 @@ public partial class BattingFeedbackBehaviour
         return count <= 1 ? reference : Mathf.Lerp(entry, exit, (float)index / (count - 1));
     }
 
+    // First sample at or after time; times strictly increase. Requires time <= last.
+    private int FirstPoseAtOrAfter(float time)
+    {
+        int lo = 0, hi = _poseCount - 1;
+        while (lo < hi)
+        {
+            int mid = (lo + hi) >> 1;
+            if (time > _poseTimes[mid]) lo = mid + 1; else hi = mid;
+        }
+        return lo;
+    }
+
     private Vector3 _savedPosition;
     private Quaternion _savedRotation;
     private bool SampleSavedPose(float time)
     {
         if (_poseCount == 0 || time < _poseTimes[0]) return false;
-        for (int i = 0; i < _poseCount; i++)
+        if (time <= _poseTimes[_poseCount - 1])
         {
-            if (time > _poseTimes[i]) continue;
+            int i = FirstPoseAtOrAfter(time);
             int previous = i == 0 ? i : i - 1;
             if (time == _poseTimes[i]) previous = i;
             if (_poseSegments[previous] != _poseSegments[i]) return false;

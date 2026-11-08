@@ -137,4 +137,62 @@ public partial class BattingFeedbackBehaviour
         Assert.IsTrue(_poseTimes.Length == 256 && _poseTimes[0] == 1f && _poseTimes[127] == 2f);
         Assert.IsTrue(_poseCores[0] == Vector3.left && _poseCores[127] == Vector3.right && _poseSegments[127] == 4);
     }
+
+    [TsukimiTest(maxSteps: 50000000)]
+    public void PrunedContourDistanceEqualsAllSegmentMinimum()
+    {
+        for (int shape = 0; shape < 3; shape++)
+        {
+            float minX = 0.1f, maxX = 0.95f;
+            _outlineX[0] = minX; _outlineWidth[0] = shape == 2 ? 0f : 0.015f;
+            for (int i = 1; i <= 16; i++)
+            {
+                float t = i / 16f;
+                _outlineX[i] = Mathf.Lerp(minX, maxX, t);
+                _outlineWidth[i] = shape == 0 ? 0.015f + 0.03f * t : shape == 1 ? 0.045f - 0.03f * t * t : 0.04f * Mathf.Sin(t * 3.1f);
+            }
+            _outlineFinite = true;
+            for (int x = -6; x <= 26; x++)
+            for (int y = -6; y <= 6; y++)
+            {
+                float px = x * 0.04f, py = y * 0.017f;
+                float start = Mathf.Min(SegmentDistanceSquaredScalars(px, py, minX, -_outlineWidth[0], minX, _outlineWidth[0]),
+                    SegmentDistanceSquaredScalars(px, py, maxX, _outlineWidth[16], maxX, -_outlineWidth[16]));
+                float brute = start;
+                for (int i = 1; i <= 16; i++)
+                    brute = Mathf.Min(brute, SegmentDistanceSquaredScalars(px, Mathf.Abs(py), _outlineX[i - 1], _outlineWidth[i - 1], _outlineX[i], _outlineWidth[i]));
+                Assert.AreEqual(brute, ContourPlanar(px, py, minX, maxX, start));
+            }
+        }
+    }
+
+    [TsukimiTest]
+    public void SearchTracksBestTimeAndResetDiscardsPendingMetrics()
+    {
+        ConsiderCandidate(null, 1.5f, 0.2f);
+        Assert.IsTrue(_hasClosest && _bestPending && _bestTime == 1.5f && _distance == 0.2f);
+        ConsiderCandidate(null, 1.6f, 0.2f);
+        ConsiderCandidate(null, 1.7f, 0.3f);
+        Assert.IsTrue(_bestTime == 1.5f);
+        ConsiderCandidate(null, 1.8f, 0.1f);
+        Assert.IsTrue(_bestTime == 1.8f && _distance == 0.1f);
+        _warmStage = 6; _scanPending = true;
+        ResetForSequence(3);
+        Assert.IsTrue(!_bestPending && !_scanPending && _warmStage == 0 && !_hasClosest);
+    }
+
+    [TsukimiTest]
+    public void PoseBinarySearchMatchesLinearScan()
+    {
+        _poseCount = 9;
+        for (int i = 0; i < 9; i++) _poseTimes[i] = 1f + i * i * 0.05f;
+        for (int k = 0; k <= 200; k++)
+        {
+            float t = 1f + k * 0.016f;
+            if (t > _poseTimes[8]) break;
+            int linear = 0;
+            while (t > _poseTimes[linear]) linear++;
+            Assert.AreEqual(linear, FirstPoseAtOrAfter(t));
+        }
+    }
 }

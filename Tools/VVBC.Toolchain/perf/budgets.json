@@ -32,18 +32,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 92987,
-        "externs": 18739
+        "steps": 14073,
+        "externs": 2885
       },
       "limits": {
-        "steps": 120884,
-        "externs": 24361
+        "steps": 18295,
+        "externs": 3751
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 139481,
-        "externs": 28109
+        "steps": 21110,
+        "externs": 4328
       }
     },
     {
@@ -70,18 +70,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 168627,
-        "externs": 35521
+        "steps": 33079,
+        "externs": 6404
       },
       "limits": {
-        "steps": 219216,
-        "externs": 46178
+        "steps": 43003,
+        "externs": 8326
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 252941,
-        "externs": 53282
+        "steps": 49619,
+        "externs": 9606
       }
     },
     {
@@ -108,18 +108,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 245771,
-        "externs": 52451
+        "steps": 53589,
+        "externs": 10775
       },
       "limits": {
-        "steps": 319503,
-        "externs": 68187
+        "steps": 69666,
+        "externs": 14008
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 368657,
-        "externs": 78677
+        "steps": 80384,
+        "externs": 16163
       }
     },
     {
@@ -146,18 +146,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 323657,
-        "externs": 69508
+        "steps": 73467,
+        "externs": 14999
       },
       "limits": {
-        "steps": 420755,
-        "externs": 90361
+        "steps": 95508,
+        "externs": 19499
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 485486,
-        "externs": 104262
+        "steps": 110201,
+        "externs": 22499
       }
     },
     {
@@ -184,18 +184,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1501691,
-        "externs": 322211
+        "steps": 254893,
+        "externs": 53565
       },
       "limits": {
-        "steps": 1952199,
-        "externs": 418875
+        "steps": 331361,
+        "externs": 69635
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2252537,
-        "externs": 483317
+        "steps": 382340,
+        "externs": 80348
       }
     },
     {
@@ -222,18 +222,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1501691,
-        "externs": 322211
+        "steps": 254893,
+        "externs": 53565
       },
       "limits": {
-        "steps": 1952199,
-        "externs": 418875
+        "steps": 331361,
+        "externs": 69635
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2252537,
-        "externs": 483317
+        "steps": 382340,
+        "externs": 80348
       }
     },
     {
@@ -260,18 +260,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 169133,
-        "externs": 35621
+        "steps": 39197,
+        "externs": 7916
       },
       "limits": {
-        "steps": 219873,
-        "externs": 46308
+        "steps": 50957,
+        "externs": 10291
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 253700,
-        "externs": 53432
+        "steps": 58796,
+        "externs": 11874
       }
     },
     {
@@ -298,18 +298,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 600823,
-        "externs": 135581
+        "steps": 242015,
+        "externs": 48575
       },
       "limits": {
-        "steps": 781070,
-        "externs": 176256
+        "steps": 314620,
+        "externs": 63148
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 901235,
-        "externs": 203372
+        "steps": 363023,
+        "externs": 72863
       }
     },
     {
@@ -336,18 +336,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1088409,
-        "externs": 247401
+        "steps": 421044,
+        "externs": 86083
       },
       "limits": {
-        "steps": 1414932,
-        "externs": 321622
+        "steps": 547358,
+        "externs": 111908
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1632614,
-        "externs": 371102
+        "steps": 631566,
+        "externs": 129125
       }
     },
     {
@@ -374,18 +374,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1576893,
-        "externs": 359257
+        "steps": 600231,
+        "externs": 123591
       },
       "limits": {
-        "steps": 2049961,
-        "externs": 467035
+        "steps": 780301,
+        "externs": 160669
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2365340,
-        "externs": 538886
+        "steps": 900347,
+        "externs": 185387
       }
     },
     {
@@ -412,18 +412,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 2065831,
-        "externs": 471192
+        "steps": 780194,
+        "externs": 161232
       },
       "limits": {
-        "steps": 2685581,
-        "externs": 612550
+        "steps": 1014253,
+        "externs": 209602
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 3098747,
-        "externs": 706788
+        "steps": 1170291,
+        "externs": 241848
       }
     },
     {
@@ -450,18 +450,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 9130553,
-        "externs": 2074853
+        "steps": 3412325,
+        "externs": 706259
       },
       "limits": {
-        "steps": 11869719,
-        "externs": 2697309
+        "steps": 4436023,
+        "externs": 918137
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 13695830,
-        "externs": 3112280
+        "steps": 5118488,
+        "externs": 1059389
       }
     },
     {
@@ -488,18 +488,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 9238819,
-        "externs": 2092305
+        "steps": 3427373,
+        "externs": 708656
       },
       "limits": {
-        "steps": 12010465,
-        "externs": 2719997
+        "steps": 4455585,
+        "externs": 921253
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 13858229,
-        "externs": 3138458
+        "steps": 5141060,
+        "externs": 1062984
       }
     },
     {
@@ -526,18 +526,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 999494,
-        "externs": 227064
+        "steps": 372375,
+        "externs": 76374
       },
       "limits": {
-        "steps": 1299343,
-        "externs": 295184
+        "steps": 484088,
+        "externs": 99287
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1499241,
-        "externs": 340596
+        "steps": 558563,
+        "externs": 114561
       }
     },
     {
@@ -564,18 +564,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 221194,
-        "externs": 46370
+        "steps": 172765,
+        "externs": 35782
       },
       "limits": {
-        "steps": 287553,
-        "externs": 60281
+        "steps": 224595,
+        "externs": 46517
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 331791,
-        "externs": 69555
+        "steps": 259148,
+        "externs": 53673
       }
     },
     {
@@ -602,18 +602,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 406461,
-        "externs": 87162
+        "steps": 315011,
+        "externs": 67386
       },
       "limits": {
-        "steps": 528400,
-        "externs": 113311
+        "steps": 409515,
+        "externs": 87602
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 609692,
-        "externs": 130743
+        "steps": 472517,
+        "externs": 101079
       }
     },
     {
@@ -640,18 +640,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 592626,
-        "externs": 127990
+        "steps": 457415,
+        "externs": 98990
       },
       "limits": {
-        "steps": 770414,
-        "externs": 166387
+        "steps": 594640,
+        "externs": 128687
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 888939,
-        "externs": 191985
+        "steps": 686123,
+        "externs": 148485
       }
     },
     {
@@ -678,18 +678,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 779245,
-        "externs": 168897
+        "steps": 600595,
+        "externs": 130727
       },
       "limits": {
-        "steps": 1013019,
-        "externs": 219567
+        "steps": 780774,
+        "externs": 169946
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1168868,
-        "externs": 253346
+        "steps": 900893,
+        "externs": 196091
       }
     },
     {
@@ -716,18 +716,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 3611501,
-        "externs": 778166
+        "steps": 2717764,
+        "externs": 593098
       },
       "limits": {
-        "steps": 4694952,
-        "externs": 1011616
+        "steps": 3533094,
+        "externs": 771028
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 5417252,
-        "externs": 1167249
+        "steps": 4076646,
+        "externs": 889647
       }
     },
     {
@@ -754,18 +754,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 3719767,
-        "externs": 795618
+        "steps": 2732812,
+        "externs": 595495
       },
       "limits": {
-        "steps": 4835698,
-        "externs": 1034304
+        "steps": 3552656,
+        "externs": 774144
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 5579651,
-        "externs": 1193427
+        "steps": 4099218,
+        "externs": 893243
       }
     },
     {
@@ -792,18 +792,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 394856,
-        "externs": 85008
+        "steps": 298809,
+        "externs": 64566
       },
       "limits": {
-        "steps": 513313,
-        "externs": 110511
+        "steps": 388452,
+        "externs": 83936
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 592284,
-        "externs": 127512
+        "steps": 448214,
+        "externs": 96849
       }
     },
     {
@@ -830,18 +830,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1414261,
-        "externs": 285077
+        "steps": 1097243,
+        "externs": 213360
       },
       "limits": {
-        "steps": 1838540,
-        "externs": 370601
+        "steps": 1426416,
+        "externs": 277368
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2121392,
-        "externs": 427616
+        "steps": 1645865,
+        "externs": 320040
       }
     },
     {
@@ -868,18 +868,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1728648,
-        "externs": 364782
+        "steps": 1104564,
+        "externs": 219179
       },
       "limits": {
-        "steps": 2247243,
-        "externs": 474217
+        "steps": 1435934,
+        "externs": 284933
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2592972,
-        "externs": 547173
+        "steps": 1656846,
+        "externs": 328769
       }
     },
     {
@@ -906,18 +906,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1855638,
-        "externs": 415735
+        "steps": 925856,
+        "externs": 192790
       },
       "limits": {
-        "steps": 2412330,
-        "externs": 540456
+        "steps": 1203613,
+        "externs": 250627
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2783457,
-        "externs": 623603
+        "steps": 1388784,
+        "externs": 289185
       }
     },
     {
@@ -944,18 +944,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 2281259,
-        "externs": 513463
+        "steps": 1149934,
+        "externs": 238102
       },
       "limits": {
-        "steps": 2965637,
-        "externs": 667502
+        "steps": 1494915,
+        "externs": 309533
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 3421889,
-        "externs": 770195
+        "steps": 1724901,
+        "externs": 357153
       }
     },
     {
@@ -982,18 +982,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 9351918,
-        "externs": 2111262
+        "steps": 4611701,
+        "externs": 947184
       },
       "limits": {
-        "steps": 12157494,
-        "externs": 2744641
+        "steps": 5995212,
+        "externs": 1231340
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 14027877,
-        "externs": 3166893
+        "steps": 6917552,
+        "externs": 1420776
       }
     },
     {
@@ -1020,18 +1020,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 8148847,
-        "externs": 1871387
+        "steps": 3651046,
+        "externs": 743454
       },
       "limits": {
-        "steps": 10593502,
-        "externs": 2432804
+        "steps": 4746360,
+        "externs": 966491
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 12223271,
-        "externs": 2807081
+        "steps": 5476569,
+        "externs": 1115181
       }
     },
     {
@@ -1058,18 +1058,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 896693,
-        "externs": 205297
+        "steps": 365484,
+        "externs": 75920
       },
       "limits": {
-        "steps": 1165701,
-        "externs": 266887
+        "steps": 475130,
+        "externs": 98696
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1345040,
-        "externs": 307946
+        "steps": 548226,
+        "externs": 113880
       }
     },
     {
@@ -1096,18 +1096,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1104759,
-        "externs": 229184
+        "steps": 761976,
+        "externs": 149106
       },
       "limits": {
-        "steps": 1436187,
-        "externs": 297940
+        "steps": 990569,
+        "externs": 193838
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1657139,
-        "externs": 343776
+        "steps": 1142964,
+        "externs": 223659
       }
     },
     {
@@ -1134,18 +1134,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1452652,
-        "externs": 316760
+        "steps": 784938,
+        "externs": 157178
       },
       "limits": {
-        "steps": 1888448,
-        "externs": 411788
+        "steps": 1020420,
+        "externs": 204332
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2178978,
-        "externs": 475140
+        "steps": 1177407,
+        "externs": 235767
       }
     },
     {
@@ -1172,18 +1172,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1731787,
-        "externs": 391774
+        "steps": 804681,
+        "externs": 165548
       },
       "limits": {
-        "steps": 2251324,
-        "externs": 509307
+        "steps": 1046086,
+        "externs": 215213
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 2597681,
-        "externs": 587661
+        "steps": 1207022,
+        "externs": 248322
       }
     },
     {
@@ -1210,18 +1210,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 2156237,
-        "externs": 489299
+        "steps": 998878,
+        "externs": 205316
       },
       "limits": {
-        "steps": 2803109,
-        "externs": 636089
+        "steps": 1298542,
+        "externs": 266911
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 3234356,
-        "externs": 733949
+        "steps": 1498317,
+        "externs": 307974
       }
     },
     {
@@ -1248,18 +1248,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 8870155,
-        "externs": 2016593
+        "steps": 4167945,
+        "externs": 852453
       },
       "limits": {
-        "steps": 11531202,
-        "externs": 2621571
+        "steps": 5418329,
+        "externs": 1108189
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 13305233,
-        "externs": 3024890
+        "steps": 6251918,
+        "externs": 1278680
       }
     },
     {
@@ -1286,18 +1286,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 8148835,
-        "externs": 1871384
+        "steps": 3651034,
+        "externs": 743451
       },
       "limits": {
-        "steps": 10593486,
-        "externs": 2432800
+        "steps": 4746345,
+        "externs": 966487
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 12223253,
-        "externs": 2807076
+        "steps": 5476551,
+        "externs": 1115177
       }
     },
     {
@@ -1324,18 +1324,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 896693,
-        "externs": 205297
+        "steps": 391747,
+        "externs": 79560
       },
       "limits": {
-        "steps": 1165701,
-        "externs": 266887
+        "steps": 509272,
+        "externs": 103428
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away.",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1345040,
-        "externs": 307946
+        "steps": 587621,
+        "externs": 119340
       }
     },
     {
@@ -1363,18 +1363,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 49090,
-        "externs": 9189
+        "steps": 15209,
+        "externs": 3463
       },
       "limits": {
-        "steps": 63817,
-        "externs": 11946
+        "steps": 19772,
+        "externs": 4502
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 73635,
-        "externs": 13784
+        "steps": 22814,
+        "externs": 5195
       }
     },
     {
@@ -1675,18 +1675,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 791688,
-        "externs": 157257
+        "steps": 232373,
+        "externs": 50770
       },
       "limits": {
-        "steps": 1029195,
-        "externs": 204435
+        "steps": 302085,
+        "externs": 66001
       },
       "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
       "absoluteLimits": {
-        "steps": 1187532,
-        "externs": 235886
+        "steps": 348560,
+        "externs": 76155
       }
     },
     {

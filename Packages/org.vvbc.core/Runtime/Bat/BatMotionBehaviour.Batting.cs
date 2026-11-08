@@ -63,6 +63,7 @@ public partial class BatMotionBehaviour
     private int _feedbackGeometryRevision;
 
     public int FeedbackGeometryRevision() { return _feedbackGeometryRevision; }
+    public bool FeedbackGeometryIsValid() { return _feedbackGeometryValid; }
 
     public void PrepareFeedbackGeometry(float ballRadiusWorld)
     {

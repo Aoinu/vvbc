@@ -2036,7 +2036,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 8517367864942984709}
-  migrationId: b0eb84806c8740558748966190fd93cf
+  migrationId: d413426852074d0e94c1d2e8ee0aed15
   fields:
   - symbol: flight
     typeName: VRC.Udon.UdonBehaviour
@@ -3373,6 +3373,37 @@ MonoBehaviour:
     curveArray: []
   - symbol: snapshotNormalizedX
     typeName: System.Single
+    isNull: 0
+    booleanValue: 0
+    integerValue: 0
+    singleValue: 0
+    stringValue: 
+    vector2Value: {x: 0, y: 0}
+    vector3Value: {x: 0, y: 0, z: 0}
+    quaternionValue: {x: 0, y: 0, z: 0, w: 0}
+    colorValue: {r: 0, g: 0, b: 0, a: 0}
+    layerMaskValue:
+      serializedVersion: 2
+      m_Bits: 0
+    curveValue:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    objectValue: {fileID: 0}
+    booleanArray: 
+    integerArray: 
+    singleArray: []
+    stringArray: []
+    vector2Array: []
+    objectArray: []
+    vector3Array: []
+    quaternionArray: []
+    colorArray: []
+    curveArray: []
+  - symbol: feedbackPoseWanted
+    typeName: System.Boolean
     isNull: 0
     booleanValue: 0
     integerValue: 0

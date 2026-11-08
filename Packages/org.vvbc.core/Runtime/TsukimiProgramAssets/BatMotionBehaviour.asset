@@ -419,6 +419,8 @@ MonoBehaviour:
     0\n    .export __ContactWidthAtLocalY__SystemSingle_SystemSingle_ret\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __FeedbackGeometryRevision_ret: %SystemInt32,
     0\n    .export __FeedbackGeometryRevision_ret\n    __FeedbackGeometryRevision_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FeedbackGeometryIsValid_ret: %SystemBoolean,
+    null\n    .export __FeedbackGeometryIsValid_ret\n    __FeedbackGeometryIsValid_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __PrepareFeedbackGeometry__SystemSingle_p_0: %SystemSingle,
     0\n    __PrepareFeedbackGeometry__SystemSingle___t0: %SystemBoolean, null\n   
     __PrepareFeedbackGeometry__SystemSingle___t1: %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_scale:
@@ -1142,18 +1144,18 @@ MonoBehaviour:
     %SystemSingle, 0\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_13:
     %SystemSingle, 0\n    __retaddr_87: %SystemUInt32, 0x0000A5A0\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_15:
     %SystemBoolean, null\n    __retaddr_88: %SystemUInt32, 0x0000A6C4\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_18:
-    %SystemSingle, 0\n    __retaddr_89: %SystemUInt32, 0x0000A91C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_90: %SystemUInt32, 0x0000A97C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_2:
+    %SystemSingle, 0\n    __retaddr_89: %SystemUInt32, 0x0000A954\n    __PrepareFeedbackGeometry__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_90: %SystemUInt32, 0x0000A9B4\n    __PrepareFeedbackGeometry__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_5: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_6: %UnityEngineTransform,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_9: %SystemSingle, 0\n   
     __PrepareFeedbackGeometry__SystemSingle_intnl_11: %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_12:
     %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_13: %SystemSingle,
     0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_14: %SystemSingle, 0\n   
-    __retaddr_91: %SystemUInt32, 0x0000AB50\n    __PrepareFeedbackGeometry__SystemSingle_intnl_16:
-    %SystemBoolean, null\n    __retaddr_92: %SystemUInt32, 0x0000ABFC\n    __PrepareFeedbackGeometry__SystemSingle_intnl_19:
-    %SystemBoolean, null\n    __retaddr_93: %SystemUInt32, 0x0000AC94\n    __PrepareFeedbackGeometry__SystemSingle_intnl_22:
-    %SystemSingle, 0\n    __retaddr_94: %SystemUInt32, 0x0000ACC4\n    __PrepareFeedbackGeometry__SystemSingle_intnl_23:
+    __retaddr_91: %SystemUInt32, 0x0000AB88\n    __PrepareFeedbackGeometry__SystemSingle_intnl_16:
+    %SystemBoolean, null\n    __retaddr_92: %SystemUInt32, 0x0000AC34\n    __PrepareFeedbackGeometry__SystemSingle_intnl_19:
+    %SystemBoolean, null\n    __retaddr_93: %SystemUInt32, 0x0000ACCC\n    __PrepareFeedbackGeometry__SystemSingle_intnl_22:
+    %SystemSingle, 0\n    __retaddr_94: %SystemUInt32, 0x0000ACFC\n    __PrepareFeedbackGeometry__SystemSingle_intnl_23:
     %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_25: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_27: %UnityEngineWrapMode,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_28: %SystemInt32, 0\n   
@@ -1162,31 +1164,31 @@ MonoBehaviour:
     %UnityEngineWrapMode, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_33:
     %SystemInt32, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_34: %UnityEngineWrapMode,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_35: %SystemInt32, 0\n   
-    __retaddr_95: %SystemUInt32, 0x0000B15C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_45:
-    %UnityEngineAnimationCurve, null\n    __retaddr_96: %SystemUInt32, 0x0000B2D4\n   
+    __retaddr_95: %SystemUInt32, 0x0000B194\n    __PrepareFeedbackGeometry__SystemSingle_intnl_45:
+    %UnityEngineAnimationCurve, null\n    __retaddr_96: %SystemUInt32, 0x0000B30C\n   
     __FeedbackSampleWidth__SystemSingle_intnl_1: %SystemBoolean, null\n    __retaddr_97:
-    %SystemUInt32, 0x0000B37C\n    __FeedbackSampleWidth__SystemSingle_intnl_4: %SystemBoolean,
-    null\n    __retaddr_98: %SystemUInt32, 0x0000B41C\n    __FeedbackSampleWidth__SystemSingle_intnl_6:
-    %SystemSingle, 0\n    __retaddr_99: %SystemUInt32, 0x0000B4C8\n    __FeedbackOutlineWidth__SystemSingle_intnl_1:
-    %SystemBoolean, null\n    __retaddr_100: %SystemUInt32, 0x0000B570\n    __FeedbackOutlineWidth__SystemSingle_intnl_4:
-    %SystemBoolean, null\n    __retaddr_101: %SystemUInt32, 0x0000B5E8\n    __FeedbackOutlineWidth__SystemSingle_intnl_5:
+    %SystemUInt32, 0x0000B3B4\n    __FeedbackSampleWidth__SystemSingle_intnl_4: %SystemBoolean,
+    null\n    __retaddr_98: %SystemUInt32, 0x0000B454\n    __FeedbackSampleWidth__SystemSingle_intnl_6:
+    %SystemSingle, 0\n    __retaddr_99: %SystemUInt32, 0x0000B500\n    __FeedbackOutlineWidth__SystemSingle_intnl_1:
+    %SystemBoolean, null\n    __retaddr_100: %SystemUInt32, 0x0000B5A8\n    __FeedbackOutlineWidth__SystemSingle_intnl_4:
+    %SystemBoolean, null\n    __retaddr_101: %SystemUInt32, 0x0000B620\n    __FeedbackOutlineWidth__SystemSingle_intnl_5:
     %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_0: %SystemSingle,
-    0\n    __retaddr_102: %SystemUInt32, 0x0000B6A8\n    __FeedbackLocalWidth__SystemSingle_intnl_3:
+    0\n    __retaddr_102: %SystemUInt32, 0x0000B6E0\n    __FeedbackLocalWidth__SystemSingle_intnl_3:
     %SystemBoolean, null\n    __FeedbackLocalWidth__SystemSingle_intnl_4: %SystemSingle,
     0\n    __FeedbackLocalWidth__SystemSingle_intnl_5: %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_6:
-    %SystemSingle, 0\n    __retaddr_103: %SystemUInt32, 0x0000B7B0\n    __IsInsideContactRange__SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_104: %SystemUInt32, 0x0000B810\n    __IsInsideContactRange__SystemSingle_intnl_2:
+    %SystemSingle, 0\n    __retaddr_103: %SystemUInt32, 0x0000B7E8\n    __IsInsideContactRange__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_104: %SystemUInt32, 0x0000B848\n    __IsInsideContactRange__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __IsInsideContactRange__SystemSingle_intnl_4: %SystemSingle,
-    0\n    __retaddr_105: %SystemUInt32, 0x0000B898\n    __IsInsideContactRange__SystemSingle_intnl_5:
+    0\n    __retaddr_105: %SystemUInt32, 0x0000B8D0\n    __IsInsideContactRange__SystemSingle_intnl_5:
     %SystemSingle, 0\n    __IsInsideContactRange__SystemSingle_intnl_7: %SystemSingle,
-    0\n    __retaddr_106: %SystemUInt32, 0x0000B8F8\n    __IsInsideContactRange__SystemSingle_intnl_8:
-    %SystemSingle, 0\n    __retaddr_107: %SystemUInt32, 0x0000B980\n    __ContactQualityAtLocalY__SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_108: %SystemUInt32, 0x0000B9E0\n    __ContactQualityAtLocalY__SystemSingle_intnl_2:
-    %SystemBoolean, null\n    __retaddr_109: %SystemUInt32, 0x0000BA7C\n    __ContactQualityAtLocalY__SystemSingle_intnl_4:
-    %SystemSingle, 0\n    __retaddr_110: %SystemUInt32, 0x0000BAFC\n    __ContactQualityAtLocalY__SystemSingle_intnl_5:
-    %SystemSingle, 0\n    __retaddr_111: %SystemUInt32, 0x0000BBDC\n    __GeometrySettingsValid_intnl_0:
+    0\n    __retaddr_106: %SystemUInt32, 0x0000B930\n    __IsInsideContactRange__SystemSingle_intnl_8:
+    %SystemSingle, 0\n    __retaddr_107: %SystemUInt32, 0x0000B9B8\n    __ContactQualityAtLocalY__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_108: %SystemUInt32, 0x0000BA18\n    __ContactQualityAtLocalY__SystemSingle_intnl_2:
+    %SystemBoolean, null\n    __retaddr_109: %SystemUInt32, 0x0000BAB4\n    __ContactQualityAtLocalY__SystemSingle_intnl_4:
+    %SystemSingle, 0\n    __retaddr_110: %SystemUInt32, 0x0000BB34\n    __ContactQualityAtLocalY__SystemSingle_intnl_5:
+    %SystemSingle, 0\n    __retaddr_111: %SystemUInt32, 0x0000BC14\n    __GeometrySettingsValid_intnl_0:
     %SystemBoolean, null\n    __const_40: %UnityEngineAnimationCurve, null\n    __EvaluateRawPower__SystemSingle_intnl_3:
-    %SystemBoolean, null\n    __retaddr_112: %SystemUInt32, 0x0000BD64\n    __EvaluateRawPower__SystemSingle_intnl_4:
+    %SystemBoolean, null\n    __retaddr_112: %SystemUInt32, 0x0000BD9C\n    __EvaluateRawPower__SystemSingle_intnl_4:
     %UnityEngineAnimationCurve, null\n    __EvaluateRawPower__SystemSingle_intnl_5:
     %SystemInt32, 0\n    __EvaluateRawPower__SystemSingle_intnl_6: %SystemBoolean,
     null\n    __const_41: %UnityEngineWrapMode, null\n    __EvaluateRawPower__SystemSingle_intnl_8:
@@ -1209,25 +1211,25 @@ MonoBehaviour:
     %SystemSingle, 40\n    __CreateDefaultPowerCurve_intnl_11: %SystemInt32, 0\n   
     __CreateDefaultPowerCurve_intnl_12: %SystemInt32, 0\n    __CreateDefaultPowerCurve_intnl_13:
     %SystemBoolean, null\n    __CreateDefaultPowerCurve_intnl_14: %SystemBoolean,
-    null\n    __retaddr_113: %SystemUInt32, 0x0000C264\n    __retaddr_114: %SystemUInt32,
-    0x0000C2C8\n    __CaptureBattingDefaults_intnl_0: %UnityEngineAnimationCurve,
-    null\n    __retaddr_115: %SystemUInt32, 0x0000C320\n    __CaptureBattingDefaults_intnl_1:
+    null\n    __retaddr_113: %SystemUInt32, 0x0000C29C\n    __retaddr_114: %SystemUInt32,
+    0x0000C300\n    __CaptureBattingDefaults_intnl_0: %UnityEngineAnimationCurve,
+    null\n    __retaddr_115: %SystemUInt32, 0x0000C358\n    __CaptureBattingDefaults_intnl_1:
     %UnityEngineAnimationCurve, null\n    __const_64: %SystemInt32, 5\n    __const_65:
     %SystemInt32, 6\n    __const_66: %SystemInt32, 7\n    __const_67: %SystemInt32,
     8\n    __const_68: %SystemInt32, 9\n    __const_69: %SystemInt32, 10\n    __const_70:
     %SystemInt32, 11\n    __const_71: %SystemInt32, 12\n    __const_72: %SystemInt32,
     13\n    __const_73: %UnityEngineKeyframeArray, null\n    __SetBattingPowerCurve__UnityEngineAnimationCurve_intnl_0:
-    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x0000C630\n    __retaddr_117:
-    %SystemUInt32, 0x0000C750\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x0000C7B4\n    __retaddr_119:
-    %SystemUInt32, 0x0000C864\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_3:
-    %UnityEngineAnimationCurve, null\n    __retaddr_120: %SystemUInt32, 0x0000C908\n   
-    __retaddr_121: %SystemUInt32, 0x0000C998\n    __SetBattingTiming__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x0000C668\n    __retaddr_117:
+    %SystemUInt32, 0x0000C788\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x0000C7EC\n    __retaddr_119:
+    %SystemUInt32, 0x0000C89C\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_3:
+    %UnityEngineAnimationCurve, null\n    __retaddr_120: %SystemUInt32, 0x0000C940\n   
+    __retaddr_121: %SystemUInt32, 0x0000C9D0\n    __SetBattingTiming__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __const_74: %SystemSingle, 90\n    __retaddr_122: %SystemUInt32,
-    0x0000CA90\n    __const_75: %SystemInt32, 14\n    __retaddr_123: %SystemUInt32,
-    0x0000CC44\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_2: %SystemBoolean,
-    null\n    __const_76: %SystemSingle, 180\n    __retaddr_124: %SystemUInt32, 0x0000CF00\n   
-    __retaddr_125: %SystemUInt32, 0x0000CF44\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
+    0x0000CAC8\n    __const_75: %SystemInt32, 14\n    __retaddr_123: %SystemUInt32,
+    0x0000CC7C\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_2: %SystemBoolean,
+    null\n    __const_76: %SystemSingle, 180\n    __retaddr_124: %SystemUInt32, 0x0000CF38\n   
+    __retaddr_125: %SystemUInt32, 0x0000CF7C\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_1:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_3:
@@ -1241,25 +1243,25 @@ MonoBehaviour:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_11:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_12:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_13:
-    %SystemBoolean, null\n    __retaddr_126: %SystemUInt32, 0x0000D3FC\n    __retaddr_127:
-    %SystemUInt32, 0x0000D42C\n    __ResetBattingSettings_intnl_0: %UnityEngineAnimationCurve,
-    null\n    __retaddr_128: %SystemUInt32, 0x0000D4F0\n    __ResetBattingSettings_intnl_3:
-    %UnityEngineAnimationCurve, null\n    __retaddr_129: %SystemUInt32, 0x0000D594\n   
+    %SystemBoolean, null\n    __retaddr_126: %SystemUInt32, 0x0000D434\n    __retaddr_127:
+    %SystemUInt32, 0x0000D464\n    __ResetBattingSettings_intnl_0: %UnityEngineAnimationCurve,
+    null\n    __retaddr_128: %SystemUInt32, 0x0000D528\n    __ResetBattingSettings_intnl_3:
+    %UnityEngineAnimationCurve, null\n    __retaddr_129: %SystemUInt32, 0x0000D5CC\n   
     __ResetBattingSettings_intnl_4: %SystemInt32, 0\n    __ResetBattingSettings_intnl_5:
     %SystemBoolean, null\n    __ResetBattingSettings_intnl_6: %SystemSingle, 0\n   
-    __retaddr_130: %SystemUInt32, 0x0000D668\n    __CloneCurve__UnityEngineAnimationCurve_intnl_0:
+    __retaddr_130: %SystemUInt32, 0x0000D6A0\n    __CloneCurve__UnityEngineAnimationCurve_intnl_0:
     %SystemBoolean, null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_1: %UnityEngineKeyframeArray,
     null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_3: %UnityEngineWrapMode,
     null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_4: %UnityEngineWrapMode,
     null\n    __LocalHeldHands_intnl_0: %SystemBoolean, null\n    __const_77: %SystemBooleanArray,
     null\n    __const_78: %UnityEngineComponentArray, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
-    %SystemBoolean, null\n    __retaddr_131: %SystemUInt32, 0x0000DAA0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
+    %SystemBoolean, null\n    __retaddr_131: %SystemUInt32, 0x0000DAD8\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_2:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_3:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_4:
     %VRCUdonUdonBehaviour, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_5:
-    %SystemBoolean, null\n    __retaddr_132: %SystemUInt32, 0x0000DBCC\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
-    %SystemBoolean, null\n    __retaddr_133: %SystemUInt32, 0x0000DC0C\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_9:
+    %SystemBoolean, null\n    __retaddr_132: %SystemUInt32, 0x0000DC04\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
+    %SystemBoolean, null\n    __retaddr_133: %SystemUInt32, 0x0000DC44\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_9:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_10:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_12:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_15:
@@ -1267,14 +1269,14 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_17:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_19:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_21:
-    %SystemInt32, 0\n    __retaddr_134: %SystemUInt32, 0x0000DED8\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_24:
-    %SystemBoolean, null\n    __retaddr_135: %SystemUInt32, 0x0000DF18\n    __retaddr_136:
-    %SystemUInt32, 0x0000DF78\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
+    %SystemInt32, 0\n    __retaddr_134: %SystemUInt32, 0x0000DF10\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_24:
+    %SystemBoolean, null\n    __retaddr_135: %SystemUInt32, 0x0000DF50\n    __retaddr_136:
+    %SystemUInt32, 0x0000DFB0\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_2:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_3:
     %VRCUdonUdonBehaviour, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_4:
-    %SystemBoolean, null\n    __retaddr_137: %SystemUInt32, 0x0000E0C4\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
-    %SystemBoolean, null\n    __retaddr_138: %SystemUInt32, 0x0000E104\n    __HasActiveContactListener_intnl_1:
+    %SystemBoolean, null\n    __retaddr_137: %SystemUInt32, 0x0000E0FC\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
+    %SystemBoolean, null\n    __retaddr_138: %SystemUInt32, 0x0000E13C\n    __HasActiveContactListener_intnl_1:
     %SystemBoolean, null\n    __HasActiveContactListener_intnl_3: %VRCUdonUdonBehaviour,
     null\n    __const_79: %UnityEngineCollider, null\n    __IgnoreBallCollision__UnityEngineCollider_intnl_0:
     %SystemBoolean, null\n    __IgnoreBallCollision__UnityEngineCollider_intnl_1:
@@ -1290,29 +1292,29 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_3: %UnityEngineTransform,
     null\n    __RecordContactPose__SystemSingle_intnl_4: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_5: %UnityEngineTransform, null\n   
-    __retaddr_139: %SystemUInt32, 0x000100A8\n    __RecordContactPose__SystemSingle_intnl_6:
+    __retaddr_139: %SystemUInt32, 0x000100E0\n    __RecordContactPose__SystemSingle_intnl_6:
     %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_7: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_8: %UnityEngineVector3, null\n   
-    __retaddr_140: %SystemUInt32, 0x00012988\n    __RecordContactPose__SystemSingle_intnl_9:
+    __retaddr_140: %SystemUInt32, 0x000129C0\n    __RecordContactPose__SystemSingle_intnl_9:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_10: %SystemBoolean,
-    null\n    __retaddr_141: %SystemUInt32, 0x00015390\n    __RecordContactPose__SystemSingle_intnl_11:
+    null\n    __retaddr_141: %SystemUInt32, 0x000153C8\n    __RecordContactPose__SystemSingle_intnl_11:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_12: %SystemBoolean,
-    null\n    __retaddr_142: %SystemUInt32, 0x00017EAC\n    __RecordContactPose__SystemSingle_intnl_13:
+    null\n    __retaddr_142: %SystemUInt32, 0x00017EE4\n    __RecordContactPose__SystemSingle_intnl_13:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_14: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_15: %SystemSingle, 0\n    __retaddr_143:
-    %SystemUInt32, 0x0001AB20\n    __RecordContactPose__SystemSingle_intnl_16: %SystemBoolean,
+    %SystemUInt32, 0x0001AB58\n    __RecordContactPose__SystemSingle_intnl_16: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_17: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_18: %SystemSingle, 0\n    __retaddr_144:
-    %SystemUInt32, 0x0001D914\n    __RecordContactPose__SystemSingle_intnl_19: %SystemBoolean,
+    %SystemUInt32, 0x0001D94C\n    __RecordContactPose__SystemSingle_intnl_19: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_20: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_21: %SystemSingle, 0\n    __retaddr_145:
-    %SystemUInt32, 0x00020888\n    __RecordContactPose__SystemSingle_intnl_22: %SystemBoolean,
+    %SystemUInt32, 0x000208C0\n    __RecordContactPose__SystemSingle_intnl_22: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_23: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_24: %SystemSingle, 0\n    __retaddr_146:
-    %SystemUInt32, 0x0002397C\n    __RecordContactPose__SystemSingle_intnl_25: %SystemBoolean,
+    %SystemUInt32, 0x000239B4\n    __RecordContactPose__SystemSingle_intnl_25: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_26: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_27: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_28:
-    %SystemBoolean, null\n    __retaddr_147: %SystemUInt32, 0x00026C68\n    __RecordContactPose__SystemSingle_intnl_29:
+    %SystemBoolean, null\n    __retaddr_147: %SystemUInt32, 0x00026CA0\n    __RecordContactPose__SystemSingle_intnl_29:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_30: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_31: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_32: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_33:
@@ -1321,63 +1323,63 @@ MonoBehaviour:
     0\n    __RecordContactPose__SystemSingle_intnl_36: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_37:
     %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_38: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_39: %SystemBoolean, null\n   
-    __retaddr_148: %SystemUInt32, 0x0002A454\n    __RecordContactPose__SystemSingle_intnl_40:
+    __retaddr_148: %SystemUInt32, 0x0002A48C\n    __RecordContactPose__SystemSingle_intnl_40:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_41: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_42: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_43: %UnityEngineQuaternion, null\n   
-    __retaddr_149: %SystemUInt32, 0x0002DEC8\n    __RecordContactPose__SystemSingle_intnl_44:
+    __retaddr_149: %SystemUInt32, 0x0002DF00\n    __RecordContactPose__SystemSingle_intnl_44:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_45: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_46: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_47: %UnityEngineVector3, null\n    __retaddr_150:
-    %SystemUInt32, 0x00031B14\n    __RecordContactPose__SystemSingle_intnl_48: %SystemBoolean,
+    %SystemUInt32, 0x00031B4C\n    __RecordContactPose__SystemSingle_intnl_48: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_49: %SystemBoolean, null\n   
-    __retaddr_151: %SystemUInt32, 0x0003589C\n    __RecordContactPose__SystemSingle_intnl_50:
+    __retaddr_151: %SystemUInt32, 0x000358D4\n    __RecordContactPose__SystemSingle_intnl_50:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_51: %SystemBoolean,
-    null\n    __retaddr_152: %SystemUInt32, 0x00039738\n    __RecordContactPose__SystemSingle_intnl_52:
+    null\n    __retaddr_152: %SystemUInt32, 0x00039770\n    __RecordContactPose__SystemSingle_intnl_52:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_53: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_54: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_55:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_56: %SystemSingle,
     0\n    __RecordContactPose__SystemSingle_intnl_57: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_58: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_59:
-    %SystemBoolean, null\n    __retaddr_153: %SystemUInt32, 0x0003D98C\n    __RecordContactPose__SystemSingle_intnl_60:
+    %SystemBoolean, null\n    __retaddr_153: %SystemUInt32, 0x0003D9C4\n    __RecordContactPose__SystemSingle_intnl_60:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_61: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_62: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_63: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_64:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_65: %SystemSingle,
     0\n    __RecordContactPose__SystemSingle_intnl_66: %SystemSingle, 0\n    __const_85:
     %SystemSingle, 57.29578\n    __RecordContactPose__SystemSingle_intnl_67: %SystemSingle,
-    0\n    __retaddr_154: %SystemUInt32, 0x00042084\n    __RecordContactPose__SystemSingle_intnl_68:
+    0\n    __retaddr_154: %SystemUInt32, 0x000420BC\n    __RecordContactPose__SystemSingle_intnl_68:
     %SystemBoolean, null\n    __const_86: %VRCSDKBaseVRCPlayerApiTrackingDataType,
     null\n    __RecordContactPose__SystemSingle_intnl_69: %VRCSDKBaseVRCPlayerApiTrackingData,
     null\n    __const_87: %VRCSDKBaseVRCPlayerApiTrackingDataType, null\n    __RecordContactPose__SystemSingle_intnl_70:
     %VRCSDKBaseVRCPlayerApiTrackingData, null\n    __RecordContactPose__SystemSingle_intnl_71:
-    %UnityEngineVector3, null\n    __retaddr_155: %SystemUInt32, 0x00046B24\n   
+    %UnityEngineVector3, null\n    __retaddr_155: %SystemUInt32, 0x00046B5C\n   
     __RecordContactPose__SystemSingle_intnl_72: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_73:
-    %UnityEngineVector3, null\n    __retaddr_156: %SystemUInt32, 0x0004B4A4\n   
+    %UnityEngineVector3, null\n    __retaddr_156: %SystemUInt32, 0x0004B4DC\n   
     __RecordContactPose__SystemSingle_intnl_74: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_75:
     %UnityEngineQuaternion, null\n    __RecordContactPose__SystemSingle_intnl_76:
-    %SystemSingle, 0\n    __retaddr_157: %SystemUInt32, 0x0004FF90\n    __RecordContactPose__SystemSingle_intnl_77:
+    %SystemSingle, 0\n    __retaddr_157: %SystemUInt32, 0x0004FFC8\n    __RecordContactPose__SystemSingle_intnl_77:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_78: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_79: %SystemSingle, 0\n    __retaddr_158:
-    %SystemUInt32, 0x00054BFC\n    __RecordContactPose__SystemSingle_intnl_80: %SystemBoolean,
+    %SystemUInt32, 0x00054C34\n    __RecordContactPose__SystemSingle_intnl_80: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_81: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_82: %SystemSingle, 0\n    __retaddr_159:
-    %SystemUInt32, 0x000599E8\n    __RecordContactPose__SystemSingle_intnl_83: %SystemBoolean,
+    %SystemUInt32, 0x00059A20\n    __RecordContactPose__SystemSingle_intnl_83: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_84: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_85: %SystemSingle, 0\n    __retaddr_160:
-    %SystemUInt32, 0x0005E954\n    __RecordContactPose__SystemSingle_intnl_86: %SystemBoolean,
+    %SystemUInt32, 0x0005E98C\n    __RecordContactPose__SystemSingle_intnl_86: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_87: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_88: %SystemSingle, 0\n    __retaddr_161:
-    %SystemUInt32, 0x00063A40\n    __RecordContactPose__SystemSingle_intnl_89: %SystemBoolean,
+    %SystemUInt32, 0x00063A78\n    __RecordContactPose__SystemSingle_intnl_89: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_90: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_91: %SystemSingle, 0\n    __retaddr_162:
-    %SystemUInt32, 0x00068CAC\n    __RecordContactPose__SystemSingle_intnl_92: %SystemBoolean,
+    %SystemUInt32, 0x00068CE4\n    __RecordContactPose__SystemSingle_intnl_92: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_93: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_94: %SystemSingle, 0\n    __retaddr_163:
-    %SystemUInt32, 0x0006E098\n    __RecordContactPose__SystemSingle_intnl_95: %SystemBoolean,
+    %SystemUInt32, 0x0006E0D0\n    __RecordContactPose__SystemSingle_intnl_95: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_96: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_97: %SystemSingle, 0\n    __retaddr_164:
-    %SystemUInt32, 0x00073604\n    __RecordContactPose__SystemSingle_intnl_98: %SystemBoolean,
+    %SystemUInt32, 0x0007363C\n    __RecordContactPose__SystemSingle_intnl_98: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_99: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_100: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_101: %SystemSingle, 0\n   
@@ -1408,8 +1410,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_4:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_6:
-    %SystemInt32, 0\n    __retaddr_165: %SystemUInt32, 0x0007D094\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_166: %SystemUInt32, 0x0007D0F4\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_2:
+    %SystemInt32, 0\n    __retaddr_165: %SystemUInt32, 0x0007D0CC\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_166: %SystemUInt32, 0x0007D12C\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_8:
@@ -1422,8 +1424,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_8:
-    %SystemBoolean, null\n    __retaddr_167: %SystemUInt32, 0x0007D798\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_1:
-    %SystemBoolean, null\n    __retaddr_168: %SystemUInt32, 0x0007D80C\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_3:
+    %SystemBoolean, null\n    __retaddr_167: %SystemUInt32, 0x0007D7D0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_1:
+    %SystemBoolean, null\n    __retaddr_168: %SystemUInt32, 0x0007D844\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_3:
     %SystemBoolean, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_8:
@@ -1511,9 +1513,9 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_117:
     %UnityEngineQuaternion, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_118:
     %UnityEngineQuaternion, null\n    __ContactFinite__SystemSingle_intnl_0: %SystemBoolean,
-    null\n    __retaddr_169: %SystemUInt32, 0x0007E9DC\n    __ContactFiniteVector__UnityEngineVector3_intnl_1:
-    %SystemBoolean, null\n    __retaddr_170: %SystemUInt32, 0x0007EA34\n    __ContactFiniteVector__UnityEngineVector3_intnl_3:
-    %SystemBoolean, null\n    __retaddr_171: %SystemUInt32, 0x0007EAA0\n    __ContactFiniteVector__UnityEngineVector3_intnl_5:
+    null\n    __retaddr_169: %SystemUInt32, 0x0007EA14\n    __ContactFiniteVector__UnityEngineVector3_intnl_1:
+    %SystemBoolean, null\n    __retaddr_170: %SystemUInt32, 0x0007EA6C\n    __ContactFiniteVector__UnityEngineVector3_intnl_3:
+    %SystemBoolean, null\n    __retaddr_171: %SystemUInt32, 0x0007EAD8\n    __ContactFiniteVector__UnityEngineVector3_intnl_5:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_2:
     %SystemInt32, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_3:
     %SystemInt32, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_5:
@@ -1550,16 +1552,16 @@ MonoBehaviour:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_58:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_59:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_61:
-    %UnityEngineVector3, null\n    __retaddr_172: %SystemUInt32, 0x0007FAFC\n   
+    %UnityEngineVector3, null\n    __retaddr_172: %SystemUInt32, 0x0007FB34\n   
     __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_66: %SystemSingle,
-    0\n    __retaddr_173: %SystemUInt32, 0x0007FB60\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_68:
+    0\n    __retaddr_173: %SystemUInt32, 0x0007FB98\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_68:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_78:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_80:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_81:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_82:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_83:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_85:
-    %SystemSingle, 0\n    __retaddr_174: %SystemUInt32, 0x00080058\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_92:
+    %SystemSingle, 0\n    __retaddr_174: %SystemUInt32, 0x00080090\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_92:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_94:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_95:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_96:
@@ -1578,8 +1580,8 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_118:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_119:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_121:
-    %SystemBoolean, null\n    __retaddr_175: %SystemUInt32, 0x00080630\n    __X11zBatGeometry__m__ContactQuality_intnl_0:
-    %SystemBoolean, null\n    __retaddr_176: %SystemUInt32, 0x00080690\n    __X11zBatGeometry__m__ContactQuality_intnl_2:
+    %SystemBoolean, null\n    __retaddr_175: %SystemUInt32, 0x00080668\n    __X11zBatGeometry__m__ContactQuality_intnl_0:
+    %SystemBoolean, null\n    __retaddr_176: %SystemUInt32, 0x000806C8\n    __X11zBatGeometry__m__ContactQuality_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactQuality_intnl_6: %SystemSingle,
     0\n    __X11zBatGeometry__m__ContactQuality_intnl_8: %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_9:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_10: %SystemBoolean,
@@ -1588,41 +1590,41 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_17: %SystemSingle,
     0\n    __X11zBatGeometry__m__ContactQuality_intnl_18: %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_19:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_20: %SystemSingle,
-    0\n    __retaddr_177: %SystemUInt32, 0x00080AB0\n    __X11zBatGeometry__m__ContactWidth_intnl_0:
-    %SystemBoolean, null\n    __retaddr_178: %SystemUInt32, 0x00080B5C\n    __X11zBatGeometry__m__ContactWidth_intnl_3:
-    %SystemBoolean, null\n    __retaddr_179: %SystemUInt32, 0x00080BD0\n    __X11zBatGeometry__m__ContactWidth_intnl_5:
-    %SystemBoolean, null\n    __retaddr_180: %SystemUInt32, 0x00080C90\n    __X11zBatGeometry__m__ContactWidth_intnl_8:
-    %SystemBoolean, null\n    __retaddr_181: %SystemUInt32, 0x00080D50\n    __X11zBatGeometry__m__ContactWidth_intnl_11:
+    0\n    __retaddr_177: %SystemUInt32, 0x00080AE8\n    __X11zBatGeometry__m__ContactWidth_intnl_0:
+    %SystemBoolean, null\n    __retaddr_178: %SystemUInt32, 0x00080B94\n    __X11zBatGeometry__m__ContactWidth_intnl_3:
+    %SystemBoolean, null\n    __retaddr_179: %SystemUInt32, 0x00080C08\n    __X11zBatGeometry__m__ContactWidth_intnl_5:
+    %SystemBoolean, null\n    __retaddr_180: %SystemUInt32, 0x00080CC8\n    __X11zBatGeometry__m__ContactWidth_intnl_8:
+    %SystemBoolean, null\n    __retaddr_181: %SystemUInt32, 0x00080D88\n    __X11zBatGeometry__m__ContactWidth_intnl_11:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_14: %UnityEngineAnimationCurve,
-    null\n    __retaddr_182: %SystemUInt32, 0x00080E38\n    __X11zBatGeometry__m__ContactWidth_intnl_15:
-    %SystemSingle, 0\n    __retaddr_183: %SystemUInt32, 0x00080E7C\n    __X11zBatGeometry__m__ContactWidth_intnl_16:
-    %SystemSingle, 0\n    __retaddr_184: %SystemUInt32, 0x00080EC0\n    __X11zBatGeometry__m__ContactWidth_intnl_17:
-    %SystemBoolean, null\n    __retaddr_185: %SystemUInt32, 0x00080F60\n    __X11zBatGeometry__m__ContactWidth_intnl_18:
+    null\n    __retaddr_182: %SystemUInt32, 0x00080E70\n    __X11zBatGeometry__m__ContactWidth_intnl_15:
+    %SystemSingle, 0\n    __retaddr_183: %SystemUInt32, 0x00080EB4\n    __X11zBatGeometry__m__ContactWidth_intnl_16:
+    %SystemSingle, 0\n    __retaddr_184: %SystemUInt32, 0x00080EF8\n    __X11zBatGeometry__m__ContactWidth_intnl_17:
+    %SystemBoolean, null\n    __retaddr_185: %SystemUInt32, 0x00080F98\n    __X11zBatGeometry__m__ContactWidth_intnl_18:
     %SystemSingle, 0\n    __X11zBatGeometry__m__Finite_intnl_0: %SystemBoolean, null\n   
-    __retaddr_186: %SystemUInt32, 0x0008111C\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_0:
-    %SystemBoolean, null\n    __retaddr_187: %SystemUInt32, 0x00081170\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_1:
-    %SystemBoolean, null\n    __retaddr_188: %SystemUInt32, 0x0008128C\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_0:
+    __retaddr_186: %SystemUInt32, 0x00081154\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_0:
+    %SystemBoolean, null\n    __retaddr_187: %SystemUInt32, 0x000811A8\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_1:
+    %SystemBoolean, null\n    __retaddr_188: %SystemUInt32, 0x000812C4\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_3:
-    %SystemInt32, 0\n    __retaddr_189: %SystemUInt32, 0x000813EC\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_5:
-    %SystemBoolean, null\n    __retaddr_190: %SystemUInt32, 0x00081454\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_6:
-    %SystemBoolean, null\n    __retaddr_191: %SystemUInt32, 0x00081500\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_8:
-    %SystemBoolean, null\n    __retaddr_192: %SystemUInt32, 0x00081618\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_0:
-    %SystemBoolean, null\n    __retaddr_193: %SystemUInt32, 0x000816C4\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_3:
+    %SystemInt32, 0\n    __retaddr_189: %SystemUInt32, 0x00081424\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_5:
+    %SystemBoolean, null\n    __retaddr_190: %SystemUInt32, 0x0008148C\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_6:
+    %SystemBoolean, null\n    __retaddr_191: %SystemUInt32, 0x00081538\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_8:
+    %SystemBoolean, null\n    __retaddr_192: %SystemUInt32, 0x00081650\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_0:
+    %SystemBoolean, null\n    __retaddr_193: %SystemUInt32, 0x000816FC\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_5: %SystemSingle,
-    0\n    __retaddr_194: %SystemUInt32, 0x0008180C\n    __X11zBatGeometry__m__NormalizedContactX_intnl_0:
-    %SystemBoolean, null\n    __retaddr_195: %SystemUInt32, 0x000818B8\n    __X11zBatGeometry__m__NormalizedContactX_intnl_3:
-    %SystemBoolean, null\n    __retaddr_196: %SystemUInt32, 0x00081954\n    __X11zBatGeometry__m__NormalizedContactX_intnl_5:
-    %SystemBoolean, null\n    __retaddr_197: %SystemUInt32, 0x000819E8\n    __X11zBatGeometry__m__NormalizedContactX_intnl_8:
+    0\n    __retaddr_194: %SystemUInt32, 0x00081844\n    __X11zBatGeometry__m__NormalizedContactX_intnl_0:
+    %SystemBoolean, null\n    __retaddr_195: %SystemUInt32, 0x000818F0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_3:
+    %SystemBoolean, null\n    __retaddr_196: %SystemUInt32, 0x0008198C\n    __X11zBatGeometry__m__NormalizedContactX_intnl_5:
+    %SystemBoolean, null\n    __retaddr_197: %SystemUInt32, 0x00081A20\n    __X11zBatGeometry__m__NormalizedContactX_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_9: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_10: %SystemSingle, 0\n   
     __X11zBatGeometry__m__NormalizedContactX_intnl_11: %SystemSingle, 0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_13:
     %SystemSingle, 0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_14: %SystemSingle,
-    0\n    __retaddr_198: %SystemUInt32, 0x00081B58\n    __X11zBatGeometry__m__NormalizedContactX_intnl_16:
-    %SystemBoolean, null\n    __retaddr_199: %SystemUInt32, 0x00081C14\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_0:
-    %SystemBoolean, null\n    __retaddr_200: %SystemUInt32, 0x00081CC0\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_3:
+    0\n    __retaddr_198: %SystemUInt32, 0x00081B90\n    __X11zBatGeometry__m__NormalizedContactX_intnl_16:
+    %SystemBoolean, null\n    __retaddr_199: %SystemUInt32, 0x00081C4C\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_0:
+    %SystemBoolean, null\n    __retaddr_200: %SystemUInt32, 0x00081CF8\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_5: %SystemSingle,
     0\n    __X13zBatKinematics__m__AngularVelocity_intnl_0: %UnityEngineQuaternion,
-    null\n    __retaddr_201: %SystemUInt32, 0x00081DE0\n    __X13zBatKinematics__m__AngularVelocity_intnl_1:
+    null\n    __retaddr_201: %SystemUInt32, 0x00081E18\n    __X13zBatKinematics__m__AngularVelocity_intnl_1:
     %UnityEngineQuaternion, null\n    __X13zBatKinematics__m__AngularVelocity_intnl_3:
     %SystemBoolean, null\n    __const_96: %SystemSingle, 360\n    __X13zBatKinematics__m__AngularVelocity_intnl_5:
     %SystemSingle, 0\n    __X13zBatKinematics__m__AngularVelocity_intnl_6: %SystemBoolean,
@@ -1646,10 +1648,10 @@ MonoBehaviour:
     __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_21: %SystemSingle, 0\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_22:
     %SystemSingle, 0\n    __const_98: %SystemSingle, 0.9\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_23:
     %SystemBoolean, null\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_28:
-    %UnityEngineVector3, null\n    __retaddr_202: %SystemUInt32, 0x00082408\n   
+    %UnityEngineVector3, null\n    __retaddr_202: %SystemUInt32, 0x00082440\n   
     __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_30: %UnityEngineQuaternion, null\n   
     __X13zBatPoseSolver__m__ApplyLock_intnl_0: %UnityEngineVector3, null\n    __retaddr_203:
-    %SystemUInt32, 0x0008251C\n    __X13zBatPoseSolver__m__CaptureLock_intnl_0: %UnityEngineQuaternion,
+    %SystemUInt32, 0x00082554\n    __X13zBatPoseSolver__m__CaptureLock_intnl_0: %UnityEngineQuaternion,
     null\n    __X13zBatPoseSolver__m__CaptureLock_intnl_1: %UnityEngineVector3, null\n   
     __X13zBatPoseSolver__m__InvertRotation_intnl_0: %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_1:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_2: %SystemSingle,
@@ -1671,7 +1673,7 @@ MonoBehaviour:
     0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_26: %SystemSingle, 0\n   
     __X13zBatPoseSolver__m__InvertRotation_intnl_27: %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_28:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__Lower_intnl_0: %UnityEngineQuaternion,
-    null\n    __retaddr_204: %SystemUInt32, 0x000829D8\n    __X13zBatPoseSolver__m__Lower_intnl_1:
+    null\n    __retaddr_204: %SystemUInt32, 0x00082A10\n    __X13zBatPoseSolver__m__Lower_intnl_1:
     %UnityEngineQuaternion, null\n    __X13zBatPoseSolver__m__Lower_intnl_3: %UnityEngineVector3,
     null\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_0: %SystemSingle,
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_1: %SystemSingle,
@@ -1722,25 +1724,25 @@ MonoBehaviour:
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_51: %SystemSingle,
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_53: %SystemSingle,
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_54: %SystemSingle,
-    0\n    __retaddr_205: %SystemUInt32, 0x000831A8\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_0:
-    %SystemBoolean, null\n    __retaddr_206: %SystemUInt32, 0x00083208\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_2:
-    %SystemBoolean, null\n    __retaddr_207: %SystemUInt32, 0x000832C8\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_5:
-    %SystemBoolean, null\n    __retaddr_208: %SystemUInt32, 0x00083388\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_8:
+    0\n    __retaddr_205: %SystemUInt32, 0x000831E0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_0:
+    %SystemBoolean, null\n    __retaddr_206: %SystemUInt32, 0x00083240\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_2:
+    %SystemBoolean, null\n    __retaddr_207: %SystemUInt32, 0x00083300\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_5:
+    %SystemBoolean, null\n    __retaddr_208: %SystemUInt32, 0x000833C0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_11:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_12:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_13:
     %SystemSingle, 0\n    __X11zBatGeometry__m__EvaluateRadius_intnl_1: %SystemInt32,
-    0\n    __retaddr_209: %SystemUInt32, 0x0008359C\n    __X11zBatGeometry__m__EvaluateRadius_intnl_3:
+    0\n    __retaddr_209: %SystemUInt32, 0x000835D4\n    __X11zBatGeometry__m__EvaluateRadius_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EvaluateRadius_intnl_5: %SystemSingle,
-    0\n    __retaddr_210: %SystemUInt32, 0x00083648\n    __X11zBatGeometry__m__EvaluateRadius_intnl_7:
+    0\n    __retaddr_210: %SystemUInt32, 0x00083680\n    __X11zBatGeometry__m__EvaluateRadius_intnl_7:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_1: %SystemInt32,
     0\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_3: %SystemBoolean, null\n   
     __X11zBatGeometry__m__IsValidRadiusCurve_intnl_4: %SystemSingle, 0\n    __const_99:
     %SystemSingle, 32\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_5: %SystemSingle,
-    0\n    __retaddr_211: %SystemUInt32, 0x00083814\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_7:
-    %SystemBoolean, null\n    __retaddr_212: %SystemUInt32, 0x0008393C\n    __X11zBatGeometry__m__ValidContactRange_intnl_0:
-    %SystemBoolean, null\n    __retaddr_213: %SystemUInt32, 0x00083990\n    __X11zBatGeometry__m__ValidContactRange_intnl_1:
-    %SystemBoolean, null\n    __retaddr_214: %SystemUInt32, 0x000839F8\n    __X11zBatGeometry__m__ValidContactRange_intnl_2:
+    0\n    __retaddr_211: %SystemUInt32, 0x0008384C\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_7:
+    %SystemBoolean, null\n    __retaddr_212: %SystemUInt32, 0x00083974\n    __X11zBatGeometry__m__ValidContactRange_intnl_0:
+    %SystemBoolean, null\n    __retaddr_213: %SystemUInt32, 0x000839C8\n    __X11zBatGeometry__m__ValidContactRange_intnl_1:
+    %SystemBoolean, null\n    __retaddr_214: %SystemUInt32, 0x00083A30\n    __X11zBatGeometry__m__ValidContactRange_intnl_2:
     %SystemBoolean, null\n    __X13zBatPoseSolver__m__RotationFromBasis_intnl_9:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__RotationFromBasis_intnl_12: %SystemBoolean,
     null\n    __X13zBatPoseSolver__m__RotationFromBasis_intnl_13: %SystemSingle,
@@ -4679,7 +4681,11 @@ MonoBehaviour:
     _feedbackGeometryRevision\n        PUSH, __FeedbackGeometryRevision_ret\n       
     COPY\n        PUSH, _feedbackGeometryRevision\n        PUSH, __returnValue\n       
     COPY\n        JUMP_INDIRECT, __FeedbackGeometryRevision_retjump\n        JUMP_INDIRECT,
-    __FeedbackGeometryRevision_retjump\n    .export PrepareFeedbackGeometry__SystemSingle\n   
+    __FeedbackGeometryRevision_retjump\n    .export FeedbackGeometryIsValid\n   
+    FeedbackGeometryIsValid:\n        PUSH, _feedbackGeometryValid\n        PUSH,
+    __FeedbackGeometryIsValid_ret\n        COPY\n        PUSH, _feedbackGeometryValid\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __FeedbackGeometryIsValid_retjump\n       
+    JUMP_INDIRECT, __FeedbackGeometryIsValid_retjump\n    .export PrepareFeedbackGeometry__SystemSingle\n   
     PrepareFeedbackGeometry__SystemSingle:\n        PUSH, __const_0\n        PUSH,
     __PrepareFeedbackGeometry__SystemSingle___t0\n        COPY\n        PUSH, __const_0\n       
     PUSH, __PrepareFeedbackGeometry__SystemSingle___t1\n        COPY\n        PUSH,
@@ -33142,7 +33148,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 549452d6668ff764e98fcd242f6da2d8, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: f8744cfa380d87ba2ac819deb9b99f97240dca98b517484e064ff5079ac19dfd
+  sourceFingerprint: 88ebb88849ca08409d8cbdd13b960b381634f09831a4b1a394e8e4e8fe29e488
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -33726,6 +33732,8 @@ MonoBehaviour:
     0\n    .export __ContactWidthAtLocalY__SystemSingle_SystemSingle_ret\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __FeedbackGeometryRevision_ret: %SystemInt32,
     0\n    .export __FeedbackGeometryRevision_ret\n    __FeedbackGeometryRevision_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FeedbackGeometryIsValid_ret: %SystemBoolean,
+    null\n    .export __FeedbackGeometryIsValid_ret\n    __FeedbackGeometryIsValid_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __PrepareFeedbackGeometry__SystemSingle_p_0: %SystemSingle,
     0\n    __PrepareFeedbackGeometry__SystemSingle___t0: %SystemBoolean, null\n   
     __PrepareFeedbackGeometry__SystemSingle___t1: %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_scale:
@@ -34581,9 +34589,9 @@ MonoBehaviour:
     %SystemBoolean, null\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_16:
     %SystemBoolean, null\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_17:
     %SystemBoolean, null\n    __retaddr_88: %SystemUInt32, 0x0000C1D8\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_18:
-    %SystemSingle, 0\n    __retaddr_89: %SystemUInt32, 0x0000C46C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_0:
+    %SystemSingle, 0\n    __retaddr_89: %SystemUInt32, 0x0000C4A4\n    __PrepareFeedbackGeometry__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_1: %SystemBoolean,
-    null\n    __retaddr_90: %SystemUInt32, 0x0000C4F4\n    __PrepareFeedbackGeometry__SystemSingle_intnl_2:
+    null\n    __retaddr_90: %SystemUInt32, 0x0000C52C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_3: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_4: %SystemBoolean, null\n   
     __PrepareFeedbackGeometry__SystemSingle_intnl_5: %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_6:
@@ -34595,14 +34603,14 @@ MonoBehaviour:
     __PrepareFeedbackGeometry__SystemSingle_intnl_12: %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_13:
     %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_14: %SystemSingle,
     0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_15: %SystemSingle, 0\n   
-    __retaddr_91: %SystemUInt32, 0x0000C768\n    __PrepareFeedbackGeometry__SystemSingle_intnl_16:
+    __retaddr_91: %SystemUInt32, 0x0000C7A0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_16:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_17: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_18: %SystemBoolean, null\n   
-    __retaddr_92: %SystemUInt32, 0x0000C850\n    __PrepareFeedbackGeometry__SystemSingle_intnl_19:
+    __retaddr_92: %SystemUInt32, 0x0000C888\n    __PrepareFeedbackGeometry__SystemSingle_intnl_19:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_20: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_21: %SystemBoolean, null\n   
-    __retaddr_93: %SystemUInt32, 0x0000C924\n    __PrepareFeedbackGeometry__SystemSingle_intnl_22:
-    %SystemSingle, 0\n    __retaddr_94: %SystemUInt32, 0x0000C968\n    __PrepareFeedbackGeometry__SystemSingle_intnl_23:
+    __retaddr_93: %SystemUInt32, 0x0000C95C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_22:
+    %SystemSingle, 0\n    __retaddr_94: %SystemUInt32, 0x0000C9A0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_23:
     %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_24: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_25: %SystemBoolean, null\n   
     __PrepareFeedbackGeometry__SystemSingle_intnl_26: %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_27:
@@ -34620,49 +34628,49 @@ MonoBehaviour:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_42: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_43: %SystemBoolean, null\n   
     __PrepareFeedbackGeometry__SystemSingle_intnl_44: %SystemBoolean, null\n    __retaddr_95:
-    %SystemUInt32, 0x0000CF04\n    __PrepareFeedbackGeometry__SystemSingle_intnl_45:
+    %SystemUInt32, 0x0000CF3C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_45:
     %UnityEngineAnimationCurve, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_46:
     %SystemInt32, 0\n    __FeedbackSampleWidth__SystemSingle_intnl_0: %SystemBoolean,
-    null\n    __retaddr_96: %SystemUInt32, 0x0000D0E0\n    __FeedbackSampleWidth__SystemSingle_intnl_1:
+    null\n    __retaddr_96: %SystemUInt32, 0x0000D118\n    __FeedbackSampleWidth__SystemSingle_intnl_1:
     %SystemBoolean, null\n    __FeedbackSampleWidth__SystemSingle_intnl_2: %SystemBoolean,
     null\n    __FeedbackSampleWidth__SystemSingle_intnl_3: %SystemSingle, 0\n   
-    __retaddr_97: %SystemUInt32, 0x0000D1C4\n    __FeedbackSampleWidth__SystemSingle_intnl_4:
+    __retaddr_97: %SystemUInt32, 0x0000D1FC\n    __FeedbackSampleWidth__SystemSingle_intnl_4:
     %SystemBoolean, null\n    __FeedbackSampleWidth__SystemSingle_intnl_5: %SystemSingle,
-    0\n    __retaddr_98: %SystemUInt32, 0x0000D28C\n    __FeedbackSampleWidth__SystemSingle_intnl_6:
+    0\n    __retaddr_98: %SystemUInt32, 0x0000D2C4\n    __FeedbackSampleWidth__SystemSingle_intnl_6:
     %SystemSingle, 0\n    __FeedbackOutlineWidth__SystemSingle_intnl_0: %SystemBoolean,
-    null\n    __retaddr_99: %SystemUInt32, 0x0000D374\n    __FeedbackOutlineWidth__SystemSingle_intnl_1:
+    null\n    __retaddr_99: %SystemUInt32, 0x0000D3AC\n    __FeedbackOutlineWidth__SystemSingle_intnl_1:
     %SystemBoolean, null\n    __FeedbackOutlineWidth__SystemSingle_intnl_2: %SystemBoolean,
     null\n    __FeedbackOutlineWidth__SystemSingle_intnl_3: %SystemSingle, 0\n   
-    __retaddr_100: %SystemUInt32, 0x0000D458\n    __FeedbackOutlineWidth__SystemSingle_intnl_4:
-    %SystemBoolean, null\n    __retaddr_101: %SystemUInt32, 0x0000D4E4\n    __FeedbackOutlineWidth__SystemSingle_intnl_5:
+    __retaddr_100: %SystemUInt32, 0x0000D490\n    __FeedbackOutlineWidth__SystemSingle_intnl_4:
+    %SystemBoolean, null\n    __retaddr_101: %SystemUInt32, 0x0000D51C\n    __FeedbackOutlineWidth__SystemSingle_intnl_5:
     %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_0: %SystemSingle,
     0\n    __FeedbackLocalWidth__SystemSingle_intnl_1: %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_2:
-    %SystemSingle, 0\n    __retaddr_102: %SystemUInt32, 0x0000D608\n    __FeedbackLocalWidth__SystemSingle_intnl_3:
+    %SystemSingle, 0\n    __retaddr_102: %SystemUInt32, 0x0000D640\n    __FeedbackLocalWidth__SystemSingle_intnl_3:
     %SystemBoolean, null\n    __FeedbackLocalWidth__SystemSingle_intnl_4: %SystemSingle,
     0\n    __FeedbackLocalWidth__SystemSingle_intnl_5: %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_6:
     %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_7: %SystemSingle,
-    0\n    __retaddr_103: %SystemUInt32, 0x0000D738\n    __IsInsideContactRange__SystemSingle_intnl_0:
+    0\n    __retaddr_103: %SystemUInt32, 0x0000D770\n    __IsInsideContactRange__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __IsInsideContactRange__SystemSingle_intnl_1: %SystemBoolean,
-    null\n    __retaddr_104: %SystemUInt32, 0x0000D7C0\n    __IsInsideContactRange__SystemSingle_intnl_2:
+    null\n    __retaddr_104: %SystemUInt32, 0x0000D7F8\n    __IsInsideContactRange__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __IsInsideContactRange__SystemSingle_intnl_3: %SystemBoolean,
     null\n    __IsInsideContactRange__SystemSingle_intnl_4: %SystemSingle, 0\n   
-    __retaddr_105: %SystemUInt32, 0x0000D870\n    __IsInsideContactRange__SystemSingle_intnl_5:
+    __retaddr_105: %SystemUInt32, 0x0000D8A8\n    __IsInsideContactRange__SystemSingle_intnl_5:
     %SystemSingle, 0\n    __IsInsideContactRange__SystemSingle_intnl_6: %SystemBoolean,
     null\n    __IsInsideContactRange__SystemSingle_intnl_7: %SystemSingle, 0\n   
-    __retaddr_106: %SystemUInt32, 0x0000D8F8\n    __IsInsideContactRange__SystemSingle_intnl_8:
+    __retaddr_106: %SystemUInt32, 0x0000D930\n    __IsInsideContactRange__SystemSingle_intnl_8:
     %SystemSingle, 0\n    __IsInsideContactRange__SystemSingle_intnl_9: %SystemBoolean,
-    null\n    __retaddr_107: %SystemUInt32, 0x0000D9A8\n    __ContactQualityAtLocalY__SystemSingle_intnl_0:
+    null\n    __retaddr_107: %SystemUInt32, 0x0000D9E0\n    __ContactQualityAtLocalY__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __ContactQualityAtLocalY__SystemSingle_intnl_1: %SystemBoolean,
-    null\n    __retaddr_108: %SystemUInt32, 0x0000DA30\n    __ContactQualityAtLocalY__SystemSingle_intnl_2:
+    null\n    __retaddr_108: %SystemUInt32, 0x0000DA68\n    __ContactQualityAtLocalY__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __ContactQualityAtLocalY__SystemSingle_intnl_3: %SystemBoolean,
-    null\n    __retaddr_109: %SystemUInt32, 0x0000DAF4\n    __ContactQualityAtLocalY__SystemSingle_intnl_4:
-    %SystemSingle, 0\n    __retaddr_110: %SystemUInt32, 0x0000DB88\n    __ContactQualityAtLocalY__SystemSingle_intnl_5:
-    %SystemSingle, 0\n    __retaddr_111: %SystemUInt32, 0x0000DC7C\n    __GeometrySettingsValid_intnl_0:
+    null\n    __retaddr_109: %SystemUInt32, 0x0000DB2C\n    __ContactQualityAtLocalY__SystemSingle_intnl_4:
+    %SystemSingle, 0\n    __retaddr_110: %SystemUInt32, 0x0000DBC0\n    __ContactQualityAtLocalY__SystemSingle_intnl_5:
+    %SystemSingle, 0\n    __retaddr_111: %SystemUInt32, 0x0000DCB4\n    __GeometrySettingsValid_intnl_0:
     %SystemBoolean, null\n    __const_40: %UnityEngineAnimationCurve, null\n    __EvaluateRawPower__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __EvaluateRawPower__SystemSingle_intnl_1: %SystemBoolean,
     null\n    __EvaluateRawPower__SystemSingle_intnl_2: %SystemBoolean, null\n   
     __EvaluateRawPower__SystemSingle_intnl_3: %SystemBoolean, null\n    __retaddr_112:
-    %SystemUInt32, 0x0000DE90\n    __EvaluateRawPower__SystemSingle_intnl_4: %UnityEngineAnimationCurve,
+    %SystemUInt32, 0x0000DEC8\n    __EvaluateRawPower__SystemSingle_intnl_4: %UnityEngineAnimationCurve,
     null\n    __EvaluateRawPower__SystemSingle_intnl_5: %SystemInt32, 0\n    __EvaluateRawPower__SystemSingle_intnl_6:
     %SystemBoolean, null\n    __const_41: %UnityEngineWrapMode, null\n    __EvaluateRawPower__SystemSingle_intnl_7:
     %SystemSingle, 0\n    __EvaluateRawPower__SystemSingle_intnl_8: %SystemBoolean,
@@ -34687,29 +34695,29 @@ MonoBehaviour:
     %SystemInt32, 0\n    __CreateDefaultPowerCurve_intnl_12: %SystemInt32, 0\n   
     __CreateDefaultPowerCurve_intnl_13: %SystemBoolean, null\n    __CreateDefaultPowerCurve_intnl_14:
     %SystemBoolean, null\n    __CreateDefaultPowerCurve_intnl_15: %SystemInt32, 0\n   
-    __retaddr_113: %SystemUInt32, 0x0000E44C\n    __retaddr_114: %SystemUInt32, 0x0000E5C8\n   
+    __retaddr_113: %SystemUInt32, 0x0000E484\n    __retaddr_114: %SystemUInt32, 0x0000E600\n   
     __CaptureBattingDefaults_intnl_0: %UnityEngineAnimationCurve, null\n    __retaddr_115:
-    %SystemUInt32, 0x0000E634\n    __CaptureBattingDefaults_intnl_1: %UnityEngineAnimationCurve,
+    %SystemUInt32, 0x0000E66C\n    __CaptureBattingDefaults_intnl_1: %UnityEngineAnimationCurve,
     null\n    __const_64: %SystemInt32, 5\n    __const_65: %SystemInt32, 6\n    __const_66:
     %SystemInt32, 7\n    __const_67: %SystemInt32, 8\n    __const_68: %SystemInt32,
     9\n    __const_69: %SystemInt32, 10\n    __const_70: %SystemInt32, 11\n    __const_71:
     %SystemInt32, 12\n    __const_72: %SystemInt32, 13\n    __const_73: %UnityEngineKeyframeArray,
     null\n    __SetBattingPowerCurve__UnityEngineAnimationCurve_intnl_0: %SystemBoolean,
     null\n    __SetBattingPowerCurve__UnityEngineAnimationCurve_intnl_1: %UnityEngineKeyframeArray,
-    null\n    __retaddr_116: %SystemUInt32, 0x0000EA84\n    __SetBattingPowerCurve__UnityEngineAnimationCurve_intnl_2:
-    %UnityEngineAnimationCurve, null\n    __retaddr_117: %SystemUInt32, 0x0000EBB8\n   
+    null\n    __retaddr_116: %SystemUInt32, 0x0000EABC\n    __SetBattingPowerCurve__UnityEngineAnimationCurve_intnl_2:
+    %UnityEngineAnimationCurve, null\n    __retaddr_117: %SystemUInt32, 0x0000EBF0\n   
     __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x0000EC30\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_1:
+    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x0000EC68\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_1:
     %SystemBoolean, null\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_2:
-    %SystemBoolean, null\n    __retaddr_119: %SystemUInt32, 0x0000ED08\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_3:
-    %UnityEngineAnimationCurve, null\n    __retaddr_120: %SystemUInt32, 0x0000EDC0\n   
-    __retaddr_121: %SystemUInt32, 0x0000EE50\n    __SetBattingTiming__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_119: %SystemUInt32, 0x0000ED40\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_3:
+    %UnityEngineAnimationCurve, null\n    __retaddr_120: %SystemUInt32, 0x0000EDF8\n   
+    __retaddr_121: %SystemUInt32, 0x0000EE88\n    __SetBattingTiming__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __SetBattingTiming__SystemSingle_intnl_1: %SystemBoolean,
     null\n    __SetBattingTiming__SystemSingle_intnl_2: %SystemBoolean, null\n   
     __const_74: %SystemSingle, 90\n    __SetBattingTiming__SystemSingle_intnl_3:
-    %SystemBoolean, null\n    __retaddr_122: %SystemUInt32, 0x0000EF98\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_122: %SystemUInt32, 0x0000EFD0\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __const_75: %SystemInt32, 14\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_1:
-    %SystemBoolean, null\n    __retaddr_123: %SystemUInt32, 0x0000F188\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_2:
+    %SystemBoolean, null\n    __retaddr_123: %SystemUInt32, 0x0000F1C0\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_3:
     %SystemBoolean, null\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_4:
     %SystemBoolean, null\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_5:
@@ -34719,8 +34727,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __const_76: %SystemSingle, 180\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_9:
     %SystemBoolean, null\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_10:
     %SystemBoolean, null\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_11:
-    %SystemBoolean, null\n    __retaddr_124: %SystemUInt32, 0x0000F50C\n    __retaddr_125:
-    %SystemUInt32, 0x0000F550\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_124: %SystemUInt32, 0x0000F544\n    __retaddr_125:
+    %SystemUInt32, 0x0000F588\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_1:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_3:
@@ -34734,14 +34742,14 @@ MonoBehaviour:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_11:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_12:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_13:
-    %SystemBoolean, null\n    __retaddr_126: %SystemUInt32, 0x0000FA08\n    __retaddr_127:
-    %SystemUInt32, 0x0000FA38\n    __ResetBattingSettings_intnl_0: %UnityEngineAnimationCurve,
+    %SystemBoolean, null\n    __retaddr_126: %SystemUInt32, 0x0000FA40\n    __retaddr_127:
+    %SystemUInt32, 0x0000FA70\n    __ResetBattingSettings_intnl_0: %UnityEngineAnimationCurve,
     null\n    __ResetBattingSettings_intnl_1: %SystemBoolean, null\n    __ResetBattingSettings_intnl_2:
-    %SystemBoolean, null\n    __retaddr_128: %SystemUInt32, 0x0000FB38\n    __ResetBattingSettings_intnl_3:
-    %UnityEngineAnimationCurve, null\n    __retaddr_129: %SystemUInt32, 0x0000FBF0\n   
+    %SystemBoolean, null\n    __retaddr_128: %SystemUInt32, 0x0000FB70\n    __ResetBattingSettings_intnl_3:
+    %UnityEngineAnimationCurve, null\n    __retaddr_129: %SystemUInt32, 0x0000FC28\n   
     __ResetBattingSettings_intnl_4: %SystemInt32, 0\n    __ResetBattingSettings_intnl_5:
     %SystemBoolean, null\n    __ResetBattingSettings_intnl_6: %SystemSingle, 0\n   
-    __retaddr_130: %SystemUInt32, 0x0000FCCC\n    __ResetBattingSettings_intnl_7:
+    __retaddr_130: %SystemUInt32, 0x0000FD04\n    __ResetBattingSettings_intnl_7:
     %SystemInt32, 0\n    __CloneCurve__UnityEngineAnimationCurve_intnl_0: %SystemBoolean,
     null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_1: %UnityEngineKeyframeArray,
     null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_2: %UnityEngineAnimationCurve,
@@ -34753,14 +34761,14 @@ MonoBehaviour:
     %SystemBoolean, null\n    __LocalHeldHands_intnl_5: %SystemInt32, 0\n    __const_77:
     %SystemBooleanArray, null\n    __const_78: %UnityEngineComponentArray, null\n   
     __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_0: %SystemBoolean,
-    null\n    __retaddr_131: %SystemUInt32, 0x00010280\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
+    null\n    __retaddr_131: %SystemUInt32, 0x000102B8\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_2:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_3:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_4:
     %VRCUdonUdonBehaviour, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_5:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_6:
-    %SystemBoolean, null\n    __retaddr_132: %SystemUInt32, 0x00010404\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
-    %SystemBoolean, null\n    __retaddr_133: %SystemUInt32, 0x00010458\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_8:
+    %SystemBoolean, null\n    __retaddr_132: %SystemUInt32, 0x0001043C\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
+    %SystemBoolean, null\n    __retaddr_133: %SystemUInt32, 0x00010490\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_8:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_9:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_10:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_11:
@@ -34776,17 +34784,17 @@ MonoBehaviour:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_21:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_22:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_23:
-    %SystemBoolean, null\n    __retaddr_134: %SystemUInt32, 0x00010848\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_24:
-    %SystemBoolean, null\n    __retaddr_135: %SystemUInt32, 0x0001089C\n    __retaddr_136:
-    %SystemUInt32, 0x00010924\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
+    %SystemBoolean, null\n    __retaddr_134: %SystemUInt32, 0x00010880\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_24:
+    %SystemBoolean, null\n    __retaddr_135: %SystemUInt32, 0x000108D4\n    __retaddr_136:
+    %SystemUInt32, 0x0001095C\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
     %SystemInt32, 0\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_2:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_3:
     %VRCUdonUdonBehaviour, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_4:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_5:
     %SystemInt32, 0\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_6:
-    %SystemBoolean, null\n    __retaddr_137: %SystemUInt32, 0x00010AF0\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
-    %SystemBoolean, null\n    __retaddr_138: %SystemUInt32, 0x00010B44\n    __HasActiveContactListener_intnl_0:
+    %SystemBoolean, null\n    __retaddr_137: %SystemUInt32, 0x00010B28\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
+    %SystemBoolean, null\n    __retaddr_138: %SystemUInt32, 0x00010B7C\n    __HasActiveContactListener_intnl_0:
     %SystemInt32, 0\n    __HasActiveContactListener_intnl_1: %SystemBoolean, null\n   
     __HasActiveContactListener_intnl_2: %SystemBoolean, null\n    __HasActiveContactListener_intnl_3:
     %VRCUdonUdonBehaviour, null\n    __HasActiveContactListener_intnl_4: %SystemBoolean,
@@ -34808,29 +34816,29 @@ MonoBehaviour:
     null\n    __RecordContactPose__SystemSingle_intnl_2: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_3: %UnityEngineTransform, null\n    __RecordContactPose__SystemSingle_intnl_4:
     %UnityEngineQuaternion, null\n    __RecordContactPose__SystemSingle_intnl_5:
-    %UnityEngineTransform, null\n    __retaddr_139: %SystemUInt32, 0x00012BCC\n   
+    %UnityEngineTransform, null\n    __retaddr_139: %SystemUInt32, 0x00012C04\n   
     __RecordContactPose__SystemSingle_intnl_6: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_7:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_8: %UnityEngineVector3,
-    null\n    __retaddr_140: %SystemUInt32, 0x000154AC\n    __RecordContactPose__SystemSingle_intnl_9:
+    null\n    __retaddr_140: %SystemUInt32, 0x000154E4\n    __RecordContactPose__SystemSingle_intnl_9:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_10: %SystemBoolean,
-    null\n    __retaddr_141: %SystemUInt32, 0x00017EB4\n    __RecordContactPose__SystemSingle_intnl_11:
+    null\n    __retaddr_141: %SystemUInt32, 0x00017EEC\n    __RecordContactPose__SystemSingle_intnl_11:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_12: %SystemBoolean,
-    null\n    __retaddr_142: %SystemUInt32, 0x0001A9D0\n    __RecordContactPose__SystemSingle_intnl_13:
+    null\n    __retaddr_142: %SystemUInt32, 0x0001AA08\n    __RecordContactPose__SystemSingle_intnl_13:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_14: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_15: %SystemSingle, 0\n    __retaddr_143:
-    %SystemUInt32, 0x0001D644\n    __RecordContactPose__SystemSingle_intnl_16: %SystemBoolean,
+    %SystemUInt32, 0x0001D67C\n    __RecordContactPose__SystemSingle_intnl_16: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_17: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_18: %SystemSingle, 0\n    __retaddr_144:
-    %SystemUInt32, 0x00020438\n    __RecordContactPose__SystemSingle_intnl_19: %SystemBoolean,
+    %SystemUInt32, 0x00020470\n    __RecordContactPose__SystemSingle_intnl_19: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_20: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_21: %SystemSingle, 0\n    __retaddr_145:
-    %SystemUInt32, 0x000233AC\n    __RecordContactPose__SystemSingle_intnl_22: %SystemBoolean,
+    %SystemUInt32, 0x000233E4\n    __RecordContactPose__SystemSingle_intnl_22: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_23: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_24: %SystemSingle, 0\n    __retaddr_146:
-    %SystemUInt32, 0x000264A0\n    __RecordContactPose__SystemSingle_intnl_25: %SystemBoolean,
+    %SystemUInt32, 0x000264D8\n    __RecordContactPose__SystemSingle_intnl_25: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_26: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_27: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_28:
-    %SystemBoolean, null\n    __retaddr_147: %SystemUInt32, 0x0002978C\n    __RecordContactPose__SystemSingle_intnl_29:
+    %SystemBoolean, null\n    __retaddr_147: %SystemUInt32, 0x000297C4\n    __RecordContactPose__SystemSingle_intnl_29:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_30: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_31: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_32: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_33:
@@ -34839,63 +34847,63 @@ MonoBehaviour:
     0\n    __RecordContactPose__SystemSingle_intnl_36: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_37:
     %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_38: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_39: %SystemBoolean, null\n   
-    __retaddr_148: %SystemUInt32, 0x0002CF78\n    __RecordContactPose__SystemSingle_intnl_40:
+    __retaddr_148: %SystemUInt32, 0x0002CFB0\n    __RecordContactPose__SystemSingle_intnl_40:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_41: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_42: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_43: %UnityEngineQuaternion, null\n   
-    __retaddr_149: %SystemUInt32, 0x000309EC\n    __RecordContactPose__SystemSingle_intnl_44:
+    __retaddr_149: %SystemUInt32, 0x00030A24\n    __RecordContactPose__SystemSingle_intnl_44:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_45: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_46: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_47: %UnityEngineVector3, null\n    __retaddr_150:
-    %SystemUInt32, 0x00034638\n    __RecordContactPose__SystemSingle_intnl_48: %SystemBoolean,
+    %SystemUInt32, 0x00034670\n    __RecordContactPose__SystemSingle_intnl_48: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_49: %SystemBoolean, null\n   
-    __retaddr_151: %SystemUInt32, 0x000383C0\n    __RecordContactPose__SystemSingle_intnl_50:
+    __retaddr_151: %SystemUInt32, 0x000383F8\n    __RecordContactPose__SystemSingle_intnl_50:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_51: %SystemBoolean,
-    null\n    __retaddr_152: %SystemUInt32, 0x0003C25C\n    __RecordContactPose__SystemSingle_intnl_52:
+    null\n    __retaddr_152: %SystemUInt32, 0x0003C294\n    __RecordContactPose__SystemSingle_intnl_52:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_53: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_54: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_55:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_56: %SystemSingle,
     0\n    __RecordContactPose__SystemSingle_intnl_57: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_58: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_59:
-    %SystemBoolean, null\n    __retaddr_153: %SystemUInt32, 0x000404B0\n    __RecordContactPose__SystemSingle_intnl_60:
+    %SystemBoolean, null\n    __retaddr_153: %SystemUInt32, 0x000404E8\n    __RecordContactPose__SystemSingle_intnl_60:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_61: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_62: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_63: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_64:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_65: %SystemSingle,
     0\n    __RecordContactPose__SystemSingle_intnl_66: %SystemSingle, 0\n    __const_85:
     %SystemSingle, 57.29578\n    __RecordContactPose__SystemSingle_intnl_67: %SystemSingle,
-    0\n    __retaddr_154: %SystemUInt32, 0x00044BA8\n    __RecordContactPose__SystemSingle_intnl_68:
+    0\n    __retaddr_154: %SystemUInt32, 0x00044BE0\n    __RecordContactPose__SystemSingle_intnl_68:
     %SystemBoolean, null\n    __const_86: %VRCSDKBaseVRCPlayerApiTrackingDataType,
     null\n    __RecordContactPose__SystemSingle_intnl_69: %VRCSDKBaseVRCPlayerApiTrackingData,
     null\n    __const_87: %VRCSDKBaseVRCPlayerApiTrackingDataType, null\n    __RecordContactPose__SystemSingle_intnl_70:
     %VRCSDKBaseVRCPlayerApiTrackingData, null\n    __RecordContactPose__SystemSingle_intnl_71:
-    %UnityEngineVector3, null\n    __retaddr_155: %SystemUInt32, 0x00049648\n   
+    %UnityEngineVector3, null\n    __retaddr_155: %SystemUInt32, 0x00049680\n   
     __RecordContactPose__SystemSingle_intnl_72: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_73:
-    %UnityEngineVector3, null\n    __retaddr_156: %SystemUInt32, 0x0004DFC8\n   
+    %UnityEngineVector3, null\n    __retaddr_156: %SystemUInt32, 0x0004E000\n   
     __RecordContactPose__SystemSingle_intnl_74: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_75:
     %UnityEngineQuaternion, null\n    __RecordContactPose__SystemSingle_intnl_76:
-    %SystemSingle, 0\n    __retaddr_157: %SystemUInt32, 0x00052AB4\n    __RecordContactPose__SystemSingle_intnl_77:
+    %SystemSingle, 0\n    __retaddr_157: %SystemUInt32, 0x00052AEC\n    __RecordContactPose__SystemSingle_intnl_77:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_78: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_79: %SystemSingle, 0\n    __retaddr_158:
-    %SystemUInt32, 0x00057720\n    __RecordContactPose__SystemSingle_intnl_80: %SystemBoolean,
+    %SystemUInt32, 0x00057758\n    __RecordContactPose__SystemSingle_intnl_80: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_81: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_82: %SystemSingle, 0\n    __retaddr_159:
-    %SystemUInt32, 0x0005C50C\n    __RecordContactPose__SystemSingle_intnl_83: %SystemBoolean,
+    %SystemUInt32, 0x0005C544\n    __RecordContactPose__SystemSingle_intnl_83: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_84: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_85: %SystemSingle, 0\n    __retaddr_160:
-    %SystemUInt32, 0x00061478\n    __RecordContactPose__SystemSingle_intnl_86: %SystemBoolean,
+    %SystemUInt32, 0x000614B0\n    __RecordContactPose__SystemSingle_intnl_86: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_87: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_88: %SystemSingle, 0\n    __retaddr_161:
-    %SystemUInt32, 0x00066564\n    __RecordContactPose__SystemSingle_intnl_89: %SystemBoolean,
+    %SystemUInt32, 0x0006659C\n    __RecordContactPose__SystemSingle_intnl_89: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_90: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_91: %SystemSingle, 0\n    __retaddr_162:
-    %SystemUInt32, 0x0006B7D0\n    __RecordContactPose__SystemSingle_intnl_92: %SystemBoolean,
+    %SystemUInt32, 0x0006B808\n    __RecordContactPose__SystemSingle_intnl_92: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_93: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_94: %SystemSingle, 0\n    __retaddr_163:
-    %SystemUInt32, 0x00070BBC\n    __RecordContactPose__SystemSingle_intnl_95: %SystemBoolean,
+    %SystemUInt32, 0x00070BF4\n    __RecordContactPose__SystemSingle_intnl_95: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_96: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_97: %SystemSingle, 0\n    __retaddr_164:
-    %SystemUInt32, 0x00076128\n    __RecordContactPose__SystemSingle_intnl_98: %SystemBoolean,
+    %SystemUInt32, 0x00076160\n    __RecordContactPose__SystemSingle_intnl_98: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_99: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_100: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_101: %SystemSingle, 0\n   
@@ -34930,9 +34938,9 @@ MonoBehaviour:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_7:
-    %SystemSingle, 0\n    __retaddr_165: %SystemUInt32, 0x0007FD30\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_0:
+    %SystemSingle, 0\n    __retaddr_165: %SystemUInt32, 0x0007FD68\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_1:
-    %SystemBoolean, null\n    __retaddr_166: %SystemUInt32, 0x0007FDB8\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_2:
+    %SystemBoolean, null\n    __retaddr_166: %SystemUInt32, 0x0007FDF0\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_3:
     %SystemBoolean, null\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_4:
     %SystemBoolean, null\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_5:
@@ -34961,9 +34969,9 @@ MonoBehaviour:
     %SystemBoolean, null\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_9:
     %SystemSingle, 0\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_10:
     %SystemInt32, 0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_167: %SystemUInt32, 0x00080610\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_1:
+    %SystemBoolean, null\n    __retaddr_167: %SystemUInt32, 0x00080648\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_1:
     %SystemBoolean, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_2:
-    %SystemBoolean, null\n    __retaddr_168: %SystemUInt32, 0x000806AC\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_3:
+    %SystemBoolean, null\n    __retaddr_168: %SystemUInt32, 0x000806E4\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_3:
     %SystemBoolean, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_4:
     %SystemBoolean, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_6:
@@ -35085,11 +35093,11 @@ MonoBehaviour:
     null\n    __ContactFinite__SystemSingle_intnl_1: %SystemBoolean, null\n    __ContactFinite__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __ContactFinite__SystemSingle_intnl_3: %SystemBoolean,
     null\n    __ContactFiniteVector__UnityEngineVector3_intnl_0: %SystemSingle, 0\n   
-    __retaddr_169: %SystemUInt32, 0x00081BE8\n    __ContactFiniteVector__UnityEngineVector3_intnl_1:
+    __retaddr_169: %SystemUInt32, 0x00081C20\n    __ContactFiniteVector__UnityEngineVector3_intnl_1:
     %SystemBoolean, null\n    __ContactFiniteVector__UnityEngineVector3_intnl_2:
-    %SystemSingle, 0\n    __retaddr_170: %SystemUInt32, 0x00081C68\n    __ContactFiniteVector__UnityEngineVector3_intnl_3:
+    %SystemSingle, 0\n    __retaddr_170: %SystemUInt32, 0x00081CA0\n    __ContactFiniteVector__UnityEngineVector3_intnl_3:
     %SystemBoolean, null\n    __ContactFiniteVector__UnityEngineVector3_intnl_4:
-    %SystemSingle, 0\n    __retaddr_171: %SystemUInt32, 0x00081CFC\n    __ContactFiniteVector__UnityEngineVector3_intnl_5:
+    %SystemSingle, 0\n    __retaddr_171: %SystemUInt32, 0x00081D34\n    __ContactFiniteVector__UnityEngineVector3_intnl_5:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_1:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_2:
@@ -35156,10 +35164,10 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_63:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_64:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_65:
-    %UnityEngineQuaternion, null\n    __retaddr_172: %SystemUInt32, 0x00082FE8\n   
+    %UnityEngineQuaternion, null\n    __retaddr_172: %SystemUInt32, 0x00083020\n   
     __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_66: %SystemSingle,
     0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_67:
-    %UnityEngineQuaternion, null\n    __retaddr_173: %SystemUInt32, 0x00083074\n   
+    %UnityEngineQuaternion, null\n    __retaddr_173: %SystemUInt32, 0x000830AC\n   
     __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_68: %SystemSingle,
     0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_69:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_70:
@@ -35184,7 +35192,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_89:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_90:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_91:
-    %UnityEngineQuaternion, null\n    __retaddr_174: %SystemUInt32, 0x000836D4\n   
+    %UnityEngineQuaternion, null\n    __retaddr_174: %SystemUInt32, 0x0008370C\n   
     __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_92: %SystemSingle,
     0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_93:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_94:
@@ -35216,9 +35224,9 @@ MonoBehaviour:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_120:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_121:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_122:
-    %SystemSingle, 0\n    __retaddr_175: %SystemUInt32, 0x00083DB0\n    __X11zBatGeometry__m__ContactQuality_intnl_0:
+    %SystemSingle, 0\n    __retaddr_175: %SystemUInt32, 0x00083DE8\n    __X11zBatGeometry__m__ContactQuality_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactQuality_intnl_1: %SystemBoolean,
-    null\n    __retaddr_176: %SystemUInt32, 0x00083E38\n    __X11zBatGeometry__m__ContactQuality_intnl_2:
+    null\n    __retaddr_176: %SystemUInt32, 0x00083E70\n    __X11zBatGeometry__m__ContactQuality_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactQuality_intnl_3: %SystemBoolean,
     null\n    __X11zBatGeometry__m__ContactQuality_intnl_4: %SystemBoolean, null\n   
     __X11zBatGeometry__m__ContactQuality_intnl_5: %SystemBoolean, null\n    __X11zBatGeometry__m__ContactQuality_intnl_6:
@@ -35233,72 +35241,72 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_18: %SystemSingle,
     0\n    __X11zBatGeometry__m__ContactQuality_intnl_19: %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_20:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_21: %SystemSingle,
-    0\n    __retaddr_177: %SystemUInt32, 0x0008430C\n    __X11zBatGeometry__m__ContactWidth_intnl_0:
+    0\n    __retaddr_177: %SystemUInt32, 0x00084344\n    __X11zBatGeometry__m__ContactWidth_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_1: %SystemBoolean,
     null\n    __X11zBatGeometry__m__ContactWidth_intnl_2: %SystemBoolean, null\n   
-    __retaddr_178: %SystemUInt32, 0x000843F4\n    __X11zBatGeometry__m__ContactWidth_intnl_3:
+    __retaddr_178: %SystemUInt32, 0x0008442C\n    __X11zBatGeometry__m__ContactWidth_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_4: %SystemBoolean,
-    null\n    __retaddr_179: %SystemUInt32, 0x00084490\n    __X11zBatGeometry__m__ContactWidth_intnl_5:
+    null\n    __retaddr_179: %SystemUInt32, 0x000844C8\n    __X11zBatGeometry__m__ContactWidth_intnl_5:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_6: %SystemBoolean,
     null\n    __X11zBatGeometry__m__ContactWidth_intnl_7: %SystemBoolean, null\n   
-    __retaddr_180: %SystemUInt32, 0x0008458C\n    __X11zBatGeometry__m__ContactWidth_intnl_8:
+    __retaddr_180: %SystemUInt32, 0x000845C4\n    __X11zBatGeometry__m__ContactWidth_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_9: %SystemBoolean,
     null\n    __X11zBatGeometry__m__ContactWidth_intnl_10: %SystemBoolean, null\n   
-    __retaddr_181: %SystemUInt32, 0x00084688\n    __X11zBatGeometry__m__ContactWidth_intnl_11:
+    __retaddr_181: %SystemUInt32, 0x000846C0\n    __X11zBatGeometry__m__ContactWidth_intnl_11:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_12: %SystemBoolean,
     null\n    __X11zBatGeometry__m__ContactWidth_intnl_13: %SystemBoolean, null\n   
     __X11zBatGeometry__m__ContactWidth_intnl_14: %UnityEngineAnimationCurve, null\n   
-    __retaddr_182: %SystemUInt32, 0x000847AC\n    __X11zBatGeometry__m__ContactWidth_intnl_15:
-    %SystemSingle, 0\n    __retaddr_183: %SystemUInt32, 0x00084804\n    __X11zBatGeometry__m__ContactWidth_intnl_16:
-    %SystemSingle, 0\n    __retaddr_184: %SystemUInt32, 0x0008485C\n    __X11zBatGeometry__m__ContactWidth_intnl_17:
-    %SystemBoolean, null\n    __retaddr_185: %SystemUInt32, 0x00084910\n    __X11zBatGeometry__m__ContactWidth_intnl_18:
+    __retaddr_182: %SystemUInt32, 0x000847E4\n    __X11zBatGeometry__m__ContactWidth_intnl_15:
+    %SystemSingle, 0\n    __retaddr_183: %SystemUInt32, 0x0008483C\n    __X11zBatGeometry__m__ContactWidth_intnl_16:
+    %SystemSingle, 0\n    __retaddr_184: %SystemUInt32, 0x00084894\n    __X11zBatGeometry__m__ContactWidth_intnl_17:
+    %SystemBoolean, null\n    __retaddr_185: %SystemUInt32, 0x00084948\n    __X11zBatGeometry__m__ContactWidth_intnl_18:
     %SystemSingle, 0\n    __X11zBatGeometry__m__Finite_intnl_0: %SystemBoolean, null\n   
     __X11zBatGeometry__m__Finite_intnl_1: %SystemBoolean, null\n    __X11zBatGeometry__m__Finite_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__Finite_intnl_3: %SystemBoolean,
-    null\n    __retaddr_186: %SystemUInt32, 0x00084B30\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_0:
-    %SystemBoolean, null\n    __retaddr_187: %SystemUInt32, 0x00084B98\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_1:
-    %SystemBoolean, null\n    __retaddr_188: %SystemUInt32, 0x00084CC8\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_0:
+    null\n    __retaddr_186: %SystemUInt32, 0x00084B68\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_0:
+    %SystemBoolean, null\n    __retaddr_187: %SystemUInt32, 0x00084BD0\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_1:
+    %SystemBoolean, null\n    __retaddr_188: %SystemUInt32, 0x00084D00\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_1:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_3:
     %SystemInt32, 0\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_4: %SystemBoolean,
-    null\n    __retaddr_189: %SystemUInt32, 0x00084E78\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_5:
-    %SystemBoolean, null\n    __retaddr_190: %SystemUInt32, 0x00084EF4\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_6:
+    null\n    __retaddr_189: %SystemUInt32, 0x00084EB0\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_5:
+    %SystemBoolean, null\n    __retaddr_190: %SystemUInt32, 0x00084F2C\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_6:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_7:
-    %SystemBoolean, null\n    __retaddr_191: %SystemUInt32, 0x00084FC8\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_8:
+    %SystemBoolean, null\n    __retaddr_191: %SystemUInt32, 0x00085000\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_9:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_10:
-    %SystemBoolean, null\n    __retaddr_192: %SystemUInt32, 0x0008511C\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_0:
+    %SystemBoolean, null\n    __retaddr_192: %SystemUInt32, 0x00085154\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_1: %SystemBoolean,
     null\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_2: %SystemBoolean, null\n   
-    __retaddr_193: %SystemUInt32, 0x00085204\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_3:
+    __retaddr_193: %SystemUInt32, 0x0008523C\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_4: %SystemBoolean,
     null\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_5: %SystemSingle, 0\n   
     __X11zBatGeometry__m__LocalYToNormalized_intnl_6: %SystemSingle, 0\n    __retaddr_194:
-    %SystemUInt32, 0x00085388\n    __X11zBatGeometry__m__NormalizedContactX_intnl_0:
+    %SystemUInt32, 0x000853C0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_1: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_2: %SystemBoolean, null\n   
-    __retaddr_195: %SystemUInt32, 0x00085470\n    __X11zBatGeometry__m__NormalizedContactX_intnl_3:
+    __retaddr_195: %SystemUInt32, 0x000854A8\n    __X11zBatGeometry__m__NormalizedContactX_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_4: %SystemBoolean,
-    null\n    __retaddr_196: %SystemUInt32, 0x00085534\n    __X11zBatGeometry__m__NormalizedContactX_intnl_5:
+    null\n    __retaddr_196: %SystemUInt32, 0x0008556C\n    __X11zBatGeometry__m__NormalizedContactX_intnl_5:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_6: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_7: %SystemSingle, 0\n   
-    __retaddr_197: %SystemUInt32, 0x00085604\n    __X11zBatGeometry__m__NormalizedContactX_intnl_8:
+    __retaddr_197: %SystemUInt32, 0x0008563C\n    __X11zBatGeometry__m__NormalizedContactX_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_9: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_10: %SystemSingle, 0\n   
     __X11zBatGeometry__m__NormalizedContactX_intnl_11: %SystemSingle, 0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_12:
     %SystemSingle, 0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_13: %SystemSingle,
     0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_14: %SystemSingle, 0\n   
     __X11zBatGeometry__m__NormalizedContactX_intnl_15: %SystemSingle, 0\n    __retaddr_198:
-    %SystemUInt32, 0x000857B0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_16:
-    %SystemBoolean, null\n    __retaddr_199: %SystemUInt32, 0x00085880\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_0:
+    %SystemUInt32, 0x000857E8\n    __X11zBatGeometry__m__NormalizedContactX_intnl_16:
+    %SystemBoolean, null\n    __retaddr_199: %SystemUInt32, 0x000858B8\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_1: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_2: %SystemBoolean, null\n   
-    __retaddr_200: %SystemUInt32, 0x00085968\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_3:
+    __retaddr_200: %SystemUInt32, 0x000859A0\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_4: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_5: %SystemSingle, 0\n   
     __X11zBatGeometry__m__NormalizedToLocalY_intnl_6: %SystemSingle, 0\n    __X13zBatKinematics__m__AngularVelocity_intnl_0:
-    %UnityEngineQuaternion, null\n    __retaddr_201: %SystemUInt32, 0x00085AC4\n   
+    %UnityEngineQuaternion, null\n    __retaddr_201: %SystemUInt32, 0x00085AFC\n   
     __X13zBatKinematics__m__AngularVelocity_intnl_1: %UnityEngineQuaternion, null\n   
     __X13zBatKinematics__m__AngularVelocity_intnl_2: %UnityEngineQuaternion, null\n   
     __X13zBatKinematics__m__AngularVelocity_intnl_3: %SystemBoolean, null\n    __const_96:
@@ -35339,11 +35347,11 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_27:
     %UnityEngineVector3, null\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_28:
     %UnityEngineVector3, null\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_29:
-    %UnityEngineVector3, null\n    __retaddr_202: %SystemUInt32, 0x0008627C\n   
+    %UnityEngineVector3, null\n    __retaddr_202: %SystemUInt32, 0x000862B4\n   
     __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_30: %UnityEngineQuaternion, null\n   
     __X13zBatPoseSolver__m__ApplyLock_intnl_0: %UnityEngineVector3, null\n    __X13zBatPoseSolver__m__ApplyLock_intnl_1:
     %UnityEngineVector3, null\n    __X13zBatPoseSolver__m__ApplyLock_intnl_2: %UnityEngineQuaternion,
-    null\n    __retaddr_203: %SystemUInt32, 0x000864A8\n    __X13zBatPoseSolver__m__CaptureLock_intnl_0:
+    null\n    __retaddr_203: %SystemUInt32, 0x000864E0\n    __X13zBatPoseSolver__m__CaptureLock_intnl_0:
     %UnityEngineQuaternion, null\n    __X13zBatPoseSolver__m__CaptureLock_intnl_1:
     %UnityEngineVector3, null\n    __X13zBatPoseSolver__m__CaptureLock_intnl_2: %UnityEngineVector3,
     null\n    __X13zBatPoseSolver__m__CaptureLock_intnl_3: %UnityEngineQuaternion,
@@ -35370,7 +35378,7 @@ MonoBehaviour:
     0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_26: %SystemSingle, 0\n   
     __X13zBatPoseSolver__m__InvertRotation_intnl_27: %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_28:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__Lower_intnl_0: %UnityEngineQuaternion,
-    null\n    __retaddr_204: %SystemUInt32, 0x00086ACC\n    __X13zBatPoseSolver__m__Lower_intnl_1:
+    null\n    __retaddr_204: %SystemUInt32, 0x00086B04\n    __X13zBatPoseSolver__m__Lower_intnl_1:
     %UnityEngineQuaternion, null\n    __X13zBatPoseSolver__m__Lower_intnl_2: %UnityEngineQuaternion,
     null\n    __X13zBatPoseSolver__m__Lower_intnl_3: %UnityEngineVector3, null\n   
     __X13zBatPoseSolver__m__Lower_intnl_4: %UnityEngineVector3, null\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_0:
@@ -35429,15 +35437,15 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_53:
     %SystemSingle, 0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_54:
     %SystemSingle, 0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_55:
-    %SystemSingle, 0\n    __retaddr_205: %SystemUInt32, 0x000873A0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_0:
+    %SystemSingle, 0\n    __retaddr_205: %SystemUInt32, 0x000873D8\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_1:
-    %SystemBoolean, null\n    __retaddr_206: %SystemUInt32, 0x00087428\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_2:
+    %SystemBoolean, null\n    __retaddr_206: %SystemUInt32, 0x00087460\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_4:
-    %SystemBoolean, null\n    __retaddr_207: %SystemUInt32, 0x00087524\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_5:
+    %SystemBoolean, null\n    __retaddr_207: %SystemUInt32, 0x0008755C\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_5:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_6:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_7:
-    %SystemBoolean, null\n    __retaddr_208: %SystemUInt32, 0x00087620\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_8:
+    %SystemBoolean, null\n    __retaddr_208: %SystemUInt32, 0x00087658\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_9:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_10:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_11:
@@ -35447,11 +35455,11 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X11zBatGeometry__m__EvaluateRadius_intnl_0: %SystemBoolean,
     null\n    __X11zBatGeometry__m__EvaluateRadius_intnl_1: %SystemInt32, 0\n   
     __X11zBatGeometry__m__EvaluateRadius_intnl_2: %SystemBoolean, null\n    __retaddr_209:
-    %SystemUInt32, 0x000878C0\n    __X11zBatGeometry__m__EvaluateRadius_intnl_3:
+    %SystemUInt32, 0x000878F8\n    __X11zBatGeometry__m__EvaluateRadius_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EvaluateRadius_intnl_4: %SystemBoolean,
     null\n    __X11zBatGeometry__m__EvaluateRadius_intnl_5: %SystemSingle, 0\n   
     __X11zBatGeometry__m__EvaluateRadius_intnl_6: %SystemSingle, 0\n    __retaddr_210:
-    %SystemUInt32, 0x000879A8\n    __X11zBatGeometry__m__EvaluateRadius_intnl_7:
+    %SystemUInt32, 0x000879E0\n    __X11zBatGeometry__m__EvaluateRadius_intnl_7:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EvaluateRadius_intnl_8: %SystemSingle,
     0\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_0: %SystemBoolean, null\n   
     __X11zBatGeometry__m__IsValidRadiusCurve_intnl_1: %SystemInt32, 0\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_2:
@@ -35459,11 +35467,11 @@ MonoBehaviour:
     null\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_4: %SystemSingle, 0\n   
     __const_99: %SystemSingle, 32\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_5:
     %SystemSingle, 0\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_6: %SystemSingle,
-    0\n    __retaddr_211: %SystemUInt32, 0x00087BF4\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_7:
+    0\n    __retaddr_211: %SystemUInt32, 0x00087C2C\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_7:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_8: %SystemInt32,
-    0\n    __retaddr_212: %SystemUInt32, 0x00087D44\n    __X11zBatGeometry__m__ValidContactRange_intnl_0:
-    %SystemBoolean, null\n    __retaddr_213: %SystemUInt32, 0x00087DAC\n    __X11zBatGeometry__m__ValidContactRange_intnl_1:
-    %SystemBoolean, null\n    __retaddr_214: %SystemUInt32, 0x00087E28\n    __X11zBatGeometry__m__ValidContactRange_intnl_2:
+    0\n    __retaddr_212: %SystemUInt32, 0x00087D7C\n    __X11zBatGeometry__m__ValidContactRange_intnl_0:
+    %SystemBoolean, null\n    __retaddr_213: %SystemUInt32, 0x00087DE4\n    __X11zBatGeometry__m__ValidContactRange_intnl_1:
+    %SystemBoolean, null\n    __retaddr_214: %SystemUInt32, 0x00087E60\n    __X11zBatGeometry__m__ValidContactRange_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ValidContactRange_intnl_3: %SystemBoolean,
     null\n    __X11zBatGeometry__m__ValidContactRange_intnl_4: %SystemBoolean, null\n   
     __X11zBatGeometry__m__ValidContactRange_intnl_5: %SystemBoolean, null\n    __X11zBatGeometry__m__ValidContactRange_intnl_6:
@@ -38944,7 +38952,11 @@ MonoBehaviour:
     _feedbackGeometryRevision\n        PUSH, __FeedbackGeometryRevision_ret\n       
     COPY\n        PUSH, __FeedbackGeometryRevision_ret\n        PUSH, __returnValue\n       
     COPY\n        JUMP_INDIRECT, __FeedbackGeometryRevision_retjump\n        JUMP_INDIRECT,
-    __FeedbackGeometryRevision_retjump\n    .export PrepareFeedbackGeometry__SystemSingle\n   
+    __FeedbackGeometryRevision_retjump\n    .export FeedbackGeometryIsValid\n   
+    FeedbackGeometryIsValid:\n        PUSH, _feedbackGeometryValid\n        PUSH,
+    __FeedbackGeometryIsValid_ret\n        COPY\n        PUSH, __FeedbackGeometryIsValid_ret\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __FeedbackGeometryIsValid_retjump\n       
+    JUMP_INDIRECT, __FeedbackGeometryIsValid_retjump\n    .export PrepareFeedbackGeometry__SystemSingle\n   
     PrepareFeedbackGeometry__SystemSingle:\n        PUSH, __const_0\n        PUSH,
     __PrepareFeedbackGeometry__SystemSingle___t0\n        COPY\n        PUSH, __const_0\n       
     PUSH, __PrepareFeedbackGeometry__SystemSingle___t1\n        COPY\n        PUSH,
@@ -68635,6 +68647,8 @@ MonoBehaviour:
     0\n    .export __ContactWidthAtLocalY__SystemSingle_SystemSingle_ret\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __FeedbackGeometryRevision_ret: %SystemInt32,
     0\n    .export __FeedbackGeometryRevision_ret\n    __FeedbackGeometryRevision_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __FeedbackGeometryIsValid_ret: %SystemBoolean,
+    null\n    .export __FeedbackGeometryIsValid_ret\n    __FeedbackGeometryIsValid_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __PrepareFeedbackGeometry__SystemSingle_p_0: %SystemSingle,
     0\n    __PrepareFeedbackGeometry__SystemSingle___t0: %SystemBoolean, null\n   
     __PrepareFeedbackGeometry__SystemSingle___t1: %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_scale:
@@ -69358,18 +69372,18 @@ MonoBehaviour:
     %SystemSingle, 0\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_13:
     %SystemSingle, 0\n    __retaddr_87: %SystemUInt32, 0x0000A5A0\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_15:
     %SystemBoolean, null\n    __retaddr_88: %SystemUInt32, 0x0000A6C4\n    __ContactWidthAtLocalY__SystemSingle_SystemSingle_intnl_18:
-    %SystemSingle, 0\n    __retaddr_89: %SystemUInt32, 0x0000A91C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_90: %SystemUInt32, 0x0000A97C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_2:
+    %SystemSingle, 0\n    __retaddr_89: %SystemUInt32, 0x0000A954\n    __PrepareFeedbackGeometry__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_90: %SystemUInt32, 0x0000A9B4\n    __PrepareFeedbackGeometry__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_5: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_6: %UnityEngineTransform,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_9: %SystemSingle, 0\n   
     __PrepareFeedbackGeometry__SystemSingle_intnl_11: %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_12:
     %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_13: %SystemSingle,
     0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_14: %SystemSingle, 0\n   
-    __retaddr_91: %SystemUInt32, 0x0000AB50\n    __PrepareFeedbackGeometry__SystemSingle_intnl_16:
-    %SystemBoolean, null\n    __retaddr_92: %SystemUInt32, 0x0000ABFC\n    __PrepareFeedbackGeometry__SystemSingle_intnl_19:
-    %SystemBoolean, null\n    __retaddr_93: %SystemUInt32, 0x0000AC94\n    __PrepareFeedbackGeometry__SystemSingle_intnl_22:
-    %SystemSingle, 0\n    __retaddr_94: %SystemUInt32, 0x0000ACC4\n    __PrepareFeedbackGeometry__SystemSingle_intnl_23:
+    __retaddr_91: %SystemUInt32, 0x0000AB88\n    __PrepareFeedbackGeometry__SystemSingle_intnl_16:
+    %SystemBoolean, null\n    __retaddr_92: %SystemUInt32, 0x0000AC34\n    __PrepareFeedbackGeometry__SystemSingle_intnl_19:
+    %SystemBoolean, null\n    __retaddr_93: %SystemUInt32, 0x0000ACCC\n    __PrepareFeedbackGeometry__SystemSingle_intnl_22:
+    %SystemSingle, 0\n    __retaddr_94: %SystemUInt32, 0x0000ACFC\n    __PrepareFeedbackGeometry__SystemSingle_intnl_23:
     %SystemSingle, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_25: %SystemBoolean,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_27: %UnityEngineWrapMode,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_28: %SystemInt32, 0\n   
@@ -69378,31 +69392,31 @@ MonoBehaviour:
     %UnityEngineWrapMode, null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_33:
     %SystemInt32, 0\n    __PrepareFeedbackGeometry__SystemSingle_intnl_34: %UnityEngineWrapMode,
     null\n    __PrepareFeedbackGeometry__SystemSingle_intnl_35: %SystemInt32, 0\n   
-    __retaddr_95: %SystemUInt32, 0x0000B15C\n    __PrepareFeedbackGeometry__SystemSingle_intnl_45:
-    %UnityEngineAnimationCurve, null\n    __retaddr_96: %SystemUInt32, 0x0000B2D4\n   
+    __retaddr_95: %SystemUInt32, 0x0000B194\n    __PrepareFeedbackGeometry__SystemSingle_intnl_45:
+    %UnityEngineAnimationCurve, null\n    __retaddr_96: %SystemUInt32, 0x0000B30C\n   
     __FeedbackSampleWidth__SystemSingle_intnl_1: %SystemBoolean, null\n    __retaddr_97:
-    %SystemUInt32, 0x0000B37C\n    __FeedbackSampleWidth__SystemSingle_intnl_4: %SystemBoolean,
-    null\n    __retaddr_98: %SystemUInt32, 0x0000B41C\n    __FeedbackSampleWidth__SystemSingle_intnl_6:
-    %SystemSingle, 0\n    __retaddr_99: %SystemUInt32, 0x0000B4C8\n    __FeedbackOutlineWidth__SystemSingle_intnl_1:
-    %SystemBoolean, null\n    __retaddr_100: %SystemUInt32, 0x0000B570\n    __FeedbackOutlineWidth__SystemSingle_intnl_4:
-    %SystemBoolean, null\n    __retaddr_101: %SystemUInt32, 0x0000B5E8\n    __FeedbackOutlineWidth__SystemSingle_intnl_5:
+    %SystemUInt32, 0x0000B3B4\n    __FeedbackSampleWidth__SystemSingle_intnl_4: %SystemBoolean,
+    null\n    __retaddr_98: %SystemUInt32, 0x0000B454\n    __FeedbackSampleWidth__SystemSingle_intnl_6:
+    %SystemSingle, 0\n    __retaddr_99: %SystemUInt32, 0x0000B500\n    __FeedbackOutlineWidth__SystemSingle_intnl_1:
+    %SystemBoolean, null\n    __retaddr_100: %SystemUInt32, 0x0000B5A8\n    __FeedbackOutlineWidth__SystemSingle_intnl_4:
+    %SystemBoolean, null\n    __retaddr_101: %SystemUInt32, 0x0000B620\n    __FeedbackOutlineWidth__SystemSingle_intnl_5:
     %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_0: %SystemSingle,
-    0\n    __retaddr_102: %SystemUInt32, 0x0000B6A8\n    __FeedbackLocalWidth__SystemSingle_intnl_3:
+    0\n    __retaddr_102: %SystemUInt32, 0x0000B6E0\n    __FeedbackLocalWidth__SystemSingle_intnl_3:
     %SystemBoolean, null\n    __FeedbackLocalWidth__SystemSingle_intnl_4: %SystemSingle,
     0\n    __FeedbackLocalWidth__SystemSingle_intnl_5: %SystemSingle, 0\n    __FeedbackLocalWidth__SystemSingle_intnl_6:
-    %SystemSingle, 0\n    __retaddr_103: %SystemUInt32, 0x0000B7B0\n    __IsInsideContactRange__SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_104: %SystemUInt32, 0x0000B810\n    __IsInsideContactRange__SystemSingle_intnl_2:
+    %SystemSingle, 0\n    __retaddr_103: %SystemUInt32, 0x0000B7E8\n    __IsInsideContactRange__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_104: %SystemUInt32, 0x0000B848\n    __IsInsideContactRange__SystemSingle_intnl_2:
     %SystemBoolean, null\n    __IsInsideContactRange__SystemSingle_intnl_4: %SystemSingle,
-    0\n    __retaddr_105: %SystemUInt32, 0x0000B898\n    __IsInsideContactRange__SystemSingle_intnl_5:
+    0\n    __retaddr_105: %SystemUInt32, 0x0000B8D0\n    __IsInsideContactRange__SystemSingle_intnl_5:
     %SystemSingle, 0\n    __IsInsideContactRange__SystemSingle_intnl_7: %SystemSingle,
-    0\n    __retaddr_106: %SystemUInt32, 0x0000B8F8\n    __IsInsideContactRange__SystemSingle_intnl_8:
-    %SystemSingle, 0\n    __retaddr_107: %SystemUInt32, 0x0000B980\n    __ContactQualityAtLocalY__SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_108: %SystemUInt32, 0x0000B9E0\n    __ContactQualityAtLocalY__SystemSingle_intnl_2:
-    %SystemBoolean, null\n    __retaddr_109: %SystemUInt32, 0x0000BA7C\n    __ContactQualityAtLocalY__SystemSingle_intnl_4:
-    %SystemSingle, 0\n    __retaddr_110: %SystemUInt32, 0x0000BAFC\n    __ContactQualityAtLocalY__SystemSingle_intnl_5:
-    %SystemSingle, 0\n    __retaddr_111: %SystemUInt32, 0x0000BBDC\n    __GeometrySettingsValid_intnl_0:
+    0\n    __retaddr_106: %SystemUInt32, 0x0000B930\n    __IsInsideContactRange__SystemSingle_intnl_8:
+    %SystemSingle, 0\n    __retaddr_107: %SystemUInt32, 0x0000B9B8\n    __ContactQualityAtLocalY__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_108: %SystemUInt32, 0x0000BA18\n    __ContactQualityAtLocalY__SystemSingle_intnl_2:
+    %SystemBoolean, null\n    __retaddr_109: %SystemUInt32, 0x0000BAB4\n    __ContactQualityAtLocalY__SystemSingle_intnl_4:
+    %SystemSingle, 0\n    __retaddr_110: %SystemUInt32, 0x0000BB34\n    __ContactQualityAtLocalY__SystemSingle_intnl_5:
+    %SystemSingle, 0\n    __retaddr_111: %SystemUInt32, 0x0000BC14\n    __GeometrySettingsValid_intnl_0:
     %SystemBoolean, null\n    __const_40: %UnityEngineAnimationCurve, null\n    __EvaluateRawPower__SystemSingle_intnl_3:
-    %SystemBoolean, null\n    __retaddr_112: %SystemUInt32, 0x0000BD64\n    __EvaluateRawPower__SystemSingle_intnl_4:
+    %SystemBoolean, null\n    __retaddr_112: %SystemUInt32, 0x0000BD9C\n    __EvaluateRawPower__SystemSingle_intnl_4:
     %UnityEngineAnimationCurve, null\n    __EvaluateRawPower__SystemSingle_intnl_5:
     %SystemInt32, 0\n    __EvaluateRawPower__SystemSingle_intnl_6: %SystemBoolean,
     null\n    __const_41: %UnityEngineWrapMode, null\n    __EvaluateRawPower__SystemSingle_intnl_8:
@@ -69425,25 +69439,25 @@ MonoBehaviour:
     %SystemSingle, 40\n    __CreateDefaultPowerCurve_intnl_11: %SystemInt32, 0\n   
     __CreateDefaultPowerCurve_intnl_12: %SystemInt32, 0\n    __CreateDefaultPowerCurve_intnl_13:
     %SystemBoolean, null\n    __CreateDefaultPowerCurve_intnl_14: %SystemBoolean,
-    null\n    __retaddr_113: %SystemUInt32, 0x0000C264\n    __retaddr_114: %SystemUInt32,
-    0x0000C2C8\n    __CaptureBattingDefaults_intnl_0: %UnityEngineAnimationCurve,
-    null\n    __retaddr_115: %SystemUInt32, 0x0000C320\n    __CaptureBattingDefaults_intnl_1:
+    null\n    __retaddr_113: %SystemUInt32, 0x0000C29C\n    __retaddr_114: %SystemUInt32,
+    0x0000C300\n    __CaptureBattingDefaults_intnl_0: %UnityEngineAnimationCurve,
+    null\n    __retaddr_115: %SystemUInt32, 0x0000C358\n    __CaptureBattingDefaults_intnl_1:
     %UnityEngineAnimationCurve, null\n    __const_64: %SystemInt32, 5\n    __const_65:
     %SystemInt32, 6\n    __const_66: %SystemInt32, 7\n    __const_67: %SystemInt32,
     8\n    __const_68: %SystemInt32, 9\n    __const_69: %SystemInt32, 10\n    __const_70:
     %SystemInt32, 11\n    __const_71: %SystemInt32, 12\n    __const_72: %SystemInt32,
     13\n    __const_73: %UnityEngineKeyframeArray, null\n    __SetBattingPowerCurve__UnityEngineAnimationCurve_intnl_0:
-    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x0000C630\n    __retaddr_117:
-    %SystemUInt32, 0x0000C750\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x0000C7B4\n    __retaddr_119:
-    %SystemUInt32, 0x0000C864\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_3:
-    %UnityEngineAnimationCurve, null\n    __retaddr_120: %SystemUInt32, 0x0000C908\n   
-    __retaddr_121: %SystemUInt32, 0x0000C998\n    __SetBattingTiming__SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x0000C668\n    __retaddr_117:
+    %SystemUInt32, 0x0000C788\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x0000C7EC\n    __retaddr_119:
+    %SystemUInt32, 0x0000C89C\n    __SetBatGeometry__SystemSingle_UnityEngineAnimationCurve_SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_intnl_3:
+    %UnityEngineAnimationCurve, null\n    __retaddr_120: %SystemUInt32, 0x0000C940\n   
+    __retaddr_121: %SystemUInt32, 0x0000C9D0\n    __SetBattingTiming__SystemSingle_intnl_0:
     %SystemBoolean, null\n    __const_74: %SystemSingle, 90\n    __retaddr_122: %SystemUInt32,
-    0x0000CA90\n    __const_75: %SystemInt32, 14\n    __retaddr_123: %SystemUInt32,
-    0x0000CC44\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_2: %SystemBoolean,
-    null\n    __const_76: %SystemSingle, 180\n    __retaddr_124: %SystemUInt32, 0x0000CF00\n   
-    __retaddr_125: %SystemUInt32, 0x0000CF44\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
+    0x0000CAC8\n    __const_75: %SystemInt32, 14\n    __retaddr_123: %SystemUInt32,
+    0x0000CC7C\n    __SetBattingCapSetting__SystemInt32_SystemSingle_intnl_2: %SystemBoolean,
+    null\n    __const_76: %SystemSingle, 180\n    __retaddr_124: %SystemUInt32, 0x0000CF38\n   
+    __retaddr_125: %SystemUInt32, 0x0000CF7C\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_0:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_1:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_3:
@@ -69457,25 +69471,25 @@ MonoBehaviour:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_11:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_12:
     %SystemBoolean, null\n    __ApplyBattingCapSetting__SystemInt32_SystemSingle_intnl_13:
-    %SystemBoolean, null\n    __retaddr_126: %SystemUInt32, 0x0000D3FC\n    __retaddr_127:
-    %SystemUInt32, 0x0000D42C\n    __ResetBattingSettings_intnl_0: %UnityEngineAnimationCurve,
-    null\n    __retaddr_128: %SystemUInt32, 0x0000D4F0\n    __ResetBattingSettings_intnl_3:
-    %UnityEngineAnimationCurve, null\n    __retaddr_129: %SystemUInt32, 0x0000D594\n   
+    %SystemBoolean, null\n    __retaddr_126: %SystemUInt32, 0x0000D434\n    __retaddr_127:
+    %SystemUInt32, 0x0000D464\n    __ResetBattingSettings_intnl_0: %UnityEngineAnimationCurve,
+    null\n    __retaddr_128: %SystemUInt32, 0x0000D528\n    __ResetBattingSettings_intnl_3:
+    %UnityEngineAnimationCurve, null\n    __retaddr_129: %SystemUInt32, 0x0000D5CC\n   
     __ResetBattingSettings_intnl_4: %SystemInt32, 0\n    __ResetBattingSettings_intnl_5:
     %SystemBoolean, null\n    __ResetBattingSettings_intnl_6: %SystemSingle, 0\n   
-    __retaddr_130: %SystemUInt32, 0x0000D668\n    __CloneCurve__UnityEngineAnimationCurve_intnl_0:
+    __retaddr_130: %SystemUInt32, 0x0000D6A0\n    __CloneCurve__UnityEngineAnimationCurve_intnl_0:
     %SystemBoolean, null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_1: %UnityEngineKeyframeArray,
     null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_3: %UnityEngineWrapMode,
     null\n    __CloneCurve__UnityEngineAnimationCurve_intnl_4: %UnityEngineWrapMode,
     null\n    __LocalHeldHands_intnl_0: %SystemBoolean, null\n    __const_77: %SystemBooleanArray,
     null\n    __const_78: %UnityEngineComponentArray, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
-    %SystemBoolean, null\n    __retaddr_131: %SystemUInt32, 0x0000DAA0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
+    %SystemBoolean, null\n    __retaddr_131: %SystemUInt32, 0x0000DAD8\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_1:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_2:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_3:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_4:
     %VRCUdonUdonBehaviour, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_5:
-    %SystemBoolean, null\n    __retaddr_132: %SystemUInt32, 0x0000DBCC\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
-    %SystemBoolean, null\n    __retaddr_133: %SystemUInt32, 0x0000DC0C\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_9:
+    %SystemBoolean, null\n    __retaddr_132: %SystemUInt32, 0x0000DC04\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
+    %SystemBoolean, null\n    __retaddr_133: %SystemUInt32, 0x0000DC44\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_9:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_10:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_12:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_15:
@@ -69483,14 +69497,14 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_17:
     %SystemBoolean, null\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_19:
     %SystemInt32, 0\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_21:
-    %SystemInt32, 0\n    __retaddr_134: %SystemUInt32, 0x0000DED8\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_24:
-    %SystemBoolean, null\n    __retaddr_135: %SystemUInt32, 0x0000DF18\n    __retaddr_136:
-    %SystemUInt32, 0x0000DF78\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
+    %SystemInt32, 0\n    __retaddr_134: %SystemUInt32, 0x0000DF10\n    __RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean_intnl_24:
+    %SystemBoolean, null\n    __retaddr_135: %SystemUInt32, 0x0000DF50\n    __retaddr_136:
+    %SystemUInt32, 0x0000DFB0\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_0:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_2:
     %SystemBoolean, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_3:
     %VRCUdonUdonBehaviour, null\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_4:
-    %SystemBoolean, null\n    __retaddr_137: %SystemUInt32, 0x0000E0C4\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
-    %SystemBoolean, null\n    __retaddr_138: %SystemUInt32, 0x0000E104\n    __HasActiveContactListener_intnl_1:
+    %SystemBoolean, null\n    __retaddr_137: %SystemUInt32, 0x0000E0FC\n    __SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean_intnl_7:
+    %SystemBoolean, null\n    __retaddr_138: %SystemUInt32, 0x0000E13C\n    __HasActiveContactListener_intnl_1:
     %SystemBoolean, null\n    __HasActiveContactListener_intnl_3: %VRCUdonUdonBehaviour,
     null\n    __const_79: %UnityEngineCollider, null\n    __IgnoreBallCollision__UnityEngineCollider_intnl_0:
     %SystemBoolean, null\n    __IgnoreBallCollision__UnityEngineCollider_intnl_1:
@@ -69506,29 +69520,29 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_3: %UnityEngineTransform,
     null\n    __RecordContactPose__SystemSingle_intnl_4: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_5: %UnityEngineTransform, null\n   
-    __retaddr_139: %SystemUInt32, 0x000100A8\n    __RecordContactPose__SystemSingle_intnl_6:
+    __retaddr_139: %SystemUInt32, 0x000100E0\n    __RecordContactPose__SystemSingle_intnl_6:
     %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_7: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_8: %UnityEngineVector3, null\n   
-    __retaddr_140: %SystemUInt32, 0x00012988\n    __RecordContactPose__SystemSingle_intnl_9:
+    __retaddr_140: %SystemUInt32, 0x000129C0\n    __RecordContactPose__SystemSingle_intnl_9:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_10: %SystemBoolean,
-    null\n    __retaddr_141: %SystemUInt32, 0x00015390\n    __RecordContactPose__SystemSingle_intnl_11:
+    null\n    __retaddr_141: %SystemUInt32, 0x000153C8\n    __RecordContactPose__SystemSingle_intnl_11:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_12: %SystemBoolean,
-    null\n    __retaddr_142: %SystemUInt32, 0x00017EAC\n    __RecordContactPose__SystemSingle_intnl_13:
+    null\n    __retaddr_142: %SystemUInt32, 0x00017EE4\n    __RecordContactPose__SystemSingle_intnl_13:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_14: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_15: %SystemSingle, 0\n    __retaddr_143:
-    %SystemUInt32, 0x0001AB20\n    __RecordContactPose__SystemSingle_intnl_16: %SystemBoolean,
+    %SystemUInt32, 0x0001AB58\n    __RecordContactPose__SystemSingle_intnl_16: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_17: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_18: %SystemSingle, 0\n    __retaddr_144:
-    %SystemUInt32, 0x0001D914\n    __RecordContactPose__SystemSingle_intnl_19: %SystemBoolean,
+    %SystemUInt32, 0x0001D94C\n    __RecordContactPose__SystemSingle_intnl_19: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_20: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_21: %SystemSingle, 0\n    __retaddr_145:
-    %SystemUInt32, 0x00020888\n    __RecordContactPose__SystemSingle_intnl_22: %SystemBoolean,
+    %SystemUInt32, 0x000208C0\n    __RecordContactPose__SystemSingle_intnl_22: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_23: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_24: %SystemSingle, 0\n    __retaddr_146:
-    %SystemUInt32, 0x0002397C\n    __RecordContactPose__SystemSingle_intnl_25: %SystemBoolean,
+    %SystemUInt32, 0x000239B4\n    __RecordContactPose__SystemSingle_intnl_25: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_26: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_27: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_28:
-    %SystemBoolean, null\n    __retaddr_147: %SystemUInt32, 0x00026C68\n    __RecordContactPose__SystemSingle_intnl_29:
+    %SystemBoolean, null\n    __retaddr_147: %SystemUInt32, 0x00026CA0\n    __RecordContactPose__SystemSingle_intnl_29:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_30: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_31: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_32: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_33:
@@ -69537,63 +69551,63 @@ MonoBehaviour:
     0\n    __RecordContactPose__SystemSingle_intnl_36: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_37:
     %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_38: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_39: %SystemBoolean, null\n   
-    __retaddr_148: %SystemUInt32, 0x0002A454\n    __RecordContactPose__SystemSingle_intnl_40:
+    __retaddr_148: %SystemUInt32, 0x0002A48C\n    __RecordContactPose__SystemSingle_intnl_40:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_41: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_42: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_43: %UnityEngineQuaternion, null\n   
-    __retaddr_149: %SystemUInt32, 0x0002DEC8\n    __RecordContactPose__SystemSingle_intnl_44:
+    __retaddr_149: %SystemUInt32, 0x0002DF00\n    __RecordContactPose__SystemSingle_intnl_44:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_45: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_46: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_47: %UnityEngineVector3, null\n    __retaddr_150:
-    %SystemUInt32, 0x00031B14\n    __RecordContactPose__SystemSingle_intnl_48: %SystemBoolean,
+    %SystemUInt32, 0x00031B4C\n    __RecordContactPose__SystemSingle_intnl_48: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_49: %SystemBoolean, null\n   
-    __retaddr_151: %SystemUInt32, 0x0003589C\n    __RecordContactPose__SystemSingle_intnl_50:
+    __retaddr_151: %SystemUInt32, 0x000358D4\n    __RecordContactPose__SystemSingle_intnl_50:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_51: %SystemBoolean,
-    null\n    __retaddr_152: %SystemUInt32, 0x00039738\n    __RecordContactPose__SystemSingle_intnl_52:
+    null\n    __retaddr_152: %SystemUInt32, 0x00039770\n    __RecordContactPose__SystemSingle_intnl_52:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_53: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_54: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_55:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_56: %SystemSingle,
     0\n    __RecordContactPose__SystemSingle_intnl_57: %SystemBoolean, null\n   
     __RecordContactPose__SystemSingle_intnl_58: %SystemSingle, 0\n    __RecordContactPose__SystemSingle_intnl_59:
-    %SystemBoolean, null\n    __retaddr_153: %SystemUInt32, 0x0003D98C\n    __RecordContactPose__SystemSingle_intnl_60:
+    %SystemBoolean, null\n    __retaddr_153: %SystemUInt32, 0x0003D9C4\n    __RecordContactPose__SystemSingle_intnl_60:
     %UnityEngineVector3, null\n    __RecordContactPose__SystemSingle_intnl_61: %UnityEngineVector3,
     null\n    __RecordContactPose__SystemSingle_intnl_62: %UnityEngineVector3, null\n   
     __RecordContactPose__SystemSingle_intnl_63: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_64:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_65: %SystemSingle,
     0\n    __RecordContactPose__SystemSingle_intnl_66: %SystemSingle, 0\n    __const_85:
     %SystemSingle, 57.29578\n    __RecordContactPose__SystemSingle_intnl_67: %SystemSingle,
-    0\n    __retaddr_154: %SystemUInt32, 0x00042084\n    __RecordContactPose__SystemSingle_intnl_68:
+    0\n    __retaddr_154: %SystemUInt32, 0x000420BC\n    __RecordContactPose__SystemSingle_intnl_68:
     %SystemBoolean, null\n    __const_86: %VRCSDKBaseVRCPlayerApiTrackingDataType,
     null\n    __RecordContactPose__SystemSingle_intnl_69: %VRCSDKBaseVRCPlayerApiTrackingData,
     null\n    __const_87: %VRCSDKBaseVRCPlayerApiTrackingDataType, null\n    __RecordContactPose__SystemSingle_intnl_70:
     %VRCSDKBaseVRCPlayerApiTrackingData, null\n    __RecordContactPose__SystemSingle_intnl_71:
-    %UnityEngineVector3, null\n    __retaddr_155: %SystemUInt32, 0x00046B24\n   
+    %UnityEngineVector3, null\n    __retaddr_155: %SystemUInt32, 0x00046B5C\n   
     __RecordContactPose__SystemSingle_intnl_72: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_73:
-    %UnityEngineVector3, null\n    __retaddr_156: %SystemUInt32, 0x0004B4A4\n   
+    %UnityEngineVector3, null\n    __retaddr_156: %SystemUInt32, 0x0004B4DC\n   
     __RecordContactPose__SystemSingle_intnl_74: %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_75:
     %UnityEngineQuaternion, null\n    __RecordContactPose__SystemSingle_intnl_76:
-    %SystemSingle, 0\n    __retaddr_157: %SystemUInt32, 0x0004FF90\n    __RecordContactPose__SystemSingle_intnl_77:
+    %SystemSingle, 0\n    __retaddr_157: %SystemUInt32, 0x0004FFC8\n    __RecordContactPose__SystemSingle_intnl_77:
     %SystemBoolean, null\n    __RecordContactPose__SystemSingle_intnl_78: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_79: %SystemSingle, 0\n    __retaddr_158:
-    %SystemUInt32, 0x00054BFC\n    __RecordContactPose__SystemSingle_intnl_80: %SystemBoolean,
+    %SystemUInt32, 0x00054C34\n    __RecordContactPose__SystemSingle_intnl_80: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_81: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_82: %SystemSingle, 0\n    __retaddr_159:
-    %SystemUInt32, 0x000599E8\n    __RecordContactPose__SystemSingle_intnl_83: %SystemBoolean,
+    %SystemUInt32, 0x00059A20\n    __RecordContactPose__SystemSingle_intnl_83: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_84: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_85: %SystemSingle, 0\n    __retaddr_160:
-    %SystemUInt32, 0x0005E954\n    __RecordContactPose__SystemSingle_intnl_86: %SystemBoolean,
+    %SystemUInt32, 0x0005E98C\n    __RecordContactPose__SystemSingle_intnl_86: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_87: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_88: %SystemSingle, 0\n    __retaddr_161:
-    %SystemUInt32, 0x00063A40\n    __RecordContactPose__SystemSingle_intnl_89: %SystemBoolean,
+    %SystemUInt32, 0x00063A78\n    __RecordContactPose__SystemSingle_intnl_89: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_90: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_91: %SystemSingle, 0\n    __retaddr_162:
-    %SystemUInt32, 0x00068CAC\n    __RecordContactPose__SystemSingle_intnl_92: %SystemBoolean,
+    %SystemUInt32, 0x00068CE4\n    __RecordContactPose__SystemSingle_intnl_92: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_93: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_94: %SystemSingle, 0\n    __retaddr_163:
-    %SystemUInt32, 0x0006E098\n    __RecordContactPose__SystemSingle_intnl_95: %SystemBoolean,
+    %SystemUInt32, 0x0006E0D0\n    __RecordContactPose__SystemSingle_intnl_95: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_96: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_97: %SystemSingle, 0\n    __retaddr_164:
-    %SystemUInt32, 0x00073604\n    __RecordContactPose__SystemSingle_intnl_98: %SystemBoolean,
+    %SystemUInt32, 0x0007363C\n    __RecordContactPose__SystemSingle_intnl_98: %SystemBoolean,
     null\n    __RecordContactPose__SystemSingle_intnl_99: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_100: %UnityEngineQuaternion,
     null\n    __RecordContactPose__SystemSingle_intnl_101: %SystemSingle, 0\n   
@@ -69624,8 +69638,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_4:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __RecordMeasuredSpeed__SystemSingle_SystemSingle_SystemSingle_intnl_6:
-    %SystemInt32, 0\n    __retaddr_165: %SystemUInt32, 0x0007D094\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_0:
-    %SystemBoolean, null\n    __retaddr_166: %SystemUInt32, 0x0007D0F4\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_2:
+    %SystemInt32, 0\n    __retaddr_165: %SystemUInt32, 0x0007D0CC\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_0:
+    %SystemBoolean, null\n    __retaddr_166: %SystemUInt32, 0x0007D12C\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_2:
     %SystemBoolean, null\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __TryGetMeasuredPeaks__SystemSingle_SystemSingle_intnl_8:
@@ -69638,8 +69652,8 @@ MonoBehaviour:
     %SystemBoolean, null\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __NextContactSampleTime__SystemSingle_SystemSingle_intnl_8:
-    %SystemBoolean, null\n    __retaddr_167: %SystemUInt32, 0x0007D798\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_1:
-    %SystemBoolean, null\n    __retaddr_168: %SystemUInt32, 0x0007D80C\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_3:
+    %SystemBoolean, null\n    __retaddr_167: %SystemUInt32, 0x0007D7D0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_1:
+    %SystemBoolean, null\n    __retaddr_168: %SystemUInt32, 0x0007D844\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_3:
     %SystemBoolean, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_5:
     %SystemInt32, 0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_6:
     %SystemInt32, 0\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_8:
@@ -69727,9 +69741,9 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_117:
     %UnityEngineQuaternion, null\n    __TrySampleContactPose__SystemSingle_SystemSingle_intnl_118:
     %UnityEngineQuaternion, null\n    __ContactFinite__SystemSingle_intnl_0: %SystemBoolean,
-    null\n    __retaddr_169: %SystemUInt32, 0x0007E9DC\n    __ContactFiniteVector__UnityEngineVector3_intnl_1:
-    %SystemBoolean, null\n    __retaddr_170: %SystemUInt32, 0x0007EA34\n    __ContactFiniteVector__UnityEngineVector3_intnl_3:
-    %SystemBoolean, null\n    __retaddr_171: %SystemUInt32, 0x0007EAA0\n    __ContactFiniteVector__UnityEngineVector3_intnl_5:
+    null\n    __retaddr_169: %SystemUInt32, 0x0007EA14\n    __ContactFiniteVector__UnityEngineVector3_intnl_1:
+    %SystemBoolean, null\n    __retaddr_170: %SystemUInt32, 0x0007EA6C\n    __ContactFiniteVector__UnityEngineVector3_intnl_3:
+    %SystemBoolean, null\n    __retaddr_171: %SystemUInt32, 0x0007EAD8\n    __ContactFiniteVector__UnityEngineVector3_intnl_5:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_2:
     %SystemInt32, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_3:
     %SystemInt32, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_5:
@@ -69766,16 +69780,16 @@ MonoBehaviour:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_58:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_59:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_61:
-    %UnityEngineVector3, null\n    __retaddr_172: %SystemUInt32, 0x0007FAFC\n   
+    %UnityEngineVector3, null\n    __retaddr_172: %SystemUInt32, 0x0007FB34\n   
     __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_66: %SystemSingle,
-    0\n    __retaddr_173: %SystemUInt32, 0x0007FB60\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_68:
+    0\n    __retaddr_173: %SystemUInt32, 0x0007FB98\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_68:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_78:
     %SystemBoolean, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_80:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_81:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_82:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_83:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_85:
-    %SystemSingle, 0\n    __retaddr_174: %SystemUInt32, 0x00080058\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_92:
+    %SystemSingle, 0\n    __retaddr_174: %SystemUInt32, 0x00080090\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_92:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_94:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_95:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_96:
@@ -69794,8 +69808,8 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_118:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_119:
     %SystemSingle, 0\n    __ContactPowerCap__SystemSingle_UnityEngineVector3_SystemSingle_intnl_121:
-    %SystemBoolean, null\n    __retaddr_175: %SystemUInt32, 0x00080630\n    __X11zBatGeometry__m__ContactQuality_intnl_0:
-    %SystemBoolean, null\n    __retaddr_176: %SystemUInt32, 0x00080690\n    __X11zBatGeometry__m__ContactQuality_intnl_2:
+    %SystemBoolean, null\n    __retaddr_175: %SystemUInt32, 0x00080668\n    __X11zBatGeometry__m__ContactQuality_intnl_0:
+    %SystemBoolean, null\n    __retaddr_176: %SystemUInt32, 0x000806C8\n    __X11zBatGeometry__m__ContactQuality_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactQuality_intnl_6: %SystemSingle,
     0\n    __X11zBatGeometry__m__ContactQuality_intnl_8: %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_9:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_10: %SystemBoolean,
@@ -69804,41 +69818,41 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_17: %SystemSingle,
     0\n    __X11zBatGeometry__m__ContactQuality_intnl_18: %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_19:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactQuality_intnl_20: %SystemSingle,
-    0\n    __retaddr_177: %SystemUInt32, 0x00080AB0\n    __X11zBatGeometry__m__ContactWidth_intnl_0:
-    %SystemBoolean, null\n    __retaddr_178: %SystemUInt32, 0x00080B5C\n    __X11zBatGeometry__m__ContactWidth_intnl_3:
-    %SystemBoolean, null\n    __retaddr_179: %SystemUInt32, 0x00080BD0\n    __X11zBatGeometry__m__ContactWidth_intnl_5:
-    %SystemBoolean, null\n    __retaddr_180: %SystemUInt32, 0x00080C90\n    __X11zBatGeometry__m__ContactWidth_intnl_8:
-    %SystemBoolean, null\n    __retaddr_181: %SystemUInt32, 0x00080D50\n    __X11zBatGeometry__m__ContactWidth_intnl_11:
+    0\n    __retaddr_177: %SystemUInt32, 0x00080AE8\n    __X11zBatGeometry__m__ContactWidth_intnl_0:
+    %SystemBoolean, null\n    __retaddr_178: %SystemUInt32, 0x00080B94\n    __X11zBatGeometry__m__ContactWidth_intnl_3:
+    %SystemBoolean, null\n    __retaddr_179: %SystemUInt32, 0x00080C08\n    __X11zBatGeometry__m__ContactWidth_intnl_5:
+    %SystemBoolean, null\n    __retaddr_180: %SystemUInt32, 0x00080CC8\n    __X11zBatGeometry__m__ContactWidth_intnl_8:
+    %SystemBoolean, null\n    __retaddr_181: %SystemUInt32, 0x00080D88\n    __X11zBatGeometry__m__ContactWidth_intnl_11:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidth_intnl_14: %UnityEngineAnimationCurve,
-    null\n    __retaddr_182: %SystemUInt32, 0x00080E38\n    __X11zBatGeometry__m__ContactWidth_intnl_15:
-    %SystemSingle, 0\n    __retaddr_183: %SystemUInt32, 0x00080E7C\n    __X11zBatGeometry__m__ContactWidth_intnl_16:
-    %SystemSingle, 0\n    __retaddr_184: %SystemUInt32, 0x00080EC0\n    __X11zBatGeometry__m__ContactWidth_intnl_17:
-    %SystemBoolean, null\n    __retaddr_185: %SystemUInt32, 0x00080F60\n    __X11zBatGeometry__m__ContactWidth_intnl_18:
+    null\n    __retaddr_182: %SystemUInt32, 0x00080E70\n    __X11zBatGeometry__m__ContactWidth_intnl_15:
+    %SystemSingle, 0\n    __retaddr_183: %SystemUInt32, 0x00080EB4\n    __X11zBatGeometry__m__ContactWidth_intnl_16:
+    %SystemSingle, 0\n    __retaddr_184: %SystemUInt32, 0x00080EF8\n    __X11zBatGeometry__m__ContactWidth_intnl_17:
+    %SystemBoolean, null\n    __retaddr_185: %SystemUInt32, 0x00080F98\n    __X11zBatGeometry__m__ContactWidth_intnl_18:
     %SystemSingle, 0\n    __X11zBatGeometry__m__Finite_intnl_0: %SystemBoolean, null\n   
-    __retaddr_186: %SystemUInt32, 0x0008111C\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_0:
-    %SystemBoolean, null\n    __retaddr_187: %SystemUInt32, 0x00081170\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_1:
-    %SystemBoolean, null\n    __retaddr_188: %SystemUInt32, 0x0008128C\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_0:
+    __retaddr_186: %SystemUInt32, 0x00081154\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_0:
+    %SystemBoolean, null\n    __retaddr_187: %SystemUInt32, 0x000811A8\n    __X11zBatGeometry__m__IsValidBatGeometry_intnl_1:
+    %SystemBoolean, null\n    __retaddr_188: %SystemUInt32, 0x000812C4\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_3:
-    %SystemInt32, 0\n    __retaddr_189: %SystemUInt32, 0x000813EC\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_5:
-    %SystemBoolean, null\n    __retaddr_190: %SystemUInt32, 0x00081454\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_6:
-    %SystemBoolean, null\n    __retaddr_191: %SystemUInt32, 0x00081500\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_8:
-    %SystemBoolean, null\n    __retaddr_192: %SystemUInt32, 0x00081618\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_0:
-    %SystemBoolean, null\n    __retaddr_193: %SystemUInt32, 0x000816C4\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_3:
+    %SystemInt32, 0\n    __retaddr_189: %SystemUInt32, 0x00081424\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_5:
+    %SystemBoolean, null\n    __retaddr_190: %SystemUInt32, 0x0008148C\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_6:
+    %SystemBoolean, null\n    __retaddr_191: %SystemUInt32, 0x00081538\n    __X11zBatGeometry__m__IsValidGeometrySettings_intnl_8:
+    %SystemBoolean, null\n    __retaddr_192: %SystemUInt32, 0x00081650\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_0:
+    %SystemBoolean, null\n    __retaddr_193: %SystemUInt32, 0x000816FC\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__LocalYToNormalized_intnl_5: %SystemSingle,
-    0\n    __retaddr_194: %SystemUInt32, 0x0008180C\n    __X11zBatGeometry__m__NormalizedContactX_intnl_0:
-    %SystemBoolean, null\n    __retaddr_195: %SystemUInt32, 0x000818B8\n    __X11zBatGeometry__m__NormalizedContactX_intnl_3:
-    %SystemBoolean, null\n    __retaddr_196: %SystemUInt32, 0x00081954\n    __X11zBatGeometry__m__NormalizedContactX_intnl_5:
-    %SystemBoolean, null\n    __retaddr_197: %SystemUInt32, 0x000819E8\n    __X11zBatGeometry__m__NormalizedContactX_intnl_8:
+    0\n    __retaddr_194: %SystemUInt32, 0x00081844\n    __X11zBatGeometry__m__NormalizedContactX_intnl_0:
+    %SystemBoolean, null\n    __retaddr_195: %SystemUInt32, 0x000818F0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_3:
+    %SystemBoolean, null\n    __retaddr_196: %SystemUInt32, 0x0008198C\n    __X11zBatGeometry__m__NormalizedContactX_intnl_5:
+    %SystemBoolean, null\n    __retaddr_197: %SystemUInt32, 0x00081A20\n    __X11zBatGeometry__m__NormalizedContactX_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_9: %SystemBoolean,
     null\n    __X11zBatGeometry__m__NormalizedContactX_intnl_10: %SystemSingle, 0\n   
     __X11zBatGeometry__m__NormalizedContactX_intnl_11: %SystemSingle, 0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_13:
     %SystemSingle, 0\n    __X11zBatGeometry__m__NormalizedContactX_intnl_14: %SystemSingle,
-    0\n    __retaddr_198: %SystemUInt32, 0x00081B58\n    __X11zBatGeometry__m__NormalizedContactX_intnl_16:
-    %SystemBoolean, null\n    __retaddr_199: %SystemUInt32, 0x00081C14\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_0:
-    %SystemBoolean, null\n    __retaddr_200: %SystemUInt32, 0x00081CC0\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_3:
+    0\n    __retaddr_198: %SystemUInt32, 0x00081B90\n    __X11zBatGeometry__m__NormalizedContactX_intnl_16:
+    %SystemBoolean, null\n    __retaddr_199: %SystemUInt32, 0x00081C4C\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_0:
+    %SystemBoolean, null\n    __retaddr_200: %SystemUInt32, 0x00081CF8\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__NormalizedToLocalY_intnl_5: %SystemSingle,
     0\n    __X13zBatKinematics__m__AngularVelocity_intnl_0: %UnityEngineQuaternion,
-    null\n    __retaddr_201: %SystemUInt32, 0x00081DE0\n    __X13zBatKinematics__m__AngularVelocity_intnl_1:
+    null\n    __retaddr_201: %SystemUInt32, 0x00081E18\n    __X13zBatKinematics__m__AngularVelocity_intnl_1:
     %UnityEngineQuaternion, null\n    __X13zBatKinematics__m__AngularVelocity_intnl_3:
     %SystemBoolean, null\n    __const_96: %SystemSingle, 360\n    __X13zBatKinematics__m__AngularVelocity_intnl_5:
     %SystemSingle, 0\n    __X13zBatKinematics__m__AngularVelocity_intnl_6: %SystemBoolean,
@@ -69862,10 +69876,10 @@ MonoBehaviour:
     __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_21: %SystemSingle, 0\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_22:
     %SystemSingle, 0\n    __const_98: %SystemSingle, 0.9\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_23:
     %SystemBoolean, null\n    __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_28:
-    %UnityEngineVector3, null\n    __retaddr_202: %SystemUInt32, 0x00082408\n   
+    %UnityEngineVector3, null\n    __retaddr_202: %SystemUInt32, 0x00082440\n   
     __X13zBatPoseSolver__m__AlignLocalYToAxis_intnl_30: %UnityEngineQuaternion, null\n   
     __X13zBatPoseSolver__m__ApplyLock_intnl_0: %UnityEngineVector3, null\n    __retaddr_203:
-    %SystemUInt32, 0x0008251C\n    __X13zBatPoseSolver__m__CaptureLock_intnl_0: %UnityEngineQuaternion,
+    %SystemUInt32, 0x00082554\n    __X13zBatPoseSolver__m__CaptureLock_intnl_0: %UnityEngineQuaternion,
     null\n    __X13zBatPoseSolver__m__CaptureLock_intnl_1: %UnityEngineVector3, null\n   
     __X13zBatPoseSolver__m__InvertRotation_intnl_0: %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_1:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_2: %SystemSingle,
@@ -69887,7 +69901,7 @@ MonoBehaviour:
     0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_26: %SystemSingle, 0\n   
     __X13zBatPoseSolver__m__InvertRotation_intnl_27: %SystemSingle, 0\n    __X13zBatPoseSolver__m__InvertRotation_intnl_28:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__Lower_intnl_0: %UnityEngineQuaternion,
-    null\n    __retaddr_204: %SystemUInt32, 0x000829D8\n    __X13zBatPoseSolver__m__Lower_intnl_1:
+    null\n    __retaddr_204: %SystemUInt32, 0x00082A10\n    __X13zBatPoseSolver__m__Lower_intnl_1:
     %UnityEngineQuaternion, null\n    __X13zBatPoseSolver__m__Lower_intnl_3: %UnityEngineVector3,
     null\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_0: %SystemSingle,
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_1: %SystemSingle,
@@ -69938,25 +69952,25 @@ MonoBehaviour:
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_51: %SystemSingle,
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_53: %SystemSingle,
     0\n    __X19zBatVisualCorrection__m__RotationAngleDegrees_intnl_54: %SystemSingle,
-    0\n    __retaddr_205: %SystemUInt32, 0x000831A8\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_0:
-    %SystemBoolean, null\n    __retaddr_206: %SystemUInt32, 0x00083208\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_2:
-    %SystemBoolean, null\n    __retaddr_207: %SystemUInt32, 0x000832C8\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_5:
-    %SystemBoolean, null\n    __retaddr_208: %SystemUInt32, 0x00083388\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_8:
+    0\n    __retaddr_205: %SystemUInt32, 0x000831E0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_0:
+    %SystemBoolean, null\n    __retaddr_206: %SystemUInt32, 0x00083240\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_2:
+    %SystemBoolean, null\n    __retaddr_207: %SystemUInt32, 0x00083300\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_5:
+    %SystemBoolean, null\n    __retaddr_208: %SystemUInt32, 0x000833C0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_11:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_12:
     %SystemSingle, 0\n    __X11zBatGeometry__m__ContactWidthFromRadius_intnl_13:
     %SystemSingle, 0\n    __X11zBatGeometry__m__EvaluateRadius_intnl_1: %SystemInt32,
-    0\n    __retaddr_209: %SystemUInt32, 0x0008359C\n    __X11zBatGeometry__m__EvaluateRadius_intnl_3:
+    0\n    __retaddr_209: %SystemUInt32, 0x000835D4\n    __X11zBatGeometry__m__EvaluateRadius_intnl_3:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EvaluateRadius_intnl_5: %SystemSingle,
-    0\n    __retaddr_210: %SystemUInt32, 0x00083648\n    __X11zBatGeometry__m__EvaluateRadius_intnl_7:
+    0\n    __retaddr_210: %SystemUInt32, 0x00083680\n    __X11zBatGeometry__m__EvaluateRadius_intnl_7:
     %SystemBoolean, null\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_1: %SystemInt32,
     0\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_3: %SystemBoolean, null\n   
     __X11zBatGeometry__m__IsValidRadiusCurve_intnl_4: %SystemSingle, 0\n    __const_99:
     %SystemSingle, 32\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_5: %SystemSingle,
-    0\n    __retaddr_211: %SystemUInt32, 0x00083814\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_7:
-    %SystemBoolean, null\n    __retaddr_212: %SystemUInt32, 0x0008393C\n    __X11zBatGeometry__m__ValidContactRange_intnl_0:
-    %SystemBoolean, null\n    __retaddr_213: %SystemUInt32, 0x00083990\n    __X11zBatGeometry__m__ValidContactRange_intnl_1:
-    %SystemBoolean, null\n    __retaddr_214: %SystemUInt32, 0x000839F8\n    __X11zBatGeometry__m__ValidContactRange_intnl_2:
+    0\n    __retaddr_211: %SystemUInt32, 0x0008384C\n    __X11zBatGeometry__m__IsValidRadiusCurve_intnl_7:
+    %SystemBoolean, null\n    __retaddr_212: %SystemUInt32, 0x00083974\n    __X11zBatGeometry__m__ValidContactRange_intnl_0:
+    %SystemBoolean, null\n    __retaddr_213: %SystemUInt32, 0x000839C8\n    __X11zBatGeometry__m__ValidContactRange_intnl_1:
+    %SystemBoolean, null\n    __retaddr_214: %SystemUInt32, 0x00083A30\n    __X11zBatGeometry__m__ValidContactRange_intnl_2:
     %SystemBoolean, null\n    __X13zBatPoseSolver__m__RotationFromBasis_intnl_9:
     %SystemSingle, 0\n    __X13zBatPoseSolver__m__RotationFromBasis_intnl_12: %SystemBoolean,
     null\n    __X13zBatPoseSolver__m__RotationFromBasis_intnl_13: %SystemSingle,
@@ -72895,7 +72909,11 @@ MonoBehaviour:
     _feedbackGeometryRevision\n        PUSH, __FeedbackGeometryRevision_ret\n       
     COPY\n        PUSH, _feedbackGeometryRevision\n        PUSH, __returnValue\n       
     COPY\n        JUMP_INDIRECT, __FeedbackGeometryRevision_retjump\n        JUMP_INDIRECT,
-    __FeedbackGeometryRevision_retjump\n    .export PrepareFeedbackGeometry__SystemSingle\n   
+    __FeedbackGeometryRevision_retjump\n    .export FeedbackGeometryIsValid\n   
+    FeedbackGeometryIsValid:\n        PUSH, _feedbackGeometryValid\n        PUSH,
+    __FeedbackGeometryIsValid_ret\n        COPY\n        PUSH, _feedbackGeometryValid\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __FeedbackGeometryIsValid_retjump\n       
+    JUMP_INDIRECT, __FeedbackGeometryIsValid_retjump\n    .export PrepareFeedbackGeometry__SystemSingle\n   
     PrepareFeedbackGeometry__SystemSingle:\n        PUSH, __const_0\n        PUSH,
     __PrepareFeedbackGeometry__SystemSingle___t0\n        COPY\n        PUSH, __const_0\n       
     PUSH, __PrepareFeedbackGeometry__SystemSingle___t1\n        COPY\n        PUSH,
@@ -101456,8 +101474,8 @@ MonoBehaviour:
   networkCallableSlots: []
   optExternBefore: 15640
   optExternAfter: 15633
-  optInsnBefore: 71271
-  optInsnAfter: 68562
-  optBytesBefore: 560044
-  optBytesAfter: 541928
+  optInsnBefore: 71279
+  optInsnAfter: 68570
+  optBytesBefore: 560100
+  optBytesAfter: 541984
   optStage: ran
