@@ -71,6 +71,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public int selectedPitchType;
 
     // Owner-only preparation.
+    private int _startAttempts;
     private bool _preparing, _solving, _reserving, _retryScheduled, _ownerReady, _initialized, _stateKnown;
     private int _solvingSequence, _ownerEpoch, _reserveEpoch, _serializedPitchId, _serializationRetries;
     private float _speedSnapshot, _resetSnapshot;
@@ -116,9 +117,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public void _StartController()
     {
         if (!_initialized || _ownerReady) return;
-        if (Networking.LocalPlayer == null)
+        VRCPlayerApi owner = Networking.LocalPlayer == null ? null : Networking.GetOwner(gameObject);
+        if (!Utilities.IsValid(owner))
         {
-            SendCustomEventDelayedSeconds(nameof(_StartController), 0.5f);
+            // LocalPlayer or Owner not settled yet: a limited number of delayed retries.
+            if (_startAttempts++ < 10) SendCustomEventDelayedSeconds(nameof(_StartController), 0.5f);
             return;
         }
         if (!IsPitchController()) return;
@@ -210,6 +213,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             return;
         }
         _ownerReady = true;
+        CommitPendingSettings();
         ResumeCycle();
     }
 
@@ -238,7 +242,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void CommitPendingSettings()
     {
-        if (!_settingsPending || !IsPitchController()) return;
+        if (!_settingsPending || !IsPitchController() || !_stateKnown) return;
         _settingsPending = false;
         speedKmh = _pendingSpeed;
         spinRpm = _pendingSpin;
@@ -257,6 +261,12 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     // Owner: snapshot the settings, stage the ball and solve the aim. The animator is untouched.
     public void _BeginPreparation()
     {
+        float late = ServerLate(_appliedReady);
+        if (_appliedId != 0 && !IsDue(late))
+        {
+            SendCustomEventDelayedSeconds(nameof(_BeginPreparation), -late);
+            return;
+        }
         BeginPreparation();
     }
 
@@ -326,13 +336,23 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private void Reserve()
     {
         double now = ServerNow();
-        _pitchId = Mathf.Max(_pitchId, _appliedId) + 1;
+        _pitchId++;
         _startTime = now + Mathf.Max(0f, leadSeconds);
         _releaseTime = _startTime + Mathf.Max(0f, releaseOffsetSeconds);
         _readyTime = _startTime + ReadyOffset(releaseOffsetSeconds, _resetSnapshot, motionSeconds);
         _reserving = true;
         _reserveEpoch = _ownerEpoch;
         RequestSerialization();
+        // With nobody else in the instance there is no receiver to confirm the send (ClientSim
+        // never calls OnPostSerialization either), so the schedule is committed directly.
+        if (VRCPlayerApi.GetPlayerCount() <= 1) CommitReservation();
+    }
+
+    private void CommitReservation()
+    {
+        _reserving = false;
+        _preparing = false;
+        ApplyPitch();
     }
 
     public override void OnPreSerialization()
@@ -348,11 +368,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             _serializationRetries = 0;
             // An older send that predates this schedule does not confirm it.
             if (current && _serializedPitchId == _pitchId)
-            {
-                _reserving = false;
-                _preparing = false;
-                ApplyPitch();
-            }
+                CommitReservation();
             return;
         }
         if (!IsPitchController()) return;
@@ -382,27 +398,40 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public override void OnDeserialization()
     {
         _stateKnown = true;
-        if (!IsPitchController()) ApplyPitch();
+        bool owner = IsPitchController();
+        // Incoming data overwrote this Owner's unsent reservation fields.
+        bool lostWork = owner && (_reserving || _preparing);
+        _reserving = false;
+        if (ApplyPitch() && owner) { _preparing = false; _solving = false; }
+        else if (lostWork)
+        {
+            _preparing = false;
+            _solving = false;
+            SendCustomEventDelayedSeconds(nameof(_BeginPreparation), Mathf.Max(0.1f, serializationRetrySeconds));
+        }
+        if (_stateKnown && _ownerReady) CommitPendingSettings();
         NotifySettingsListener();
     }
 
     // Copies the synced schedule and arms the motion, release and cycle-ready events.
-    private void ApplyPitch()
+    private bool ApplyPitch()
     {
         float ahead = _appliedId == 0 ? 1f : (float)Networking.CalculateServerDeltaTime(_startTime, _appliedStart);
-        if (!AcceptPitch(ahead)) return;
+        if (!AcceptPitch(ahead)) return false;
         double now = ServerNow();
         SendCustomEventDelayedSeconds(nameof(_OnMotionDue), DelayUntil(_appliedStart, now));
         SendCustomEventDelayedSeconds(nameof(_OnReleaseDue), DelayUntil(_appliedRelease, now));
         SendCustomEventDelayedSeconds(nameof(_OnCycleReady), DelayUntil(_appliedReady, now));
+        return true;
     }
 
     // Takes a synced schedule once. Order is by start time, so an id reused after an Ownership
-    // change still counts as new, while repeated or older schedules are ignored.
+    // change still counts as new, while repeated or older schedules are ignored. _appliedId is a
+    // local generation bumped per accepted schedule: every executed-flag compares it, never the synced id.
     private bool AcceptPitch(float startAhead)
     {
         if (_pitchId <= 0 || (_appliedId != 0 && startAhead <= 0.001f)) return false;
-        _appliedId = _pitchId;
+        _appliedId++;
         _appliedStart = _startTime;
         _appliedRelease = _releaseTime;
         _appliedReady = _readyTime;

@@ -18,7 +18,7 @@ public partial class BattingPitcherBehaviour
     {
         SetSyncedPitch(3, 10.0);
         Assert.IsTrue(AcceptPitch(1f));
-        Assert.AreEqual(3, _appliedId);
+        Assert.AreEqual(1, _appliedId);
         Assert.AreEqual(10.0, _appliedStart);
         // same schedule again, and an older one
         Assert.IsFalse(AcceptPitch(0f));
@@ -38,6 +38,14 @@ public partial class BattingPitcherBehaviour
         SetSyncedPitch(5, 30.0);
         Assert.IsTrue(AcceptPitch(20f));
         Assert.AreEqual(30.0, _appliedStart);
+        // the reused synced id gets a fresh local generation, so nothing counts as already run
+        Assert.AreEqual(2, _appliedId);
+        _motionStartedId = 1;
+        _releasedId = 1;
+        _readyHandledId = 1;
+        Assert.IsTrue(_motionStartedId != _appliedId);
+        Assert.IsTrue(_releasedId != _appliedId);
+        Assert.IsTrue(_readyHandledId != _appliedId);
     }
 
     [TsukimiTest]
@@ -51,6 +59,34 @@ public partial class BattingPitcherBehaviour
         TryRelease();
         Assert.AreEqual(0, _releasedId);
         Assert.AreEqual(0, _localLaunchId);
+    }
+
+    [TsukimiTest]
+    public void SettingsAreHeldUntilTheOwnerHasASyncedState()
+    {
+        Mimic.Join();
+        _stateKnown = false;
+        _pendingSpeed = 150f;
+        _settingsPending = true;
+        CommitPendingSettings();
+        Assert.IsTrue(_settingsPending);
+        Assert.AreEqual(120f, speedKmh);
+        _stateKnown = true;
+        CommitPendingSettings();
+        Assert.IsFalse(_settingsPending);
+        Assert.AreEqual(150f, speedKmh);
+    }
+
+    [TsukimiTest]
+    public void ReceivedSnapshotSetsTheReadyTimeThatGatesTheNextPitch()
+    {
+        SetSyncedPitch(4, 10.0);
+        Assert.IsTrue(AcceptPitch(1f));
+        Assert.AreEqual(15.2, _appliedReady);
+        // a stale snapshot cannot move it back
+        SetSyncedPitch(3, 5.0);
+        Assert.IsFalse(AcceptPitch(-5f));
+        Assert.AreEqual(15.2, _appliedReady);
     }
 
     [TsukimiTest]
@@ -84,7 +120,7 @@ public partial class BattingPitcherBehaviour
         _reserving = true;
         int epoch = _ownerEpoch;
         DropOwnerWork();
-        Assert.AreEqual(7, _appliedId);
+        Assert.AreEqual(1, _appliedId);
         Assert.AreEqual(50.0, _appliedStart);
         Assert.AreEqual(Vector3.forward, _appliedVelocity);
         Assert.IsFalse(_preparing);
@@ -109,12 +145,13 @@ public partial class BattingPitcherBehaviour
         Mimic.Join();
         SetSyncedPitch(2, 10.0);
         Assert.IsTrue(AcceptPitch(1f));
+        _stateKnown = true;
         SubmitSettings(150f, 3000f, 6f, 5, 2);
         Assert.AreEqual(150f, speedKmh);
         Assert.AreEqual(5, courseMask);
         Assert.AreEqual(2, pitchType);
         Assert.AreEqual(Vector3.forward, _appliedVelocity);
-        Assert.AreEqual(2, _appliedId);
+        Assert.AreEqual(1, _appliedId);
         Assert.AreEqual(10.0, _appliedStart);
         Assert.AreEqual(2, _pitchId);
     }
