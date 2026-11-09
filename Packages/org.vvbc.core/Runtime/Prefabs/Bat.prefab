@@ -38,7 +38,6 @@ Transform:
   - {fileID: 8527309192383487951}
   - {fileID: 1274452079380953140}
   - {fileID: 167964654254103806}
-  - {fileID: 5153813786058612679}
   m_Father: {fileID: 1972221323338935047}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &5795909763019066111
@@ -224,6 +223,7 @@ Transform:
   - {fileID: 989696961999946462}
   - {fileID: 5426587970309346282}
   - {fileID: 8315727378079767489}
+  - {fileID: 5153813786058612679}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7991828642839359340
@@ -292,7 +292,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 623435411751939395}
+  m_Father: {fileID: 1972221323338935047}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &881431591529228740
 AudioSource:

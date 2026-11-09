@@ -37,6 +37,10 @@ and superseded snapshots are rejected by the existing sequence/state ordering.
 The hitter never replays its own snapshot. The Ball applies its flight state
 before attempting audio, so an unavailable Bat or sound cannot block the state.
 
+The remote contact sound is placed at the Hit Snapshot's synchronized position
+(the ball position at contact, before local catch-up), not at the current Ball
+or interpolated Bat position. No extra sync field is used.
+
 `maximumHitAudioAge` on BallBehaviour defaults to 0.75 seconds. This is a
 starting compromise that permits ordinary network delay while avoiding a sound
 long after the impact; it is not a measured latency guarantee. Tune it with real

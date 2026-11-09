@@ -137,7 +137,7 @@ cannot establish the cause without listening to the actual clips in VRChat.
 
 | Sound | Prefab / GameObject | Min / Max distance | Dynamic volume controls |
 | --- | --- | --- | --- |
-| Bat contact | `Bat.prefab` / `Body/Contact Audio` | 1 / 350 m | Bat impact `contactMinVolume` 0.45, `contactMaxVolume` 1 |
+| Bat contact | `Bat.prefab` / `Contact Audio` (Bat root child, placed at the contact point) | 1 / 350 m | Bat impact `contactMinVolume` 0.45, `contactMaxVolume` 1 |
 | Ball impact | `Ball.prefab` / `Audio/Bounce` | 1 / 250 m | Ball impact `minimumVolume` 0.35, `maximumVolume` 1 |
 | Bat drop / impact | `Bat.prefab` / `Body/Drop Audio` | 1 / 250 m | Body impact `minimumVolume` 0.35, `maximumVolume` 1 |
 | Flight wind | `Ball.prefab` / `Audio/Wind` | 1 / 200 m | Ball `windMaxVolume` 0.35 |

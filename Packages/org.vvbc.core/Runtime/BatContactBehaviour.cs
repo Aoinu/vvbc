@@ -416,7 +416,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         FeedbackImpactAudioBehaviour effects = bat != null ? bat.GetComponentInChildren<FeedbackImpactAudioBehaviour>(true) : null;
         if (!flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
             result.linearVelocity, result.angularVelocity, batterId, strength)) return false;
-        if (effects != null) effects.PlayLocalContact(strength, heldHands);
+        if (effects != null) effects.PlayLocalContact(snapshot.contactPosition, strength, heldHands);
         contactTime = time;
         contactPitchSequence = _sequence;
         contactSequence++;

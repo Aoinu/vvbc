@@ -28,11 +28,12 @@ public partial class FeedbackImpactAudioBehaviour : TsukimiBehaviour
     public float hapticAmplitude = 0.5f;
     public float hapticFrequency = 0.5f;
     [HideInInspector] public float remoteContactStrength;
+    [HideInInspector] public Vector3 remoteContactPosition;
     private float _nextImpactTime;
 
-    public void PlayLocalContact(float strength, int hands)
+    public void PlayLocalContact(Vector3 position, float strength, int hands)
     {
-        PlayContact(strength);
+        PlayContact(position, strength);
         VRCPlayerApi player = Networking.LocalPlayer;
         if (player == null || !player.IsUserInVR()) return;
         if ((hands & 1) != 0) player.PlayHapticEventInHand(VRC_Pickup.PickupHand.Left, hapticDuration, hapticAmplitude, hapticFrequency);
@@ -41,13 +42,15 @@ public partial class FeedbackImpactAudioBehaviour : TsukimiBehaviour
 
     public void PlayRemoteContact()
     {
-        PlayContact(remoteContactStrength);
+        PlayContact(remoteContactPosition, remoteContactStrength);
     }
 
-    private void PlayContact(float strength)
+    private void PlayContact(Vector3 position, float strength)
     {
         if (contactAudio == null || contactClip == null) return;
         strength = Mathf.Clamp01(strength);
+        // Contact Audio is a Bat-root child (does not follow Body); place it once at the contact point.
+        contactAudio.transform.position = position;
         contactAudio.clip = contactClip;
         contactAudio.volume = ContactVolume(strength);
         contactAudio.pitch = ContactPitch(strength);

@@ -254,7 +254,7 @@ public partial class BallBehaviour
         }
         VRCPlayerApi localPlayer = Networking.LocalPlayer;
         if (_kind == HitState && localPlayer != null && ShouldPlayHitAudio(_batterId, localPlayer.playerId, elapsed))
-            PlayRemoteHitAudio(_batterId, _hitStrength);
+            PlayRemoteHitAudio(_batterId, _hitStrength, _position);
     }
 
     private bool ShouldPlayHitAudio(int batterId, int localId, double elapsed)
@@ -262,7 +262,7 @@ public partial class BallBehaviour
         return batterId > 0 && batterId != localId && elapsed >= 0.0 && elapsed <= Mathf.Max(0f, maximumHitAudioAge);
     }
 
-    private void PlayRemoteHitAudio(int batterId, float strength)
+    private void PlayRemoteHitAudio(int batterId, float strength, Vector3 contactPosition)
     {
         VRCPlayerApi player = VRCPlayerApi.GetPlayerById(batterId);
         if (!Utilities.IsValid(player)) return;
@@ -285,6 +285,7 @@ public partial class BallBehaviour
         UdonBehaviour effects = (UdonBehaviour)bat.GetProgramVariable("vvbcBatContactEffects");
         if (effects == null || effects == bat || !effects.transform.IsChildOf(bat.transform)) return;
         effects.SetProgramVariable("remoteContactStrength", strength);
+        effects.SetProgramVariable("remoteContactPosition", contactPosition);
         effects.SendCustomEvent("PlayRemoteContact");
     }
 

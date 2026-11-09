@@ -247,9 +247,11 @@ limits and validation steps are in [bat contact](bat-contact.md).
 
 The Body's existing `FeedbackImpactAudioBehaviour` owns drop audio, contact
 audio and local haptics. Assign a contact clip and adjust its volume and pitch
-ranges and haptic settings there. `Body/Contact Audio` has a separate spatial
-AudioSource from `Body/Drop Audio`, so the two effects do not interrupt each
-other. Remote hits use the synchronized player's Bat and do not vibrate the
+ranges and haptic settings there. `Contact Audio` is a direct child of the Bat root
+(not Body), so it does not follow the swing; it is moved once to the contact
+position when a hit is played and is never moved during playback. It is a
+separate spatial AudioSource from `Body/Drop Audio`, so the two effects do not
+interrupt each other. Remote hits use the synchronized player's Bat and do not vibrate the
 observer. The package does not supply clips. See
 [batting feedback](batting-feedback.md) and the
 [Ball network prototype](ball-network-prototype.md).
