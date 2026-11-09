@@ -20,6 +20,11 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public float maxExtrapolation = 0.025f;
     public float sprayScale = 1f;
     public float launchScale = 1f;
+    [Header("Batted Ball Spin")]
+    [Tooltip("Peak batted-ball spin in rpm, reached where Spin Curve outputs 1. Must be finite and >= 0.")]
+    public float maxSpinRpm = 2000f;
+    [Tooltip("Input: abs(normalized Y contact offset), 0..1. Output: fraction of Max Spin Rpm, 0..1. Spin direction comes from the sign of the offset. Default is x^2.")]
+    public AnimationCurve spinCurve;
 
     private int _sequence = -1;
     private int _collisionSequence = -1;
@@ -85,6 +90,14 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         if (strikeZone != null) return StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward);
         // Keep existing standalone contact prefabs usable until migrated.
         return StrikeZoneGeometry.Forward(centerDirection);
+    }
+
+    // Evaluated once at contact. An unset curve falls back to the default x^2.
+    public float EvaluateSpinRatio(float normalizedY)
+    {
+        float offset = Mathf.Clamp01(Mathf.Abs(normalizedY));
+        float ratio = spinCurve != null ? spinCurve.Evaluate(offset) : offset * offset;
+        return float.IsNaN(ratio) ? 0f : Mathf.Clamp01(ratio);
     }
 
     public float EvaluateRawPower(float speed)
@@ -384,6 +397,8 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshot.power = Mathf.Min(rawPower, powerCap);
         snapshot.sprayScale = sprayScale;
         snapshot.launchScale = launchScale;
+        snapshot.maxSpinRpm = maxSpinRpm;
+        snapshot.spinRatio = EvaluateSpinRatio(snapshot.normalizedY);
         BallResult result = BallResultMath.Calculate(snapshot);
         bool ballExtrapolated = time > flight.latestMotionTime;
         bool batExtrapolated = time > motion.contactLatestTime;

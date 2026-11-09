@@ -20,6 +20,8 @@ public partial class BallBehaviour
         s.power = 0.7f;
         s.sprayScale = 1f;
         s.launchScale = 1f;
+        s.maxSpinRpm = 2000f;
+        s.spinRatio = 1f;
         return s;
     }
 
@@ -87,8 +89,8 @@ public partial class BallBehaviour
         float speed = 8f + 37f * s.power * s.quality;
         Assert.IsTrue(Mathf.Abs(top.linearVelocity.magnitude - speed) < 0.001f);
         Assert.IsTrue(Mathf.Abs(bottom.linearVelocity.magnitude - speed) < 0.001f);
-        Assert.IsTrue((top.angularVelocity + s.axisX * (2000f * 2f * Mathf.PI / 60f)).magnitude < 0.001f);
-        Assert.IsTrue((bottom.angularVelocity - s.axisX * (2000f * 2f * Mathf.PI / 60f)).magnitude < 0.001f);
+        Assert.IsTrue((top.angularVelocity - s.axisX * (2000f * 2f * Mathf.PI / 60f)).magnitude < 0.001f);
+        Assert.IsTrue((bottom.angularVelocity + s.axisX * (2000f * 2f * Mathf.PI / 60f)).magnitude < 0.001f);
         Assert.IsTrue(center.angularVelocity.magnitude < 0.0001f);
     }
 
@@ -321,5 +323,94 @@ public partial class BallBehaviour
         launch = (-12f - 0.35f * 25f) * Mathf.Deg2Rad;
         expected = new Vector3(0f, -Mathf.Sin(launch), Mathf.Cos(launch));
         Assert.IsTrue(rotation.valid && (rotation.linearVelocity.normalized - expected).magnitude < 0.0001f);
+    }
+
+    // Magnus acceleration direction for a level bat hitting toward center.
+    private float ResultMagnusY(BallResultSnapshot s)
+    {
+        BallResult r = BallResultMath.Calculate(s);
+        return Vector3.Cross(r.angularVelocity, r.linearVelocity).y;
+    }
+
+    [TsukimiTest]
+    public void ResultBottomContactGivesBackspinAndTopContactGivesTopspin()
+    {
+        BallResultSnapshot s = ResultExample();
+        s.sprayScale = 0f;
+        s.normalizedY = -0.6f; // ball center above the bat axis: strike the lower half.
+        Assert.IsTrue(ResultMagnusY(s) > 0f);
+        s.normalizedY = 0.6f;
+        Assert.IsTrue(ResultMagnusY(s) < 0f);
+        s.normalizedY = 0f;
+        Assert.IsTrue(BallResultMath.Calculate(s).angularVelocity.magnitude < 0.0001f);
+    }
+
+    [TsukimiTest]
+    public void ResultSpinIsPhysicallyEquivalentForReversedBatAxis()
+    {
+        BallResultSnapshot s = ResultExample();
+        s.sprayScale = 0f;
+        s.normalizedY = 0.5f;
+        s.spinRatio = 0.25f;
+        BallResult a = BallResultMath.Calculate(s);
+        s.axisX = -s.axisX;
+        s.axisY = -s.axisY;
+        s.normalizedY = -s.normalizedY;
+        BallResult b = BallResultMath.Calculate(s);
+        Assert.IsTrue(a.valid && b.valid);
+        Assert.IsTrue((a.angularVelocity - b.angularVelocity).magnitude < 0.001f);
+        Assert.IsTrue((a.linearVelocity - b.linearVelocity).magnitude < 0.001f);
+    }
+
+    [TsukimiTest]
+    public void ResultSpinAxisStaysOnTiltedBatAxisAndScalesWithRatioAndMax()
+    {
+        BallResultSnapshot s = ResultExample();
+        s.axisX = new Vector3(1f, 0.3f, 0.1f).normalized;
+        s.axisY = Vector3.Cross(s.incomingVelocity, s.axisX).normalized;
+        s.normal = Vector3.Cross(s.axisX, s.axisY).normalized;
+        s.normalizedY = 0.5f;
+        s.maxSpinRpm = 2000f;
+        s.spinRatio = 0.25f;
+        BallResult r = BallResultMath.Calculate(s);
+        Assert.IsTrue(r.valid);
+        Assert.IsTrue(Vector3.Cross(r.angularVelocity, s.axisX).magnitude < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(r.angularVelocity.magnitude - 500f * 2f * Mathf.PI / 60f) < 0.001f);
+        s.maxSpinRpm = 1000f;
+        Assert.IsTrue(Mathf.Abs(BallResultMath.Calculate(s).angularVelocity.magnitude - 250f * 2f * Mathf.PI / 60f) < 0.001f);
+        s.maxSpinRpm = 0f;
+        Assert.IsTrue(BallResultMath.Calculate(s).angularVelocity.magnitude < 0.0001f);
+    }
+
+    [TsukimiTest]
+    public void ResultSpinRatioIsClampedAndInvalidSpinSettingsNeverProduceNaN()
+    {
+        BallResultSnapshot s = ResultExample();
+        s.spinRatio = 5f;
+        Assert.IsTrue(Mathf.Abs(BallResultMath.Calculate(s).angularVelocity.magnitude - 2000f * 2f * Mathf.PI / 60f) < 0.001f);
+        s.spinRatio = -1f;
+        Assert.IsTrue(BallResultMath.Calculate(s).angularVelocity.magnitude < 0.0001f);
+        s.spinRatio = 1f;
+        s.maxSpinRpm = -100f;
+        BallResult negative = BallResultMath.Calculate(s);
+        Assert.IsTrue(negative.valid && negative.angularVelocity.magnitude < 0.0001f);
+        s.maxSpinRpm = float.NaN;
+        Assert.IsFalse(BallResultMath.Calculate(s).valid);
+        s.maxSpinRpm = float.PositiveInfinity;
+        Assert.IsFalse(BallResultMath.Calculate(s).valid);
+        s.maxSpinRpm = 2000f;
+        s.spinRatio = float.NaN;
+        Assert.IsFalse(BallResultMath.Calculate(s).valid);
+    }
+
+    [TsukimiTest]
+    public void ResultLaunchSpeedDirectionAreIndependentOfSpinSettings()
+    {
+        BallResultSnapshot s = ResultExample();
+        BallResult a = BallResultMath.Calculate(s);
+        s.maxSpinRpm = 0f;
+        s.spinRatio = 0f;
+        BallResult b = BallResultMath.Calculate(s);
+        Assert.IsTrue((a.linearVelocity - b.linearVelocity).magnitude < 0.00001f);
     }
 }

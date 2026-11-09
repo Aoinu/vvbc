@@ -88,4 +88,14 @@ public partial class BatContactBehaviour
         Assert.IsTrue(Mathf.Abs(reverseQuality - quality) < 0.0001f);
         Assert.AreEqual(Mathf.Abs(0.04f) <= width, Mathf.Abs(-0.04f) <= reverseWidth);
     }
+
+    [TsukimiTest]
+    public void MissingSpinCurveFallsBackToQuadratic()
+    {
+        spinCurve = null;
+        Assert.AreEqual(0f, EvaluateSpinRatio(0f));
+        Assert.IsTrue(Mathf.Abs(EvaluateSpinRatio(0.5f) - 0.25f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(EvaluateSpinRatio(-0.75f) - 0.5625f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(EvaluateSpinRatio(2f) - 1f) < 0.0001f);
+    }
 }

@@ -287,6 +287,11 @@ PrefabInstance:
       propertyPath: migrationId
       value: 1327e0e8677a4395ab9cfe3195324623
       objectReference: {fileID: 0}
+    - target: {fileID: 6758497573637842802, guid: 01237ea139a85dc49aaf0a3ea126720d,
+        type: 3}
+      propertyPath: migrationId
+      value: a17713859bb54a59a7ee7bde53eed90b
+      objectReference: {fileID: 0}
     - target: {fileID: 7270934395229756101, guid: 01237ea139a85dc49aaf0a3ea126720d,
         type: 3}
       propertyPath: migrationId

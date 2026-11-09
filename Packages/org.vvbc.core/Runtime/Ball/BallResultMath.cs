@@ -19,6 +19,10 @@ public struct BallResultSnapshot
     public float power;
     public float sprayScale;
     public float launchScale;
+    // Peak batted-ball spin in rpm, and the already-evaluated fraction of it
+    // (Spin Curve at abs(normalizedY)). Spin sign comes from normalizedY.
+    public float maxSpinRpm;
+    public float spinRatio;
 }
 
 public struct BallResult
@@ -58,7 +62,8 @@ public static class BallResultMath
             !FiniteVector(s.axisY) || !FiniteVector(s.normal) ||
             !FiniteVector(s.centerDirection) || !FiniteVector(s.worldUp) ||
             !Finite(s.normalizedY) || !Finite(s.quality) || !Finite(s.power) ||
-            !Finite(s.sprayScale) || !Finite(s.launchScale)) return result;
+            !Finite(s.sprayScale) || !Finite(s.launchScale) ||
+            !Finite(s.maxSpinRpm) || !Finite(s.spinRatio)) return result;
         if (s.axisX.sqrMagnitude < 0.00000001f || s.axisY.sqrMagnitude < 0.00000001f ||
             s.normal.sqrMagnitude < 0.00000001f || s.centerDirection.sqrMagnitude < 0.00000001f ||
             s.worldUp.sqrMagnitude < 0.00000001f) return result;
@@ -95,7 +100,12 @@ public static class BallResultMath
         Vector3 direction = Rotate(Rotate(center, y, spray * s.sprayScale), x, launch * s.launchScale);
         if (!FiniteVector(direction) || direction.sqrMagnitude < 0.00000001f) return result;
         result.linearVelocity = direction.normalized * (8f + 37f * Mathf.Clamp01(s.power) * Mathf.Clamp01(s.quality));
-        result.angularVelocity = (-2000f * yn * (2f * Mathf.PI / 60f)) * x;
+        // +normalizedY is a hit on the upper half of the ball (Y points down at
+        // a level bat), so +normalizedY gives topspin: omega = +x for forward
+        // flight along center. The axis stays fixed to the bat's long axis.
+        float spinRpm = Mathf.Max(0f, s.maxSpinRpm) * Mathf.Clamp01(s.spinRatio);
+        float spinSign = yn > 0f ? 1f : (yn < 0f ? -1f : 0f);
+        result.angularVelocity = (spinSign * spinRpm * (2f * Mathf.PI / 60f)) * x;
         result.valid = FiniteVector(result.linearVelocity) && FiniteVector(result.angularVelocity);
         return result;
     }

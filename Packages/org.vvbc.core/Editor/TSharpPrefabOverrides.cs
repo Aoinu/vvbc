@@ -264,6 +264,7 @@ namespace VVBC.Editor
                 }
             }
 
+            if (EnsureDefaultSpinCurve(values)) changed = true;
             if (!alreadyMigrated)
             {
                 values.migrationId = Guid.NewGuid().ToString("N");
@@ -374,6 +375,30 @@ namespace VVBC.Editor
             Vector3 scale = collider.transform.lossyScale;
             radius = BatGeometry.EffectiveSphereRadius(collider.radius, scale);
             return Finite(radius) && radius >= 0f;
+        }
+
+        // Batted-ball spin ratio over abs(normalizedY): f(x) = x^2. Cubic Hermite keys
+        // (0,0,tangent 0) and (1,1,tangent 2) reproduce x^2 exactly.
+        internal static AnimationCurve CreateDefaultSpinCurve()
+        {
+            AnimationCurve curve = new AnimationCurve(new Keyframe(0f, 0f, 0f, 0f), new Keyframe(1f, 1f, 2f, 2f));
+            curve.preWrapMode = WrapMode.ClampForever;
+            curve.postWrapMode = WrapMode.ClampForever;
+            return curve;
+        }
+
+        // A curve that was never authored has no keys; seed it with the default.
+        private static bool EnsureDefaultSpinCurve(TSharpPrefabValues values)
+        {
+            if (values == null || values.target == null || values.target.programSource == null ||
+                values.target.programSource.name != "BatContactBehaviour" || values.fields == null) return false;
+            var slot = values.fields.FirstOrDefault(field => field != null && field.symbol == "spinCurve");
+            if (slot == null) return false;
+            if (!slot.isNull && slot.curveValue != null && slot.curveValue.length > 0) return false;
+            if (values.target.publicVariables.TryGetVariableValue("spinCurve", out object existing) &&
+                existing is AnimationCurve current && current.length > 0) return false;
+            SetField(values, "spinCurve", typeof(AnimationCurve), CreateDefaultSpinCurve());
+            return true;
         }
 
         internal static AnimationCurve CreateDefaultRadiusCurve()
