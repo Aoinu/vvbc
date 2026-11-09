@@ -20,7 +20,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     public float minSpeedKmh = 60f;
     public float maxSpeedKmh = 160f;
     public float minSpinRpm = 0f;
-    public float maxSpinRpm = 4000f;
+    public float maxSpinRpm = 3000f;
     public float minResetSeconds = 3f;
     public float maxResetSeconds = 15f;
     [Tooltip("Quiet time after the last edit before the settings are committed, in seconds.")]

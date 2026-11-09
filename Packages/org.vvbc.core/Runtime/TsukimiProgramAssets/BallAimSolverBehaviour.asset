@@ -38,7 +38,8 @@ MonoBehaviour:
     null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
     __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
+    __ret__X15zBallFlightModel__m__Step__spin: %UnityEngineVector3, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_1:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_2:
@@ -91,25 +92,27 @@ MonoBehaviour:
     %SystemInt32, 0\n    __Advance_i: %SystemInt32, 0\n    __Advance___t0: %SystemBoolean,
     null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance_state__position:
     %UnityEngineVector3, null\n    __Advance_state__velocity: %UnityEngineVector3,
-    null\n    __Advance___t1__position: %UnityEngineVector3, null\n    __Advance___t1__velocity:
-    %UnityEngineVector3, null\n    __Advance___t2__position: %UnityEngineVector3,
-    null\n    __Advance___t2__velocity: %UnityEngineVector3, null\n    __Advance___t3:
+    null\n    __Advance_state__spin: %UnityEngineVector3, null\n    __Advance___t1__position:
+    %UnityEngineVector3, null\n    __Advance___t1__velocity: %UnityEngineVector3,
+    null\n    __Advance___t1__spin: %UnityEngineVector3, null\n    __Advance___t2__position:
+    %UnityEngineVector3, null\n    __Advance___t2__velocity: %UnityEngineVector3,
+    null\n    __Advance___t2__spin: %UnityEngineVector3, null\n    __Advance___t3:
     %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n    __Advance_side:
     %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n    __Advance_fraction:
     %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n    __Advance___t6:
     %SystemBoolean, null\n    __Advance___inl4__state__position: %UnityEngineVector3,
-    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__spin:
-    %UnityEngineVector3, null\n    __Advance___inl4__gravity: %UnityEngineVector3,
-    null\n    __Advance___inl4__drag: %SystemSingle, 0\n    __Advance___inl4__magnus:
-    %SystemSingle, 0\n    __Advance___inl4__dt: %SystemSingle, 0\n    __Advance___inl4____t0:
-    %UnityEngineVector3, null\n    __Advance___inl4____t1: %UnityEngineVector3, null\n   
-    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl10__velocity:
-    %UnityEngineVector3, null\n    __Advance___inl10__spin: %UnityEngineVector3,
-    null\n    __Advance___inl10__drag: %SystemSingle, 0\n    __Advance___inl10__magnus:
-    %SystemSingle, 0\n    __Advance___inl16__velocity: %UnityEngineVector3, null\n   
-    __Advance___inl16__angularVelocity: %UnityEngineVector3, null\n    __Advance___inl16__drag:
-    %SystemSingle, 0\n    __Advance___inl16__magnus: %SystemSingle, 0\n    __Advance_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
+    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__state__spin:
+    %UnityEngineVector3, null\n    __Advance___inl4__spin: %UnityEngineVector3, null\n   
+    __Advance___inl4__gravity: %UnityEngineVector3, null\n    __Advance___inl4__drag:
+    %SystemSingle, 0\n    __Advance___inl4__magnus: %SystemSingle, 0\n    __Advance___inl4__dt:
+    %SystemSingle, 0\n    __Advance___inl4____t0: %UnityEngineVector3, null\n   
+    __Advance___inl4____t1: %UnityEngineVector3, null\n    __Advance___inl_t1: %UnityEngineVector3,
+    null\n    __Advance___inl10__velocity: %UnityEngineVector3, null\n    __Advance___inl10__spin:
+    %UnityEngineVector3, null\n    __Advance___inl10__drag: %SystemSingle, 0\n   
+    __Advance___inl10__magnus: %SystemSingle, 0\n    __Advance___inl16__velocity:
+    %UnityEngineVector3, null\n    __Advance___inl16__angularVelocity: %UnityEngineVector3,
+    null\n    __Advance___inl16__drag: %SystemSingle, 0\n    __Advance___inl16__magnus:
+    %SystemSingle, 0\n    __Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_1:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_difference:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_error:
@@ -174,10 +177,10 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14:
     %UnityEngineVector3, null\n    __retaddr_2: %SystemUInt32, 0x00000C58\n    __const_10:
     %SystemInt32, 1\n    __const_11: %SystemInt32, 2\n    __retaddr_3: %SystemUInt32,
-    0x00001738\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
-    0x000017D4\n    __retaddr_5: %SystemUInt32, 0x00002164\n    __const_12: %SystemSingle,
+    0x0000174C\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
+    0x000017E8\n    __retaddr_5: %SystemUInt32, 0x00002178\n    __const_12: %SystemSingle,
     0.000001\n    __const_13: %SystemSingle, -0.2\n    __const_14: %SystemSingle,
-    0.2\n    __retaddr_6: %SystemUInt32, 0x000029F4\n    __fold_SystemSingle__0:
+    0.2\n    __retaddr_6: %SystemUInt32, 0x00002A08\n    __fold_SystemSingle__0:
     %SystemSingle, null\n.data_end\n.code_start\n    .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
     BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_retjump\n       
@@ -624,6 +627,7 @@ MonoBehaviour:
     PUSH, __Advance___inl4__state__position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __Advance___inl4__state__position\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
     COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, _position\n       
     COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, _velocity\n       
     COPY\n        PUSH, _step\n        PUSH, __const_10\n        PUSH, _step\n       
@@ -1093,7 +1097,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 802ef6a721c0ab24f8fbb7691c39a0a5, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 4403ca70bd119dd5e597d89ef2da95c9f04486e65669e8870a709f02f248b2d2
+  sourceFingerprint: bb7380d139ecfb20ddff4761d69e28e3b6e92ff3c06302594eb1b81f8daa65a0
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -1150,7 +1154,8 @@ MonoBehaviour:
     null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
     __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
+    __ret__X15zBallFlightModel__m__Step__spin: %UnityEngineVector3, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_1:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_2:
@@ -1203,25 +1208,27 @@ MonoBehaviour:
     %SystemInt32, 0\n    __Advance_i: %SystemInt32, 0\n    __Advance___t0: %SystemBoolean,
     null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance_state__position:
     %UnityEngineVector3, null\n    __Advance_state__velocity: %UnityEngineVector3,
-    null\n    __Advance___t1__position: %UnityEngineVector3, null\n    __Advance___t1__velocity:
-    %UnityEngineVector3, null\n    __Advance___t2__position: %UnityEngineVector3,
-    null\n    __Advance___t2__velocity: %UnityEngineVector3, null\n    __Advance___t3:
+    null\n    __Advance_state__spin: %UnityEngineVector3, null\n    __Advance___t1__position:
+    %UnityEngineVector3, null\n    __Advance___t1__velocity: %UnityEngineVector3,
+    null\n    __Advance___t1__spin: %UnityEngineVector3, null\n    __Advance___t2__position:
+    %UnityEngineVector3, null\n    __Advance___t2__velocity: %UnityEngineVector3,
+    null\n    __Advance___t2__spin: %UnityEngineVector3, null\n    __Advance___t3:
     %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n    __Advance_side:
     %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n    __Advance_fraction:
     %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n    __Advance___t6:
     %SystemBoolean, null\n    __Advance___inl4__state__position: %UnityEngineVector3,
-    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__spin:
-    %UnityEngineVector3, null\n    __Advance___inl4__gravity: %UnityEngineVector3,
-    null\n    __Advance___inl4__drag: %SystemSingle, 0\n    __Advance___inl4__magnus:
-    %SystemSingle, 0\n    __Advance___inl4__dt: %SystemSingle, 0\n    __Advance___inl4____t0:
-    %UnityEngineVector3, null\n    __Advance___inl4____t1: %UnityEngineVector3, null\n   
-    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl10__velocity:
-    %UnityEngineVector3, null\n    __Advance___inl10__spin: %UnityEngineVector3,
-    null\n    __Advance___inl10__drag: %SystemSingle, 0\n    __Advance___inl10__magnus:
-    %SystemSingle, 0\n    __Advance___inl16__velocity: %UnityEngineVector3, null\n   
-    __Advance___inl16__angularVelocity: %UnityEngineVector3, null\n    __Advance___inl16__drag:
-    %SystemSingle, 0\n    __Advance___inl16__magnus: %SystemSingle, 0\n    __Advance_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
+    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__state__spin:
+    %UnityEngineVector3, null\n    __Advance___inl4__spin: %UnityEngineVector3, null\n   
+    __Advance___inl4__gravity: %UnityEngineVector3, null\n    __Advance___inl4__drag:
+    %SystemSingle, 0\n    __Advance___inl4__magnus: %SystemSingle, 0\n    __Advance___inl4__dt:
+    %SystemSingle, 0\n    __Advance___inl4____t0: %UnityEngineVector3, null\n   
+    __Advance___inl4____t1: %UnityEngineVector3, null\n    __Advance___inl_t1: %UnityEngineVector3,
+    null\n    __Advance___inl10__velocity: %UnityEngineVector3, null\n    __Advance___inl10__spin:
+    %UnityEngineVector3, null\n    __Advance___inl10__drag: %SystemSingle, 0\n   
+    __Advance___inl10__magnus: %SystemSingle, 0\n    __Advance___inl16__velocity:
+    %UnityEngineVector3, null\n    __Advance___inl16__angularVelocity: %UnityEngineVector3,
+    null\n    __Advance___inl16__drag: %SystemSingle, 0\n    __Advance___inl16__magnus:
+    %SystemSingle, 0\n    __Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_1:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_difference:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_error:
@@ -1378,9 +1385,9 @@ MonoBehaviour:
     %SystemBoolean, null\n    __Advance_intnl_23: %SystemSingle, 0\n    __Advance_intnl_24:
     %SystemSingle, 0\n    __Advance_intnl_25: %UnityEngineVector3, null\n    __Advance_intnl_26:
     %UnityEngineVector3, null\n    __Advance_intnl_27: %UnityEngineVector3, null\n   
-    __retaddr_3: %SystemUInt32, 0x00002080\n    __Advance_intnl_28: %SystemInt32,
+    __retaddr_3: %SystemUInt32, 0x00002148\n    __Advance_intnl_28: %SystemInt32,
     0\n    __Advance_intnl_29: %SystemBoolean, null\n    __retaddr_4: %SystemUInt32,
-    0x0000211C\n    __Advance_intnl_30: %SystemInt32, 0\n    __Advance_intnl_31:
+    0x000021E4\n    __Advance_intnl_30: %SystemInt32, 0\n    __Advance_intnl_31:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_0:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_1:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_2:
@@ -1423,7 +1430,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_39:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_40:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_41:
-    %SystemInt32, 0\n    __retaddr_5: %SystemUInt32, 0x00002D90\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_42:
+    %SystemInt32, 0\n    __retaddr_5: %SystemUInt32, 0x00002E58\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_42:
     %SystemInt32, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_43:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_44:
     %SystemSingle, 0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_45:
@@ -1488,7 +1495,7 @@ MonoBehaviour:
     0\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_103: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_104: %UnityEngineVector3,
     null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_intnl_105: %SystemBoolean,
-    null\n    __retaddr_6: %SystemUInt32, 0x00003880\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
+    null\n    __retaddr_6: %SystemUInt32, 0x00003948\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
     %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
     0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
     __X16zBallAerodynamics__m__Acceleration_intnl_3: %UnityEngineVector3, null\n   
@@ -1968,34 +1975,38 @@ MonoBehaviour:
     PUSH, __Advance___t0\n        COPY\n        PUSH, __const_0\n        PUSH, __Advance_previous\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Advance_state__position\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Advance_state__velocity\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__position\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__velocity\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t2__position\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t2__velocity\n       
-    COPY\n        PUSH, __const_3\n        PUSH, __Advance___t3\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __Advance_previousSide\n        COPY\n       
-    PUSH, __const_1\n        PUSH, __Advance_side\n        COPY\n        PUSH, __const_2\n       
-    PUSH, __Advance___t4\n        COPY\n        PUSH, __const_1\n        PUSH, __Advance_fraction\n       
-    COPY\n        PUSH, __const_2\n        PUSH, __Advance___t5\n        COPY\n       
-    PUSH, __const_2\n        PUSH, __Advance___t6\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __Advance___inl4__state__position\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __Advance___inl4__state__velocity\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __Advance___inl4__spin\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __Advance___inl4__gravity\n        COPY\n        PUSH, __const_1\n       
-    PUSH, __Advance___inl4__drag\n        COPY\n        PUSH, __const_1\n       
-    PUSH, __Advance___inl4__magnus\n        COPY\n        PUSH, __const_1\n       
-    PUSH, __Advance___inl4__dt\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __Advance___inl4____t0\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __Advance___inl4____t1\n        COPY\n        PUSH, __const_0\n        PUSH,
-    __Advance___inl_t1\n        COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl10__velocity\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl10__spin\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl10__drag\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl10__magnus\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl16__velocity\n       
-    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl16__angularVelocity\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl16__drag\n       
-    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl16__magnus\n       
-    COPY\n        PUSH, __const_10\n        PUSH, stepsPerFrame\n        PUSH, __Advance_intnl_0\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance_state__spin\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __Advance___t1__position\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __Advance___t1__velocity\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __Advance___t1__spin\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___t2__position\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___t2__velocity\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___t2__spin\n        COPY\n        PUSH, __const_3\n       
+    PUSH, __Advance___t3\n        COPY\n        PUSH, __const_1\n        PUSH, __Advance_previousSide\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance_side\n        COPY\n       
+    PUSH, __const_2\n        PUSH, __Advance___t4\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __Advance_fraction\n        COPY\n        PUSH, __const_2\n        PUSH,
+    __Advance___t5\n        COPY\n        PUSH, __const_2\n        PUSH, __Advance___t6\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl4__state__position\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl4__state__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl4__state__spin\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl4__spin\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___inl4__gravity\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl4__drag\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl4__magnus\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __Advance___inl4__dt\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __Advance___inl4____t0\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __Advance___inl4____t1\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __Advance___inl_t1\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___inl10__velocity\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___inl10__spin\n        COPY\n        PUSH,
+    __const_1\n        PUSH, __Advance___inl10__drag\n        COPY\n        PUSH,
+    __const_1\n        PUSH, __Advance___inl10__magnus\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___inl16__velocity\n        COPY\n        PUSH,
+    __const_0\n        PUSH, __Advance___inl16__angularVelocity\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __Advance___inl16__drag\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __Advance___inl16__magnus\n        COPY\n       
+    PUSH, __const_10\n        PUSH, stepsPerFrame\n        PUSH, __Advance_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__Max__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __Advance_intnl_0\n        PUSH, __Advance_budget\n        COPY\n       
     PUSH, __const_3\n        PUSH, __Advance_i\n        COPY\n        PUSH, __const_3\n       
@@ -2008,12 +2019,15 @@ MonoBehaviour:
     JUMP_IF_FALSE, __Advance_L3\n        PUSH, _position\n        PUSH, __Advance_previous\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__position\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__velocity\n       
-    COPY\n        PUSH, __Advance___t1__position\n        PUSH, __Advance_state__position\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __Advance___t1__spin\n        COPY\n       
+    PUSH, __Advance___t1__position\n        PUSH, __Advance_state__position\n       
     COPY\n        PUSH, __Advance___t1__velocity\n        PUSH, __Advance_state__velocity\n       
+    COPY\n        PUSH, __Advance___t1__spin\n        PUSH, __Advance_state__spin\n       
     COPY\n        PUSH, _position\n        PUSH, __Advance_state__position\n       
     COPY\n        PUSH, _velocity\n        PUSH, __Advance_state__velocity\n       
     COPY\n        PUSH, __Advance_state__position\n        PUSH, __Advance___inl4__state__position\n       
     COPY\n        PUSH, __Advance_state__velocity\n        PUSH, __Advance___inl4__state__velocity\n       
+    COPY\n        PUSH, __Advance_state__spin\n        PUSH, __Advance___inl4__state__spin\n       
     COPY\n        PUSH, _trialSpin\n        PUSH, __Advance___inl4__spin\n       
     COPY\n        PUSH, _gravity\n        PUSH, __Advance___inl4__gravity\n       
     COPY\n        PUSH, _drag\n        PUSH, __Advance___inl4__drag\n        COPY\n       
@@ -2056,11 +2070,14 @@ MonoBehaviour:
     PUSH, __Advance_intnl_13\n        PUSH, __Advance___inl4__state__position\n       
     COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __Advance___inl4__state__spin\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
     COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n        PUSH,
     __Advance___t2__position\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
-    PUSH, __Advance___t2__velocity\n        COPY\n        PUSH, __Advance___t2__position\n       
+    PUSH, __Advance___t2__velocity\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
+    PUSH, __Advance___t2__spin\n        COPY\n        PUSH, __Advance___t2__position\n       
     PUSH, __Advance_state__position\n        COPY\n        PUSH, __Advance___t2__velocity\n       
-    PUSH, __Advance_state__velocity\n        COPY\n        PUSH, __Advance_state__position\n       
+    PUSH, __Advance_state__velocity\n        COPY\n        PUSH, __Advance___t2__spin\n       
+    PUSH, __Advance_state__spin\n        COPY\n        PUSH, __Advance_state__position\n       
     PUSH, _position\n        COPY\n        PUSH, __Advance_state__velocity\n       
     PUSH, _velocity\n        COPY\n        PUSH, _step\n        PUSH, __Advance___t3\n       
     COPY\n        PUSH, __Advance___t3\n        PUSH, __const_10\n        PUSH, __Advance_intnl_14\n       
@@ -2615,7 +2632,8 @@ MonoBehaviour:
     null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
     __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
+    __ret__X15zBallFlightModel__m__Step__spin: %UnityEngineVector3, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BallAimSolverBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_1:
     %UnityEngineVector3, null\n    __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_p_2:
@@ -2668,25 +2686,27 @@ MonoBehaviour:
     %SystemInt32, 0\n    __Advance_i: %SystemInt32, 0\n    __Advance___t0: %SystemBoolean,
     null\n    __Advance_previous: %UnityEngineVector3, null\n    __Advance_state__position:
     %UnityEngineVector3, null\n    __Advance_state__velocity: %UnityEngineVector3,
-    null\n    __Advance___t1__position: %UnityEngineVector3, null\n    __Advance___t1__velocity:
-    %UnityEngineVector3, null\n    __Advance___t2__position: %UnityEngineVector3,
-    null\n    __Advance___t2__velocity: %UnityEngineVector3, null\n    __Advance___t3:
+    null\n    __Advance_state__spin: %UnityEngineVector3, null\n    __Advance___t1__position:
+    %UnityEngineVector3, null\n    __Advance___t1__velocity: %UnityEngineVector3,
+    null\n    __Advance___t1__spin: %UnityEngineVector3, null\n    __Advance___t2__position:
+    %UnityEngineVector3, null\n    __Advance___t2__velocity: %UnityEngineVector3,
+    null\n    __Advance___t2__spin: %UnityEngineVector3, null\n    __Advance___t3:
     %SystemInt32, 0\n    __Advance_previousSide: %SystemSingle, 0\n    __Advance_side:
     %SystemSingle, 0\n    __Advance___t4: %SystemBoolean, null\n    __Advance_fraction:
     %SystemSingle, 0\n    __Advance___t5: %SystemBoolean, null\n    __Advance___t6:
     %SystemBoolean, null\n    __Advance___inl4__state__position: %UnityEngineVector3,
-    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__spin:
-    %UnityEngineVector3, null\n    __Advance___inl4__gravity: %UnityEngineVector3,
-    null\n    __Advance___inl4__drag: %SystemSingle, 0\n    __Advance___inl4__magnus:
-    %SystemSingle, 0\n    __Advance___inl4__dt: %SystemSingle, 0\n    __Advance___inl4____t0:
-    %UnityEngineVector3, null\n    __Advance___inl4____t1: %UnityEngineVector3, null\n   
-    __Advance___inl_t1: %UnityEngineVector3, null\n    __Advance___inl10__velocity:
-    %UnityEngineVector3, null\n    __Advance___inl10__spin: %UnityEngineVector3,
-    null\n    __Advance___inl10__drag: %SystemSingle, 0\n    __Advance___inl10__magnus:
-    %SystemSingle, 0\n    __Advance___inl16__velocity: %UnityEngineVector3, null\n   
-    __Advance___inl16__angularVelocity: %UnityEngineVector3, null\n    __Advance___inl16__drag:
-    %SystemSingle, 0\n    __Advance___inl16__magnus: %SystemSingle, 0\n    __Advance_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
+    null\n    __Advance___inl4__state__velocity: %UnityEngineVector3, null\n    __Advance___inl4__state__spin:
+    %UnityEngineVector3, null\n    __Advance___inl4__spin: %UnityEngineVector3, null\n   
+    __Advance___inl4__gravity: %UnityEngineVector3, null\n    __Advance___inl4__drag:
+    %SystemSingle, 0\n    __Advance___inl4__magnus: %SystemSingle, 0\n    __Advance___inl4__dt:
+    %SystemSingle, 0\n    __Advance___inl4____t0: %UnityEngineVector3, null\n   
+    __Advance___inl4____t1: %UnityEngineVector3, null\n    __Advance___inl_t1: %UnityEngineVector3,
+    null\n    __Advance___inl10__velocity: %UnityEngineVector3, null\n    __Advance___inl10__spin:
+    %UnityEngineVector3, null\n    __Advance___inl10__drag: %SystemSingle, 0\n   
+    __Advance___inl10__magnus: %SystemSingle, 0\n    __Advance___inl16__velocity:
+    %UnityEngineVector3, null\n    __Advance___inl16__angularVelocity: %UnityEngineVector3,
+    null\n    __Advance___inl16__drag: %SystemSingle, 0\n    __Advance___inl16__magnus:
+    %SystemSingle, 0\n    __Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_0:
     %SystemBoolean, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_p_1:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_difference:
     %UnityEngineVector3, null\n    __FinishTrial__SystemBoolean_UnityEngineVector3_error:
@@ -2751,10 +2771,10 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __BeginSolveRelativeSpin__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_intnl_14:
     %UnityEngineVector3, null\n    __retaddr_2: %SystemUInt32, 0x00000C58\n    __const_10:
     %SystemInt32, 1\n    __const_11: %SystemInt32, 2\n    __retaddr_3: %SystemUInt32,
-    0x00001738\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
-    0x000017D4\n    __retaddr_5: %SystemUInt32, 0x00002164\n    __const_12: %SystemSingle,
+    0x0000174C\n    __Advance_intnl_28: %SystemInt32, 0\n    __retaddr_4: %SystemUInt32,
+    0x000017E8\n    __retaddr_5: %SystemUInt32, 0x00002178\n    __const_12: %SystemSingle,
     0.000001\n    __const_13: %SystemSingle, -0.2\n    __const_14: %SystemSingle,
-    0.2\n    __retaddr_6: %SystemUInt32, 0x000029F4\n    __fold_SystemSingle__0:
+    0.2\n    __retaddr_6: %SystemUInt32, 0x00002A08\n    __fold_SystemSingle__0:
     %SystemSingle, null\n.data_end\n.code_start\n    .export BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle\n   
     BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __BeginSolve__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_SystemSingle_retjump\n       
@@ -3201,6 +3221,7 @@ MonoBehaviour:
     PUSH, __Advance___inl4__state__position\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __Advance___inl4__state__position\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
     COPY\n        PUSH, __Advance___inl4__state__position\n        PUSH, _position\n       
     COPY\n        PUSH, __Advance___inl4__state__velocity\n        PUSH, _velocity\n       
     COPY\n        PUSH, _step\n        PUSH, __const_10\n        PUSH, _step\n       
@@ -3683,8 +3704,8 @@ MonoBehaviour:
   networkCallableSlots: []
   optExternBefore: 245
   optExternAfter: 242
-  optInsnBefore: 2008
-  optInsnAfter: 1448
-  optBytesBefore: 14716
-  optBytesAfter: 10968
+  optInsnBefore: 2038
+  optInsnAfter: 1451
+  optBytesBefore: 14916
+  optBytesAfter: 10988
   optStage: ran

@@ -80,7 +80,7 @@ public partial class BallBehaviour
         if (elapsed < 0.0) elapsed = 0.0;
         if (!CanCatchUp(elapsed, Time.fixedDeltaTime)) return false;
         BallFlightState state = AdvanceSnapshot(position, velocity, spin, Physics.gravity,
-            dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
+            dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime, 0f);
         _localPitchTime = releaseTime;
         _hasLocalPitch = true;
         Launch(state.position, state.velocity, spin);
@@ -246,9 +246,10 @@ public partial class BallBehaviour
             }
             else
             {
+                bool hit = _kind == HitState;
                 BallFlightState state = AdvanceSnapshot(_position, _velocity, _spin, Physics.gravity,
-                    dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime);
-                if (_kind == HitState) ApplyRemoteHit(state.position, state.velocity, _spin);
+                    dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime, hit ? battedSpinHalfLife : 0f);
+                if (hit) ApplyRemoteHit(state.position, state.velocity, state.spin);
                 else Launch(state.position, state.velocity, _spin);
             }
         }
@@ -295,12 +296,12 @@ public partial class BallBehaviour
     }
 
     private BallFlightState AdvanceSnapshot(Vector3 position, Vector3 velocity, Vector3 spin,
-        Vector3 gravity, float drag, float magnus, float elapsed, float step)
+        Vector3 gravity, float drag, float magnus, float elapsed, float step, float spinHalfLife)
     {
         BallFlightState state = new BallFlightState();
         state.position = position;
         state.velocity = velocity;
-        return BallFlightModel.Advance(state, spin, gravity, drag, magnus, elapsed, step);
+        return BallFlightModel.AdvanceDecayingSpin(state, spin, gravity, drag, magnus, elapsed, step, spinHalfLife);
     }
 
     // A reset wins a simultaneous old hit; a hit wins the pitch it replaces.

@@ -4,12 +4,16 @@ using UnityEngine;
 public partial class BallBehaviour
 {
     [TsukimiTest]
-    public void SpeedTrailStartsAt80KilometersPerHour()
+    public void SpeedTrailShrinksBetween80And40KilometersPerHour()
     {
-        minimumTrailSpeedKmh = 80f;
-        Assert.IsFalse(ShouldShowTrail(79.9f / 3.6f));
-        Assert.IsTrue(ShouldShowTrail(80f / 3.6f));
-        Assert.IsTrue(ShouldShowTrail(160f / 3.6f));
+        minimumTrailSpeedKmh = 40f;
+        fullTrailSpeedKmh = 80f;
+        Assert.AreEqual(0f, TrailLengthFraction(40f / 3.6f));
+        Assert.IsFalse(ShouldShowTrail(40f / 3.6f));
+        Assert.IsTrue(Mathf.Abs(TrailLengthFraction(60f / 3.6f) - 0.5f) < 0.0001f);
+        Assert.IsTrue(ShouldShowTrail(41f / 3.6f));
+        Assert.AreEqual(1f, TrailLengthFraction(80f / 3.6f));
+        Assert.AreEqual(1f, TrailLengthFraction(160f / 3.6f));
         Assert.IsFalse(ShouldShowTrail(0f));
     }
 

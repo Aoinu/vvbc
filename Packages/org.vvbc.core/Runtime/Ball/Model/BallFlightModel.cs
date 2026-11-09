@@ -31,4 +31,36 @@ public static class BallFlightModel
         }
         return state;
     }
+
+    // Rigidbody.angularDrag that halves the spin every halfLife seconds; 0 means no damping.
+    public static float AngularDragForHalfLife(float halfLife)
+    {
+        return halfLife > 0f ? Mathf.Log(2f) / halfLife : 0f;
+    }
+
+    // Spin remaining after dt with the given half-life; a non-positive half-life means no decay.
+    public static Vector3 DecaySpin(Vector3 spin, float halfLife, float dt)
+    {
+        if (halfLife <= 0f || dt <= 0f) return spin;
+        return spin * Mathf.Pow(0.5f, dt / halfLife);
+    }
+
+    // Same stepping as Advance, but the spin halves every halfLife seconds.
+    // The final spin is returned in state.spin.
+    public static BallFlightState AdvanceDecayingSpin(BallFlightState state, Vector3 spin, Vector3 gravity,
+        float drag, float magnus, float duration, float fixedStep, float halfLife)
+    {
+        state.spin = spin;
+        if (duration <= 0f || fixedStep <= 0f) return state;
+        float remaining = duration;
+        while (remaining > 0.000001f)
+        {
+            float dt = Mathf.Min(remaining, fixedStep);
+            Vector3 stepSpin = state.spin;
+            state = Step(state, stepSpin, gravity, drag, magnus, dt);
+            state.spin = DecaySpin(stepSpin, halfLife, dt);
+            remaining -= dt;
+        }
+        return state;
+    }
 }

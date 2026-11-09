@@ -57,6 +57,8 @@ public partial class BallBehaviour
         contactConsumed = !pitch;
         _contactPending = false;
         ConfigureBody();
+        // A remote hit continues with the batted-ball spin damping; a pitch keeps angularDrag 0.
+        if (!pitch) body.angularDrag = BallFlightModel.AngularDragForHalfLife(battedSpinHalfLife);
         body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, angularVelocity.magnitude + 1f);
         body.position = position;
         body.isKinematic = false;
@@ -98,6 +100,12 @@ public partial class BallBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
+        if (flying && body != null && collision != null && !body.isKinematic && (groundLayers.value & (1 << collision.gameObject.layer)) != 0)
+        {
+            // Every ground bounce kills most of the spin; angularDrag then also acts as rolling resistance.
+            body.angularVelocity *= bounceSpinRetention;
+            body.angularDrag = rollingAngularDrag;
+        }
         PlayImpact(collision);
         if (contactConsumed) return;
         if (!flying || body == null || ballCollider == null || motionObserver == null ||
@@ -157,16 +165,17 @@ public partial class BallBehaviour
         float remaining = physicsTime - _pendingTime;
         float step = Time.fixedDeltaTime;
         if (step <= 0f) return;
-        state = BallFlightModel.Advance(state, _pendingSpin, Physics.gravity,
-            dragCoefficient, magnusCoefficient, remaining, step);
+        state = BallFlightModel.AdvanceDecayingSpin(state, _pendingSpin, Physics.gravity,
+            dragCoefficient, magnusCoefficient, remaining, step, battedSpinHalfLife);
+        body.angularDrag = BallFlightModel.AngularDragForHalfLife(battedSpinHalfLife);
         body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, _pendingSpin.magnitude + 1f);
         body.position = state.position;
         body.velocity = state.velocity;
-        body.angularVelocity = _pendingSpin;
+        body.angularVelocity = state.spin;
         OnLocalHitApplied();
         _nextSample = 0;
         _sampleCount = 0;
-        RecordMotion(physicsTime, state.position, state.velocity, _pendingSpin);
+        RecordMotion(physicsTime, state.position, state.velocity, state.spin);
         _contactPending = false;
     }
 

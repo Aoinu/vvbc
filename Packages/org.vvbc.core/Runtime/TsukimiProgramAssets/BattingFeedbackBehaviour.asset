@@ -90,9 +90,11 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    _savedRotation: %UnityEngineQuaternion, null\n   
     __ret__X15zBallFlightModel__m__Advance__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Advance__velocity: %UnityEngineVector3, null\n   
+    __ret__X15zBallFlightModel__m__Advance__spin: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BattingFeedbackBehaviour\"\n   
+    __ret__X15zBallFlightModel__m__Step__spin: %UnityEngineVector3, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BattingFeedbackBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __Start___t0: %VRCUdonUdonBehaviour,
     null\n    __Start___t1: %VRCUdonUdonBehaviour, null\n    __Start___t2: %VRCUdonUdonBehaviour,
     null\n    __Start___t3: %SystemInt32, 0\n    __Start___t4: %VRCUdonUdonBehaviour,
@@ -618,29 +620,32 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t5: %UnityEngineVector3,
     null\n    __PredictTrailExit_step: %SystemSingle, 0\n    __PredictTrailExit_state__position:
     %UnityEngineVector3, null\n    __PredictTrailExit_state__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t6__position: %UnityEngineVector3, null\n    __PredictTrailExit___t6__velocity:
-    %UnityEngineVector3, null\n    __PredictTrailExit___t7: %VRCUdonUdonBehaviour,
-    null\n    __PredictTrailExit___t8: %UnityEngineVector3, null\n    __PredictTrailExit___t9:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t10: %UnityEngineVector3,
-    null\n    __PredictTrailExit_spin: %UnityEngineVector3, null\n    __PredictTrailExit___t11:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t12: %UnityEngineVector3,
-    null\n    __PredictTrailExit_time: %SystemSingle, 0\n    __PredictTrailExit___t13:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t14: %SystemSingle, 0\n   
-    __PredictTrailExit_i: %SystemInt32, 0\n    __PredictTrailExit_next__position:
+    null\n    __PredictTrailExit_state__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t6__position:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t6__velocity: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t6__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t7:
+    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t8: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t9: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t10:
+    %UnityEngineVector3, null\n    __PredictTrailExit_spin: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t11: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t12:
+    %UnityEngineVector3, null\n    __PredictTrailExit_time: %SystemSingle, 0\n   
+    __PredictTrailExit___t13: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t14:
+    %SystemSingle, 0\n    __PredictTrailExit_i: %SystemInt32, 0\n    __PredictTrailExit_next__position:
     %UnityEngineVector3, null\n    __PredictTrailExit_next__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t15: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t16:
-    %SystemSingle, 0\n    __PredictTrailExit___t17__position: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t17__velocity: %UnityEngineVector3, null\n   
-    __PredictTrailExit___t18: %UnityEngineVector3, null\n    __PredictTrailExit___t19:
+    null\n    __PredictTrailExit_next__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t15:
+    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t16: %SystemSingle, 0\n   
+    __PredictTrailExit___t17__position: %UnityEngineVector3, null\n    __PredictTrailExit___t17__velocity:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t17__spin: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t18: %UnityEngineVector3, null\n    __PredictTrailExit___t19:
     %UnityEngineVector3, null\n    __PredictTrailExit___t20: %VRCUdonUdonBehaviour,
     null\n    __PredictTrailExit___t21: %SystemSingle, 0\n    __PredictTrailExit___t22__position:
     %UnityEngineVector3, null\n    __PredictTrailExit___t22__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t23: %UnityEngineVector3, null\n    __PredictTrailExit___t24:
-    %UnityEngineVector3, null\n    __PredictTrailExit___t25: %SystemSingle, 0\n   
-    __PredictTrailExit___t26__position: %UnityEngineVector3, null\n    __PredictTrailExit___t26__velocity:
-    %UnityEngineVector3, null\n    __PredictTrailExit_left: %SystemSingle, 0\n   
-    __PredictTrailExit_j: %SystemInt32, 0\n    __PredictTrailExit_right: %SystemSingle,
-    0\n    __PredictTrailExit_k: %SystemInt32, 0\n    __PredictTrailExit_middle:
+    null\n    __PredictTrailExit___t22__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t23:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t24: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t25: %SystemSingle, 0\n    __PredictTrailExit___t26__position:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t26__velocity: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t26__spin: %UnityEngineVector3, null\n    __PredictTrailExit_left:
+    %SystemSingle, 0\n    __PredictTrailExit_j: %SystemInt32, 0\n    __PredictTrailExit_right:
+    %SystemSingle, 0\n    __PredictTrailExit_k: %SystemInt32, 0\n    __PredictTrailExit_middle:
     %SystemSingle, 0\n    __PredictTrailExit___t27: %SystemSingle, 0\n    __PredictTrailExit_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_p_1:
@@ -792,19 +797,21 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_1: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Advance_p_2: %UnityEngineVector3, null\n   
     __X15zBallFlightModel__m__Advance_p_3: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_4:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_5: %SystemSingle, 0\n   
-    __X15zBallFlightModel__m__Advance_p_6: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_7:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance___t0: %SystemBoolean,
-    null\n    __X15zBallFlightModel__m__Advance_remaining: %SystemSingle, 0\n   
-    __X15zBallFlightModel__m__Advance_dt: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance___t1__position:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance___t1__velocity:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance___t2: %SystemSingle,
-    0\n    __X15zBallFlightModel__m__Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __X15zBallFlightModel__m__Step_p_0: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_1:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_2: %UnityEngineVector3,
-    null\n    __X15zBallFlightModel__m__Step_p_3: %UnityEngineVector3, null\n   
-    __X15zBallFlightModel__m__Step_p_4: %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_5:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_6: %SystemSingle, 0\n   
+    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_5: %SystemSingle,
+    0\n    __X15zBallFlightModel__m__Advance_p_6: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_7:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_8: %SystemSingle, 0\n   
+    __X15zBallFlightModel__m__Advance___t0: %SystemBoolean, null\n    __X15zBallFlightModel__m__Advance_remaining:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_dt: %SystemSingle, 0\n   
+    __X15zBallFlightModel__m__Advance___t1__position: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t1__velocity: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t1__spin: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t2: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __X15zBallFlightModel__m__Step_p_0: %UnityEngineVector3,
+    null\n    __X15zBallFlightModel__m__Step_p_1: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Step_p_2: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_3:
+    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_4: %UnityEngineVector3,
+    null\n    __X15zBallFlightModel__m__Step_p_5: %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_6:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_7: %SystemSingle, 0\n   
     __X15zBallFlightModel__m__Step___t0: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step___t1:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_retjump: %SystemUInt32,
     0xFFFFFFFC\n    __X15zBallFlightModel__m__AerodynamicAcceleration_p_0: %UnityEngineVector3,
@@ -1594,7 +1601,7 @@ MonoBehaviour:
     null\n    __ScanPitchZone__SystemSingle_intnl_71: %SystemSingle, 0\n    __PredictTrailExit_intnl_1:
     %SystemObject, null\n    __PredictTrailExit_intnl_2: %UnityEngineTransform, null\n   
     __PredictTrailExit_intnl_4: %SystemObject, null\n    __PredictTrailExit_intnl_5:
-    %UnityEngineVector3, null\n    __retaddr_99: %SystemUInt32, 0x0010134C\n    __PredictTrailExit_intnl_6:
+    %UnityEngineVector3, null\n    __retaddr_99: %SystemUInt32, 0x0010139C\n    __PredictTrailExit_intnl_6:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_9: %SystemBoolean, null\n   
     __PredictTrailExit_intnl_10: %SystemObject, null\n    __PredictTrailExit_intnl_11:
     %UnityEngineVector3, null\n    __const_215: %SystemString, \"snapshotIncomingVelocity\"\n   
@@ -1608,13 +1615,13 @@ MonoBehaviour:
     null\n    __PredictTrailExit_intnl_21: %SystemSingle, 0\n    __const_219: %SystemString,
     \"magnusCoefficient\"\n    __PredictTrailExit_intnl_22: %SystemObject, null\n   
     __PredictTrailExit_intnl_23: %SystemSingle, 0\n    __retaddr_100: %SystemUInt32,
-    0x00101724\n    __PredictTrailExit_intnl_24: %SystemBoolean, null\n    __PredictTrailExit_intnl_25:
-    %SystemSingle, 0\n    __retaddr_101: %SystemUInt32, 0x00101870\n    __PredictTrailExit_intnl_27:
-    %UnityEngineVector3, null\n    __retaddr_102: %SystemUInt32, 0x001018A0\n   
+    0x001017C4\n    __PredictTrailExit_intnl_24: %SystemBoolean, null\n    __PredictTrailExit_intnl_25:
+    %SystemSingle, 0\n    __retaddr_101: %SystemUInt32, 0x00101924\n    __PredictTrailExit_intnl_27:
+    %UnityEngineVector3, null\n    __retaddr_102: %SystemUInt32, 0x00101954\n   
     __PredictTrailExit_intnl_28: %SystemBoolean, null\n    __PredictTrailExit_intnl_29:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_30: %SystemSingle, 0\n   
-    __retaddr_103: %SystemUInt32, 0x001019D0\n    __PredictTrailExit_intnl_32: %UnityEngineVector3,
-    null\n    __retaddr_104: %SystemUInt32, 0x00101A00\n    __PredictTrailExit_intnl_33:
+    __retaddr_103: %SystemUInt32, 0x00101A84\n    __PredictTrailExit_intnl_32: %UnityEngineVector3,
+    null\n    __retaddr_104: %SystemUInt32, 0x00101AB4\n    __PredictTrailExit_intnl_33:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_35: %SystemSingle, 0\n   
     __PredictTrailExit_intnl_36: %SystemSingle, 0\n    __PredictTrailExit_intnl_37:
     %SystemSingle, 0\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_intnl_2:
@@ -1655,7 +1662,7 @@ MonoBehaviour:
     0\n    __CapturePoses__BatMotionBehaviour_intnl_21: %SystemSingle, 0\n    __CapturePoses__BatMotionBehaviour_intnl_22:
     %VRCUdonUdonBehaviour, null\n    __CapturePoses__BatMotionBehaviour_intnl_23:
     %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_24: %SystemBoolean,
-    null\n    __retaddr_105: %SystemUInt32, 0x001057D8\n    __CapturePoses__BatMotionBehaviour_intnl_25:
+    null\n    __retaddr_105: %SystemUInt32, 0x001058A0\n    __CapturePoses__BatMotionBehaviour_intnl_25:
     %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_26: %SystemSingle,
     0\n    __CapturePoses__BatMotionBehaviour_intnl_27: %SystemBoolean, null\n   
     __CapturePoses__BatMotionBehaviour_intnl_28: %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_29:
@@ -1665,14 +1672,14 @@ MonoBehaviour:
     %SystemBoolean, null\n    __CapturePoses__BatMotionBehaviour_intnl_34: %VRCUdonUdonBehaviour,
     null\n    __CapturePoses__BatMotionBehaviour_intnl_35: %SystemObject, null\n   
     __CapturePoses__BatMotionBehaviour_intnl_36: %SystemBoolean, null\n    __retaddr_106:
-    %SystemUInt32, 0x0010C7AC\n    __CapturePoses__BatMotionBehaviour_intnl_37: %SystemObject,
+    %SystemUInt32, 0x0010C874\n    __CapturePoses__BatMotionBehaviour_intnl_37: %SystemObject,
     null\n    __CapturePoses__BatMotionBehaviour_intnl_38: %SystemSingle, 0\n   
     __const_222: %UnityEngineVector3Array, null\n    __const_223: %UnityEngineQuaternionArray,
     null\n    __const_224: %SystemInt32Array, null\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_1:
     %SystemInt32, 0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_2: %SystemSingle,
     0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_4: %SystemInt32, 0\n   
     __AddPose__BatMotionBehaviour_SystemSingle_intnl_5: %SystemBoolean, null\n   
-    __retaddr_107: %SystemUInt32, 0x0010DD88\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_6:
+    __retaddr_107: %SystemUInt32, 0x0010DE50\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_6:
     %SystemObject, null\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_7:
     %UnityEngineVector3, null\n    __const_225: %SystemString, \"contactSampleVelocity\"\n   
     __AddPose__BatMotionBehaviour_SystemSingle_intnl_8: %SystemObject, null\n   
@@ -1721,15 +1728,15 @@ MonoBehaviour:
     %UnityEngineVector3Array, null\n    __FreezeTrail_intnl_49: %UnityEngineQuaternionArray,
     null\n    __FreezeTrail_intnl_50: %UnityEngineColorArray, null\n    __FreezeTrail_intnl_51:
     %SystemBooleanArray, null\n    __FreezeTrail_intnl_52: %SystemBoolean, null\n   
-    __retaddr_108: %SystemUInt32, 0x00113588\n    __FreezeTrail_intnl_53: %SystemSingle,
-    0\n    __retaddr_109: %SystemUInt32, 0x00116520\n    __FreezeTrail_intnl_54:
+    __retaddr_108: %SystemUInt32, 0x00113650\n    __FreezeTrail_intnl_53: %SystemSingle,
+    0\n    __retaddr_109: %SystemUInt32, 0x001165E8\n    __FreezeTrail_intnl_54:
     %SystemBoolean, null\n    __FreezeTrail_intnl_55: %UnityEngineVector3, null\n   
     __FreezeTrail_intnl_56: %UnityEngineVector3, null\n    __FreezeTrail_intnl_57:
     %VRCUdonUdonBehaviour, null\n    __FreezeTrail_intnl_58: %SystemObject, null\n   
     __FreezeTrail_intnl_59: %UnityEngineVector3, null\n    __FreezeTrail_intnl_60:
     %UnityEngineColorArray, null\n    __FreezeTrail_intnl_61: %SystemInt32, 0\n   
-    __retaddr_110: %SystemUInt32, 0x0011CA44\n    __FreezeTrail_intnl_62: %SystemSingle,
-    0\n    __retaddr_111: %SystemUInt32, 0x0011FE34\n    __FreezeTrail_intnl_63:
+    __retaddr_110: %SystemUInt32, 0x0011CB0C\n    __FreezeTrail_intnl_62: %SystemSingle,
+    0\n    __retaddr_111: %SystemUInt32, 0x0011FEFC\n    __FreezeTrail_intnl_63:
     %UnityEngineColor, null\n    __FreezeTrail_intnl_66: %SystemBoolean, null\n   
     __const_233: %SystemString, \"Pose history interrupted\"\n    __FreezeTrail_intnl_67:
     %SystemObject, null\n    __FreezeTrail_intnl_68: %VRCUdonUdonBehaviour, null\n   
@@ -1748,7 +1755,7 @@ MonoBehaviour:
     null\n    __SampleSavedPose__SystemSingle_intnl_1: %SystemSingle, 0\n    __SampleSavedPose__SystemSingle_intnl_3:
     %SystemInt32, 0\n    __SampleSavedPose__SystemSingle_intnl_4: %SystemSingle,
     0\n    __SampleSavedPose__SystemSingle_intnl_5: %SystemBoolean, null\n    __retaddr_112:
-    %SystemUInt32, 0x00122090\n    __SampleSavedPose__SystemSingle_intnl_6: %SystemInt32,
+    %SystemUInt32, 0x00122158\n    __SampleSavedPose__SystemSingle_intnl_6: %SystemInt32,
     0\n    __SampleSavedPose__SystemSingle_intnl_7: %SystemBoolean, null\n    __SampleSavedPose__SystemSingle_intnl_9:
     %SystemSingle, 0\n    __SampleSavedPose__SystemSingle_intnl_10: %SystemBoolean,
     null\n    __SampleSavedPose__SystemSingle_intnl_11: %SystemInt32, 0\n    __SampleSavedPose__SystemSingle_intnl_12:
@@ -1759,7 +1766,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __SampleSavedPose__SystemSingle_intnl_22: %UnityEngineVector3,
     null\n    __SampleSavedPose__SystemSingle_intnl_23: %UnityEngineVector3, null\n   
     __SampleSavedPose__SystemSingle_intnl_24: %UnityEngineVector3, null\n    __retaddr_113:
-    %SystemUInt32, 0x00122458\n    __SampleSavedPose__SystemSingle_intnl_25: %UnityEngineVector3,
+    %SystemUInt32, 0x00122520\n    __SampleSavedPose__SystemSingle_intnl_25: %UnityEngineVector3,
     null\n    __SampleSavedPose__SystemSingle_intnl_27: %UnityEngineQuaternion, null\n   
     __SampleSavedPose__SystemSingle_intnl_28: %UnityEngineQuaternion, null\n    __SampleSavedPose__SystemSingle_intnl_32:
     %SystemObject, null\n    __SampleSavedPose__SystemSingle_intnl_33: %VRCUdonUdonBehaviour,
@@ -1784,16 +1791,16 @@ MonoBehaviour:
     null\n    __ShowBatTrail_intnl_0: %SystemBoolean, null\n    __ShowBatTrail_intnl_1:
     %UnityEngineTransform, null\n    __ShowBatTrail_intnl_2: %UnityEngineRenderer,
     null\n    __ShowBatTrail_intnl_3: %SystemBoolean, null\n    __ShowBatTrail_intnl_4:
-    %SystemBoolean, null\n    __retaddr_114: %SystemUInt32, 0x00123014\n    __ShowBatTrail_intnl_5:
+    %SystemBoolean, null\n    __retaddr_114: %SystemUInt32, 0x001230DC\n    __ShowBatTrail_intnl_5:
     %SystemBoolean, null\n    __ShowBatTrail_intnl_6: %SystemBoolean, null\n    __const_237:
     %SystemString, \"Visual reference missing or inside a physics hierarchy\"\n   
     __ShowBatTrail_intnl_7: %UnityEngineVector3, null\n    __ShowBatTrail_intnl_8:
     %UnityEngineQuaternion, null\n    __ShowBatTrail_intnl_9: %UnityEngineMaterial,
     null\n    __ShowBatTrail_intnl_10: %UnityEngineColor, null\n    __retaddr_115:
-    %SystemUInt32, 0x00123E54\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_0:
-    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x00123F04\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_4:
-    %SystemBoolean, null\n    __retaddr_117: %SystemUInt32, 0x00123F7C\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_7:
-    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x00123FF4\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_10:
+    %SystemUInt32, 0x00123F1C\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_0:
+    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x00123FCC\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_4:
+    %SystemBoolean, null\n    __retaddr_117: %SystemUInt32, 0x00124044\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_7:
+    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x001240BC\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_10:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_12:
     %SystemSingle, 0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_13: %SystemSingle,
     0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_14: %SystemSingle, 0\n   
@@ -1802,13 +1809,13 @@ MonoBehaviour:
     0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_18: %SystemSingle, 0\n   
     __X11zBatGeometry__m__Finite_intnl_0: %SystemBoolean, null\n    __const_238:
     %SystemSingle, null\n    __X15zBallFlightModel__m__Advance_intnl_2: %SystemBoolean,
-    null\n    __retaddr_119: %SystemUInt32, 0x001243E0\n    __X15zBallFlightModel__m__Step_intnl_0:
+    null\n    __retaddr_119: %SystemUInt32, 0x001244D0\n    __X15zBallFlightModel__m__Step_intnl_0:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_1: %UnityEngineVector3,
-    null\n    __retaddr_120: %SystemUInt32, 0x001244FC\n    __X15zBallFlightModel__m__Step_intnl_2:
+    null\n    __retaddr_120: %SystemUInt32, 0x00124614\n    __X15zBallFlightModel__m__Step_intnl_2:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_3: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Step_intnl_4: %UnityEngineVector3, null\n   
     __X15zBallFlightModel__m__Step_intnl_6: %UnityEngineVector3, null\n    __retaddr_121:
-    %SystemUInt32, 0x00124640\n    __X15zBallFlightModel__m__AerodynamicAcceleration_intnl_0:
+    %SystemUInt32, 0x0012476C\n    __X15zBallFlightModel__m__AerodynamicAcceleration_intnl_0:
     %UnityEngineVector3, null\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
     %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
     0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
@@ -60085,6 +60092,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_21\n        PUSH, __PredictTrailExit_step\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__position\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__velocity\n       
+    COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__spin\n       
     COPY\n        PUSH, __const_0\n        PUSH, __PredictTrailExit___t7\n       
     COPY\n        PUSH, __const_0\n        PUSH, __PredictTrailExit___t9\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_spin\n       
@@ -60094,14 +60102,17 @@ MonoBehaviour:
     COPY\n        PUSH, __const_1\n        PUSH, __PredictTrailExit_i\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_next__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_next__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit_next__spin\n        COPY\n       
     PUSH, __const_0\n        PUSH, __PredictTrailExit___t15\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t18\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t19\n        COPY\n       
     PUSH, __const_0\n        PUSH, __PredictTrailExit___t20\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t23\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t24\n        COPY\n       
     PUSH, __const_21\n        PUSH, __PredictTrailExit___t25\n        COPY\n       
@@ -60137,6 +60148,7 @@ MonoBehaviour:
     JUMP_INDIRECT, __PredictTrailExit_retjump\n    __PredictTrailExit_L7:\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_state__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_state__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit_state__spin\n        COPY\n       
     PUSH, contact\n        PUSH, __PredictTrailExit___t7\n        COPY\n        PUSH,
     __PredictTrailExit___t7\n        PUSH, __const_32\n        PUSH, __PredictTrailExit_intnl_10\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
@@ -60159,6 +60171,7 @@ MonoBehaviour:
     PUSH, __PredictTrailExit_intnl_18\n        JUMP_IF_FALSE, __PredictTrailExit_L9\n       
     PUSH, __PredictTrailExit_state__position\n        PUSH, __PredictTrailExit___t17__position\n       
     COPY\n        PUSH, __PredictTrailExit_state__velocity\n        PUSH, __PredictTrailExit___t17__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit_state__spin\n        PUSH, __PredictTrailExit___t17__spin\n       
     COPY\n        PUSH, __PredictTrailExit_spin\n        PUSH, __PredictTrailExit___t18\n       
     COPY\n        PUSH, __PredictTrailExit___t19\n        EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n       
     PUSH, flight\n        PUSH, __PredictTrailExit___t15\n        COPY\n        PUSH,
@@ -60166,6 +60179,7 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __PredictTrailExit___t17__position\n        PUSH, __PredictTrailExit___t22__position\n       
     COPY\n        PUSH, __PredictTrailExit___t17__velocity\n        PUSH, __PredictTrailExit___t22__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit___t17__spin\n        PUSH, __PredictTrailExit___t22__spin\n       
     COPY\n        PUSH, __PredictTrailExit___t18\n        PUSH, __PredictTrailExit___t23\n       
     COPY\n        PUSH, __PredictTrailExit___t19\n        PUSH, __PredictTrailExit___t24\n       
     COPY\n        PUSH, __PredictTrailExit_intnl_20\n        PUSH, __PredictTrailExit___t25\n       
@@ -60174,16 +60188,18 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __PredictTrailExit___t22__position\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n       
     COPY\n        PUSH, __PredictTrailExit___t22__velocity\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n       
-    COPY\n        PUSH, __PredictTrailExit___t23\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n       
-    COPY\n        PUSH, __PredictTrailExit___t24\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n       
-    COPY\n        PUSH, __PredictTrailExit___t25\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n       
-    COPY\n        PUSH, __PredictTrailExit_intnl_22\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n       
-    COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n       
+    COPY\n        PUSH, __PredictTrailExit___t22__spin\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n       
+    COPY\n        PUSH, __PredictTrailExit___t23\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n       
+    COPY\n        PUSH, __PredictTrailExit___t24\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n       
+    COPY\n        PUSH, __PredictTrailExit___t25\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n       
+    COPY\n        PUSH, __PredictTrailExit_intnl_22\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n       
     COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     COPY\n        PUSH, __retaddr_100\n        PUSH, __X15zBallFlightModel__m__Advance_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__Advance\n        PUSH, __ret__X15zBallFlightModel__m__Advance__position\n       
     PUSH, __PredictTrailExit_next__position\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
-    PUSH, __PredictTrailExit_next__velocity\n        COPY\n        PUSH, __const_21\n       
+    PUSH, __PredictTrailExit_next__velocity\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
+    PUSH, __PredictTrailExit_next__spin\n        COPY\n        PUSH, __const_21\n       
     PUSH, __PredictTrailExit_left\n        COPY\n        PUSH, __const_3\n       
     PUSH, __PredictTrailExit_j\n        COPY\n    __PredictTrailExit_L10:\n       
     PUSH, __PredictTrailExit_j\n        PUSH, __const_138\n        PUSH, __PredictTrailExit_intnl_24\n       
@@ -60246,7 +60262,8 @@ MonoBehaviour:
     PUSH, __const_3\n        PUSH, __PredictTrailExit_j\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     JUMP, __PredictTrailExit_L10\n    __PredictTrailExit_L11:\n        PUSH, __PredictTrailExit_next__position\n       
     PUSH, __PredictTrailExit_state__position\n        COPY\n        PUSH, __PredictTrailExit_next__velocity\n       
-    PUSH, __PredictTrailExit_state__velocity\n        COPY\n        PUSH, __PredictTrailExit_time\n       
+    PUSH, __PredictTrailExit_state__velocity\n        COPY\n        PUSH, __PredictTrailExit_next__spin\n       
+    PUSH, __PredictTrailExit_state__spin\n        COPY\n        PUSH, __PredictTrailExit_time\n       
     PUSH, __PredictTrailExit_step\n        PUSH, __PredictTrailExit_time\n       
     EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __PredictTrailExit_i\n        PUSH, __const_3\n        PUSH, __PredictTrailExit_i\n       
@@ -68125,23 +68142,24 @@ MonoBehaviour:
     __X11zBatGeometry__m__Finite_retjump\n        JUMP_INDIRECT, __X11zBatGeometry__m__Finite_retjump\n   
     X15zBallFlightModel__m__Advance:\n        PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     COPY\n        PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __const_21\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __const_21\n       
     PUSH, __X15zBallFlightModel__m__Advance___t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance___t0\n        JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L0\n       
     JUMP, __X15zBallFlightModel__m__Advance_L1\n    __X15zBallFlightModel__m__Advance_L0:\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __const_21\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_8\n        PUSH, __const_21\n       
     PUSH, __X15zBallFlightModel__m__Advance___t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
     __X15zBallFlightModel__m__Advance_L1:\n        PUSH, __X15zBallFlightModel__m__Advance___t0\n       
     JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L3\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n       
     PUSH, __ret__X15zBallFlightModel__m__Advance__position\n        COPY\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n    __X15zBallFlightModel__m__Advance_L3:\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     COPY\n    __X15zBallFlightModel__m__Advance_L4:\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     PUSH, __const_58\n        PUSH, __X15zBallFlightModel__m__Advance_intnl_2\n       
     EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_2\n        JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L5\n       
-    PUSH, __X15zBallFlightModel__m__Advance_remaining\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    PUSH, __X15zBallFlightModel__m__Advance_remaining\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     PUSH, __X15zBallFlightModel__m__Advance_dt\n        EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        PUSH, __X15zBallFlightModel__m__Step_p_0\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n       
@@ -68149,38 +68167,42 @@ MonoBehaviour:
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     COPY\n        PUSH, __retaddr_119\n        PUSH, __X15zBallFlightModel__m__Step_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__Step\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_1\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_1\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_2\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     JUMP, __X15zBallFlightModel__m__Advance_L4\n    __X15zBallFlightModel__m__Advance_L5:\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        PUSH, __ret__X15zBallFlightModel__m__Advance__position\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n       
     JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n    X15zBallFlightModel__m__Step:\n       
     PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_intnl_0\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_0\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_2\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_1\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_2\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_3\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_1\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_2\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_3\n       
     COPY\n        PUSH, __retaddr_120\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__AerodynamicAcceleration\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_1\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_ret\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_4\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_0\n        PUSH, __X15zBallFlightModel__m__Step_intnl_4\n       
     PUSH, __X15zBallFlightModel__m__Step_p_1\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_6\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_p_0\n        PUSH, __X15zBallFlightModel__m__Step_intnl_6\n       
     PUSH, __X15zBallFlightModel__m__Step_p_0\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_p_0\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Step_retjump\n       
     JUMP_INDIRECT, __X15zBallFlightModel__m__Step_retjump\n    X15zBallFlightModel__m__AerodynamicAcceleration:\n       
     PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
@@ -68213,7 +68235,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 9f086c0d21eba2f438b8833f94036b5d, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: cae795d20c979b1763ebc6aa38979210ea0c6557ed34a26935824195bc69d125
+  sourceFingerprint: a9cb079e8a09c9760230136c9baf76a572941381c5fb7514fb14cfe7456bb15b
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -68413,9 +68435,11 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    _savedRotation: %UnityEngineQuaternion, null\n   
     __ret__X15zBallFlightModel__m__Advance__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Advance__velocity: %UnityEngineVector3, null\n   
+    __ret__X15zBallFlightModel__m__Advance__spin: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BattingFeedbackBehaviour\"\n   
+    __ret__X15zBallFlightModel__m__Step__spin: %UnityEngineVector3, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BattingFeedbackBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __Start___t0: %VRCUdonUdonBehaviour,
     null\n    __Start___t1: %VRCUdonUdonBehaviour, null\n    __Start___t2: %VRCUdonUdonBehaviour,
     null\n    __Start___t3: %SystemInt32, 0\n    __Start___t4: %VRCUdonUdonBehaviour,
@@ -68941,29 +68965,32 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t5: %UnityEngineVector3,
     null\n    __PredictTrailExit_step: %SystemSingle, 0\n    __PredictTrailExit_state__position:
     %UnityEngineVector3, null\n    __PredictTrailExit_state__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t6__position: %UnityEngineVector3, null\n    __PredictTrailExit___t6__velocity:
-    %UnityEngineVector3, null\n    __PredictTrailExit___t7: %VRCUdonUdonBehaviour,
-    null\n    __PredictTrailExit___t8: %UnityEngineVector3, null\n    __PredictTrailExit___t9:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t10: %UnityEngineVector3,
-    null\n    __PredictTrailExit_spin: %UnityEngineVector3, null\n    __PredictTrailExit___t11:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t12: %UnityEngineVector3,
-    null\n    __PredictTrailExit_time: %SystemSingle, 0\n    __PredictTrailExit___t13:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t14: %SystemSingle, 0\n   
-    __PredictTrailExit_i: %SystemInt32, 0\n    __PredictTrailExit_next__position:
+    null\n    __PredictTrailExit_state__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t6__position:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t6__velocity: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t6__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t7:
+    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t8: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t9: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t10:
+    %UnityEngineVector3, null\n    __PredictTrailExit_spin: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t11: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t12:
+    %UnityEngineVector3, null\n    __PredictTrailExit_time: %SystemSingle, 0\n   
+    __PredictTrailExit___t13: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t14:
+    %SystemSingle, 0\n    __PredictTrailExit_i: %SystemInt32, 0\n    __PredictTrailExit_next__position:
     %UnityEngineVector3, null\n    __PredictTrailExit_next__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t15: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t16:
-    %SystemSingle, 0\n    __PredictTrailExit___t17__position: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t17__velocity: %UnityEngineVector3, null\n   
-    __PredictTrailExit___t18: %UnityEngineVector3, null\n    __PredictTrailExit___t19:
+    null\n    __PredictTrailExit_next__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t15:
+    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t16: %SystemSingle, 0\n   
+    __PredictTrailExit___t17__position: %UnityEngineVector3, null\n    __PredictTrailExit___t17__velocity:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t17__spin: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t18: %UnityEngineVector3, null\n    __PredictTrailExit___t19:
     %UnityEngineVector3, null\n    __PredictTrailExit___t20: %VRCUdonUdonBehaviour,
     null\n    __PredictTrailExit___t21: %SystemSingle, 0\n    __PredictTrailExit___t22__position:
     %UnityEngineVector3, null\n    __PredictTrailExit___t22__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t23: %UnityEngineVector3, null\n    __PredictTrailExit___t24:
-    %UnityEngineVector3, null\n    __PredictTrailExit___t25: %SystemSingle, 0\n   
-    __PredictTrailExit___t26__position: %UnityEngineVector3, null\n    __PredictTrailExit___t26__velocity:
-    %UnityEngineVector3, null\n    __PredictTrailExit_left: %SystemSingle, 0\n   
-    __PredictTrailExit_j: %SystemInt32, 0\n    __PredictTrailExit_right: %SystemSingle,
-    0\n    __PredictTrailExit_k: %SystemInt32, 0\n    __PredictTrailExit_middle:
+    null\n    __PredictTrailExit___t22__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t23:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t24: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t25: %SystemSingle, 0\n    __PredictTrailExit___t26__position:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t26__velocity: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t26__spin: %UnityEngineVector3, null\n    __PredictTrailExit_left:
+    %SystemSingle, 0\n    __PredictTrailExit_j: %SystemInt32, 0\n    __PredictTrailExit_right:
+    %SystemSingle, 0\n    __PredictTrailExit_k: %SystemInt32, 0\n    __PredictTrailExit_middle:
     %SystemSingle, 0\n    __PredictTrailExit___t27: %SystemSingle, 0\n    __PredictTrailExit_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_p_1:
@@ -69115,19 +69142,21 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_1: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Advance_p_2: %UnityEngineVector3, null\n   
     __X15zBallFlightModel__m__Advance_p_3: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_4:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_5: %SystemSingle, 0\n   
-    __X15zBallFlightModel__m__Advance_p_6: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_7:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance___t0: %SystemBoolean,
-    null\n    __X15zBallFlightModel__m__Advance_remaining: %SystemSingle, 0\n   
-    __X15zBallFlightModel__m__Advance_dt: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance___t1__position:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance___t1__velocity:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance___t2: %SystemSingle,
-    0\n    __X15zBallFlightModel__m__Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __X15zBallFlightModel__m__Step_p_0: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_1:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_2: %UnityEngineVector3,
-    null\n    __X15zBallFlightModel__m__Step_p_3: %UnityEngineVector3, null\n   
-    __X15zBallFlightModel__m__Step_p_4: %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_5:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_6: %SystemSingle, 0\n   
+    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_5: %SystemSingle,
+    0\n    __X15zBallFlightModel__m__Advance_p_6: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_7:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_8: %SystemSingle, 0\n   
+    __X15zBallFlightModel__m__Advance___t0: %SystemBoolean, null\n    __X15zBallFlightModel__m__Advance_remaining:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_dt: %SystemSingle, 0\n   
+    __X15zBallFlightModel__m__Advance___t1__position: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t1__velocity: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t1__spin: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t2: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __X15zBallFlightModel__m__Step_p_0: %UnityEngineVector3,
+    null\n    __X15zBallFlightModel__m__Step_p_1: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Step_p_2: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_3:
+    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_4: %UnityEngineVector3,
+    null\n    __X15zBallFlightModel__m__Step_p_5: %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_6:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_7: %SystemSingle, 0\n   
     __X15zBallFlightModel__m__Step___t0: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step___t1:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_retjump: %SystemUInt32,
     0xFFFFFFFC\n    __X15zBallFlightModel__m__AerodynamicAcceleration_p_0: %UnityEngineVector3,
@@ -70011,7 +70040,7 @@ MonoBehaviour:
     __PredictTrailExit_intnl_1: %SystemObject, null\n    __PredictTrailExit_intnl_2:
     %UnityEngineTransform, null\n    __PredictTrailExit_intnl_3: %SystemBoolean,
     null\n    __PredictTrailExit_intnl_4: %SystemObject, null\n    __PredictTrailExit_intnl_5:
-    %UnityEngineVector3, null\n    __retaddr_99: %SystemUInt32, 0x001023BC\n    __PredictTrailExit_intnl_6:
+    %UnityEngineVector3, null\n    __retaddr_99: %SystemUInt32, 0x00102434\n    __PredictTrailExit_intnl_6:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_7: %SystemBoolean, null\n   
     __PredictTrailExit_intnl_8: %SystemSingle, 0\n    __PredictTrailExit_intnl_9:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_10: %SystemObject, null\n   
@@ -70027,14 +70056,14 @@ MonoBehaviour:
     __PredictTrailExit_intnl_21: %SystemSingle, 0\n    __const_219: %SystemString,
     \"magnusCoefficient\"\n    __PredictTrailExit_intnl_22: %SystemObject, null\n   
     __PredictTrailExit_intnl_23: %SystemSingle, 0\n    __retaddr_100: %SystemUInt32,
-    0x00102904\n    __PredictTrailExit_intnl_24: %SystemBoolean, null\n    __PredictTrailExit_intnl_25:
+    0x001029E0\n    __PredictTrailExit_intnl_24: %SystemBoolean, null\n    __PredictTrailExit_intnl_25:
     %SystemSingle, 0\n    __PredictTrailExit_intnl_26: %SystemSingle, 0\n    __retaddr_101:
-    %SystemUInt32, 0x00102A94\n    __PredictTrailExit_intnl_27: %UnityEngineVector3,
-    null\n    __retaddr_102: %SystemUInt32, 0x00102AD8\n    __PredictTrailExit_intnl_28:
+    %SystemUInt32, 0x00102B98\n    __PredictTrailExit_intnl_27: %UnityEngineVector3,
+    null\n    __retaddr_102: %SystemUInt32, 0x00102BDC\n    __PredictTrailExit_intnl_28:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_29: %SystemBoolean, null\n   
     __PredictTrailExit_intnl_30: %SystemSingle, 0\n    __PredictTrailExit_intnl_31:
-    %SystemSingle, 0\n    __retaddr_103: %SystemUInt32, 0x00102C38\n    __PredictTrailExit_intnl_32:
-    %UnityEngineVector3, null\n    __retaddr_104: %SystemUInt32, 0x00102C7C\n   
+    %SystemSingle, 0\n    __retaddr_103: %SystemUInt32, 0x00102D3C\n    __PredictTrailExit_intnl_32:
+    %UnityEngineVector3, null\n    __retaddr_104: %SystemUInt32, 0x00102D80\n   
     __PredictTrailExit_intnl_33: %SystemBoolean, null\n    __PredictTrailExit_intnl_34:
     %SystemInt32, 0\n    __PredictTrailExit_intnl_35: %SystemSingle, 0\n    __PredictTrailExit_intnl_36:
     %SystemSingle, 0\n    __PredictTrailExit_intnl_37: %SystemSingle, 0\n    __PredictTrailExit_intnl_38:
@@ -70080,7 +70109,7 @@ MonoBehaviour:
     0\n    __CapturePoses__BatMotionBehaviour_intnl_21: %SystemSingle, 0\n    __CapturePoses__BatMotionBehaviour_intnl_22:
     %VRCUdonUdonBehaviour, null\n    __CapturePoses__BatMotionBehaviour_intnl_23:
     %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_24: %SystemBoolean,
-    null\n    __retaddr_105: %SystemUInt32, 0x00106B78\n    __CapturePoses__BatMotionBehaviour_intnl_25:
+    null\n    __retaddr_105: %SystemUInt32, 0x00106C90\n    __CapturePoses__BatMotionBehaviour_intnl_25:
     %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_26: %SystemSingle,
     0\n    __CapturePoses__BatMotionBehaviour_intnl_27: %SystemBoolean, null\n   
     __CapturePoses__BatMotionBehaviour_intnl_28: %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_29:
@@ -70090,7 +70119,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __CapturePoses__BatMotionBehaviour_intnl_34: %VRCUdonUdonBehaviour,
     null\n    __CapturePoses__BatMotionBehaviour_intnl_35: %SystemObject, null\n   
     __CapturePoses__BatMotionBehaviour_intnl_36: %SystemBoolean, null\n    __retaddr_106:
-    %SystemUInt32, 0x0010DB54\n    __CapturePoses__BatMotionBehaviour_intnl_37: %SystemObject,
+    %SystemUInt32, 0x0010DC6C\n    __CapturePoses__BatMotionBehaviour_intnl_37: %SystemObject,
     null\n    __CapturePoses__BatMotionBehaviour_intnl_38: %SystemSingle, 0\n   
     __CapturePoses__BatMotionBehaviour_intnl_39: %SystemBoolean, null\n    __const_222:
     %UnityEngineVector3Array, null\n    __const_223: %UnityEngineQuaternionArray,
@@ -70099,7 +70128,7 @@ MonoBehaviour:
     %SystemInt32, 0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_2: %SystemSingle,
     0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_3: %SystemBoolean, null\n   
     __AddPose__BatMotionBehaviour_SystemSingle_intnl_4: %SystemInt32, 0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_5:
-    %SystemBoolean, null\n    __retaddr_107: %SystemUInt32, 0x0010F248\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_6:
+    %SystemBoolean, null\n    __retaddr_107: %SystemUInt32, 0x0010F360\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_6:
     %SystemObject, null\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_7:
     %UnityEngineVector3, null\n    __const_225: %SystemString, \"contactSampleVelocity\"\n   
     __AddPose__BatMotionBehaviour_SystemSingle_intnl_8: %SystemObject, null\n   
@@ -70154,15 +70183,15 @@ MonoBehaviour:
     __FreezeTrail_intnl_48: %UnityEngineVector3Array, null\n    __FreezeTrail_intnl_49:
     %UnityEngineQuaternionArray, null\n    __FreezeTrail_intnl_50: %UnityEngineColorArray,
     null\n    __FreezeTrail_intnl_51: %SystemBooleanArray, null\n    __FreezeTrail_intnl_52:
-    %SystemBoolean, null\n    __retaddr_108: %SystemUInt32, 0x00114EA8\n    __FreezeTrail_intnl_53:
-    %SystemSingle, 0\n    __retaddr_109: %SystemUInt32, 0x00117E40\n    __FreezeTrail_intnl_54:
+    %SystemBoolean, null\n    __retaddr_108: %SystemUInt32, 0x00114FC0\n    __FreezeTrail_intnl_53:
+    %SystemSingle, 0\n    __retaddr_109: %SystemUInt32, 0x00117F58\n    __FreezeTrail_intnl_54:
     %SystemBoolean, null\n    __FreezeTrail_intnl_55: %UnityEngineVector3, null\n   
     __FreezeTrail_intnl_56: %UnityEngineVector3, null\n    __FreezeTrail_intnl_57:
     %VRCUdonUdonBehaviour, null\n    __FreezeTrail_intnl_58: %SystemObject, null\n   
     __FreezeTrail_intnl_59: %UnityEngineVector3, null\n    __FreezeTrail_intnl_60:
     %UnityEngineColorArray, null\n    __FreezeTrail_intnl_61: %SystemInt32, 0\n   
-    __retaddr_110: %SystemUInt32, 0x0011E364\n    __FreezeTrail_intnl_62: %SystemSingle,
-    0\n    __retaddr_111: %SystemUInt32, 0x00121768\n    __FreezeTrail_intnl_63:
+    __retaddr_110: %SystemUInt32, 0x0011E47C\n    __FreezeTrail_intnl_62: %SystemSingle,
+    0\n    __retaddr_111: %SystemUInt32, 0x00121880\n    __FreezeTrail_intnl_63:
     %UnityEngineColor, null\n    __FreezeTrail_intnl_64: %SystemInt32, 0\n    __FreezeTrail_intnl_65:
     %SystemInt32, 0\n    __FreezeTrail_intnl_66: %SystemBoolean, null\n    __const_233:
     %SystemString, \"Pose history interrupted\"\n    __FreezeTrail_intnl_67: %SystemObject,
@@ -70188,7 +70217,7 @@ MonoBehaviour:
     0\n    __SampleSavedPose__SystemSingle_intnl_2: %SystemBoolean, null\n    __SampleSavedPose__SystemSingle_intnl_3:
     %SystemInt32, 0\n    __SampleSavedPose__SystemSingle_intnl_4: %SystemSingle,
     0\n    __SampleSavedPose__SystemSingle_intnl_5: %SystemBoolean, null\n    __retaddr_112:
-    %SystemUInt32, 0x00123BAC\n    __SampleSavedPose__SystemSingle_intnl_6: %SystemInt32,
+    %SystemUInt32, 0x00123CC4\n    __SampleSavedPose__SystemSingle_intnl_6: %SystemInt32,
     0\n    __SampleSavedPose__SystemSingle_intnl_7: %SystemBoolean, null\n    __SampleSavedPose__SystemSingle_intnl_8:
     %SystemInt32, 0\n    __SampleSavedPose__SystemSingle_intnl_9: %SystemSingle,
     0\n    __SampleSavedPose__SystemSingle_intnl_10: %SystemBoolean, null\n    __SampleSavedPose__SystemSingle_intnl_11:
@@ -70201,7 +70230,7 @@ MonoBehaviour:
     %SystemSingle, 0\n    __SampleSavedPose__SystemSingle_intnl_21: %UnityEngineVector3,
     null\n    __SampleSavedPose__SystemSingle_intnl_22: %UnityEngineVector3, null\n   
     __SampleSavedPose__SystemSingle_intnl_23: %UnityEngineVector3, null\n    __SampleSavedPose__SystemSingle_intnl_24:
-    %UnityEngineVector3, null\n    __retaddr_113: %SystemUInt32, 0x00123FD8\n   
+    %UnityEngineVector3, null\n    __retaddr_113: %SystemUInt32, 0x001240F0\n   
     __SampleSavedPose__SystemSingle_intnl_25: %UnityEngineVector3, null\n    __SampleSavedPose__SystemSingle_intnl_26:
     %UnityEngineVector3, null\n    __SampleSavedPose__SystemSingle_intnl_27: %UnityEngineQuaternion,
     null\n    __SampleSavedPose__SystemSingle_intnl_28: %UnityEngineQuaternion, null\n   
@@ -70238,24 +70267,24 @@ MonoBehaviour:
     null\n    __ShowBatTrail_intnl_0: %SystemBoolean, null\n    __ShowBatTrail_intnl_1:
     %UnityEngineTransform, null\n    __ShowBatTrail_intnl_2: %UnityEngineRenderer,
     null\n    __ShowBatTrail_intnl_3: %SystemBoolean, null\n    __ShowBatTrail_intnl_4:
-    %SystemBoolean, null\n    __retaddr_114: %SystemUInt32, 0x00124E1C\n    __ShowBatTrail_intnl_5:
+    %SystemBoolean, null\n    __retaddr_114: %SystemUInt32, 0x00124F34\n    __ShowBatTrail_intnl_5:
     %SystemBoolean, null\n    __ShowBatTrail_intnl_6: %SystemBoolean, null\n    __const_237:
     %SystemString, \"Visual reference missing or inside a physics hierarchy\"\n   
     __ShowBatTrail_intnl_7: %UnityEngineVector3, null\n    __ShowBatTrail_intnl_8:
     %UnityEngineQuaternion, null\n    __ShowBatTrail_intnl_9: %UnityEngineMaterial,
     null\n    __ShowBatTrail_intnl_10: %UnityEngineColor, null\n    __ShowBatTrail_intnl_11:
     %SystemInt32, 0\n    __ShowBatTrail_intnl_12: %SystemInt32, 0\n    __retaddr_115:
-    %SystemUInt32, 0x00125C84\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_0:
+    %SystemUInt32, 0x00125D9C\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_0:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_1:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_2:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_3:
-    %SystemSingle, 0\n    __retaddr_116: %SystemUInt32, 0x00125D84\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_4:
+    %SystemSingle, 0\n    __retaddr_116: %SystemUInt32, 0x00125E9C\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_4:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_5:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_6:
-    %SystemSingle, 0\n    __retaddr_117: %SystemUInt32, 0x00125E38\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_7:
+    %SystemSingle, 0\n    __retaddr_117: %SystemUInt32, 0x00125F50\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_7:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_8:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_9:
-    %SystemSingle, 0\n    __retaddr_118: %SystemUInt32, 0x00125EEC\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_10:
+    %SystemSingle, 0\n    __retaddr_118: %SystemUInt32, 0x00126004\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_10:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_11:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_12:
     %SystemSingle, 0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_13: %SystemSingle,
@@ -70270,15 +70299,15 @@ MonoBehaviour:
     %SystemBoolean, null\n    __X15zBallFlightModel__m__Advance_intnl_0: %SystemBoolean,
     null\n    __X15zBallFlightModel__m__Advance_intnl_1: %SystemBoolean, null\n   
     __X15zBallFlightModel__m__Advance_intnl_2: %SystemBoolean, null\n    __X15zBallFlightModel__m__Advance_intnl_3:
-    %SystemSingle, 0\n    __retaddr_119: %SystemUInt32, 0x0012640C\n    __X15zBallFlightModel__m__Advance_intnl_4:
+    %SystemSingle, 0\n    __retaddr_119: %SystemUInt32, 0x00126560\n    __X15zBallFlightModel__m__Advance_intnl_4:
     %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_intnl_0: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Step_intnl_1: %UnityEngineVector3, null\n   
-    __retaddr_120: %SystemUInt32, 0x001265B4\n    __X15zBallFlightModel__m__Step_intnl_2:
+    __retaddr_120: %SystemUInt32, 0x00126744\n    __X15zBallFlightModel__m__Step_intnl_2:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_3: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Step_intnl_4: %UnityEngineVector3, null\n   
     __X15zBallFlightModel__m__Step_intnl_5: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_6:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_7: %UnityEngineVector3,
-    null\n    __retaddr_121: %SystemUInt32, 0x00126748\n    __X15zBallFlightModel__m__AerodynamicAcceleration_intnl_0:
+    null\n    __retaddr_121: %SystemUInt32, 0x001268EC\n    __X15zBallFlightModel__m__AerodynamicAcceleration_intnl_0:
     %UnityEngineVector3, null\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
     %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
     0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
@@ -128919,8 +128948,10 @@ MonoBehaviour:
     COPY\n        PUSH, __const_21\n        PUSH, __PredictTrailExit_step\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__position\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__velocity\n       
+    COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__spin\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit___t6__position\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit___t6__velocity\n       
+    COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit___t6__spin\n       
     COPY\n        PUSH, __const_0\n        PUSH, __PredictTrailExit___t7\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit___t8\n       
     COPY\n        PUSH, __const_0\n        PUSH, __PredictTrailExit___t9\n       
@@ -128934,21 +128965,25 @@ MonoBehaviour:
     COPY\n        PUSH, __const_1\n        PUSH, __PredictTrailExit_i\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_next__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_next__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit_next__spin\n        COPY\n       
     PUSH, __const_0\n        PUSH, __PredictTrailExit___t15\n        COPY\n       
     PUSH, __const_21\n        PUSH, __PredictTrailExit___t16\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t18\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t19\n        COPY\n       
     PUSH, __const_0\n        PUSH, __PredictTrailExit___t20\n        COPY\n       
     PUSH, __const_21\n        PUSH, __PredictTrailExit___t21\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t23\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t24\n        COPY\n       
     PUSH, __const_21\n        PUSH, __PredictTrailExit___t25\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t26__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t26__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t26__spin\n        COPY\n       
     PUSH, __const_21\n        PUSH, __PredictTrailExit_left\n        COPY\n       
     PUSH, __const_1\n        PUSH, __PredictTrailExit_j\n        COPY\n        PUSH,
     __const_21\n        PUSH, __PredictTrailExit_right\n        COPY\n        PUSH,
@@ -128991,8 +129026,10 @@ MonoBehaviour:
     JUMP_INDIRECT, __PredictTrailExit_retjump\n    __PredictTrailExit_L7:\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t6__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t6__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t6__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_state__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_state__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit_state__spin\n        COPY\n       
     PUSH, contact\n        PUSH, __PredictTrailExit___t7\n        COPY\n        PUSH,
     __PredictTrailExit___t7\n        PUSH, __const_32\n        PUSH, __PredictTrailExit_intnl_10\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
@@ -129024,6 +129061,7 @@ MonoBehaviour:
     PUSH, __PredictTrailExit_intnl_18\n        JUMP_IF_FALSE, __PredictTrailExit_L9\n       
     PUSH, __PredictTrailExit_state__position\n        PUSH, __PredictTrailExit___t17__position\n       
     COPY\n        PUSH, __PredictTrailExit_state__velocity\n        PUSH, __PredictTrailExit___t17__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit_state__spin\n        PUSH, __PredictTrailExit___t17__spin\n       
     COPY\n        PUSH, __PredictTrailExit_spin\n        PUSH, __PredictTrailExit___t18\n       
     COPY\n        PUSH, __PredictTrailExit_intnl_19\n        EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n       
     PUSH, __PredictTrailExit_intnl_19\n        PUSH, __PredictTrailExit___t19\n       
@@ -129034,6 +129072,7 @@ MonoBehaviour:
     COPY\n        PUSH, __PredictTrailExit_intnl_21\n        PUSH, __PredictTrailExit___t16\n       
     COPY\n        PUSH, __PredictTrailExit___t17__position\n        PUSH, __PredictTrailExit___t22__position\n       
     COPY\n        PUSH, __PredictTrailExit___t17__velocity\n        PUSH, __PredictTrailExit___t22__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit___t17__spin\n        PUSH, __PredictTrailExit___t22__spin\n       
     COPY\n        PUSH, __PredictTrailExit___t18\n        PUSH, __PredictTrailExit___t23\n       
     COPY\n        PUSH, __PredictTrailExit___t19\n        PUSH, __PredictTrailExit___t24\n       
     COPY\n        PUSH, __PredictTrailExit___t16\n        PUSH, __PredictTrailExit___t25\n       
@@ -129044,18 +129083,21 @@ MonoBehaviour:
     COPY\n        PUSH, __PredictTrailExit_intnl_23\n        PUSH, __PredictTrailExit___t21\n       
     COPY\n        PUSH, __PredictTrailExit___t22__position\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n       
     COPY\n        PUSH, __PredictTrailExit___t22__velocity\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n       
-    COPY\n        PUSH, __PredictTrailExit___t23\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n       
-    COPY\n        PUSH, __PredictTrailExit___t24\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n       
-    COPY\n        PUSH, __PredictTrailExit___t25\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n       
-    COPY\n        PUSH, __PredictTrailExit___t21\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n       
-    COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n       
+    COPY\n        PUSH, __PredictTrailExit___t22__spin\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n       
+    COPY\n        PUSH, __PredictTrailExit___t23\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n       
+    COPY\n        PUSH, __PredictTrailExit___t24\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n       
+    COPY\n        PUSH, __PredictTrailExit___t25\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n       
+    COPY\n        PUSH, __PredictTrailExit___t21\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n       
     COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     COPY\n        PUSH, __retaddr_100\n        PUSH, __X15zBallFlightModel__m__Advance_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__Advance\n        PUSH, __ret__X15zBallFlightModel__m__Advance__position\n       
     PUSH, __PredictTrailExit___t26__position\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
-    PUSH, __PredictTrailExit___t26__velocity\n        COPY\n        PUSH, __PredictTrailExit___t26__position\n       
+    PUSH, __PredictTrailExit___t26__velocity\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
+    PUSH, __PredictTrailExit___t26__spin\n        COPY\n        PUSH, __PredictTrailExit___t26__position\n       
     PUSH, __PredictTrailExit_next__position\n        COPY\n        PUSH, __PredictTrailExit___t26__velocity\n       
-    PUSH, __PredictTrailExit_next__velocity\n        COPY\n        PUSH, __const_21\n       
+    PUSH, __PredictTrailExit_next__velocity\n        COPY\n        PUSH, __PredictTrailExit___t26__spin\n       
+    PUSH, __PredictTrailExit_next__spin\n        COPY\n        PUSH, __const_21\n       
     PUSH, __PredictTrailExit_left\n        COPY\n        PUSH, __const_3\n       
     PUSH, __PredictTrailExit_j\n        COPY\n        ANNOTATION, \"@tsukimi loop
     trip=const:8 no-computed-jump\"\n    __PredictTrailExit_L10:\n        PUSH, __PredictTrailExit_j\n       
@@ -129130,6 +129172,7 @@ MonoBehaviour:
     COPY\n        JUMP, __PredictTrailExit_L10\n    __PredictTrailExit_L11:\n       
     PUSH, __PredictTrailExit_next__position\n        PUSH, __PredictTrailExit_state__position\n       
     COPY\n        PUSH, __PredictTrailExit_next__velocity\n        PUSH, __PredictTrailExit_state__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit_next__spin\n        PUSH, __PredictTrailExit_state__spin\n       
     COPY\n        PUSH, __PredictTrailExit_time\n        PUSH, __PredictTrailExit___t27\n       
     COPY\n        PUSH, __PredictTrailExit___t27\n        PUSH, __PredictTrailExit_step\n       
     PUSH, __PredictTrailExit_intnl_40\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -137200,13 +137243,14 @@ MonoBehaviour:
     COPY\n        PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n       
     COPY\n        PUSH, __const_25\n        PUSH, __X15zBallFlightModel__m__Advance___t1__position\n       
     COPY\n        PUSH, __const_25\n        PUSH, __X15zBallFlightModel__m__Advance___t1__velocity\n       
+    COPY\n        PUSH, __const_25\n        PUSH, __X15zBallFlightModel__m__Advance___t1__spin\n       
     COPY\n        PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance___t2\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __const_21\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __const_21\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_0\n        PUSH, __X15zBallFlightModel__m__Advance___t0\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance___t0\n        JUMP_IF_FALSE,
     __X15zBallFlightModel__m__Advance_L0\n        JUMP, __X15zBallFlightModel__m__Advance_L1\n   
-    __X15zBallFlightModel__m__Advance_L0:\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    __X15zBallFlightModel__m__Advance_L0:\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance_intnl_1\n       
     EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_1\n        PUSH, __X15zBallFlightModel__m__Advance___t0\n       
@@ -137214,14 +137258,15 @@ MonoBehaviour:
     JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L3\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n       
     PUSH, __ret__X15zBallFlightModel__m__Advance__position\n        COPY\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n    __X15zBallFlightModel__m__Advance_L3:\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     COPY\n        ANNOTATION, \"@tsukimi loop trip=unknown no-computed-jump\"\n   
     __X15zBallFlightModel__m__Advance_L4:\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     PUSH, __const_58\n        PUSH, __X15zBallFlightModel__m__Advance_intnl_2\n       
     EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_2\n        JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L5\n       
-    PUSH, __X15zBallFlightModel__m__Advance_remaining\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    PUSH, __X15zBallFlightModel__m__Advance_remaining\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_3\n        EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_3\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n        PUSH, __X15zBallFlightModel__m__Step_p_0\n       
@@ -137230,14 +137275,17 @@ MonoBehaviour:
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     COPY\n        PUSH, __retaddr_119\n        PUSH, __X15zBallFlightModel__m__Step_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__Step\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     PUSH, __X15zBallFlightModel__m__Advance___t1__position\n        COPY\n       
     PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n        PUSH, __X15zBallFlightModel__m__Advance___t1__velocity\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance___t1__position\n       
+    COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n        PUSH,
+    __X15zBallFlightModel__m__Advance___t1__spin\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance___t1__position\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance___t1__velocity\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_1\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_1\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance___t1__spin\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_2\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     PUSH, __X15zBallFlightModel__m__Advance___t2\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance___t2\n       
     PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Advance_intnl_4\n       
     EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -137245,35 +137293,37 @@ MonoBehaviour:
     COPY\n        JUMP, __X15zBallFlightModel__m__Advance_L4\n    __X15zBallFlightModel__m__Advance_L5:\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        PUSH, __ret__X15zBallFlightModel__m__Advance__position\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n       
     JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n    X15zBallFlightModel__m__Step:\n       
     PUSH, __const_25\n        PUSH, __X15zBallFlightModel__m__Step___t0\n       
     COPY\n        PUSH, __const_25\n        PUSH, __X15zBallFlightModel__m__Step___t1\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step___t0\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step___t0\n        PUSH, __X15zBallFlightModel__m__Step_intnl_0\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_0\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_2\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_1\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_2\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_3\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_1\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_2\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_3\n       
     COPY\n        PUSH, __retaddr_120\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__AerodynamicAcceleration\n       
     PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_ret\n        PUSH, __X15zBallFlightModel__m__Step_intnl_2\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n        PUSH, __X15zBallFlightModel__m__Step_intnl_2\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_4\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_0\n        PUSH, __X15zBallFlightModel__m__Step_intnl_4\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_5\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_5\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_0\n        PUSH, __X15zBallFlightModel__m__Step___t1\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_6\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step___t1\n        PUSH, __X15zBallFlightModel__m__Step_intnl_6\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_7\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_7\n        PUSH, __X15zBallFlightModel__m__Step_p_0\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_0\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Step_retjump\n       
     JUMP_INDIRECT, __X15zBallFlightModel__m__Step_retjump\n    X15zBallFlightModel__m__AerodynamicAcceleration:\n       
     PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
@@ -137382,9 +137432,11 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    _savedRotation: %UnityEngineQuaternion, null\n   
     __ret__X15zBallFlightModel__m__Advance__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Advance__velocity: %UnityEngineVector3, null\n   
+    __ret__X15zBallFlightModel__m__Advance__spin: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__position: %UnityEngineVector3, null\n   
     __ret__X15zBallFlightModel__m__Step__velocity: %UnityEngineVector3, null\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"BattingFeedbackBehaviour\"\n   
+    __ret__X15zBallFlightModel__m__Step__spin: %UnityEngineVector3, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BattingFeedbackBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __Start___t0: %VRCUdonUdonBehaviour,
     null\n    __Start___t1: %VRCUdonUdonBehaviour, null\n    __Start___t2: %VRCUdonUdonBehaviour,
     null\n    __Start___t3: %SystemInt32, 0\n    __Start___t4: %VRCUdonUdonBehaviour,
@@ -137910,29 +137962,32 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t5: %UnityEngineVector3,
     null\n    __PredictTrailExit_step: %SystemSingle, 0\n    __PredictTrailExit_state__position:
     %UnityEngineVector3, null\n    __PredictTrailExit_state__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t6__position: %UnityEngineVector3, null\n    __PredictTrailExit___t6__velocity:
-    %UnityEngineVector3, null\n    __PredictTrailExit___t7: %VRCUdonUdonBehaviour,
-    null\n    __PredictTrailExit___t8: %UnityEngineVector3, null\n    __PredictTrailExit___t9:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t10: %UnityEngineVector3,
-    null\n    __PredictTrailExit_spin: %UnityEngineVector3, null\n    __PredictTrailExit___t11:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t12: %UnityEngineVector3,
-    null\n    __PredictTrailExit_time: %SystemSingle, 0\n    __PredictTrailExit___t13:
-    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t14: %SystemSingle, 0\n   
-    __PredictTrailExit_i: %SystemInt32, 0\n    __PredictTrailExit_next__position:
+    null\n    __PredictTrailExit_state__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t6__position:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t6__velocity: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t6__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t7:
+    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t8: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t9: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t10:
+    %UnityEngineVector3, null\n    __PredictTrailExit_spin: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t11: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t12:
+    %UnityEngineVector3, null\n    __PredictTrailExit_time: %SystemSingle, 0\n   
+    __PredictTrailExit___t13: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t14:
+    %SystemSingle, 0\n    __PredictTrailExit_i: %SystemInt32, 0\n    __PredictTrailExit_next__position:
     %UnityEngineVector3, null\n    __PredictTrailExit_next__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t15: %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t16:
-    %SystemSingle, 0\n    __PredictTrailExit___t17__position: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t17__velocity: %UnityEngineVector3, null\n   
-    __PredictTrailExit___t18: %UnityEngineVector3, null\n    __PredictTrailExit___t19:
+    null\n    __PredictTrailExit_next__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t15:
+    %VRCUdonUdonBehaviour, null\n    __PredictTrailExit___t16: %SystemSingle, 0\n   
+    __PredictTrailExit___t17__position: %UnityEngineVector3, null\n    __PredictTrailExit___t17__velocity:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t17__spin: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t18: %UnityEngineVector3, null\n    __PredictTrailExit___t19:
     %UnityEngineVector3, null\n    __PredictTrailExit___t20: %VRCUdonUdonBehaviour,
     null\n    __PredictTrailExit___t21: %SystemSingle, 0\n    __PredictTrailExit___t22__position:
     %UnityEngineVector3, null\n    __PredictTrailExit___t22__velocity: %UnityEngineVector3,
-    null\n    __PredictTrailExit___t23: %UnityEngineVector3, null\n    __PredictTrailExit___t24:
-    %UnityEngineVector3, null\n    __PredictTrailExit___t25: %SystemSingle, 0\n   
-    __PredictTrailExit___t26__position: %UnityEngineVector3, null\n    __PredictTrailExit___t26__velocity:
-    %UnityEngineVector3, null\n    __PredictTrailExit_left: %SystemSingle, 0\n   
-    __PredictTrailExit_j: %SystemInt32, 0\n    __PredictTrailExit_right: %SystemSingle,
-    0\n    __PredictTrailExit_k: %SystemInt32, 0\n    __PredictTrailExit_middle:
+    null\n    __PredictTrailExit___t22__spin: %UnityEngineVector3, null\n    __PredictTrailExit___t23:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t24: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t25: %SystemSingle, 0\n    __PredictTrailExit___t26__position:
+    %UnityEngineVector3, null\n    __PredictTrailExit___t26__velocity: %UnityEngineVector3,
+    null\n    __PredictTrailExit___t26__spin: %UnityEngineVector3, null\n    __PredictTrailExit_left:
+    %SystemSingle, 0\n    __PredictTrailExit_j: %SystemInt32, 0\n    __PredictTrailExit_right:
+    %SystemSingle, 0\n    __PredictTrailExit_k: %SystemInt32, 0\n    __PredictTrailExit_middle:
     %SystemSingle, 0\n    __PredictTrailExit___t27: %SystemSingle, 0\n    __PredictTrailExit_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_p_0:
     %UnityEngineVector3, null\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_p_1:
@@ -138084,19 +138139,21 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_1: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Advance_p_2: %UnityEngineVector3, null\n   
     __X15zBallFlightModel__m__Advance_p_3: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_4:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_5: %SystemSingle, 0\n   
-    __X15zBallFlightModel__m__Advance_p_6: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_7:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance___t0: %SystemBoolean,
-    null\n    __X15zBallFlightModel__m__Advance_remaining: %SystemSingle, 0\n   
-    __X15zBallFlightModel__m__Advance_dt: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance___t1__position:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance___t1__velocity:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance___t2: %SystemSingle,
-    0\n    __X15zBallFlightModel__m__Advance_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __X15zBallFlightModel__m__Step_p_0: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_1:
-    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_2: %UnityEngineVector3,
-    null\n    __X15zBallFlightModel__m__Step_p_3: %UnityEngineVector3, null\n   
-    __X15zBallFlightModel__m__Step_p_4: %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_5:
-    %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_6: %SystemSingle, 0\n   
+    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Advance_p_5: %SystemSingle,
+    0\n    __X15zBallFlightModel__m__Advance_p_6: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_7:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_p_8: %SystemSingle, 0\n   
+    __X15zBallFlightModel__m__Advance___t0: %SystemBoolean, null\n    __X15zBallFlightModel__m__Advance_remaining:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_dt: %SystemSingle, 0\n   
+    __X15zBallFlightModel__m__Advance___t1__position: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t1__velocity: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t1__spin: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Advance___t2: %SystemSingle, 0\n    __X15zBallFlightModel__m__Advance_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __X15zBallFlightModel__m__Step_p_0: %UnityEngineVector3,
+    null\n    __X15zBallFlightModel__m__Step_p_1: %UnityEngineVector3, null\n   
+    __X15zBallFlightModel__m__Step_p_2: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_3:
+    %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_p_4: %UnityEngineVector3,
+    null\n    __X15zBallFlightModel__m__Step_p_5: %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_6:
+    %SystemSingle, 0\n    __X15zBallFlightModel__m__Step_p_7: %SystemSingle, 0\n   
     __X15zBallFlightModel__m__Step___t0: %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step___t1:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_retjump: %SystemUInt32,
     0xFFFFFFFC\n    __X15zBallFlightModel__m__AerodynamicAcceleration_p_0: %UnityEngineVector3,
@@ -138886,7 +138943,7 @@ MonoBehaviour:
     null\n    __ScanPitchZone__SystemSingle_intnl_71: %SystemSingle, 0\n    __PredictTrailExit_intnl_1:
     %SystemObject, null\n    __PredictTrailExit_intnl_2: %UnityEngineTransform, null\n   
     __PredictTrailExit_intnl_4: %SystemObject, null\n    __PredictTrailExit_intnl_5:
-    %UnityEngineVector3, null\n    __retaddr_99: %SystemUInt32, 0x0010134C\n    __PredictTrailExit_intnl_6:
+    %UnityEngineVector3, null\n    __retaddr_99: %SystemUInt32, 0x0010139C\n    __PredictTrailExit_intnl_6:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_9: %SystemBoolean, null\n   
     __PredictTrailExit_intnl_10: %SystemObject, null\n    __PredictTrailExit_intnl_11:
     %UnityEngineVector3, null\n    __const_215: %SystemString, \"snapshotIncomingVelocity\"\n   
@@ -138900,13 +138957,13 @@ MonoBehaviour:
     null\n    __PredictTrailExit_intnl_21: %SystemSingle, 0\n    __const_219: %SystemString,
     \"magnusCoefficient\"\n    __PredictTrailExit_intnl_22: %SystemObject, null\n   
     __PredictTrailExit_intnl_23: %SystemSingle, 0\n    __retaddr_100: %SystemUInt32,
-    0x00101724\n    __PredictTrailExit_intnl_24: %SystemBoolean, null\n    __PredictTrailExit_intnl_25:
-    %SystemSingle, 0\n    __retaddr_101: %SystemUInt32, 0x00101870\n    __PredictTrailExit_intnl_27:
-    %UnityEngineVector3, null\n    __retaddr_102: %SystemUInt32, 0x001018A0\n   
+    0x001017C4\n    __PredictTrailExit_intnl_24: %SystemBoolean, null\n    __PredictTrailExit_intnl_25:
+    %SystemSingle, 0\n    __retaddr_101: %SystemUInt32, 0x00101924\n    __PredictTrailExit_intnl_27:
+    %UnityEngineVector3, null\n    __retaddr_102: %SystemUInt32, 0x00101954\n   
     __PredictTrailExit_intnl_28: %SystemBoolean, null\n    __PredictTrailExit_intnl_29:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_30: %SystemSingle, 0\n   
-    __retaddr_103: %SystemUInt32, 0x001019D0\n    __PredictTrailExit_intnl_32: %UnityEngineVector3,
-    null\n    __retaddr_104: %SystemUInt32, 0x00101A00\n    __PredictTrailExit_intnl_33:
+    __retaddr_103: %SystemUInt32, 0x00101A84\n    __PredictTrailExit_intnl_32: %UnityEngineVector3,
+    null\n    __retaddr_104: %SystemUInt32, 0x00101AB4\n    __PredictTrailExit_intnl_33:
     %SystemBoolean, null\n    __PredictTrailExit_intnl_35: %SystemSingle, 0\n   
     __PredictTrailExit_intnl_36: %SystemSingle, 0\n    __PredictTrailExit_intnl_37:
     %SystemSingle, 0\n    __TrailHermite__UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_intnl_2:
@@ -138947,7 +139004,7 @@ MonoBehaviour:
     0\n    __CapturePoses__BatMotionBehaviour_intnl_21: %SystemSingle, 0\n    __CapturePoses__BatMotionBehaviour_intnl_22:
     %VRCUdonUdonBehaviour, null\n    __CapturePoses__BatMotionBehaviour_intnl_23:
     %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_24: %SystemBoolean,
-    null\n    __retaddr_105: %SystemUInt32, 0x001057D8\n    __CapturePoses__BatMotionBehaviour_intnl_25:
+    null\n    __retaddr_105: %SystemUInt32, 0x001058A0\n    __CapturePoses__BatMotionBehaviour_intnl_25:
     %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_26: %SystemSingle,
     0\n    __CapturePoses__BatMotionBehaviour_intnl_27: %SystemBoolean, null\n   
     __CapturePoses__BatMotionBehaviour_intnl_28: %SystemObject, null\n    __CapturePoses__BatMotionBehaviour_intnl_29:
@@ -138957,14 +139014,14 @@ MonoBehaviour:
     %SystemBoolean, null\n    __CapturePoses__BatMotionBehaviour_intnl_34: %VRCUdonUdonBehaviour,
     null\n    __CapturePoses__BatMotionBehaviour_intnl_35: %SystemObject, null\n   
     __CapturePoses__BatMotionBehaviour_intnl_36: %SystemBoolean, null\n    __retaddr_106:
-    %SystemUInt32, 0x0010C7AC\n    __CapturePoses__BatMotionBehaviour_intnl_37: %SystemObject,
+    %SystemUInt32, 0x0010C874\n    __CapturePoses__BatMotionBehaviour_intnl_37: %SystemObject,
     null\n    __CapturePoses__BatMotionBehaviour_intnl_38: %SystemSingle, 0\n   
     __const_222: %UnityEngineVector3Array, null\n    __const_223: %UnityEngineQuaternionArray,
     null\n    __const_224: %SystemInt32Array, null\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_1:
     %SystemInt32, 0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_2: %SystemSingle,
     0\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_4: %SystemInt32, 0\n   
     __AddPose__BatMotionBehaviour_SystemSingle_intnl_5: %SystemBoolean, null\n   
-    __retaddr_107: %SystemUInt32, 0x0010DD88\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_6:
+    __retaddr_107: %SystemUInt32, 0x0010DE50\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_6:
     %SystemObject, null\n    __AddPose__BatMotionBehaviour_SystemSingle_intnl_7:
     %UnityEngineVector3, null\n    __const_225: %SystemString, \"contactSampleVelocity\"\n   
     __AddPose__BatMotionBehaviour_SystemSingle_intnl_8: %SystemObject, null\n   
@@ -139013,15 +139070,15 @@ MonoBehaviour:
     %UnityEngineVector3Array, null\n    __FreezeTrail_intnl_49: %UnityEngineQuaternionArray,
     null\n    __FreezeTrail_intnl_50: %UnityEngineColorArray, null\n    __FreezeTrail_intnl_51:
     %SystemBooleanArray, null\n    __FreezeTrail_intnl_52: %SystemBoolean, null\n   
-    __retaddr_108: %SystemUInt32, 0x00113588\n    __FreezeTrail_intnl_53: %SystemSingle,
-    0\n    __retaddr_109: %SystemUInt32, 0x00116520\n    __FreezeTrail_intnl_54:
+    __retaddr_108: %SystemUInt32, 0x00113650\n    __FreezeTrail_intnl_53: %SystemSingle,
+    0\n    __retaddr_109: %SystemUInt32, 0x001165E8\n    __FreezeTrail_intnl_54:
     %SystemBoolean, null\n    __FreezeTrail_intnl_55: %UnityEngineVector3, null\n   
     __FreezeTrail_intnl_56: %UnityEngineVector3, null\n    __FreezeTrail_intnl_57:
     %VRCUdonUdonBehaviour, null\n    __FreezeTrail_intnl_58: %SystemObject, null\n   
     __FreezeTrail_intnl_59: %UnityEngineVector3, null\n    __FreezeTrail_intnl_60:
     %UnityEngineColorArray, null\n    __FreezeTrail_intnl_61: %SystemInt32, 0\n   
-    __retaddr_110: %SystemUInt32, 0x0011CA44\n    __FreezeTrail_intnl_62: %SystemSingle,
-    0\n    __retaddr_111: %SystemUInt32, 0x0011FE34\n    __FreezeTrail_intnl_63:
+    __retaddr_110: %SystemUInt32, 0x0011CB0C\n    __FreezeTrail_intnl_62: %SystemSingle,
+    0\n    __retaddr_111: %SystemUInt32, 0x0011FEFC\n    __FreezeTrail_intnl_63:
     %UnityEngineColor, null\n    __FreezeTrail_intnl_66: %SystemBoolean, null\n   
     __const_233: %SystemString, \"Pose history interrupted\"\n    __FreezeTrail_intnl_67:
     %SystemObject, null\n    __FreezeTrail_intnl_68: %VRCUdonUdonBehaviour, null\n   
@@ -139040,7 +139097,7 @@ MonoBehaviour:
     null\n    __SampleSavedPose__SystemSingle_intnl_1: %SystemSingle, 0\n    __SampleSavedPose__SystemSingle_intnl_3:
     %SystemInt32, 0\n    __SampleSavedPose__SystemSingle_intnl_4: %SystemSingle,
     0\n    __SampleSavedPose__SystemSingle_intnl_5: %SystemBoolean, null\n    __retaddr_112:
-    %SystemUInt32, 0x00122090\n    __SampleSavedPose__SystemSingle_intnl_6: %SystemInt32,
+    %SystemUInt32, 0x00122158\n    __SampleSavedPose__SystemSingle_intnl_6: %SystemInt32,
     0\n    __SampleSavedPose__SystemSingle_intnl_7: %SystemBoolean, null\n    __SampleSavedPose__SystemSingle_intnl_9:
     %SystemSingle, 0\n    __SampleSavedPose__SystemSingle_intnl_10: %SystemBoolean,
     null\n    __SampleSavedPose__SystemSingle_intnl_11: %SystemInt32, 0\n    __SampleSavedPose__SystemSingle_intnl_12:
@@ -139051,7 +139108,7 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __SampleSavedPose__SystemSingle_intnl_22: %UnityEngineVector3,
     null\n    __SampleSavedPose__SystemSingle_intnl_23: %UnityEngineVector3, null\n   
     __SampleSavedPose__SystemSingle_intnl_24: %UnityEngineVector3, null\n    __retaddr_113:
-    %SystemUInt32, 0x00122458\n    __SampleSavedPose__SystemSingle_intnl_25: %UnityEngineVector3,
+    %SystemUInt32, 0x00122520\n    __SampleSavedPose__SystemSingle_intnl_25: %UnityEngineVector3,
     null\n    __SampleSavedPose__SystemSingle_intnl_27: %UnityEngineQuaternion, null\n   
     __SampleSavedPose__SystemSingle_intnl_28: %UnityEngineQuaternion, null\n    __SampleSavedPose__SystemSingle_intnl_32:
     %SystemObject, null\n    __SampleSavedPose__SystemSingle_intnl_33: %VRCUdonUdonBehaviour,
@@ -139076,16 +139133,16 @@ MonoBehaviour:
     null\n    __ShowBatTrail_intnl_0: %SystemBoolean, null\n    __ShowBatTrail_intnl_1:
     %UnityEngineTransform, null\n    __ShowBatTrail_intnl_2: %UnityEngineRenderer,
     null\n    __ShowBatTrail_intnl_3: %SystemBoolean, null\n    __ShowBatTrail_intnl_4:
-    %SystemBoolean, null\n    __retaddr_114: %SystemUInt32, 0x00123014\n    __ShowBatTrail_intnl_5:
+    %SystemBoolean, null\n    __retaddr_114: %SystemUInt32, 0x001230DC\n    __ShowBatTrail_intnl_5:
     %SystemBoolean, null\n    __ShowBatTrail_intnl_6: %SystemBoolean, null\n    __const_237:
     %SystemString, \"Visual reference missing or inside a physics hierarchy\"\n   
     __ShowBatTrail_intnl_7: %UnityEngineVector3, null\n    __ShowBatTrail_intnl_8:
     %UnityEngineQuaternion, null\n    __ShowBatTrail_intnl_9: %UnityEngineMaterial,
     null\n    __ShowBatTrail_intnl_10: %UnityEngineColor, null\n    __retaddr_115:
-    %SystemUInt32, 0x00123E54\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_0:
-    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x00123F04\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_4:
-    %SystemBoolean, null\n    __retaddr_117: %SystemUInt32, 0x00123F7C\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_7:
-    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x00123FF4\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_10:
+    %SystemUInt32, 0x00123F1C\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_0:
+    %SystemBoolean, null\n    __retaddr_116: %SystemUInt32, 0x00123FCC\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_4:
+    %SystemBoolean, null\n    __retaddr_117: %SystemUInt32, 0x00124044\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_7:
+    %SystemBoolean, null\n    __retaddr_118: %SystemUInt32, 0x001240BC\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_10:
     %SystemBoolean, null\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_12:
     %SystemSingle, 0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_13: %SystemSingle,
     0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_14: %SystemSingle, 0\n   
@@ -139094,13 +139151,13 @@ MonoBehaviour:
     0\n    __X11zBatGeometry__m__EffectiveSphereRadius_intnl_18: %SystemSingle, 0\n   
     __X11zBatGeometry__m__Finite_intnl_0: %SystemBoolean, null\n    __const_238:
     %SystemSingle, null\n    __X15zBallFlightModel__m__Advance_intnl_2: %SystemBoolean,
-    null\n    __retaddr_119: %SystemUInt32, 0x001243E0\n    __X15zBallFlightModel__m__Step_intnl_0:
+    null\n    __retaddr_119: %SystemUInt32, 0x001244D0\n    __X15zBallFlightModel__m__Step_intnl_0:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_1: %UnityEngineVector3,
-    null\n    __retaddr_120: %SystemUInt32, 0x001244FC\n    __X15zBallFlightModel__m__Step_intnl_2:
+    null\n    __retaddr_120: %SystemUInt32, 0x00124614\n    __X15zBallFlightModel__m__Step_intnl_2:
     %UnityEngineVector3, null\n    __X15zBallFlightModel__m__Step_intnl_3: %UnityEngineVector3,
     null\n    __X15zBallFlightModel__m__Step_intnl_4: %UnityEngineVector3, null\n   
     __X15zBallFlightModel__m__Step_intnl_6: %UnityEngineVector3, null\n    __retaddr_121:
-    %SystemUInt32, 0x00124640\n    __X15zBallFlightModel__m__AerodynamicAcceleration_intnl_0:
+    %SystemUInt32, 0x0012476C\n    __X15zBallFlightModel__m__AerodynamicAcceleration_intnl_0:
     %UnityEngineVector3, null\n    __X16zBallAerodynamics__m__Acceleration_intnl_0:
     %SystemSingle, 0\n    __X16zBallAerodynamics__m__Acceleration_intnl_1: %SystemSingle,
     0\n    __X16zBallAerodynamics__m__Acceleration_intnl_2: %SystemSingle, 0\n   
@@ -197377,6 +197434,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_21\n        PUSH, __PredictTrailExit_step\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__position\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__velocity\n       
+    COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_state__spin\n       
     COPY\n        PUSH, __const_0\n        PUSH, __PredictTrailExit___t7\n       
     COPY\n        PUSH, __const_0\n        PUSH, __PredictTrailExit___t9\n       
     COPY\n        PUSH, __const_25\n        PUSH, __PredictTrailExit_spin\n       
@@ -197386,14 +197444,17 @@ MonoBehaviour:
     COPY\n        PUSH, __const_1\n        PUSH, __PredictTrailExit_i\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_next__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_next__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit_next__spin\n        COPY\n       
     PUSH, __const_0\n        PUSH, __PredictTrailExit___t15\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t17__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t18\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t19\n        COPY\n       
     PUSH, __const_0\n        PUSH, __PredictTrailExit___t20\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit___t22__spin\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t23\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit___t24\n        COPY\n       
     PUSH, __const_21\n        PUSH, __PredictTrailExit___t25\n        COPY\n       
@@ -197429,6 +197490,7 @@ MonoBehaviour:
     JUMP_INDIRECT, __PredictTrailExit_retjump\n    __PredictTrailExit_L7:\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_state__position\n        COPY\n       
     PUSH, __const_25\n        PUSH, __PredictTrailExit_state__velocity\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __PredictTrailExit_state__spin\n        COPY\n       
     PUSH, contact\n        PUSH, __PredictTrailExit___t7\n        COPY\n        PUSH,
     __PredictTrailExit___t7\n        PUSH, __const_32\n        PUSH, __PredictTrailExit_intnl_10\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
@@ -197451,6 +197513,7 @@ MonoBehaviour:
     PUSH, __PredictTrailExit_intnl_18\n        JUMP_IF_FALSE, __PredictTrailExit_L9\n       
     PUSH, __PredictTrailExit_state__position\n        PUSH, __PredictTrailExit___t17__position\n       
     COPY\n        PUSH, __PredictTrailExit_state__velocity\n        PUSH, __PredictTrailExit___t17__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit_state__spin\n        PUSH, __PredictTrailExit___t17__spin\n       
     COPY\n        PUSH, __PredictTrailExit_spin\n        PUSH, __PredictTrailExit___t18\n       
     COPY\n        PUSH, __PredictTrailExit___t19\n        EXTERN, \"UnityEnginePhysics.__get_gravity__UnityEngineVector3\"\n       
     PUSH, flight\n        PUSH, __PredictTrailExit___t15\n        COPY\n        PUSH,
@@ -197458,6 +197521,7 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __PredictTrailExit___t17__position\n        PUSH, __PredictTrailExit___t22__position\n       
     COPY\n        PUSH, __PredictTrailExit___t17__velocity\n        PUSH, __PredictTrailExit___t22__velocity\n       
+    COPY\n        PUSH, __PredictTrailExit___t17__spin\n        PUSH, __PredictTrailExit___t22__spin\n       
     COPY\n        PUSH, __PredictTrailExit___t18\n        PUSH, __PredictTrailExit___t23\n       
     COPY\n        PUSH, __PredictTrailExit___t19\n        PUSH, __PredictTrailExit___t24\n       
     COPY\n        PUSH, __PredictTrailExit_intnl_20\n        PUSH, __PredictTrailExit___t25\n       
@@ -197466,16 +197530,18 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __PredictTrailExit___t22__position\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n       
     COPY\n        PUSH, __PredictTrailExit___t22__velocity\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n       
-    COPY\n        PUSH, __PredictTrailExit___t23\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n       
-    COPY\n        PUSH, __PredictTrailExit___t24\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n       
-    COPY\n        PUSH, __PredictTrailExit___t25\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n       
-    COPY\n        PUSH, __PredictTrailExit_intnl_22\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n       
-    COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n       
+    COPY\n        PUSH, __PredictTrailExit___t22__spin\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n       
+    COPY\n        PUSH, __PredictTrailExit___t23\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n       
+    COPY\n        PUSH, __PredictTrailExit___t24\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n       
+    COPY\n        PUSH, __PredictTrailExit___t25\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n       
+    COPY\n        PUSH, __PredictTrailExit_intnl_22\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n       
     COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    COPY\n        PUSH, __PredictTrailExit_step\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     COPY\n        PUSH, __retaddr_100\n        PUSH, __X15zBallFlightModel__m__Advance_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__Advance\n        PUSH, __ret__X15zBallFlightModel__m__Advance__position\n       
     PUSH, __PredictTrailExit_next__position\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
-    PUSH, __PredictTrailExit_next__velocity\n        COPY\n        PUSH, __const_21\n       
+    PUSH, __PredictTrailExit_next__velocity\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
+    PUSH, __PredictTrailExit_next__spin\n        COPY\n        PUSH, __const_21\n       
     PUSH, __PredictTrailExit_left\n        COPY\n        PUSH, __const_3\n       
     PUSH, __PredictTrailExit_j\n        COPY\n    __PredictTrailExit_L10:\n       
     PUSH, __PredictTrailExit_j\n        PUSH, __const_138\n        PUSH, __PredictTrailExit_intnl_24\n       
@@ -197538,7 +197604,8 @@ MonoBehaviour:
     PUSH, __const_3\n        PUSH, __PredictTrailExit_j\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     JUMP, __PredictTrailExit_L10\n    __PredictTrailExit_L11:\n        PUSH, __PredictTrailExit_next__position\n       
     PUSH, __PredictTrailExit_state__position\n        COPY\n        PUSH, __PredictTrailExit_next__velocity\n       
-    PUSH, __PredictTrailExit_state__velocity\n        COPY\n        PUSH, __PredictTrailExit_time\n       
+    PUSH, __PredictTrailExit_state__velocity\n        COPY\n        PUSH, __PredictTrailExit_next__spin\n       
+    PUSH, __PredictTrailExit_state__spin\n        COPY\n        PUSH, __PredictTrailExit_time\n       
     PUSH, __PredictTrailExit_step\n        PUSH, __PredictTrailExit_time\n       
     EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __PredictTrailExit_i\n        PUSH, __const_3\n        PUSH, __PredictTrailExit_i\n       
@@ -205417,23 +205484,24 @@ MonoBehaviour:
     __X11zBatGeometry__m__Finite_retjump\n        JUMP_INDIRECT, __X11zBatGeometry__m__Finite_retjump\n   
     X15zBallFlightModel__m__Advance:\n        PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     COPY\n        PUSH, __const_21\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __const_21\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __const_21\n       
     PUSH, __X15zBallFlightModel__m__Advance___t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance___t0\n        JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L0\n       
     JUMP, __X15zBallFlightModel__m__Advance_L1\n    __X15zBallFlightModel__m__Advance_L0:\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __const_21\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_8\n        PUSH, __const_21\n       
     PUSH, __X15zBallFlightModel__m__Advance___t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
     __X15zBallFlightModel__m__Advance_L1:\n        PUSH, __X15zBallFlightModel__m__Advance___t0\n       
     JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L3\n        PUSH, __X15zBallFlightModel__m__Advance_p_0\n       
     PUSH, __ret__X15zBallFlightModel__m__Advance__position\n        COPY\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n    __X15zBallFlightModel__m__Advance_L3:\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_7\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     COPY\n    __X15zBallFlightModel__m__Advance_L4:\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     PUSH, __const_58\n        PUSH, __X15zBallFlightModel__m__Advance_intnl_2\n       
     EXTERN, \"SystemSingle.__op_GreaterThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_intnl_2\n        JUMP_IF_FALSE, __X15zBallFlightModel__m__Advance_L5\n       
-    PUSH, __X15zBallFlightModel__m__Advance_remaining\n        PUSH, __X15zBallFlightModel__m__Advance_p_7\n       
+    PUSH, __X15zBallFlightModel__m__Advance_remaining\n        PUSH, __X15zBallFlightModel__m__Advance_p_8\n       
     PUSH, __X15zBallFlightModel__m__Advance_dt\n        EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        PUSH, __X15zBallFlightModel__m__Step_p_0\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n       
@@ -205441,38 +205509,42 @@ MonoBehaviour:
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_3\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_4\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_5\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_6\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     COPY\n        PUSH, __retaddr_119\n        PUSH, __X15zBallFlightModel__m__Step_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__Step\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
-    PUSH, __X15zBallFlightModel__m__Advance_p_1\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_1\n        COPY\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
+    PUSH, __X15zBallFlightModel__m__Advance_p_2\n        COPY\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     PUSH, __X15zBallFlightModel__m__Advance_dt\n        PUSH, __X15zBallFlightModel__m__Advance_remaining\n       
     EXTERN, \"SystemSingle.__op_Subtraction__SystemSingle_SystemSingle__SystemSingle\"\n       
     JUMP, __X15zBallFlightModel__m__Advance_L4\n    __X15zBallFlightModel__m__Advance_L5:\n       
     PUSH, __X15zBallFlightModel__m__Advance_p_0\n        PUSH, __ret__X15zBallFlightModel__m__Advance__position\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Advance__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Advance_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Advance__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n       
     JUMP_INDIRECT, __X15zBallFlightModel__m__Advance_retjump\n    X15zBallFlightModel__m__Step:\n       
     PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_intnl_0\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n        PUSH, __X15zBallFlightModel__m__Step_intnl_1\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_0\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_2\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_1\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_4\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_2\n       
-    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_3\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_3\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_1\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_5\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_2\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_3\n       
     COPY\n        PUSH, __retaddr_120\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_retjump\n       
     COPY\n        JUMP, X15zBallFlightModel__m__AerodynamicAcceleration\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_1\n        PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_ret\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    PUSH, __X15zBallFlightModel__m__Step_intnl_3\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_4\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_0\n        PUSH, __X15zBallFlightModel__m__Step_intnl_4\n       
     PUSH, __X15zBallFlightModel__m__Step_p_1\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
-    PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_6\n       
+    PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __X15zBallFlightModel__m__Step_p_7\n       
     PUSH, __X15zBallFlightModel__m__Step_intnl_6\n        EXTERN, \"UnityEngineVector3.__op_Multiply__UnityEngineVector3_SystemSingle__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_p_0\n        PUSH, __X15zBallFlightModel__m__Step_intnl_6\n       
     PUSH, __X15zBallFlightModel__m__Step_p_0\n        EXTERN, \"UnityEngineVector3.__op_Addition__UnityEngineVector3_UnityEngineVector3__UnityEngineVector3\"\n       
     PUSH, __X15zBallFlightModel__m__Step_p_0\n        PUSH, __ret__X15zBallFlightModel__m__Step__position\n       
     COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_1\n        PUSH, __ret__X15zBallFlightModel__m__Step__velocity\n       
+    COPY\n        PUSH, __X15zBallFlightModel__m__Step_p_2\n        PUSH, __ret__X15zBallFlightModel__m__Step__spin\n       
     COPY\n        JUMP_INDIRECT, __X15zBallFlightModel__m__Step_retjump\n       
     JUMP_INDIRECT, __X15zBallFlightModel__m__Step_retjump\n    X15zBallFlightModel__m__AerodynamicAcceleration:\n       
     PUSH, __X15zBallFlightModel__m__AerodynamicAcceleration_p_0\n        PUSH, __X16zBallAerodynamics__m__Acceleration_p_0\n       
@@ -205565,8 +205637,8 @@ MonoBehaviour:
   networkCallableSlots: []
   optExternBefore: 35724
   optExternAfter: 35723
-  optInsnBefore: 152195
-  optInsnAfter: 150926
-  optBytesBefore: 1206388
-  optBytesAfter: 1197892
+  optInsnBefore: 152258
+  optInsnAfter: 150971
+  optBytesBefore: 1206808
+  optBytesAfter: 1198192
   optStage: ran

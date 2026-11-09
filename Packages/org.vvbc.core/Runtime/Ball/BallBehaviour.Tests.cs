@@ -101,6 +101,28 @@ public partial class BallBehaviour
         Assert.IsTrue(Mathf.Abs(later.velocity.y + 0.3f) < 0.0001f);
     }
 
+    [TsukimiTest]
+    public void BattedSpinHalvesEveryHalfLife()
+    {
+        BallFlightState state = new BallFlightState();
+        BallFlightState decayed = BallFlightModel.AdvanceDecayingSpin(state, Vector3.up * 100f,
+            Vector3.zero, 0f, 0f, 1f, 0.02f, 1f);
+        Assert.IsTrue(Mathf.Abs(decayed.spin.y - 50f) < 0.01f);
+        BallFlightState kept = BallFlightModel.AdvanceDecayingSpin(state, Vector3.up * 100f,
+            Vector3.zero, 0f, 0f, 1f, 0.02f, 0f);
+        Assert.IsTrue(Mathf.Abs(kept.spin.y - 100f) < 0.0001f);
+    }
+
+    [TsukimiTest]
+    public void AngularDragForHalfLifeHalvesSpinOverOneHalfLife()
+    {
+        float drag = BallFlightModel.AngularDragForHalfLife(1f);
+        Assert.IsTrue(Mathf.Abs(drag - 0.6931472f) < 0.0001f);
+        Assert.AreEqual(0f, BallFlightModel.AngularDragForHalfLife(0f));
+        Assert.AreEqual(0f, BallFlightModel.AngularDragForHalfLife(-1f));
+        Assert.IsTrue(Mathf.Abs(BallFlightModel.AngularDragForHalfLife(2f) - 0.3465736f) < 0.0001f);
+    }
+
     private bool Outside(float start, float end, float maxExtrapolation, Transform unused, Vector3 half)
     {
         return ContactPathOutsideLocalBox(start, end, maxExtrapolation, Vector3.zero, Quaternion.identity,

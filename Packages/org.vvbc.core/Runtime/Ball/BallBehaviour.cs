@@ -19,6 +19,10 @@ public partial class BallBehaviour : TsukimiBehaviour
     [Header("Flight Physics")]
     [Tooltip("Aerodynamic drag coefficient, in inverse metres. Default 0.00622.")] public float dragCoefficient = 0.00622f;
     [Tooltip("Magnus coefficient. Default 0.00063; spin is in radians per second.")] public float magnusCoefficient = 0.00063f;
+    [Tooltip("Half-life of a batted ball's spin, in seconds; sets Rigidbody.angularDrag at the hit. 0 disables decay. Default 1.")] public float battedSpinHalfLife = 1f;
+    [Range(0f, 1f), Tooltip("Fraction of spin kept after each ground bounce. Default 0.4.")] public float bounceSpinRetention = 0.4f;
+    [Tooltip("Rigidbody.angularDrag after a ground bounce, per second. Acts as rolling resistance: a rolling ball loses speed at about 0.29 x this value per second. Default 0.8.")]
+    public float rollingAngularDrag = 0.8f;
     [Tooltip("Ground surfaces reported to the strike observer.")] public LayerMask groundLayers;
 
     // The owner of the Ball lifecycle turns flight on only for a free ball.

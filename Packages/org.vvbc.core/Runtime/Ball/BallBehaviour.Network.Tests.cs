@@ -144,7 +144,7 @@ public partial class BallBehaviour
     public void CatchupUsesExistingFlightModel()
     {
         BallFlightState state = AdvanceSnapshot(Vector3.up * 2f, Vector3.right * 10f,
-            Vector3.zero, Vector3.down * 10f, 0f, 0f, 0.03f, 0.02f);
+            Vector3.zero, Vector3.down * 10f, 0f, 0f, 0.03f, 0.02f, 0f);
         Assert.IsTrue(Mathf.Abs(state.position.x - 0.3f) < 0.0001f);
         Assert.IsTrue(Mathf.Abs(state.position.y - 1.993f) < 0.0001f);
         Assert.IsTrue(Mathf.Abs(state.velocity.y + 0.3f) < 0.0001f);

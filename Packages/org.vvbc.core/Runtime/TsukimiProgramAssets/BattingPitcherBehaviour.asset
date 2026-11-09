@@ -23,7 +23,7 @@ MonoBehaviour:
     spinRpm: %SystemSingle, 2500\n    .export spinRpm\n    .sync spinRpm, none\n   
     courseMask: %SystemInt32, 16\n    .export courseMask\n    .sync courseMask, none\n   
     pitchType: %SystemInt32, 0\n    .export pitchType\n    .sync pitchType, none\n   
-    resetSeconds: %SystemSingle, 3\n    .export resetSeconds\n    .sync resetSeconds,
+    resetSeconds: %SystemSingle, 7\n    .export resetSeconds\n    .sync resetSeconds,
     none\n    courseColumn: %SystemInt32, 1\n    .export courseColumn\n    courseRow:
     %SystemInt32, 1\n    .export courseRow\n    pitchSpinAxes: %UnityEngineVector3Array,
     null\n    .export pitchSpinAxes\n    presetAssetGuid: %SystemString, \"\"\n   
@@ -11756,7 +11756,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 6fd286d2a131ec749b6ef65fd7571a42, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: c681182451de239888f2668a9d5d796eabdd37430472674b1e662cca9d36de88
+  sourceFingerprint: 6435430e90af5fe91d7bf87ea46920f25ca205cc6c69fe25644e182c7bf630ee
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -11898,7 +11898,7 @@ MonoBehaviour:
     spinRpm: %SystemSingle, 2500\n    .export spinRpm\n    .sync spinRpm, none\n   
     courseMask: %SystemInt32, 16\n    .export courseMask\n    .sync courseMask, none\n   
     pitchType: %SystemInt32, 0\n    .export pitchType\n    .sync pitchType, none\n   
-    resetSeconds: %SystemSingle, 3\n    .export resetSeconds\n    .sync resetSeconds,
+    resetSeconds: %SystemSingle, 7\n    .export resetSeconds\n    .sync resetSeconds,
     none\n    courseColumn: %SystemInt32, 1\n    .export courseColumn\n    courseRow:
     %SystemInt32, 1\n    .export courseRow\n    pitchSpinAxes: %UnityEngineVector3Array,
     null\n    .export pitchSpinAxes\n    presetAssetGuid: %SystemString, \"\"\n   
@@ -23637,7 +23637,7 @@ MonoBehaviour:
     spinRpm: %SystemSingle, 2500\n    .export spinRpm\n    .sync spinRpm, none\n   
     courseMask: %SystemInt32, 16\n    .export courseMask\n    .sync courseMask, none\n   
     pitchType: %SystemInt32, 0\n    .export pitchType\n    .sync pitchType, none\n   
-    resetSeconds: %SystemSingle, 3\n    .export resetSeconds\n    .sync resetSeconds,
+    resetSeconds: %SystemSingle, 7\n    .export resetSeconds\n    .sync resetSeconds,
     none\n    courseColumn: %SystemInt32, 1\n    .export courseColumn\n    courseRow:
     %SystemInt32, 1\n    .export courseRow\n    pitchSpinAxes: %UnityEngineVector3Array,
     null\n    .export pitchSpinAxes\n    presetAssetGuid: %SystemString, \"\"\n   

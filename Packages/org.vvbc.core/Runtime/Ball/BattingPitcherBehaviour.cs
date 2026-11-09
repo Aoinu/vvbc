@@ -22,7 +22,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     [UdonSynced] public float spinRpm = 2500f;
     [UdonSynced] public int courseMask = 16;
     [UdonSynced] public int pitchType;
-    [UdonSynced] public float resetSeconds = 3f;
+    [UdonSynced] public float resetSeconds = 7f;
     public int courseColumn = 1;
     public int courseRow = 1;
     // Baked from the editor preset asset; no ScriptableObject is read at runtime.
