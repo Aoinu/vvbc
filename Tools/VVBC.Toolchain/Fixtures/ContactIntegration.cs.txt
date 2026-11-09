@@ -1,0 +1,607 @@
+// Execute in the development Editor with:
+// isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/ContactIntegration.cs.txt
+// This fixture creates a temporary preview scene and never uses Sandbox assets.
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+var objects = new System.Collections.Generic.List<UnityEngine.GameObject>();
+System.Func<string, UnityEngine.GameObject> make = name =>
+{
+    var go = new UnityEngine.GameObject(name);
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go, scene);
+    objects.Add(go);
+    return go;
+};
+System.Action<object, string, object> set = (target, name, value) =>
+{
+    var field = target.GetType().GetField(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+    if (field == null) throw new System.Exception("missing field: " + name);
+    field.SetValue(target, value);
+};
+System.Action<bool, string> check = (condition, name) =>
+{
+    if (!condition) throw new System.Exception("Contact integration failed: " + name);
+};
+try
+{
+    var ballObject = make("Ball");
+    var body = ballObject.AddComponent<UnityEngine.Rigidbody>();
+    var flight = ballObject.AddComponent<BallBehaviour>();
+    flight.body = body;
+    var ballCollider = ballObject.AddComponent<UnityEngine.SphereCollider>();
+    ballCollider.radius = 0.0366f;
+    flight.ballCollider = ballCollider;
+    var motion = make("Motion").AddComponent<BatMotionBehaviour>();
+    var radiusCurve = UnityEngine.AnimationCurve.Linear(0f, 0.0084f, 1f, 0.0334f);
+    radiusCurve.AddKey(0.1f / 0.855f, 0.0084f);
+    for (int i = 0; i < radiusCurve.length; i++)
+    {
+        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(radiusCurve, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+        UnityEditor.AnimationUtility.SetKeyRightTangentMode(radiusCurve, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+    }
+    motion.radiusCurve = radiusCurve;
+    float startNormalized = 0.1f / 0.855f;
+    for (int i = 0; i <= 20; i++)
+    {
+        float localY = UnityEngine.Mathf.Lerp(0.1f, 0.855f, i / 20f);
+        float previousWidth = UnityEngine.Mathf.Lerp(0.045f, 0.070f, i / 20f);
+        check(UnityEngine.Mathf.Abs(BatGeometry.ContactWidth(radiusCurve, 0.855f, localY, 0.0366f, 0f, 1f) - previousWidth) < 0.00001f,
+            "default width matches legacy interpolation");
+    }
+    var torpedo = UnityEngine.AnimationCurve.Linear(0f, 0.01f, 1f, 0.01f);
+    torpedo.AddKey(0.5f, 0.04f);
+    for (int i = 0; i < torpedo.length; i++)
+    {
+        UnityEditor.AnimationUtility.SetKeyLeftTangentMode(torpedo, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+        UnityEditor.AnimationUtility.SetKeyRightTangentMode(torpedo, i, UnityEditor.AnimationUtility.TangentMode.Linear);
+    }
+    check(UnityEngine.Mathf.Abs(BatGeometry.EvaluateRadius(torpedo, 0.25f) - 0.025f) < 0.00001f &&
+        BatGeometry.EvaluateRadius(torpedo, 0.5f) > BatGeometry.EvaluateRadius(torpedo, 1f), "torpedo interpolation");
+    check(BatGeometry.EvaluateRadius(torpedo, -1f) == BatGeometry.EvaluateRadius(torpedo, 0f) &&
+        BatGeometry.EvaluateRadius(torpedo, 2f) == BatGeometry.EvaluateRadius(torpedo, 1f), "curve coordinate clamps");
+    check(BatGeometry.EvaluateRadius(UnityEngine.AnimationCurve.Linear(0f, -1f, 1f, -1f), 0.5f) == 0f &&
+        float.IsNaN(BatGeometry.EvaluateRadius(torpedo, float.NaN)), "invalid and negative radius safety");
+    check(!motion.SetBatGeometry(float.PositiveInfinity, torpedo, 0.5f, 0f, 1f, 0f, 0.25f) &&
+        !motion.SetBatGeometry(0.855f, torpedo, 0.5f, 0.8f, 0.2f, 0f, 0.25f) &&
+        !motion.SetBatGeometry(0.855f, torpedo, 0.5f, 0f, 1f, -0.1f, 0.25f), "invalid geometry rejected");
+    int revisionBeforeGeometry = motion.contactHistoryRevision;
+    check(motion.SetBatGeometry(1f, torpedo, 0.5f, 0f, 1f, 0.01f, 0.25f) &&
+        UnityEngine.Mathf.Abs(motion.SweetSpotLocalY() - 0.5f) < 0.00001f &&
+        motion.contactHistoryRevision != revisionBeforeGeometry, "length and sweet spot reset history");
+    torpedo.MoveKey(1, new UnityEngine.Keyframe(0.5f, 0.1f));
+    check(UnityEngine.Mathf.Abs(motion.radiusCurve.Evaluate(0.5f) - 0.04f) < 0.00001f, "runtime geometry copies curve");
+    motion.ResetBattingSettings();
+    check(UnityEngine.Mathf.Abs(motion.SweetSpotLocalY() - 0.68f) < 0.00001f &&
+        UnityEngine.Mathf.Abs(motion.radiusCurve.Evaluate(startNormalized) - 0.0084f) < 0.00001f,
+        "reset restores geometry and curve");
+    var zone = make("Zone").transform;
+    var contact = make("Contact").AddComponent<BatContactBehaviour>();
+    contact.motion = motion;
+    contact.flight = flight;
+    contact.contactZone = zone;
+    contact.centerDirection = UnityEngine.Vector3.back;
+    var start = UnityEngine.Time.fixedTime - 0.02f;
+    var end = UnityEngine.Time.fixedTime;
+    var core = zone.position;
+    var rotation = UnityEngine.Quaternion.AngleAxis(-90f, UnityEngine.Vector3.forward);
+    var mt = new float[32]; mt[0] = start; mt[1] = end;
+    var mp = new UnityEngine.Vector3[32]; mp[0] = core; mp[1] = core + UnityEngine.Vector3.forward * 0.2f;
+    var mr = new UnityEngine.Quaternion[32]; mr[0] = rotation; mr[1] = rotation;
+    var mv = new UnityEngine.Vector3[32]; mv[0] = UnityEngine.Vector3.back * 70f; mv[1] = UnityEngine.Vector3.forward * 90f;
+    var mref = new UnityEngine.Vector3[32]; mref[0] = UnityEngine.Vector3.back * 20f; mref[1] = mref[0];
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactRotations", mr);
+    set(motion, "_contactVelocities", mv); set(motion, "_contactAngularVelocities", new UnityEngine.Vector3[32]);
+    set(motion, "_contactReferenceVelocities", mref); set(motion, "_contactHandsValid", new bool[32]);
+    set(motion, "_contactCount", 2); set(motion, "_contactNext", 2);
+    motion.contactPreviousTime = start; motion.contactOldestTime = start; motion.contactLatestTime = end;
+    var bt = new float[64]; bt[0] = start; bt[1] = end;
+    var bp = new UnityEngine.Vector3[64];
+    var bv = new UnityEngine.Vector3[64];
+    System.Action<float, float, int> seed = (firstX, lastX, sequence) =>
+    {
+        bt[0] = start; bt[1] = end;
+        bp[0] = core + UnityEngine.Vector3.right * firstX + UnityEngine.Vector3.back * 0.2f;
+        bp[1] = core + UnityEngine.Vector3.right * lastX;
+        bv[0] = new UnityEngine.Vector3((lastX - firstX) / 0.02f, 0f, 10f); bv[1] = bv[0];
+        set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+        set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+        set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+        flight.oldestMotionTime = start; flight.latestMotionTime = end;
+        flight.flightSequence = sequence; flight.contactConsumed = false; flight.flying = true;
+        body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+        set(contact, "_sequence", -1);
+    };
+    seed(0.35f, 0.75f, 101);
+    contact.OnBatContactPose();
+    var fraction = (contact.contactTime - start) / (end - start);
+    check(contact.contactValid && fraction > 0.1f && fraction < 0.2f, "first legal root");
+    var d = contact.contactPosition - contact.snapshotBatCorePosition;
+    check(UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(d, contact.snapshotN)) < 0.002f, "snapshot plane at tc");
+    check(UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(d, contact.snapshotX) - contact.snapshotPlaneX) < 0.0001f, "snapshot X");
+    check(UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(d, contact.snapshotY) - contact.snapshotPlaneY) < 0.0001f, "snapshot Y");
+    var u = fraction;
+    var expectedCoreZ = (-2f * u * u * u + 3f * u * u) * 0.2f +
+        (u * u * u - 2f * u * u + u) * 0.02f * -70f + (u * u * u - u * u) * 0.02f * 90f;
+    var expectedCoreVelocity = ((-6f * u * u + 6f * u) * 0.2f +
+        (3f * u * u - 4f * u + 1f) * 0.02f * -70f + (3f * u * u - 2f * u) * 0.02f * 90f) / 0.02f;
+    check(UnityEngine.Mathf.Abs(contact.snapshotBatCorePosition.z - expectedCoreZ) < 0.001f &&
+        UnityEngine.Mathf.Abs(contact.snapshotBatCoreVelocity.z - expectedCoreVelocity) < 0.02f &&
+        (contact.snapshotIncomingVelocity - new UnityEngine.Vector3(20f, 0f, 10f)).sqrMagnitude < 0.0001f, "all motion fields use tc");
+    var expected = new BallFlightState { position = contact.contactPosition, velocity = contact.resultVelocity };
+    expected = BallFlightModel.Advance(expected, contact.resultSpin, UnityEngine.Physics.gravity,
+        flight.dragCoefficient, flight.magnusCoefficient, end - contact.contactTime, UnityEngine.Time.fixedDeltaTime);
+    check((body.position - expected.position).sqrMagnitude < 0.00000001f &&
+        (body.velocity - expected.velocity).sqrMagnitude < 0.00000001f, "post-contact flight at physics time");
+    int count = contact.contactSequence;
+    var frozenPosition = contact.contactPosition;
+    var frozenVelocity = contact.resultVelocity;
+    bp[1] += UnityEngine.Vector3.one * 10f;
+    body.position += UnityEngine.Vector3.one;
+    contact.OnBatContactPose();
+    check(contact.contactSequence == count && flight.contactConsumed, "duplicate contact");
+    check(contact.contactPosition == frozenPosition && contact.resultVelocity == frozenVelocity, "snapshot stays frozen");
+    float originalQuality = contact.contactQuality;
+    float originalPlaneX = contact.snapshotPlaneX;
+    mr[0] = UnityEngine.Quaternion.AngleAxis(90f, UnityEngine.Vector3.forward); mr[1] = mr[0];
+    seed(-0.35f, -0.75f, 200);
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotPlaneX - originalPlaneX) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.contactQuality - originalQuality) < 0.0001f,
+        "mirrored Bat axis preserves contact position and quality");
+    mr[0] = rotation; mr[1] = rotation;
+    check(motion.SetBatGeometry(0.855f, radiusCurve, 0.68f / 0.855f, 0.1f / 0.855f, 1f, 0f, 1f), "set Bat geometry");
+    seed(0.35f, 0.75f, 201);
+    contact.OnBatContactPose();
+    check(contact.contactValid && contact.contactQuality > originalQuality && contact.contactQuality == 1f,
+        "Bat geometry changes actual contact quality");
+    mr[0] = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up) * rotation; mr[1] = mr[0];
+    check(motion.SetBattingTiming(10f), "set narrow Bat timing");
+    seed(0.35f, 0.75f, 202);
+    contact.OnBatContactPose();
+    check(!contact.contactValid, "narrow Bat timing rejects contact");
+    check(motion.SetBattingTiming(30f), "set default Bat timing");
+    seed(0.35f, 0.75f, 203);
+    contact.OnBatContactPose();
+    check(contact.contactValid, "wider Bat timing accepts contact");
+    mr[0] = rotation; mr[1] = rotation;
+    motion.ResetBattingSettings();
+    seed(0.35f, 0.75f, 204);
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.contactQuality - originalQuality) < 0.0001f,
+        "Bat reset restores original quality");
+    var defaultPowerCurve = motion.powerCurve;
+    check(UnityEngine.Mathf.Abs(contact.snapshotRawPower - 0.75f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(contact.snapshotRawPower, contact.snapshotPowerCap)) < 0.0001f,
+        "default raw power and final cap are applied to contact");
+    motion.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
+    seed(0.35f, 0.75f, 107);
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotRawPower - 0.5f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(contact.snapshotRawPower, contact.snapshotPowerCap)) < 0.0001f &&
+        contact.resultVelocity.magnitude < frozenVelocity.magnitude,
+        "edited curve changes actual contact power and result");
+    motion.powerCurve = defaultPowerCurve;
+    seed(0.35f, 0.75f, 105);
+    var incomingSpin = new UnityEngine.Vector3[64];
+    incomingSpin[0] = UnityEngine.Vector3.up * 300f; incomingSpin[1] = incomingSpin[0];
+    set(flight, "_angularVelocities", incomingSpin);
+    contact.OnBatContactPose();
+    check(contact.contactValid && (contact.resultVelocity - frozenVelocity).sqrMagnitude < 0.000001f &&
+        contact.snapshotIncomingSpin == incomingSpin[1], "incoming spin does not affect result");
+    seed(-0.2f, 0.9f, 102);
+    contact.OnBatContactPose();
+    fraction = (contact.contactTime - start) / (end - start);
+    check(contact.contactValid && fraction > 0.8f && fraction < 0.9f, "skip illegal earlier root, fraction=" + fraction + " valid=" + contact.contactValid + " x=" + contact.snapshotPlaneX);
+    mp[1] = core; mv[0] = UnityEngine.Vector3.zero; mv[1] = UnityEngine.Vector3.zero;
+    mt[1] = end + 0.02f; motion.contactLatestTime = mt[1];
+    bp[0] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.3f;
+    bp[1] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.1f;
+    bt[0] = start; bt[1] = end;
+    bv[0] = UnityEngine.Vector3.forward * 10f; bv[1] = bv[0];
+    set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+    set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+    set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    flight.oldestMotionTime = start; flight.latestMotionTime = end; flight.flightSequence = 103;
+    flight.contactConsumed = false; flight.flying = true;
+    body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+    set(contact, "_sequence", -1);
+    contact.OnBatContactPose();
+    check(contact.contactValid && contact.contactTime > end && contact.ballSampleExtrapolated, "future extrapolated contact");
+    check((body.velocity - bv[1]).sqrMagnitude < 0.000001f, "future result is pending");
+    var predictedTime = contact.contactTime;
+    var predictedResult = contact.resultVelocity;
+    bp[1] += UnityEngine.Vector3.right;
+    contact.OnBatContactPose();
+    check(contact.contactTime == predictedTime && contact.resultVelocity == predictedResult, "prediction is final after acceptance");
+    flight.Stage(UnityEngine.Vector3.zero);
+    check(!flight.flying && !flight.contactConsumed, "next pitch resets result");
+    var pending = (bool)flight.GetType().GetField("_contactPending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    check(!pending, "next pitch discards pending result");
+
+    bt[0] = start; bt[1] = end;
+    bp[0] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.3f;
+    bp[1] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.1f;
+    bv[0] = UnityEngine.Vector3.forward * 10f; bv[1] = bv[0];
+    set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+    set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+    set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    flight.oldestMotionTime = start; flight.latestMotionTime = end; flight.flightSequence = 106;
+    flight.contactConsumed = false; flight.flying = true;
+    body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+    set(contact, "_sequence", -1);
+    contact.OnBatContactPose();
+    check(contact.contactValid && contact.contactTime > end, "second future contact accepted");
+    float futurePhysicsTime = end + 0.02f;
+    var expectedFuture = new BallFlightState { position = contact.contactPosition, velocity = contact.resultVelocity };
+    expectedFuture = BallFlightModel.Advance(expectedFuture, contact.resultSpin, UnityEngine.Physics.gravity,
+        flight.dragCoefficient, flight.magnusCoefficient, futurePhysicsTime - contact.contactTime, UnityEngine.Time.fixedDeltaTime);
+    var apply = flight.GetType().GetMethod("ApplyPendingContact", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+    var pendingTime = (float)flight.GetType().GetField("_pendingTime", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    var pendingPosition = (UnityEngine.Vector3)flight.GetType().GetField("_pendingPosition", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    var pendingVelocity = (UnityEngine.Vector3)flight.GetType().GetField("_pendingVelocity", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight);
+    apply.Invoke(flight, new object[] { futurePhysicsTime });
+    check((body.position - expectedFuture.position).sqrMagnitude < 0.00000001f &&
+        (body.velocity - expectedFuture.velocity).sqrMagnitude < 0.00000001f &&
+        !(bool)flight.GetType().GetField("_contactPending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight),
+        "pending result applies once at later physics time; position error=" + (body.position - expectedFuture.position).magnitude +
+        " velocity error=" + (body.velocity - expectedFuture.velocity).magnitude +
+        " pending time delta=" + (pendingTime - contact.contactTime) + " pending position delta=" + (pendingPosition - contact.contactPosition).magnitude +
+        " pending velocity delta=" + (pendingVelocity - contact.resultVelocity).magnitude +
+        " pending=" + flight.GetType().GetField("_contactPending", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(flight));
+
+    // Resume an interval previously beyond the extrapolation limit after a new
+    // fixed sample arrives. Several Bat samples occurred in the meantime.
+    for (int i = 0; i < 5; i++)
+    {
+        mt[i] = end - 0.04f + i * 0.01f;
+        mp[i] = core; mv[i] = UnityEngine.Vector3.zero; mr[i] = rotation; mref[i] = UnityEngine.Vector3.back * 20f;
+    }
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactRotations", mr);
+    set(motion, "_contactVelocities", mv); set(motion, "_contactReferenceVelocities", mref);
+    set(motion, "_contactCount", 5); set(motion, "_contactNext", 5);
+    motion.contactOldestTime = mt[0]; motion.contactPreviousTime = mt[3]; motion.contactLatestTime = mt[4];
+    bt[0] = end - 0.04f; bt[1] = end;
+    bp[0] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.25f;
+    bp[1] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.forward * 0.15f;
+    bv[0] = UnityEngine.Vector3.forward * 10f; bv[1] = bv[0];
+    set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+    set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+    set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    flight.oldestMotionTime = bt[0]; flight.latestMotionTime = end; flight.flightSequence = 104;
+    flight.contactConsumed = false; flight.flying = true;
+    body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+    set(contact, "_sequence", 104); set(contact, "_historyRevision", motion.contactHistoryRevision);
+    set(contact, "_scannedUntil", end - 0.025f); set(contact, "_enteredZone", false); set(contact, "_opportunityEnded", false);
+    contact.contactValid = false;
+    contact.OnBatContactPose();
+    check(contact.contactValid && UnityEngine.Mathf.Abs(contact.contactTime - (end - 0.015f)) < 0.0002f,
+        "resume unevaluated intervals in chronological order");
+
+    var crossing = make("Crossing").AddComponent<PitchCrossingBehaviour>();
+    crossing.flight = flight;
+    set(crossing, "_origin", UnityEngine.Vector3.zero); set(crossing, "_forward", UnityEngine.Vector3.forward);
+    set(crossing, "_right", UnityEngine.Vector3.right); set(crossing, "_depth", 0.4318f);
+    set(crossing, "_width", 0.4318f); set(crossing, "_bottom", 0.7f); set(crossing, "_top", 1.3f);
+    set(crossing, "_radius", 0.0366f); set(crossing, "_previousTime", 1f);
+    set(crossing, "_previousPosition", new UnityEngine.Vector3(0f, 1f, 1f));
+    set(crossing, "_previousVelocity", UnityEngine.Vector3.back * 20f);
+    crossing.tracking = true;
+    crossing.NotifyContact(1.01f, new UnityEngine.Vector3(0f, 1f, 0.8f), UnityEngine.Vector3.back * 20f, UnityEngine.Vector3.zero);
+    check(crossing.hasResult && crossing.isStrike, "contact predicts unhit strike trajectory");
+    var strikePoint = crossing.resultCrossing;
+    crossing.NotifyContact(1.02f, UnityEngine.Vector3.one * 9f, UnityEngine.Vector3.forward, UnityEngine.Vector3.zero);
+    check(crossing.hasResult && crossing.isStrike && crossing.resultCrossing == strikePoint, "strike result remains fixed");
+
+    var batBody = make("BatBody");
+    var batRigid = batBody.AddComponent<UnityEngine.Rigidbody>();
+    var batCollider = batBody.AddComponent<UnityEngine.CapsuleCollider>();
+    set(motion, "body", batRigid);
+    motion.IgnoreBallCollision(ballCollider);
+    check(UnityEngine.Physics.GetIgnoreCollision(ballCollider, batCollider), "bat collider pair ignored");
+    var record = motion.GetType().GetMethod("RecordContactPose", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+    record.Invoke(motion, new object[] { 1f });
+    batBody.transform.position = UnityEngine.Vector3.right * 10f;
+    record.Invoke(motion, new object[] { 1.01f });
+    check(!motion.TrySampleContactPose(1.005f, 0.025f), "tracking jump does not form a sample interval");
+    motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, 99, null, false, false, false, null);
+    check(!motion.TrySampleContactPose(1.01f, 0.025f), "grip change clears history");
+    batRigid.centerOfMass = UnityEngine.Vector3.up * 0.25f;
+    batBody.transform.SetPositionAndRotation(UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
+    record.Invoke(motion, new object[] { 2f });
+    check(!motion.TryGetMeasuredPeaks(2f, 2f), "initial pose is not a measured frame difference");
+    batBody.transform.SetPositionAndRotation(UnityEngine.Vector3.right * 0.2f,
+        UnityEngine.Quaternion.AngleAxis(9f, UnityEngine.Vector3.up));
+    record.Invoke(motion, new object[] { 2.1f });
+    check(motion.TryGetMeasuredPeaks(2.1f, 2.1f) &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakReferenceSpeed - 2f) < 0.001f &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakAngularSpeed - 90f) < 0.01f,
+        "measured reference speed and angular speed use frame differences in m/s and degrees/s");
+    check(motion.TrySampleContactPose(2.1f, 0f) &&
+        UnityEngine.Vector3.Distance(motion.contactSampleRootPosition, UnityEngine.Vector3.right * 0.2f) < 0.001f &&
+        UnityEngine.Vector3.Distance(motion.contactSamplePosition, UnityEngine.Vector3.right * 0.2f) < 0.001f,
+        "contact origin is the bat root, not the offset centre of mass");
+    motion.GetType().GetMethod("ResetContactHistory", System.Reflection.BindingFlags.Instance |
+        System.Reflection.BindingFlags.NonPublic).Invoke(motion, null);
+    batBody.transform.SetPositionAndRotation(UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity);
+    record.Invoke(motion, new object[] { 3f });
+    batBody.transform.rotation = UnityEngine.Quaternion.AngleAxis(10f, UnityEngine.Vector3.forward);
+    record.Invoke(motion, new object[] { 3.1f });
+    float expectedSweetSpeed = 2f * 0.68f * UnityEngine.Mathf.Sin(5f * UnityEngine.Mathf.Deg2Rad) / 0.1f;
+    check(motion.TryGetMeasuredPeaks(3.1f, 3.1f) &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakReferenceSpeed - expectedSweetSpeed) < 0.001f,
+        "rotation speed uses the sweet-spot position");
+    check(motion.SetBatGeometry(1f, radiusCurve, 0.5f, 0.1f, 1f, 0f, 0.25f) &&
+        !motion.TryGetMeasuredPeaks(3f, 3.1f), "geometry change clears old reference-speed samples");
+    batBody.transform.rotation = UnityEngine.Quaternion.identity;
+    record.Invoke(motion, new object[] { 4f });
+    batBody.transform.rotation = UnityEngine.Quaternion.AngleAxis(10f, UnityEngine.Vector3.forward);
+    record.Invoke(motion, new object[] { 4.1f });
+    float expectedChangedSpeed = 2f * 0.5f * UnityEngine.Mathf.Sin(5f * UnityEngine.Mathf.Deg2Rad) / 0.1f;
+    check(motion.TryGetMeasuredPeaks(4.1f, 4.1f) &&
+        UnityEngine.Mathf.Abs(motion.measuredPeakReferenceSpeed - expectedChangedSpeed) < 0.001f,
+        "length and sweet-spot changes move the velocity reference");
+    motion.ResetBattingSettings();
+    motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, 100, null, false, false, false, null);
+    check(!motion.TryGetMeasuredPeaks(2f, 3f), "grip change clears measured history");
+    mt[0] = -0.03f; mt[1] = 0.01f;
+    mp[0] = UnityEngine.Vector3.left * 0.06f; mp[1] = UnityEngine.Vector3.right * 0.02f;
+    mv[0] = UnityEngine.Vector3.right * 2f; mv[1] = mv[0];
+    mr[0] = UnityEngine.Quaternion.identity; mr[1] = mr[0];
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactVelocities", mv);
+    set(motion, "_contactRotations", mr); set(motion, "_contactCount", 2); set(motion, "_contactNext", 2);
+    bt[0] = -0.02f; bt[1] = 0f;
+    bp[0] = UnityEngine.Vector3.back * 0.2f; bp[1] = UnityEngine.Vector3.zero;
+    bv[0] = UnityEngine.Vector3.forward * 10f; bv[1] = bv[0];
+    set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+    set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    check(motion.TrySampleContactPose(-0.01f, 0.025f) && flight.TrySampleContactMotion(-0.01f, 0.025f) &&
+        UnityEngine.Mathf.Abs(motion.contactSamplePosition.x + 0.02f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(flight.sampledPosition.z + 0.1f) < 0.0001f, "different sample intervals share one time");
+    mr[1] = UnityEngine.Quaternion.AngleAxis(90f, UnityEngine.Vector3.up);
+    var angular = new UnityEngine.Vector3[32]; angular[0] = UnityEngine.Vector3.up * (UnityEngine.Mathf.PI / 2f); angular[1] = angular[0];
+    set(motion, "_contactRotations", mr); set(motion, "_contactAngularVelocities", angular);
+    check(motion.TrySampleContactPose(-0.01f, 0.025f) &&
+        UnityEngine.Quaternion.Angle(motion.contactSampleRotation, UnityEngine.Quaternion.AngleAxis(45f, UnityEngine.Vector3.up)) < 0.01f,
+        "rotation uses slerp");
+    check(motion.TrySampleContactPose(0.03f, 0.025f) &&
+        UnityEngine.Quaternion.Angle(motion.contactSampleRotation, UnityEngine.Quaternion.AngleAxis(91.8f, UnityEngine.Vector3.up)) < 0.02f,
+        "bat rotation extrapolates within the limit");
+    var shortest = BatKinematics.AngularVelocity(UnityEngine.Quaternion.identity,
+        UnityEngine.Quaternion.AngleAxis(350f, UnityEngine.Vector3.up), 1f);
+    check((shortest - UnityEngine.Vector3.down * (10f * UnityEngine.Mathf.Deg2Rad)).sqrMagnitude < 0.000001f,
+        "angular difference follows the shortest rotation");
+    bt[0] = 1f; bt[1] = 1.02f;
+    var ballRotations = new UnityEngine.Quaternion[64];
+    ballRotations[0] = UnityEngine.Quaternion.identity;
+    ballRotations[1] = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up);
+    var ballAngular = new UnityEngine.Vector3[64];
+    ballAngular[1] = UnityEngine.Vector3.up * (1000f * UnityEngine.Mathf.Deg2Rad);
+    set(flight, "_times", bt); set(flight, "_rotations", ballRotations);
+    set(flight, "_angularVelocities", ballAngular); set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    check(flight.TrySampleFeedbackRotation(1.01f, 0.025f) &&
+        UnityEngine.Quaternion.Angle(flight.sampledRotation, UnityEngine.Quaternion.AngleAxis(10f, UnityEngine.Vector3.up)) < 0.05f,
+        "ball rotation interpolates at snapshot time");
+    check(flight.TrySampleFeedbackRotation(1.03f, 0.025f) &&
+        UnityEngine.Quaternion.Angle(flight.sampledRotation, UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.up)) < 0.05f &&
+        !flight.TrySampleFeedbackRotation(1.1f, 0.1f), "ball rotation extrapolation is bounded");
+    var feedback = make("Feedback").AddComponent<BattingFeedbackBehaviour>();
+    feedback.flight = flight; feedback.contact = contact;
+    flight.flightSequence = 123;
+    contact.contactPitchSequence = 123; contact.contactValid = true;
+    contact.contactTime = 4f; contact.contactPosition = new UnityEngine.Vector3(1f, 2f, 3f);
+    contact.snapshotBatCorePosition = new UnityEngine.Vector3(4f, 5f, 6f);
+    contact.snapshotBatRootPosition = new UnityEngine.Vector3(7f, 8f, 9f);
+    contact.snapshotBatRotation = UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.up);
+    contact.snapshotBallRotation = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up);
+    contact.snapshotBallRotationValid = true;
+    feedback.OnContactConfirmed();
+    var feedbackType = feedback.GetType();
+    var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var canMoveVisual = feedbackType.GetMethod("CanMoveVisual", flags);
+    check(!(bool)canMoveVisual.Invoke(feedback, new object[] { batBody.transform }) &&
+        (bool)canMoveVisual.Invoke(feedback, new object[] { zone }),
+        "feedback rejects physics transforms as visual targets");
+    check((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback) == contact.contactPosition &&
+        (UnityEngine.Vector3)feedbackType.GetField("_batPosition", flags).GetValue(feedback) == contact.snapshotBatRootPosition,
+        "contact feedback copies the accepted snapshot");
+    contact.contactPosition = UnityEngine.Vector3.zero;
+    feedback.OnContactConfirmed();
+    check((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback) != UnityEngine.Vector3.zero,
+        "duplicate contact cannot replace frozen feedback");
+    flight.Stage(UnityEngine.Vector3.zero);
+    feedback.Update();
+    check(!(bool)feedbackType.GetField("_hasResult", flags).GetValue(feedback) &&
+        !(bool)feedbackType.GetField("_shown", flags).GetValue(feedback), "ball reset discards pending feedback");
+    bt[0] = 5f; bt[1] = 5.1f;
+    bp[0] = new UnityEngine.Vector3(0f, 0.5f, -1f); bp[1] = new UnityEngine.Vector3(0f, 0.5f, 1f);
+    bv[0] = UnityEngine.Vector3.forward * 20f; bv[1] = bv[0];
+    set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+    set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+    mt[0] = 5f; mt[1] = 5.1f; mp[0] = UnityEngine.Vector3.zero; mp[1] = UnityEngine.Vector3.zero;
+    mv[0] = UnityEngine.Vector3.zero; mv[1] = UnityEngine.Vector3.zero;
+    mr[0] = UnityEngine.Quaternion.identity; mr[1] = UnityEngine.Quaternion.identity;
+    mref[0] = UnityEngine.Vector3.right * 8f; mref[1] = mref[0];
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactVelocities", mv);
+    set(motion, "_contactRotations", mr); set(motion, "_contactReferenceVelocities", mref);
+    set(motion, "_contactCount", 2); set(motion, "_contactNext", 2);
+    contact.centerDirection = UnityEngine.Vector3.forward;
+    motion.powerCurve = UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f);
+    var sampleCandidate = feedbackType.GetMethod("SampleCandidate", flags);
+    var consider = feedbackType.GetMethod("ConsiderScannedPoint", flags);
+    foreach (float t in new[] { 5.02f, 5.045f, 5.075f })
+    {
+        check((bool)sampleCandidate.Invoke(feedback, new object[] { motion, t }), "sample miss candidate");
+        consider.Invoke(feedback, new object[] { motion, t });
+    }
+    check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_time", flags).GetValue(feedback) - 5.05f) < 0.002f &&
+        UnityEngine.Mathf.Abs(((UnityEngine.Vector3)feedbackType.GetField("_ballPosition", flags).GetValue(feedback)).z) < 0.04f,
+        "miss refinement and display use the same closest snapshot");
+    check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_rawPower", flags).GetValue(feedback) - 0.26f) < 0.0001f,
+        "miss feedback uses the edited contact power curve");
+    feedbackType.GetMethod("FinalizeMiss", flags).Invoke(feedback, new object[] { 6f });
+    check((bool)feedbackType.GetField("_hasResult", flags).GetValue(feedback) &&
+        !(bool)feedbackType.GetField("_isContact", flags).GetValue(feedback), "miss is distinct from contact");
+    float now = UnityEngine.Time.time;
+    var measured = motion.GetType().GetMethod("RecordMeasuredSpeed", flags);
+    measured.Invoke(motion, new object[] { now - 0.61f, 99f, 999f });
+    measured.Invoke(motion, new object[] { now - 0.59f, 4f, 120f });
+    measured.Invoke(motion, new object[] { now - 0.30f, 12f, 60f });
+    measured.Invoke(motion, new object[] { now - 0.01f, 8f, 240f });
+    measured.Invoke(motion, new object[] { now + 0.01f, 200f, 2000f });
+    set(feedback, "_entryTime", now - 0.30f); set(feedback, "_exitTime", now - 0.10f);
+    set(feedback, "_exited", true); set(feedback, "_peakSpeed", 0f); set(feedback, "_peakAngular", 0f);
+    feedbackType.GetMethod("UpdatePeaks", flags).Invoke(feedback, new object[] { motion });
+    check(UnityEngine.Mathf.Abs((float)feedbackType.GetField("_peakSpeed", flags).GetValue(feedback) - 12f) < 0.001f &&
+        UnityEngine.Mathf.Abs((float)feedbackType.GetField("_peakAngular", flags).GetValue(feedback) - 240f) < 0.001f &&
+        UnityEngine.Mathf.Abs((float)feedbackType.GetField("_speed", flags).GetValue(feedback) - 8f) < 0.001f,
+        "entry-minus-0.3 and exit-plus-0.1 bound measured peaks independently from closest speed");
+
+    // Hold both hands in place while rotating their tracking poses enough for
+    // the existing wrist rule; only the new raw curve crosses its 0.55 gate.
+    mt[0] = start - 0.2f; mt[1] = start - 0.01f; mt[2] = end;
+    for (int i = 0; i < 3; i++) { mp[i] = core; mv[i] = UnityEngine.Vector3.zero; mr[i] = rotation; }
+    var handValid = new bool[32]; handValid[0] = handValid[1] = handValid[2] = true;
+    var handRotations = new UnityEngine.Quaternion[32];
+    handRotations[0] = UnityEngine.Quaternion.identity;
+    handRotations[1] = handRotations[2] = UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.up);
+    set(motion, "_contactTimes", mt); set(motion, "_contactPositions", mp); set(motion, "_contactVelocities", mv);
+    set(motion, "_contactRotations", mr); set(motion, "_contactAngularVelocities", new UnityEngine.Vector3[32]);
+    set(motion, "_contactHandsValid", handValid);
+    set(motion, "_contactLeftPositions", new UnityEngine.Vector3[32]);
+    set(motion, "_contactRightPositions", new UnityEngine.Vector3[32]);
+    set(motion, "_contactLeftRotations", handRotations); set(motion, "_contactRightRotations", handRotations);
+    set(motion, "_contactCount", 3); set(motion, "_contactNext", 3);
+    motion.contactOldestTime = mt[0]; motion.contactPreviousTime = mt[1]; motion.contactLatestTime = mt[2];
+    contact.centerDirection = UnityEngine.Vector3.back;
+    motion.powerCurve = defaultPowerCurve;
+    for (int pass = 0; pass < 2; pass++)
+    {
+        float speed = pass == 0 ? 10f : 20f;
+        for (int i = 0; i < 3; i++) mref[i] = UnityEngine.Vector3.back * speed;
+        set(motion, "_contactReferenceVelocities", mref);
+        bt[0] = start; bt[1] = end;
+        bp[0] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.back * 0.1f;
+        bp[1] = core + UnityEngine.Vector3.right * 0.68f + UnityEngine.Vector3.forward * 0.1f;
+        bv[0] = bv[1] = UnityEngine.Vector3.forward * 10f;
+        set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+        set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+        set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+        flight.oldestMotionTime = start; flight.latestMotionTime = end; flight.flightSequence = 200 + pass;
+        flight.contactConsumed = false; flight.flying = true;
+        body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+        set(contact, "_sequence", -1);
+        contact.OnBatContactPose();
+        float expectedRaw = pass == 0 ? 0.5f : 0.75f;
+        float expectedCap = pass == 0 ? 1f : 0.3f;
+        check(contact.contactValid && UnityEngine.Mathf.Abs(contact.snapshotRawPower - expectedRaw) < 0.0001f &&
+            UnityEngine.Mathf.Abs(contact.snapshotPowerCap - expectedCap) < 0.0001f &&
+            UnityEngine.Mathf.Abs(contact.finalBatPower - UnityEngine.Mathf.Min(expectedRaw, expectedCap)) < 0.0001f &&
+            contact.snapshotPowerCapReason == (pass == 0 ? 0 : 2), "raw power crosses unchanged wrist cap gate");
+    }
+    // Contact geometry follows the Bat model, not the Rigidbody centre of mass.
+    // The Body matches the packaged Bat: its origin is the model root and its
+    // capsule spans local +Y. Poses go through RecordContactPose and the real
+    // grip transitions; PhysX recomputes the automatic centre of mass.
+    var geometryBat = make("GeometryBat");
+    var geometryRigid = geometryBat.AddComponent<UnityEngine.Rigidbody>();
+    geometryRigid.isKinematic = true; geometryRigid.useGravity = false;
+    var geometryCollider = geometryBat.AddComponent<UnityEngine.CapsuleCollider>();
+    geometryCollider.direction = 1; geometryCollider.center = UnityEngine.Vector3.up * 0.43f;
+    geometryCollider.height = 0.85f; geometryCollider.radius = 0.035f; geometryCollider.enabled = false;
+    set(motion, "body", geometryRigid);
+    motion.ResetBattingSettings();
+    motion.powerCurve = defaultPowerCurve;
+    contact.centerDirection = UnityEngine.Vector3.back;
+    var physics = scene.GetPhysicsScene();
+    int geometryRevision = 500; int geometrySequence = 600;
+    var planeXs = new System.Collections.Generic.List<float>();
+    System.Func<UnityEngine.Vector3, UnityEngine.Quaternion, UnityEngine.Vector3, UnityEngine.Quaternion, string, float> hitSweetSpot =
+        (rootA, rotationA, rootB, rotationB, label) =>
+    {
+        // A grip transition starts a fresh history, as on every grab.
+        motion.Configure(BatMotionBehaviour.LocalHeld, 1, 1, 0, 1, 2, 1, 0, ++geometryRevision, null, false, false, false, null);
+        geometryBat.transform.SetPositionAndRotation(rootA, rotationA);
+        record.Invoke(motion, new object[] { start });
+        geometryBat.transform.SetPositionAndRotation(rootB, rotationB);
+        record.Invoke(motion, new object[] { end });
+        float middle = (start + end) * 0.5f;
+        var middleRoot = UnityEngine.Vector3.Lerp(rootA, rootB, 0.5f);
+        var middleRotation = UnityEngine.Quaternion.Slerp(rotationA, rotationB, 0.5f);
+        var point = middleRoot + middleRotation * (UnityEngine.Vector3.up * 0.68f);
+        var ballVelocity = UnityEngine.Vector3.forward * 20f;
+        bt[0] = start; bt[1] = end;
+        bp[0] = point + ballVelocity * (start - middle); bp[1] = point + ballVelocity * (end - middle);
+        bv[0] = ballVelocity; bv[1] = ballVelocity;
+        set(flight, "_times", bt); set(flight, "_positions", bp); set(flight, "_velocities", bv);
+        set(flight, "_angularVelocities", new UnityEngine.Vector3[64]);
+        set(flight, "_sampleCount", 2); set(flight, "_nextSample", 2);
+        flight.oldestMotionTime = start; flight.latestMotionTime = end; flight.flightSequence = ++geometrySequence;
+        flight.contactConsumed = false; flight.flying = true;
+        body.isKinematic = false; body.position = bp[1]; body.velocity = bv[1];
+        set(contact, "_sequence", -1);
+        // Miss feedback evaluates the same geometry from the same history.
+        check((bool)sampleCandidate.Invoke(feedback, new object[] { motion, middle }) &&
+            UnityEngine.Mathf.Abs((float)feedbackType.GetField("_candidateX", flags).GetValue(feedback) - 0.68f) < 0.001f,
+            label + ": feedback plane X=" + feedbackType.GetField("_candidateX", flags).GetValue(feedback));
+        contact.OnBatContactPose();
+        check(contact.contactValid, label + ": contact accepted");
+        float planeX = contact.snapshotPlaneX;
+        check(UnityEngine.Mathf.Abs(planeX - 0.68f) < 0.001f && UnityEngine.Mathf.Abs(contact.contactQuality - 1f) < 0.002f,
+            label + ": sweet spot plane X=" + planeX + " quality=" + contact.contactQuality +
+            " centre of mass=" + geometryRigid.centerOfMass);
+        var contactRoot = UnityEngine.Vector3.Lerp(rootA, rootB, (contact.contactTime - start) / (end - start));
+        check(contact.snapshotBatRootPosition == contact.snapshotBatCorePosition &&
+            UnityEngine.Vector3.Distance(contact.snapshotBatRootPosition, contactRoot) < 0.0005f &&
+            UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(contact.contactPosition - contact.snapshotBatRootPosition,
+                contact.snapshotX) - planeX) < 0.0001f, label + ": snapshot root is the contact origin");
+        feedback.OnContactConfirmed();
+        check((UnityEngine.Vector3)feedbackType.GetField("_batPosition", flags).GetValue(feedback) == contact.snapshotBatRootPosition,
+            label + ": contact feedback places the phantom at the contact origin");
+        planeXs.Add(planeX);
+        return planeX;
+    };
+    var batBase = UnityEngine.Quaternion.AngleAxis(-90f, UnityEngine.Vector3.forward);
+    var homeRoot = zone.position + UnityEngine.Vector3.left * 0.6f;
+    check(geometryRigid.centerOfMass.sqrMagnitude < 0.000001f, "first grab starts with the centre of mass at the root");
+    hitSweetSpot(homeRoot, batBase, homeRoot, batBase, "first grab");
+    // Release: the dynamic Bat enables its collider and PhysX moves the
+    // automatic centre of mass to the capsule centre.
+    motion.StopMotion();
+    geometryRigid.isKinematic = false; geometryCollider.enabled = true;
+    physics.Simulate(0.02f);
+    check(UnityEngine.Mathf.Abs(geometryRigid.centerOfMass.y - 0.43f) < 0.001f,
+        "released Bat moves the automatic centre of mass, com=" + geometryRigid.centerOfMass);
+    geometryRigid.isKinematic = true; geometryCollider.enabled = false;
+    physics.Simulate(0.02f);
+    check(UnityEngine.Mathf.Abs(geometryRigid.centerOfMass.y - 0.43f) < 0.001f,
+        "re-grabbed kinematic Bat keeps the moved centre of mass, com=" + geometryRigid.centerOfMass);
+    hitSweetSpot(homeRoot, batBase, homeRoot, batBase, "re-grab");
+    // Respawn while idle at another pose, then grab again.
+    motion.StopMotion();
+    geometryCollider.enabled = true;
+    var respawnRoot = homeRoot + new UnityEngine.Vector3(0.1f, -0.2f, 0.3f);
+    var respawnRotation = UnityEngine.Quaternion.AngleAxis(20f, UnityEngine.Vector3.up) *
+        UnityEngine.Quaternion.AngleAxis(30f, UnityEngine.Vector3.forward) * batBase;
+    geometryBat.transform.SetPositionAndRotation(respawnRoot, respawnRotation);
+    physics.Simulate(0.02f);
+    geometryCollider.enabled = false;
+    hitSweetSpot(respawnRoot, respawnRotation, respawnRoot, respawnRotation, "respawn, translated and rotated");
+    // Explicit centres of mass give the same plane X for the same local point.
+    foreach (float comY in new[] { 0f, 0.35f, 0.43f })
+    {
+        geometryRigid.centerOfMass = UnityEngine.Vector3.up * comY;
+        hitSweetSpot(homeRoot, batBase, homeRoot, batBase, "centre of mass y=" + comY);
+    }
+    geometryRigid.ResetCenterOfMass();
+    // A swinging Bat: translation toward the ball and roll about its own axis
+    // exercise Hermite position and slerped rotation between samples.
+    var rolled = batBase * UnityEngine.Quaternion.AngleAxis(25f, UnityEngine.Vector3.up);
+    hitSweetSpot(homeRoot + UnityEngine.Vector3.forward * 0.1f, batBase, homeRoot + UnityEngine.Vector3.back * 0.1f, rolled, "swinging Bat");
+    float minimumPlaneX = float.MaxValue, maximumPlaneX = -float.MaxValue;
+    foreach (float x in planeXs) { minimumPlaneX = UnityEngine.Mathf.Min(minimumPlaneX, x); maximumPlaneX = UnityEngine.Mathf.Max(maximumPlaneX, x); }
+    check(maximumPlaneX - minimumPlaneX < 0.001f, "plane X spread across grip, respawn and centre of mass=" + (maximumPlaneX - minimumPlaneX));
+    return "PASS contact integration: time, roots, snapshot, flight, extrapolation, reset, strike, collision, discontinuity and centre-of-mass-independent geometry";
+}
+finally
+{
+    foreach (var go in objects) if (go != null) UnityEngine.Object.DestroyImmediate(go);
+    UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+}

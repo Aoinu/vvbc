@@ -3,6 +3,7 @@ using UnityEngine;
 using VRC.SDK3.Components;
 using VRC.SDKBase;
 using VRC.Udon.Common;
+using VRC.Udon;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public partial class BatBehaviour : TsukimiBehaviour
@@ -17,6 +18,9 @@ public partial class BatBehaviour : TsukimiBehaviour
     [SerializeField] private VRC_Pickup gripB;
 
     [SerializeField] private BatMotionBehaviour motion;
+
+    // Cross-folder Udon interface for resolving this player's contact effects.
+    [HideInInspector] public UdonBehaviour vvbcBatContactEffects;
 
     [Header("Diagnostics")]
     [SerializeField] private bool debugGripTransitions;

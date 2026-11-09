@@ -1,0 +1,30 @@
+var go=new UnityEngine.GameObject("vvbc-temp-feedback-cache-test");
+try {
+ var motion=go.AddComponent<BatMotionBehaviour>(); var body=go.AddComponent<UnityEngine.Rigidbody>();
+ typeof(BatMotionBehaviour).GetField("body", System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(motion,body);
+ motion.batLength=1f; motion.sweetSpotNormalized=.5f; motion.contactStartNormalized=.1f; motion.contactEndNormalized=.9f; motion.contactMargin=.005f; motion.minimumQuality=.25f;
+ motion.radiusCurve=UnityEngine.AnimationCurve.Linear(0,.01f,1,.03f);
+ motion.Start();
+ int checks=0,failed=0;float maxError=0;
+ var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+ object initialSnapshot=typeof(BatMotionBehaviour).GetField("_feedbackCurveSnapshot",flags).GetValue(motion);
+ if(initialSnapshot==null || !object.ReferenceEquals(initialSnapshot,typeof(BatMotionBehaviour).GetField("_defaultRadiusCurve",flags).GetValue(motion)))failed++;checks++;
+ System.Action<float,float> compare=(x,ball)=>{motion.PrepareFeedbackGeometry(ball);float local=motion.ContactPlaneDistanceToLocalY(x);local=UnityEngine.Mathf.Clamp(local,motion.ContactStartLocalY(),motion.ContactEndLocalY());float expected=motion.ContactWidthAtLocalY(local,ball);float actual=motion.FeedbackSampleWidth(x);float error=UnityEngine.Mathf.Abs(actual-expected);if(error>maxError)maxError=error;if(!(error<=.000001f))failed++;checks++;float outlineExpected=motion.ContactWidthAtLocalY(motion.ContactPlaneDistanceToLocalY(x),ball);float outlineActual=motion.FeedbackOutlineWidth(x);float outlineError=UnityEngine.Mathf.Abs(outlineExpected-outlineActual);if(outlineError>maxError)maxError=outlineError;if(!(outlineError<=.000001f))failed++;checks++;};
+ compare(.5f,.036f);if(!object.ReferenceEquals(initialSnapshot,typeof(BatMotionBehaviour).GetField("_feedbackCurveSnapshot",flags).GetValue(motion)))failed++;checks++;int revision=motion.FeedbackGeometryRevision();
+ System.Action<bool> changed=expected=>{int now=motion.FeedbackGeometryRevision();if((now!=revision)!=expected)failed++;checks++;revision=now;};
+ compare(.5f,.036f);changed(false);
+ motion.radiusCurve=new UnityEngine.AnimationCurve(motion.radiusCurve.keys);compare(.5f,.036f);changed(false);
+ var keys=motion.radiusCurve.keys;keys[1].value=.09f;motion.radiusCurve.MoveKey(1,keys[1]);compare(.5f,.036f);changed(true);
+ motion.batLength=1.2f;compare(.5f,.036f);changed(true);motion.contactStartNormalized=.3f;compare(.01f,.036f);changed(true);motion.contactEndNormalized=.8f;compare(1.1f,.036f);changed(true);motion.contactMargin=.02f;compare(.5f,.036f);changed(true);
+ go.transform.localScale=new UnityEngine.Vector3(2f,.7f,1.3f);compare(.5f,.06f);changed(true);
+ go.SetActive(false); go.SetActive(true); compare(.5f,.06f);changed(false);
+ motion.sweetSpotNormalized=.6f;motion.minimumQuality=.5f;compare(.5f,.06f);changed(false);
+ float originalLength=1f;
+ bool set=motion.SetBatGeometry(.9f,UnityEngine.AnimationCurve.Linear(0,.02f,1,.04f),.5f,.1f,.9f,.01f,.3f);
+ if(!set)failed++;checks++;compare(.5f,.036f);changed(true);
+ motion.ResetBattingSettings();if(motion.batLength!=originalLength)failed++;checks++;compare(.5f,.036f);changed(true);
+ motion.contactMargin=float.NaN;compare(.5f,.036f);motion.contactMargin=0f;
+ motion.batLength=-1f;compare(.5f,.036f);motion.batLength=1f;
+ motion.radiusCurve=null;compare(.5f,.036f);
+ return $"checks={checks} failed={failed} maxWidthError={maxError:R}";
+} finally { UnityEngine.Object.DestroyImmediate(go); }

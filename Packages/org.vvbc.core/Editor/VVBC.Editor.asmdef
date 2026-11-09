@@ -1,7 +1,11 @@
 {
 	"name": "VVBC.Editor",
 	"references": [
-		"VVBC.Runtime"
+		"VVBC.Runtime",
+		"TsukimiCode.UdonTools.Editor",
+		"VRC.Udon",
+		"VRC.Udon.Editor",
+		"VRC.SDKBase.Editor.BuildPipeline"
 	],
 	"includePlatforms": [
 		"Editor"

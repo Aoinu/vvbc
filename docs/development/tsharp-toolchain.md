@@ -24,6 +24,8 @@ Tools/VVBC.Toolchain/
   toolchain.py
   tests/
   Validate-Consumer.ps1
+  Run-PerformanceTests.ps1
+  perf/                      (Performance Budget tests: budgets.json, harness, README.md)
 Assets/VirtualVenueBaseballComponents/Editor/
   VVBC.ToolchainValidation.cs
   VVBC.Toolchain.Editor.asmdef
@@ -132,11 +134,13 @@ Requires Windows PowerShell, Python 3.11+, .NET 8+, official VPM/network access,
 a licensed Unity install and a separately acquired, licensed Tsukimi 0.10.1 install.
 The default compiler location is this project's installed package directory.
 The runner creates a fresh Base project in a unique OS temporary directory,
-installs Worlds 3.10.5 via official VPM CLI 0.1.28, embeds only core's snapshot
+installs Worlds 3.10.5 via official VPM CLI 0.1.28, embeds core's snapshot and
+the tracked files of the local `org.vvbc.assets` package snapshot
 and deploys the independent validator. It never copies development Assets,
 Library, the development manifest, UnityMCP, or Tsukimi source/binaries.
 
-The consumer explicitly references the installed compiler via a local UPM
+The assets snapshot excludes untracked files and does not prove VPM feed
+resolution for `org.vvbc.assets`. The consumer explicitly references the installed compiler via a local UPM
 `file:` dependency. This tests isolation from development Assets and other
 packages, T# recognition, C# compile, Program Asset compilation and actual
 UdonProgram generation with the declared compiler version. It **does not prove
@@ -172,7 +176,11 @@ Do not vendor, mirror, patch or redistribute the proprietary compiler. The
 package's MIT license covers VVBC code, not its separately licensed dependencies.
 Tsukimi-generated AI/MCP/skill settings remain local and ignored.
 
-Profiler/CostLimit/CallLimit are available for future measured performance
-budgets. They are not mandatory for every runtime change. Runtime fixes are made
+Performance regressions in Bat Motion, Bat Contact and Batting Feedback are gated by
+Udon step/extern budgets: `pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1`
+(see `Tools/VVBC.Toolchain/perf/README.md`; budgets are in `perf/budgets.json` and change only
+through reviewed edits). It is a local-only gate: it needs the installed Tsukimi package but no Unity
+Editor, and is not run by CI. Run it for runtime changes that touch these Behaviours. Steps/externs are not CPU time. Profiler/CostLimit/CallLimit remain available for
+other measured budgets. Runtime fixes are made
 in package T# source, followed by all relevant gates. No manual Export, sync,
 hash receipts, fresh output comparison or UdonSharp compatibility is required.

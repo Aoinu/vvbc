@@ -1,0 +1,49 @@
+// Execute in the development Editor with:
+// isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/BatGeometryEditor.cs.txt
+// All temporary objects live in a preview scene and are discarded afterwards.
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+var asset = AssetDatabase.LoadAssetAtPath<VVBC.Editor.VVBCTSharpProgramAsset>(
+    "Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/BatMotionBehaviour.asset");
+System.Action<bool, string> check = (condition, message) =>
+{
+    if (!condition) throw new Exception("Bat geometry Editor fixture: " + message);
+};
+try
+{
+    check(asset != null, "Program Asset missing");
+    var editorAssembly = typeof(VVBC.Editor.VVBCTSharpProgramAsset).Assembly;
+    var write = editorAssembly.GetType("VVBC.Editor.UdonFields").GetMethod("Write",
+        System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+    var freshObject = new GameObject("FreshBatGeometry");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(freshObject, scene);
+    var fresh = freshObject.AddComponent<VRC.Udon.UdonBehaviour>();
+    fresh.programSource = asset;
+    var curve = new AnimationCurve(new Keyframe(0f, 0.01f), new Keyframe(1f, 0.03f));
+    check((bool)write.Invoke(null, new object[] { fresh, "radiusCurve", typeof(AnimationCurve), curve, "fixture" }),
+        "first write must change the value");
+    check(!(bool)write.Invoke(null, new object[] { fresh, "radiusCurve", typeof(AnimationCurve),
+        new AnimationCurve(curve.keys), "fixture" }), "an equal curve must not be rewritten");
+    check(fresh.publicVariables.TryGetVariableValue("radiusCurve", out AnimationCurve stored) && stored != null &&
+        Mathf.Abs(stored.Evaluate(1f) - 0.03f) < 0.00001f, "Udon curve was not stored");
+
+    var batPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/Bat.prefab");
+    var bat = (GameObject)PrefabUtility.InstantiatePrefab(batPrefab, scene);
+    var container = new GameObject("GizmoSelectionContainer");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(container, scene);
+    bat.transform.SetParent(container.transform);
+    var sibling = new GameObject("UnrelatedSibling"); sibling.transform.SetParent(container.transform);
+    var motion = bat.GetComponentsInChildren<VRC.Udon.UdonBehaviour>(true)
+        .First(u => u.programSource != null && u.programSource.name == "BatMotionBehaviour");
+    check(motion.publicVariables.TryGetVariableValue("body", out Rigidbody body) && body != null, "Bat Body is missing");
+    var findMotion = typeof(BattingZoneGizmos).GetMethod("FindBatMotion",
+        System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+    check(findMotion != null && (VRC.Udon.UdonBehaviour)findMotion.Invoke(null, new object[] { bat.transform }) == motion &&
+        (VRC.Udon.UdonBehaviour)findMotion.Invoke(null, new object[] { body.transform }) == motion &&
+        findMotion.Invoke(null, new object[] { sibling.transform }) == null,
+        "Gizmo must follow Bat root and Body selection without selecting siblings");
+    return "PASS Bat geometry Editor fixture: direct Udon write and Gizmo selection";
+}
+finally
+{
+    UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+}

@@ -4,6 +4,281 @@ using UnityEngine;
 public partial class BatMotionBehaviour
 {
     [TsukimiTest]
+    public void BattingGeometryAndTimingRejectInvalidUpdates()
+    {
+        float originalLength = batLength;
+        float originalSweetSpot = sweetSpotNormalized;
+        Assert.IsFalse(SetBatGeometry(1f, null, 0.5f, 0f, 1f, 0f, 0.5f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(0.8f, 0.2f, 0.5f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(0f, 1f, 1.1f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(float.NaN, 1f, 0.5f));
+        Assert.IsFalse(SetBattingTiming(91f));
+        Assert.IsFalse(SetBattingTiming(float.NaN));
+        Assert.IsFalse(SetBattingCapSetting(11, 1.1f));
+        Assert.IsFalse(SetBattingCapSetting(0, 0f));
+        Assert.AreEqual(originalLength, batLength);
+        Assert.AreEqual(originalSweetSpot, sweetSpotNormalized);
+        Assert.AreEqual(30f, timingYawDegrees);
+    }
+
+    [TsukimiTest]
+    public void BattingSettingsRestoreInspectorDefaults()
+    {
+        batLength = 0.855f;
+        radiusCurve = null;
+        sweetSpotNormalized = 0.68f / 0.855f;
+        contactStartNormalized = 0.1f / 0.855f;
+        contactEndNormalized = 1f;
+        contactMargin = 0f;
+        float defaultSweetSpot = sweetSpotNormalized;
+        CaptureBattingDefaults();
+        batLength = 1f; sweetSpotNormalized = 0.5f; contactStartNormalized = 0.1f;
+        contactEndNormalized = 0.9f; contactMargin = 0.01f; minimumQuality = 0.4f;
+        Assert.IsTrue(SetBattingTiming(15f));
+        Assert.IsTrue(SetBattingCapSetting(11, 0.6f));
+        Assert.AreEqual(1f, batLength);
+        Assert.AreEqual(15f, timingYawDegrees);
+        Assert.AreEqual(0.6f, wristPowerCap);
+        ResetBattingSettings();
+        Assert.AreEqual(0.855f, batLength);
+        Assert.AreEqual(defaultSweetSpot, sweetSpotNormalized);
+        Assert.AreEqual(0f, contactMargin);
+        Assert.IsTrue(radiusCurve == null);
+        Assert.AreEqual(0.25f, minimumQuality);
+        Assert.AreEqual(30f, timingYawDegrees);
+        Assert.AreEqual(0.3f, wristPowerCap);
+    }
+
+    [TsukimiTest]
+    public void BatGeometryConvertsNormalizedPositionsAndScalesWithLength()
+    {
+        Assert.AreEqual(0f, BatGeometry.NormalizedToLocalY(0.855f, 0f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.NormalizedToLocalY(0.855f, 0.5f) - 0.4275f) < 0.00001f);
+        Assert.AreEqual(0.855f, BatGeometry.NormalizedToLocalY(0.855f, 1f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.NormalizedToLocalY(1.2f, 0.5f) - 0.6f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(BatGeometry.LocalYToNormalized(1.2f, 0.6f) - 0.5f) < 0.00001f);
+        Assert.AreEqual(0f, BatGeometry.LocalYToNormalized(1.2f, -1f));
+        Assert.AreEqual(1f, BatGeometry.LocalYToNormalized(1.2f, 2f));
+    }
+
+    [TsukimiTest]
+    public void NormalizedContactXUsesAsymmetricSweetSpotWithoutClamping()
+    {
+        batLength = 2f; contactStartNormalized = 0.1f; sweetSpotNormalized = 0.7f; contactEndNormalized = 0.9f;
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(0.2f) + 1f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(1.4f)) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(1.8f) - 1f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(0.8f) + 0.5f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NormalizedContactXAtLocalY(1.6f) - 0.5f) < 0.00001f);
+        Assert.IsTrue(NormalizedContactXAtLocalY(0f) < -1f);
+        Assert.IsTrue(NormalizedContactXAtLocalY(2f) > 1f);
+    }
+
+    [TsukimiTest]
+    public void NormalizedContactXRejectsInvalidGeometryAndNonFiniteResults()
+    {
+        Assert.IsFalse(BatGeometry.ValidContactRange(0.2f, 1f, 0.2f));
+        Assert.IsFalse(BatGeometry.ValidContactRange(0f, 0.8f, 0.8f));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(1f, 0.2f, 0.2f, 0.2f, 1f)));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(0f, 0.2f, 0f, 0.5f, 1f)));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(1f, float.PositiveInfinity, 0f, 0.5f, 1f)));
+        Assert.IsTrue(float.IsNaN(BatGeometry.NormalizedContactX(float.Epsilon, float.MaxValue, 0f, 0.5f, 1f)));
+    }
+
+    [TsukimiTest]
+    public void ContactQualityUsesNormalizedRangeAndSweetSpotAndTracksLength()
+    {
+        float start = 0.1f / 0.855f, sweet = 0.68f / 0.855f;
+        Assert.AreEqual(1f, BatGeometry.ContactQuality(sweet, start, 1f, sweet, 0.25f));
+        Assert.AreEqual(0.25f, BatGeometry.ContactQuality(start, start, 1f, sweet, 0.25f));
+        Assert.AreEqual(0.25f, BatGeometry.ContactQuality(1f, start, 1f, sweet, 0.25f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactQuality((start + sweet) * 0.5f,
+            start, 1f, sweet, 0.25f) - 0.625f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactQuality((sweet + 1f) * 0.5f,
+            start, 1f, sweet, 0.25f) - 0.625f) < 0.00001f);
+        batLength = 1.1f; sweetSpotNormalized = 0.75f;
+        Assert.IsTrue(Mathf.Abs(SweetSpotLocalY() - 0.825f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void GeometryApiRejectsMissingCurveWithoutChangingSettings()
+    {
+        _contactCount = 2; _contactNext = 2; _measuredCount = 1; _measuredNext = 1;
+        int revision = contactHistoryRevision;
+        Assert.IsFalse(SetBatGeometry(0.9f, null, 0.6f, 0.1f, 1f, 0.01f, 0.25f));
+        Assert.AreEqual(0.855f, batLength);
+        Assert.AreEqual(2, _contactCount);
+        Assert.AreEqual(1, _measuredCount);
+        Assert.AreEqual(revision, contactHistoryRevision);
+        Assert.IsTrue(Mathf.Abs(SweetSpotLocalY() - 0.68f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void ContactWidthAddsScaledBallRadiusAndMarginOnce()
+    {
+        batLength = 1f; contactStartNormalized = 0f; contactEndNormalized = 1f;
+        radiusCurve = null;
+        sweetSpotNormalized = 0.5f; contactMargin = 0.005f; minimumQuality = 0.25f;
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactWidthFromRadius(0.01f, 0.0366f, 0.005f, 1f) - 0.0516f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(BatGeometry.ContactWidthFromRadius(0.01f, 0.0366f, 0.005f, 2f) - 0.0616f) < 0.00001f);
+        Assert.AreEqual(0.0416f, BatGeometry.ContactWidthFromRadius(-1f, 0.0366f, 0.005f, 1f));
+        Assert.IsTrue(Mathf.Abs(BatGeometry.EffectiveSphereRadius(0.0366f, new Vector3(2f, 1f, 1f)) - 0.0732f) < 0.00001f);
+        Assert.AreEqual(-1f, BatGeometry.EffectiveSphereRadius(0.0366f, new Vector3(float.NaN, 1f, 1f)));
+    }
+
+    [TsukimiTest]
+    public void FeedbackGeometryRejectsInvalidInputsAndClearsPreviousSnapshot()
+    {
+        _feedbackGeometryValid = true;
+        radiusCurve = null;
+        PrepareFeedbackGeometry(0.0366f);
+        Assert.IsFalse(_feedbackGeometryValid);
+        Assert.AreEqual(0f, FeedbackSampleWidth(0.5f));
+        Assert.AreEqual(0f, FeedbackOutlineWidth(0.5f));
+        _feedbackGeometryValid = true;
+        PrepareFeedbackGeometry(float.NaN);
+        Assert.IsFalse(_feedbackGeometryValid);
+        Assert.AreEqual(0f, FeedbackSampleWidth(float.NaN));
+        Assert.AreEqual(0f, FeedbackOutlineWidth(float.NaN));
+    }
+
+    [TsukimiTest]
+    public void FeedbackHandsReflectOnlyLocallyHeldGrips()
+    {
+        _mode = LocalHeld; lowerHand = BatGripConstants.HandLeft; upperHand = BatGripConstants.HandNone;
+        Assert.IsTrue(LocalHeldHands() == 1);
+        upperHand = BatGripConstants.HandRight;
+        Assert.IsTrue(LocalHeldHands() == 3);
+        lowerHand = BatGripConstants.HandRight; upperHand = BatGripConstants.HandNone;
+        Assert.IsTrue(LocalHeldHands() == 2);
+        _mode = RemoteHeld;
+        Assert.IsTrue(LocalHeldHands() == 0);
+    }
+
+    [TsukimiTest]
+    public void MeasuredPeaksUseFrameSamplesAndInclusiveTimeWindow()
+    {
+        RecordMeasuredSpeed(0.69f, 100f, 1000f);
+        RecordMeasuredSpeed(0.70f, 4f, 120f);
+        RecordMeasuredSpeed(1.00f, 12f, 60f);
+        RecordMeasuredSpeed(1.10f, 8f, 240f);
+        RecordMeasuredSpeed(1.11f, 200f, 2000f);
+        Assert.IsTrue(TryGetMeasuredPeaks(0.70f, 1.10f));
+        Assert.IsTrue(Mathf.Abs(measuredPeakReferenceSpeed - 12f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(measuredPeakAngularSpeed - 240f) < 0.0001f);
+        Assert.IsFalse(TryGetMeasuredPeaks(2f, 3f));
+        Assert.IsTrue(measuredPeakReferenceSpeed == 0f && measuredPeakAngularSpeed == 0f);
+        Assert.IsFalse(TryGetMeasuredPeaks(2f, 1f));
+    }
+
+    [TsukimiTest]
+    public void MeasuredHistoryWrapAndResetDoNotReturnStaleFrames()
+    {
+        for (int i = 0; i < 130; i++) RecordMeasuredSpeed(i, i, i * 2f);
+        Assert.IsTrue(measuredOldestTime == 2f && measuredLatestTime == 129f);
+        Assert.IsFalse(TryGetMeasuredPeaks(0f, 1f));
+        Assert.IsTrue(TryGetMeasuredPeaks(2f, 3f));
+        Assert.IsTrue(measuredPeakReferenceSpeed == 3f && measuredPeakAngularSpeed == 6f);
+        ResetContactHistory();
+        Assert.IsFalse(TryGetMeasuredPeaks(2f, 3f));
+        Assert.IsTrue(measuredOldestTime == 0f && measuredLatestTime == 0f);
+    }
+
+    [TsukimiTest]
+    public void ContactHistoryRejectsMissingSamplesAndDoesNotExtrapolateBeyondLimit()
+    {
+        Assert.IsFalse(TrySampleContactPose(1f, 0.025f));
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.02f;
+        _contactPositions[0] = Vector3.zero; _contactPositions[1] = Vector3.right;
+        _contactRotations[0] = Quaternion.identity; _contactRotations[1] = Quaternion.identity;
+        _contactVelocities[0] = Vector3.right; _contactVelocities[1] = Vector3.right;
+        Assert.IsTrue(TrySampleContactPose(1.04f, 0.025f));
+        Assert.IsTrue(Mathf.Abs(contactSamplePosition.x - 1.02f) < 0.0001f);
+        Assert.IsFalse(TrySampleContactPose(1.06f, 0.1f));
+        ResetContactHistory();
+        Assert.IsFalse(TrySampleContactPose(1.02f, 0.025f));
+    }
+
+    [TsukimiTest]
+    public void ContactOriginIsTheRecordedBatRootForRotatedAndExtrapolatedSamples()
+    {
+        // Equal sample times take the exact-sample path. Interpolation with
+        // rotation is covered by the Unity contact integration fixture.
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1f;
+        _contactPositions[0] = new Vector3(1f, 2f, 3f); _contactPositions[1] = _contactPositions[0];
+        // 40 degrees about +Y.
+        _contactRotations[0] = new Quaternion(0f, 0.3420201f, 0f, 0.9396926f);
+        _contactRotations[1] = _contactRotations[0];
+        _contactVelocities[0] = Vector3.right * 5f; _contactVelocities[1] = Vector3.right * 5f;
+        Assert.IsTrue(TrySampleContactPose(1f, 0f));
+        Assert.IsTrue((contactSamplePosition - new Vector3(1f, 2f, 3f)).magnitude < 0.0001f);
+        Assert.IsTrue(contactSampleRootPosition == contactSamplePosition);
+        Assert.IsTrue(TrySampleContactPose(1.02f, 0.025f));
+        Assert.IsTrue((contactSamplePosition - new Vector3(1.1f, 2f, 3f)).magnitude < 0.0001f);
+        Assert.IsTrue(contactSampleRootPosition == contactSamplePosition);
+    }
+
+    [TsukimiTest]
+    public void ContactHistoryFindsEachLaterSampleBoundary()
+    {
+        _contactCount = 3; _contactNext = 3;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.01f; _contactTimes[2] = 1.02f;
+        Assert.IsTrue(Mathf.Abs(NextContactSampleTime(1.005f, 2f) - 1.01f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NextContactSampleTime(1.01f, 2f) - 1.02f) < 0.00001f);
+        Assert.IsTrue(Mathf.Abs(NextContactSampleTime(1.02f, 1.025f) - 1.025f) < 0.00001f);
+    }
+
+    [TsukimiTest]
+    public void HandPowerCapLimitsClearOneHandAndPreservesNormalSlowMotion()
+    {
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.2f;
+        _contactHandsValid[0] = true; _contactHandsValid[1] = true;
+        _contactLeftRotations[0] = Quaternion.identity; _contactLeftRotations[1] = Quaternion.identity;
+        _contactRightRotations[0] = Quaternion.identity; _contactRightRotations[1] = Quaternion.identity;
+        _contactLeftPositions[1] = Vector3.right * 0.2f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.4f) < 0.0001f);
+        Assert.IsTrue(contactPowerCapReason == 1);
+        _contactRightPositions[1] = Vector3.right * 0.2f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.2f) - 1f) < 0.0001f);
+        Assert.IsTrue(contactPowerCapReason == 0);
+        _contactHandsValid[0] = false;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 1f) < 0.0001f);
+    }
+
+    [TsukimiTest]
+    public void HandPowerCapUsesStrictestPushWristAndSpikeCaps()
+    {
+        _contactCount = 2; _contactNext = 2;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.2f;
+        _contactHandsValid[0] = true; _contactHandsValid[1] = true;
+        _contactLeftRotations[0] = Quaternion.identity; _contactLeftRotations[1] = Quaternion.identity;
+        _contactRightRotations[0] = Quaternion.identity; _contactRightRotations[1] = Quaternion.identity;
+        _contactRotations[0] = Quaternion.identity; _contactRotations[1] = Quaternion.identity;
+        _contactLeftPositions[1] = Vector3.forward * 0.2f;
+        _contactRightPositions[1] = Vector3.forward * 0.2f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.35f) < 0.0001f);
+        _contactRotations[1] = new Quaternion(0f, 0.258819f, 0f, 0.965926f);
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 1f) < 0.0001f);
+        _contactRotations[1] = Quaternion.identity;
+        _contactLeftPositions[1] = Vector3.zero;
+        _contactRightPositions[1] = Vector3.zero;
+        _contactLeftRotations[1] = new Quaternion(0f, 0.258819f, 0f, 0.965926f);
+        _contactRightRotations[1] = _contactLeftRotations[1];
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.3f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.2f) - 1f) < 0.0001f);
+        // The new curve gives 0.50 at 10 m/s and 0.75 at 20 m/s. The
+        // existing 0.55 wrist threshold must still classify them differently.
+        Assert.AreEqual(1f, ContactPowerCap(1.2f, Vector3.forward, 0.50f));
+        Assert.AreEqual(0.3f, ContactPowerCap(1.2f, Vector3.forward, 0.75f));
+        Assert.AreEqual(2, contactPowerCapReason);
+        _contactLeftPositions[1] = Vector3.right * 6f;
+        Assert.IsTrue(Mathf.Abs(ContactPowerCap(1.2f, Vector3.forward, 0.8f) - 0.2f) < 0.0001f);
+    }
+
+    [TsukimiTest]
     public void MissingReferencesRejectLockAndClearOldOffset()
     {
         body = null;

@@ -11,6 +11,7 @@
   "license": "MIT",
   "vpmDependencies": {
     "com.vrchat.worlds": "3.10.5",
-    "com.tsukimicode.udon-tools": "0.10.1"
+    "com.tsukimicode.udon-tools": "0.10.1",
+    "org.vvbc.assets": "0.0.1"
   }
 }

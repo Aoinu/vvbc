@@ -1,0 +1,255 @@
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewScene(
+    UnityEditor.SceneManagement.NewSceneSetup.EmptyScene, UnityEditor.SceneManagement.NewSceneMode.Additive);
+string scenePath = "Assets/__VVBC_HomePlate_" + Guid.NewGuid().ToString("N") + ".unity";
+try
+{
+    var assembly = typeof(VVBC.Editor.VVBCTSharpBehaviourInspector).Assembly;
+    var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+    var connections = assembly.GetType("VVBC.Editor.HomePlateConnections");
+    var set = connections.GetMethod("SetReference", flags);
+    var read = connections.GetMethod("ReadReference", flags);
+    var sync = connections.GetMethod("Synchronize", flags);
+    var validate = connections.GetMethod("Check", flags);
+    System.Func<VRC.Udon.UdonBehaviour, string, VRC.Udon.UdonBehaviour> get = (b, s) =>
+        (VRC.Udon.UdonBehaviour)read.Invoke(null, new object[] { b, s });
+    System.Action<VRC.Udon.UdonBehaviour, string, VRC.Udon.UdonBehaviour> assign = (b, s, v) =>
+        set.Invoke(null, new object[] { b, s, v });
+    var platePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab");
+    var visualPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Samples/Prefabs/HomePlateVisual.prefab");
+    var ballPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/Ball.prefab");
+    var listenerTest = new GameObject("Listener test");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(listenerTest, scene);
+    var geometryParent = new GameObject("Geometry parent");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(geometryParent, scene);
+    geometryParent.transform.SetPositionAndRotation(new Vector3(3f, 2f, -4f), Quaternion.Euler(0f, 30f, 0f));
+    listenerTest.transform.SetParent(geometryParent.transform, false);
+    listenerTest.transform.localRotation = Quaternion.Euler(0f, 60f, 0f);
+    var geometryZone = listenerTest.AddComponent<StrikeZoneBehaviour>();
+    var geometryContact = listenerTest.AddComponent<BatContactBehaviour>();
+    geometryContact.strikeZone = geometryZone;
+    geometryContact.zoneHalfSize = new Vector3(0.4f, 0.5f, 0.8f);
+    geometryZone.plateDepth = 0.5f; geometryZone.width = 0.6f;
+    geometryZone.bottom = 0.4f; geometryZone.top = 1.3f; geometryZone.zoneCenterOffset = new Vector2(0.1f, -0.05f);
+    var aim = geometryZone.AimPoint(0, 0);
+    if (Vector3.Distance(aim, new Vector3(3.5f, 3.1f, -3.9f)) > 0.0001f ||
+        Vector3.Distance(geometryContact.CenterDirection(), Vector3.right) > 0.0001f)
+        throw new Exception("Parent yaw, world height or batter-left aim is incorrect");
+    geometryZone.useBatterOccupancy = true;
+    geometryZone.occupantPlayerId = 5;
+    geometryZone.syncedZoneBottom = 0.54f; geometryZone.syncedZoneTop = 1.07f;
+    geometryZone.Snapshot();
+    var oldBottom = geometryZone.snapshotBottom;
+    var oldTop = geometryZone.snapshotTop;
+    var oldAim = geometryZone.AimPoint(1, 1);
+    geometryZone.syncedZoneBottom = 0.486f; geometryZone.syncedZoneTop = 0.963f;
+    if (Mathf.Abs(oldBottom - 0.49f) > 0.0001f || Mathf.Abs(oldTop - 1.02f) > 0.0001f ||
+        Mathf.Abs(geometryZone.snapshotBottom - oldBottom) > 0.0001f ||
+        Mathf.Abs(geometryZone.snapshotTop - oldTop) > 0.0001f ||
+        geometryZone.AimPoint(1, 1).y >= oldAim.y)
+        throw new Exception("Dynamic zone, offset or pitch snapshot is incorrect");
+    geometryZone.occupantPlayerId = -1;
+    if (Mathf.Abs(geometryZone.EffectiveBottom() - 0.486f) > 0.0001f ||
+        Mathf.Abs(geometryZone.EffectiveTop() - 0.963f) > 0.0001f)
+        throw new Exception("Unoccupied zone did not return to baseline");
+    geometryZone.useBatterOccupancy = false;
+    geometryZone.width = 1.2f; geometryZone.top = 2f; geometryZone.zoneCenterOffset = Vector2.one;
+    if (geometryContact.zoneHalfSize != new Vector3(0.4f, 0.5f, 0.8f) ||
+        geometryContact.transform.localPosition != Vector3.zero)
+        throw new Exception("Strike dimensions changed the independent Contact Zone");
+    var localBall = listenerTest.AddComponent<BallBehaviour>();
+    var listenerA = listenerTest.AddComponent<VRC.Udon.UdonBehaviour>();
+    var listenerB = listenerTest.AddComponent<VRC.Udon.UdonBehaviour>();
+    localBall.RegisterPresentationListener(listenerA);
+    localBall.RegisterPresentationListener(listenerA);
+    localBall.RegisterPresentationListener(listenerB);
+    var listenerField = typeof(BallBehaviour).GetField("_presentationListeners",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+    var listeners = (VRC.Udon.UdonBehaviour[])listenerField.GetValue(localBall);
+    if (listeners.Length != 2 || listeners[0] != listenerA || listeners[1] != listenerB)
+        throw new Exception("Multiple pitcher presentation listeners were not retained");
+    var motion = listenerTest.AddComponent<BatMotionBehaviour>();
+    motion.RegisterContactListener(listenerA, false);
+    motion.RegisterContactListener(listenerB, false);
+    motion.RegisterContactListener(listenerA, true);
+    var contactListeners = (VRC.Udon.UdonBehaviour[])typeof(BatMotionBehaviour).GetField("_contactListeners",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(motion);
+    var active = (bool[])typeof(BatMotionBehaviour).GetField("_contactListenerActive",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(motion);
+    if (contactListeners.Length != 2 || contactListeners[0] != listenerA || contactListeners[1] != listenerB || !active[0] || active[1])
+        throw new Exception("Two contact lanes did not register independently");
+    motion.SetContactListenerActive(listenerB, true);
+    motion.SetContactListenerActive(listenerA, false);
+    if (active[0] || !active[1]) throw new Exception("Stopping one lane affected another");
+    var privateMotion = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+    var hasActive = typeof(BatMotionBehaviour).GetMethod("HasActiveContactListener", privateMotion);
+    var countField = typeof(BatMotionBehaviour).GetField("_contactCount", privateMotion);
+    motion.SetContactListenerActive(listenerB, false);
+    if ((bool)hasActive.Invoke(motion, null)) throw new Exception("Inactive lanes still sample Bat history");
+    countField.SetValue(motion, 2);
+    int oldRevision = motion.contactHistoryRevision;
+    motion.SetContactListenerActive(listenerA, true);
+    if (!(bool)hasActive.Invoke(motion, null) || (int)countField.GetValue(motion) != 0 || motion.contactHistoryRevision == oldRevision)
+        throw new Exception("Activating the first lane did not discard stale Bat history");
+    motion.SetContactListenerActive(listenerA, false);
+    if ((bool)hasActive.Invoke(motion, null)) throw new Exception("No active lanes should sample history");
+    UnityEngine.Object.DestroyImmediate(geometryParent);
+    if (UnityEditor.PrefabUtility.GetPrefabAssetType(visualPrefab) != UnityEditor.PrefabAssetType.Variant ||
+        UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(visualPrefab) != platePrefab)
+        throw new Exception("Visual is not the HomePlate variant");
+    foreach (var plate in new[] { platePrefab, visualPrefab })
+    {
+        var left = plate.transform.Find("BatterBoxLeft");
+        var right = plate.transform.Find("BatterBoxRight");
+        var colliders = plate.GetComponentsInChildren<Collider>(true);
+        if (!left || !right || colliders.Length != 2 ||
+            Array.Exists(colliders, c => !(c is BoxCollider) || !c.isTrigger || (c.transform != left && c.transform != right)) ||
+            left.GetComponents<Collider>().Length != 1 || right.GetComponents<Collider>().Length != 1)
+            throw new Exception("Expected exactly two BatterBox trigger colliders");
+        var zone = plate.GetComponent<VRC.Udon.UdonBehaviour>();
+        if (get(left.GetComponent<VRC.Udon.UdonBehaviour>(), "homePlate") != zone ||
+            get(right.GetComponent<VRC.Udon.UdonBehaviour>(), "homePlate") != zone)
+            throw new Exception("BatterBox references are incorrect");
+    }
+    if (validate.Invoke(null, new object[] { platePrefab.GetComponent<VRC.Udon.UdonBehaviour>() }) != null)
+        throw new Exception("Generic HomePlate prefab was rejected without a Ball");
+    var poseParent = new GameObject("Pose parent");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(poseParent, scene);
+    var posePlate = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(platePrefab, scene);
+    posePlate.transform.SetParent(poseParent.transform, false);
+    posePlate.transform.localRotation = Quaternion.Euler(0f, 45f, 0f);
+    poseParent.transform.localScale = new Vector3(2f, 1f, 0.5f);
+    var poseZone = posePlate.GetComponent<VRC.Udon.UdonBehaviour>();
+    var poseError = validate.Invoke(null, new object[] { poseZone }) as string;
+    if (poseError == null || !poseError.Contains("unit effective scale")) throw new Exception("Parent scale/shear was not diagnosed");
+    poseParent.transform.localScale = Vector3.one;
+    poseParent.transform.rotation = Quaternion.Euler(20f, 0f, 0f);
+    poseError = validate.Invoke(null, new object[] { poseZone }) as string;
+    if (poseError == null || !poseError.Contains("yaw-only")) throw new Exception("Parent pitch was not diagnosed");
+    UnityEngine.Object.DestroyImmediate(poseParent);
+    foreach (var filter in visualPrefab.GetComponentsInChildren<MeshFilter>(true))
+        if (!filter.sharedMesh) throw new Exception("Missing visual mesh: " + filter.name);
+    foreach (var renderer in visualPrefab.GetComponentsInChildren<MeshRenderer>(true))
+        foreach (var material in renderer.sharedMaterials) if (!material) throw new Exception("Missing visual material: " + renderer.name);
+    var phantomBehaviour = platePrefab.transform.Find("BallPhantom").GetComponent<VRC.Udon.UdonBehaviour>();
+    phantomBehaviour.publicVariables.TryGetVariableValue("meshDiameter", out float diameter);
+    var phantomMesh = platePrefab.transform.Find("BallPhantom").GetComponent<MeshFilter>().sharedMesh;
+    var meshSize = phantomMesh.bounds.size;
+    var meshDiameter = Mathf.Max(meshSize.x, meshSize.y, meshSize.z);
+    if (meshDiameter <= 0f || Mathf.Abs(diameter - meshDiameter) > meshDiameter * 0.0001f)
+        throw new Exception("Phantom mesh diameter is incorrect");
+
+    var plates = new GameObject[2];
+    var balls = new GameObject[2];
+    var pitchers = new GameObject[2];
+    for (int i = 0; i < 2; i++)
+    {
+        plates[i] = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(i == 0 ? platePrefab : visualPrefab, scene);
+        plates[i].name = "Plate" + i;
+        UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(plates[i]);
+        plates[i].transform.SetPositionAndRotation(new Vector3(i * 8f, i * 2f, -i * 4f), Quaternion.Euler(0f, i * 90f, 0f));
+        balls[i] = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(ballPrefab, scene);
+        balls[i].name = "Ball" + i;
+        UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(balls[i]);
+        var zone = plates[i].GetComponent<VRC.Udon.UdonBehaviour>();
+        var ball = balls[i].GetComponent<VRC.Udon.UdonBehaviour>();
+        pitchers[i] = new GameObject("Pitcher" + i);
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(pitchers[i], scene);
+        var pitcher = pitchers[i].AddComponent<VRC.Udon.UdonBehaviour>();
+        pitcher.programSource = UnityEditor.AssetDatabase.LoadAssetAtPath<VRC.Udon.AbstractUdonProgramSource>(
+            "Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/BattingPitcherBehaviour.asset");
+        assign(pitcher, "strikeZone", zone);
+        UnityEditor.Undo.IncrementCurrentGroup();
+        int group = UnityEditor.Undo.GetCurrentGroup();
+        assign(zone, "ball", ball);
+        sync.Invoke(null, new object[] { zone });
+        UnityEditor.Undo.CollapseUndoOperations(group);
+        var contact = plates[i].transform.Find("ContactZone").GetComponent<VRC.Udon.UdonBehaviour>();
+        var crossing = plates[i].transform.Find("PitchCrossing").GetComponent<VRC.Udon.UdonBehaviour>();
+        var phantom = plates[i].transform.Find("BallPhantom").GetComponent<VRC.Udon.UdonBehaviour>();
+        if (get(contact, "strikeZone") != zone || get(crossing, "zone") != zone || get(crossing, "phantom") != phantom ||
+            get(contact, "flight") != ball || get(crossing, "flight") != ball || get(ball, "motionObserver") != crossing)
+            throw new Exception("Incorrect references in set " + i);
+        if (!contact.publicVariables.TryGetVariableValue("flight", out VRC.Udon.UdonBehaviour storedContact) || storedContact != ball ||
+            !ball.publicVariables.TryGetVariableValue("motionObserver", out VRC.Udon.UdonBehaviour storedObserver) || storedObserver != crossing)
+            throw new Exception("Udon values differ from authoring values in set " + i);
+        UnityEditor.Undo.PerformUndo();
+        if (get(zone, "ball") != null || get(contact, "flight") != null || get(crossing, "flight") != null || get(ball, "motionObserver") != null)
+            throw new Exception("Undo did not restore the references");
+        UnityEditor.Undo.PerformRedo();
+        if (get(zone, "ball") != ball || get(contact, "flight") != ball || get(crossing, "flight") != ball || get(ball, "motionObserver") != crossing)
+            throw new Exception("Redo did not restore the references");
+    }
+    var crossing0 = plates[0].transform.Find("PitchCrossing").GetComponent<VRC.Udon.UdonBehaviour>();
+    var crossing1 = plates[1].transform.Find("PitchCrossing").GetComponent<VRC.Udon.UdonBehaviour>();
+    if (get(balls[0].GetComponent<VRC.Udon.UdonBehaviour>(), "motionObserver") != crossing0 ||
+        get(balls[1].GetComponent<VRC.Udon.UdonBehaviour>(), "motionObserver") != crossing1)
+        throw new Exception("Sets cross-connected");
+    var firstZone = plates[0].GetComponent<VRC.Udon.UdonBehaviour>();
+    var firstBall = balls[0].GetComponent<VRC.Udon.UdonBehaviour>();
+    var secondBall = balls[1].GetComponent<VRC.Udon.UdonBehaviour>();
+    assign(firstZone, "ball", secondBall);
+    sync.Invoke(null, new object[] { firstZone });
+    if (validate.Invoke(null, new object[] { firstZone }) == null) throw new Exception("Conflicting Ball was not diagnosed");
+    if (get(secondBall, "motionObserver") != crossing1 || get(firstBall, "motionObserver") != crossing0 ||
+        get(crossing0, "flight") != firstBall) throw new Exception("Conflicting Ball was silently stolen");
+    assign(firstZone, "ball", firstBall);
+    sync.Invoke(null, new object[] { firstZone });
+    var spare = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(ballPrefab, scene);
+    var spareBall = spare.GetComponent<VRC.Udon.UdonBehaviour>();
+    assign(firstZone, "ball", spareBall);
+    sync.Invoke(null, new object[] { firstZone });
+    if (get(firstBall, "motionObserver") != null || get(spareBall, "motionObserver") != crossing0 ||
+        get(crossing0, "flight") != spareBall) throw new Exception("Ball reassignment did not detach the old Ball");
+    assign(firstZone, "ball", firstBall);
+    sync.Invoke(null, new object[] { firstZone });
+    if (get(spareBall, "motionObserver") != null) throw new Exception("Spare Ball was not detached");
+    UnityEngine.Object.DestroyImmediate(spare);
+    var otherScene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+    try
+    {
+        var otherBallObject = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(ballPrefab, otherScene);
+        var otherBall = otherBallObject.GetComponent<VRC.Udon.UdonBehaviour>();
+        assign(firstZone, "ball", otherBall);
+        sync.Invoke(null, new object[] { firstZone });
+        if (validate.Invoke(null, new object[] { firstZone }) == null || get(otherBall, "motionObserver") != null ||
+            get(crossing0, "flight") != firstBall) throw new Exception("Cross-scene Ball was accepted");
+        assign(firstZone, "ball", firstBall);
+        sync.Invoke(null, new object[] { firstZone });
+    }
+    finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(otherScene); }
+    var occupantObject = new GameObject("OccupantOnly0");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(occupantObject, scene);
+    var writeField = assembly.GetType("VVBC.Editor.UdonFields").GetMethod("Write", flags);
+    writeField.Invoke(null, new object[] { firstZone, "occupantOnlyObjects", typeof(GameObject[]), new[] { occupantObject, null }, "fixture" });
+    if (!UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, scenePath)) throw new Exception("Scene save failed");
+    UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
+    scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
+    var roots = scene.GetRootGameObjects();
+    for (int i = 0; i < 2; i++)
+    {
+        var plate = Array.Find(roots, g => g.name == "Plate" + i);
+        var ballObject = Array.Find(roots, g => g.name == "Ball" + i);
+        if (!plate || !ballObject) throw new Exception("Missing saved roots: " + string.Join(",", Array.ConvertAll(roots, g => g.name)));
+        var ball = ballObject.GetComponent<VRC.Udon.UdonBehaviour>();
+        var zone = plate.GetComponent<VRC.Udon.UdonBehaviour>();
+        var crossing = plate.transform.Find("PitchCrossing").GetComponent<VRC.Udon.UdonBehaviour>();
+        var pitcher = Array.Find(roots, g => g.name == "Pitcher" + i).GetComponent<VRC.Udon.UdonBehaviour>();
+        if (get(zone, "ball") != ball || get(crossing, "flight") != ball || get(ball, "motionObserver") != crossing)
+            throw new Exception("Scene reload lost references in set " + i);
+        if (get(pitcher, "strikeZone") != zone) throw new Exception("Pitcher target did not survive scene reload");
+        if (i == 0)
+        {
+            if (!zone.publicVariables.TryGetVariableValue("occupantOnlyObjects", out GameObject[] storedObjects) ||
+                storedObjects == null || storedObjects.Length != 2 ||
+                storedObjects[0] != Array.Find(roots, g => g.name == "OccupantOnly0") || storedObjects[1] != null)
+                throw new Exception("Occupant-only object override did not survive scene reload");
+        }
+        if (!UnityEditor.PrefabUtility.IsPartOfPrefabInstance(zone)) throw new Exception("Prefab connection lost");
+    }
+    return "PASS: variant, visual references, two independent sets, Undo/Redo and scene reload";
+}
+finally
+{
+    if (scene.IsValid() && scene.isLoaded) UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
+    if (UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(scenePath)) UnityEditor.AssetDatabase.DeleteAsset(scenePath);
+}

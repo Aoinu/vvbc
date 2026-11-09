@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9af59f336f623f7468dcef39093011d0, type: 3}
+  m_Name: DefaultPitchPresets
+  m_EditorClassIdentifier: 
+  presets:
+  - name: Four-Seam FB
+    spinAxis: {x: -1, y: 0, z: 0}
+    seamEuler: {x: 0, y: 0, z: 90}
+    initialPhase: 0
+  - name: Curve
+    spinAxis: {x: 1, y: -0.388, z: 0}
+    seamEuler: {x: 0, y: 0, z: 60}
+    initialPhase: 0
+  - name: Slider
+    spinAxis: {x: 0, y: -0.397, z: 0.519}
+    seamEuler: {x: 0, y: 38.66, z: 6.68}
+    initialPhase: 0
+  - name: Sweeper
+    spinAxis: {x: -1, y: -1, z: 0}
+    seamEuler: {x: 0, y: 0, z: 0}
+    initialPhase: 0
+  - name: Split
+    spinAxis: {x: -0.12, y: 0, z: 0.99}
+    seamEuler: {x: 0, y: 0, z: 0}
+    initialPhase: 0
+  - name: Screw
+    spinAxis: {x: 0.65, y: 0.76, z: 0}
+    seamEuler: {x: 0, y: 0, z: 0}
+    initialPhase: 0
+  - name: Sinker
+    spinAxis: {x: -0.65, y: 0.55, z: 0.52}
+    seamEuler: {x: 0, y: 0, z: 0}
+    initialPhase: 188

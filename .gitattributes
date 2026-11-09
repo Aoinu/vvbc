@@ -3,6 +3,8 @@
 /Assets/VirtualVenueBaseballComponents/**/*.meta whitespace=-blank-at-eol
 /Assets/VirtualVenueBaseballComponents.meta whitespace=-blank-at-eol
 /Assets/VirtualVenueBaseballComponents/**/*.asset whitespace=-blank-at-eol
+/Packages/org.vvbc.core/Editor/**/*.meta whitespace=-blank-at-eol
+/Packages/org.vvbc.core/Editor/**/*.asset whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.meta whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.asset whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.prefab whitespace=-blank-at-eol

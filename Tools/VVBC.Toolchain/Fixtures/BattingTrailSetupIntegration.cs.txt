@@ -1,0 +1,36 @@
+// Execute in the Unity Editor. Uses a preview scene and a uniquely named temporary prefab.
+var source = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/BattingFeedback.prefab");
+var sourceUdon = source.GetComponent<VRC.Udon.UdonBehaviour>();
+if (BattingTrailSetup.Validate(sourceUdon) != null) throw new Exception("Packaged prefab: " + BattingTrailSetup.Validate(sourceUdon));
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+string tempPath = "Assets/__VVBC_Trail_" + Guid.NewGuid().ToString("N") + ".prefab";
+try
+{
+    var instance = (GameObject)PrefabUtility.InstantiatePrefab(source, scene);
+    var u = instance.GetComponent<VRC.Udon.UdonBehaviour>();
+    u.publicVariables.TryGetVariableValue("contactAudio", out AudioSource oldAudio);
+    instance.transform.localPosition = new Vector3(12f, 3f, 4f);
+    u.publicVariables.TrySetVariableValue("batPhantoms", new Transform[0]);
+    u.publicVariables.TrySetVariableValue("batRenderers", new Renderer[0]);
+    if (BattingTrailSetup.Validate(u) == null) throw new Exception("Empty overrides were not detected");
+    BattingTrailSetup.Migrate(u);
+    if (BattingTrailSetup.Validate(u) != null) throw new Exception("Migration failed: " + BattingTrailSetup.Validate(u));
+    u.publicVariables.TryGetVariableValue("contactAudio", out AudioSource audio);
+    if (audio != oldAudio || instance.transform.localPosition != new Vector3(12f, 3f, 4f)) throw new Exception("Migration changed unrelated settings");
+    bool refused = false;
+    try { BattingTrailSetup.Migrate(u); } catch (InvalidOperationException) { refused = true; }
+    if (!refused) throw new Exception("Migration overwrote nonempty arrays");
+    PrefabUtility.SaveAsPrefabAsset(instance, tempPath);
+    AssetDatabase.ImportAsset(tempPath, ImportAssetOptions.ForceUpdate);
+    var reloaded = AssetDatabase.LoadAssetAtPath<GameObject>(tempPath).GetComponent<VRC.Udon.UdonBehaviour>();
+    if (BattingTrailSetup.Validate(reloaded) != null) throw new Exception("Serialized prefab references failed reload: " + BattingTrailSetup.Validate(reloaded));
+    reloaded.publicVariables.TryGetVariableValue("batPhantoms", out Transform[] transforms);
+    reloaded.publicVariables.TryGetVariableValue("batRenderers", out Renderer[] renderers);
+    if (transforms.Length != 7 || renderers.Length != 7) throw new Exception("Serialized array lengths changed");
+    return "PASS prefab references, incomplete override detection, safe migration and serialized reload";
+}
+finally
+{
+    UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+    AssetDatabase.DeleteAsset(tempPath);
+}

@@ -1,0 +1,187 @@
+using System;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using VRC.Udon;
+
+namespace VVBC.Editor
+{
+    // Editor-time wiring of HomePlate's child behaviours and the Ball. Values live
+    // in UdonBehaviour.publicVariables and are written only when they change.
+    internal static class HomePlateConnections
+    {
+        private static bool syncing;
+
+        internal static bool IsProgram(UdonBehaviour value, string program)
+        {
+            return value != null && value.programSource != null && value.programSource.name == program;
+        }
+
+        private static UdonBehaviour Child(Transform root, string childName, string program)
+        {
+            var child = root.Find(childName);
+            return child == null ? null : child.GetComponents<UdonBehaviour>().FirstOrDefault(b => IsProgram(b, program));
+        }
+
+        private static bool IsHomePlate(UdonBehaviour zone)
+        {
+            string path = EditorUtility.IsPersistent(zone) ? AssetDatabase.GetAssetPath(zone) :
+                PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(zone);
+            if (path == "Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab" ||
+                path == "Packages/org.vvbc.core/Runtime/Samples/Prefabs/HomePlateVisual.prefab") return true;
+            var source = zone;
+            while (source != null)
+            {
+                if (AssetDatabase.GetAssetPath(source) == "Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab") return true;
+                var next = PrefabUtility.GetCorrespondingObjectFromSource(source);
+                if (next == source) break;
+                source = next;
+            }
+            return zone.transform.Find("ContactZone") != null || zone.transform.Find("PitchCrossing") != null ||
+                zone.transform.Find("BallPhantom") != null;
+        }
+
+        internal static UdonBehaviour ReadReference(UdonBehaviour behaviour, string symbol)
+        {
+            return UdonFields.ReadReference(behaviour, symbol);
+        }
+
+        internal static void SetReference(UdonBehaviour behaviour, string symbol, UdonBehaviour value)
+        {
+            UdonFields.Write(behaviour, symbol, typeof(UdonBehaviour), value, "Connect HomePlate");
+        }
+
+        internal static string Check(UdonBehaviour zone)
+        {
+            if (!IsProgram(zone, "StrikeZoneBehaviour")) return null;
+            var root = zone.transform;
+            var contact = Child(root, "ContactZone", "BatContactBehaviour");
+            var crossing = Child(root, "PitchCrossing", "PitchCrossingBehaviour");
+            var phantom = Child(root, "BallPhantom", "BallPhantomBehaviour");
+            var left = Child(root, "BatterBoxLeft", "BatterBoxBehaviour");
+            var rightBox = Child(root, "BatterBoxRight", "BatterBoxBehaviour");
+            // An old standalone StrikeZone is not a HomePlate instance.
+            if (!IsHomePlate(zone)) return null;
+            if (zone.SyncMethod != VRC.SDKBase.Networking.SyncType.Manual) return "HomePlate must use Manual Sync.";
+            if (contact == null || crossing == null || phantom == null) return "HomePlate is missing a required child behaviour.";
+            if (left == null || rightBox == null) return "HomePlate is missing a BatterBox behaviour.";
+            foreach (var box in new[] { left, rightBox })
+            {
+                var colliders = box.GetComponents<Collider>();
+                if (colliders.Length != 1 || !(colliders[0] is BoxCollider) || !colliders[0].isTrigger)
+                    return "Each BatterBox requires exactly one BoxCollider trigger.";
+                if (ReadReference(box, "homePlate") != zone) return "BatterBox HomePlate reference is incorrect.";
+            }
+            if (!UdonFields.Read(left, "isLeft", false) || UdonFields.Read(rightBox, "isLeft", false))
+                return "BatterBox left/right settings are incorrect.";
+            var allColliders = root.GetComponentsInChildren<Collider>(true);
+            if (allColliders.Length != 2 || allColliders.Any(c => c.gameObject != left.gameObject && c.gameObject != rightBox.gameObject))
+                return "Only the two BatterBox trigger colliders are allowed.";
+            if (!UdonFields.Read(zone, "useBatterOccupancy", false)) return "HomePlate occupancy is disabled.";
+            var origin = UdonFields.Read<Transform>(zone, "plateOrigin");
+            if (origin != null && origin != root) return "HomePlate origin must be its root Transform.";
+            var matrix = root.localToWorldMatrix;
+            Vector3 right = matrix.MultiplyVector(Vector3.right);
+            Vector3 up = matrix.MultiplyVector(Vector3.up);
+            Vector3 forward = matrix.MultiplyVector(Vector3.forward);
+            if (Mathf.Abs(right.sqrMagnitude - 1f) > 0.0001f || Mathf.Abs(forward.sqrMagnitude - 1f) > 0.0001f ||
+                Vector3.Distance(up, Vector3.up) > 0.0001f || Mathf.Abs(Vector3.Dot(right, forward)) > 0.0001f ||
+                Vector3.Distance(Vector3.Cross(right, up), forward) > 0.0001f)
+                return "HomePlate requires unit effective scale and yaw-only rotation, including its parents.";
+            if (ReadReference(contact, "strikeZone") != zone || ReadReference(crossing, "zone") != zone ||
+                ReadReference(crossing, "phantom") != phantom || ReadReference(zone, "contactListener") != contact)
+                return "HomePlate internal references are inconsistent.";
+            var ball = ReadReference(zone, "ball");
+            if (ball == null) return EditorUtility.IsPersistent(zone) || PrefabStageUtility.GetPrefabStage(zone.gameObject) != null
+                ? null : "HomePlate has no Ball assigned.";
+            if (!IsProgram(ball, "BallBehaviour")) return "HomePlate Ball must use BallBehaviour.";
+            if (ball.gameObject.scene != zone.gameObject.scene) return "HomePlate and Ball must belong to the same scene.";
+            var observer = ReadReference(ball, "motionObserver");
+            if (observer != null && observer != crossing) return "The assigned Ball already belongs to another observer.";
+            if (observer != crossing || ReadReference(contact, "flight") != ball || ReadReference(crossing, "flight") != ball)
+                return "Ball references are inconsistent.";
+            return null;
+        }
+
+        internal static string CheckPitcher(UdonBehaviour pitcher)
+        {
+            if (!IsProgram(pitcher, "BattingPitcherBehaviour")) return null;
+            var zone = ReadReference(pitcher, "strikeZone");
+            if (zone == null) return EditorUtility.IsPersistent(pitcher) || PrefabStageUtility.GetPrefabStage(pitcher.gameObject) != null
+                ? null : "Pitcher has no HomePlate assigned.";
+            if (!IsProgram(zone, "StrikeZoneBehaviour") ||
+                Child(zone.transform, "ContactZone", "BatContactBehaviour") == null)
+                return "Pitcher must reference a HomePlate StrikeZone.";
+            if (zone.gameObject.scene != pitcher.gameObject.scene) return "Pitcher and HomePlate must belong to the same scene.";
+            var error = Check(zone);
+            return error == null ? null : "Pitcher HomePlate: " + error;
+        }
+
+        internal static void Synchronize(UdonBehaviour zone)
+        {
+            if (syncing || zone == null || EditorUtility.IsPersistent(zone)) return;
+            var root = zone.transform;
+            var contact = Child(root, "ContactZone", "BatContactBehaviour");
+            var crossing = Child(root, "PitchCrossing", "PitchCrossingBehaviour");
+            var phantom = Child(root, "BallPhantom", "BallPhantomBehaviour");
+            if (contact == null || crossing == null || phantom == null) return;
+            var ball = ReadReference(zone, "ball");
+            var oldBall = ReadReference(crossing, "flight");
+            if (ball != null && (ball.gameObject.scene != zone.gameObject.scene || !IsProgram(ball, "BallBehaviour") ||
+                (ReadReference(ball, "motionObserver") != null && ReadReference(ball, "motionObserver") != crossing))) return;
+            syncing = true;
+            try
+            {
+                if (oldBall != null && oldBall != ball && ReadReference(oldBall, "motionObserver") == crossing)
+                    SetReference(oldBall, "motionObserver", null);
+                SetReference(contact, "flight", ball);
+                SetReference(crossing, "flight", ball);
+                if (ball != null) SetReference(ball, "motionObserver", crossing);
+            }
+            finally { syncing = false; }
+        }
+
+        [MenuItem("Tools/VVBC/HomePlate/Validate Open Scenes")]
+        private static void ValidateOpenScenes()
+        {
+            int count = 0, errors = 0;
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (!scene.isLoaded) continue;
+                foreach (var root in scene.GetRootGameObjects())
+                foreach (var zone in root.GetComponentsInChildren<UdonBehaviour>(true))
+                {
+                    if (IsProgram(zone, "BattingPitcherBehaviour"))
+                    {
+                        count++;
+                        string pitcherError = CheckPitcher(zone);
+                        if (pitcherError != null)
+                        {
+                            errors++;
+                            Debug.LogError("Pitcher " + zone.name + ": " + pitcherError, zone);
+                        }
+                        continue;
+                    }
+                    if (!IsProgram(zone, "StrikeZoneBehaviour") || !IsHomePlate(zone)) continue;
+                    count++;
+                    string error = Check(zone);
+                    if (error == null)
+                    {
+                        var ball = ReadReference(zone, "ball");
+                        var contact = Child(zone.transform, "ContactZone", "BatContactBehaviour");
+                        var crossing = Child(zone.transform, "PitchCrossing", "PitchCrossingBehaviour");
+                        if (ReadReference(contact, "flight") != ball || ReadReference(crossing, "flight") != ball ||
+                            ReadReference(ball, "motionObserver") != crossing) error = "Ball references are inconsistent.";
+                    }
+                    if (error == null) continue;
+                    errors++;
+                    Debug.LogError("HomePlate " + zone.name + ": " + error, zone);
+                }
+            }
+            Debug.Log("HomePlate validation: " + count + " checked, " + errors + " errors.");
+        }
+    }
+}

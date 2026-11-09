@@ -1,0 +1,176 @@
+// Run with isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/PowerCurveIntegration.cs.txt
+// The temporary variant is removed after checking the serialized Udon variables.
+var sourcePath = "Packages/org.vvbc.core/Runtime/Prefabs/Bat.prefab";
+var variantPath = "Assets/__VVBCPowerCurveTest_" + System.Guid.NewGuid().ToString("N") + ".prefab";
+var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
+UnityEngine.GameObject testObject = null;
+UnityEngine.GameObject instance = null;
+System.Action<bool, string> check = (condition, name) =>
+{
+    if (!condition) throw new System.Exception("Power curve integration failed: " + name);
+};
+System.Func<GameObject, VRC.Udon.UdonBehaviour> findMotion = root => root.GetComponentsInChildren<VRC.Udon.UdonBehaviour>(true)
+    .Single(b => b.programSource && b.programSource.name == "BatMotionBehaviour");
+try
+{
+    UnityEditor.AssetDatabase.ImportAsset(sourcePath, UnityEditor.ImportAssetOptions.ForceUpdate);
+    var source = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(sourcePath);
+    var sourceUdon = findMotion(source);
+    UnityEngine.AnimationCurve saved;
+    check(sourceUdon && sourceUdon.publicVariables.TryGetVariableValue("powerCurve", out saved) && saved != null,
+        "prefab contains the Inspector curve");
+    sourceUdon.publicVariables.TryGetVariableValue("powerCurve", out saved);
+    var playerTemplate = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(
+        "Packages/org.vvbc.core/Runtime/Prefabs/VVBCPlayerObjectTemplate.prefab");
+    var templateMotion = findMotion(playerTemplate);
+    check(templateMotion.publicVariables.TryGetVariableValue("powerCurve", out UnityEngine.AnimationCurve templateCurve) &&
+        templateCurve != null && templateCurve.length == saved.length &&
+        UnityEngine.Mathf.Abs(templateCurve.Evaluate(20f) - 0.75f) < 0.0001f,
+        "PlayerObject template inherits the Bat power curve");
+    testObject = new UnityEngine.GameObject("PowerCurveTest");
+    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(testObject, scene);
+    var contact = testObject.AddComponent<BatMotionBehaviour>();
+    contact.powerCurve = new UnityEngine.AnimationCurve(saved.keys);
+    foreach (var pair in new[] {
+        new UnityEngine.Vector2(0f, 0f), new UnityEngine.Vector2(2.5f, 0f),
+        new UnityEngine.Vector2(5f, 0.25f), new UnityEngine.Vector2(10f, 0.5f),
+        new UnityEngine.Vector2(15f, 0.6462406f), new UnityEngine.Vector2(20f, 0.75f),
+        new UnityEngine.Vector2(30f, 0.8962406f), new UnityEngine.Vector2(40f, 1f) })
+        check(UnityEngine.Mathf.Abs(contact.EvaluateRawPower(pair.x) - pair.y) < 0.0001f, "reference point " + pair.x);
+    float last = 0f;
+    float maximumError = 0f;
+    for (int i = 0; i <= 40000; i++)
+    {
+        float speed = i * 0.001f;
+        float actual = contact.EvaluateRawPower(speed);
+        float expected = speed <= 0f ? 0f : UnityEngine.Mathf.Clamp01(0.5f + 0.25f * UnityEngine.Mathf.Log(speed / 10f, 2f));
+        maximumError = UnityEngine.Mathf.Max(maximumError, UnityEngine.Mathf.Abs(actual - expected));
+        check(actual >= 0f && actual <= 1f && actual + 0.000001f >= last, "monotonic bounded initial curve");
+        last = actual;
+    }
+    check(maximumError < 0.01f, "reference approximation");
+    check(contact.SetBattingPowerCurve(UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f)), "accept runtime curve");
+    check(UnityEngine.Mathf.Abs(contact.EvaluateRawPower(20f) - 0.5f) < 0.0001f, "runtime curve takes effect");
+    check(!contact.SetBattingPowerCurve(null), "reject null runtime curve");
+    contact.ResetBattingSettings();
+    check(UnityEngine.Mathf.Abs(contact.EvaluateRawPower(20f) - 0.75f) < 0.0001f, "reset restores initial curve");
+    check(contact.EvaluateRawPower(-1f) == 0f && contact.EvaluateRawPower(float.NaN) == 0f &&
+        contact.EvaluateRawPower(float.PositiveInfinity) == 0f && contact.EvaluateRawPower(float.NegativeInfinity) == 0f &&
+        contact.EvaluateRawPower(100f) == 1f && contact.EvaluateRawPower(float.MaxValue) == 1f,
+        "invalid and out-of-range speeds");
+
+    // Run the actual compiled Udon program with the same curve that the SDK
+    // reads from the prefab's serialized publicVariables table.
+    var programAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TsukimiCode.UdonTools.Editor.TsukimiProgramAsset>(
+        "Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/BatMotionBehaviour.asset");
+    var program = programAsset.SerializedProgramAssetNoCreate.RetrieveProgram();
+    var vm = new VRC.Udon.ClientBindings.UdonClientInterface().ConstructUdonVM();
+    check(program != null && vm != null, "compiled Udon program and VM");
+    check(System.Linq.Enumerable.Contains(programAsset.InspectorFieldSymbols(program.SymbolTable), "powerCurve") &&
+        program.SymbolTable.GetSymbolType("powerCurve") == typeof(UnityEngine.AnimationCurve), "editable Inspector field");
+    vm.LoadProgram(program);
+    var symbols = program.SymbolTable;
+    var input = symbols.GetAddressFromSymbol("__EvaluateRawPower__SystemSingle_p_0");
+    var output = symbols.GetAddressFromSymbol("__EvaluateRawPower__SystemSingle_ret");
+    var curveAddress = symbols.GetAddressFromSymbol("powerCurve");
+    var entry = program.EntryPoints.GetAddressFromSymbol("EvaluateRawPower__SystemSingle");
+    System.Func<float, float> udonEvaluate = speed =>
+    {
+        program.Heap.SetHeapVariable(input, speed);
+        vm.SetProgramCounter(entry);
+        check(vm.Interpret() == 0, "Udon VM execution");
+        return program.Heap.GetHeapVariable<float>(output);
+    };
+    program.Heap.SetHeapVariable(curveAddress, new UnityEngine.AnimationCurve(saved.keys), typeof(UnityEngine.AnimationCurve));
+    var setCurveInput = symbols.GetAddressFromSymbol("__SetBattingPowerCurve__UnityEngineAnimationCurve_p_0");
+    var setCurveOutput = symbols.GetAddressFromSymbol("__SetBattingPowerCurve__UnityEngineAnimationCurve_ret");
+    program.Heap.SetHeapVariable(setCurveInput, UnityEngine.AnimationCurve.Linear(0f, 0.1f, 40f, 0.9f), typeof(UnityEngine.AnimationCurve));
+    vm.SetProgramCounter(program.EntryPoints.GetAddressFromSymbol("SetBattingPowerCurve__UnityEngineAnimationCurve"));
+    check(vm.Interpret() == 0 && program.Heap.GetHeapVariable<bool>(setCurveOutput), "compiled runtime curve setter");
+    check(UnityEngine.Mathf.Abs(udonEvaluate(20f) - 0.5f) < 0.0001f, "compiled runtime curve takes effect");
+    vm.SetProgramCounter(program.EntryPoints.GetAddressFromSymbol("ResetBattingSettings"));
+    check(vm.Interpret() == 0 && UnityEngine.Mathf.Abs(udonEvaluate(20f) - 0.75f) < 0.0001f, "compiled reset restores curve");
+    foreach (var pair in new[] { new UnityEngine.Vector2(5f, 0.25f), new UnityEngine.Vector2(10f, 0.5f),
+        new UnityEngine.Vector2(20f, 0.75f), new UnityEngine.Vector2(40f, 1f), new UnityEngine.Vector2(100f, 1f) })
+        check(UnityEngine.Mathf.Abs(udonEvaluate(pair.x) - pair.y) < 0.0001f, "compiled Udon curve " + pair.x);
+    check(udonEvaluate(float.NaN) == 0f && udonEvaluate(float.PositiveInfinity) == 0f &&
+        udonEvaluate(float.MaxValue) == 1f, "compiled Udon invalid and extreme speed");
+    var udonCustom = UnityEngine.AnimationCurve.Linear(5f, 0.2f, 20f, 0.8f);
+    udonCustom.preWrapMode = UnityEngine.WrapMode.Loop;
+    udonCustom.postWrapMode = UnityEngine.WrapMode.PingPong;
+    program.Heap.SetHeapVariable(curveAddress, udonCustom, typeof(UnityEngine.AnimationCurve));
+    check(UnityEngine.Mathf.Abs(udonEvaluate(10f) - 0.4f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(udonEvaluate(30f) - 0.8f) < 0.0001f, "compiled Udon custom curve and wrap");
+    program.Heap.SetHeapVariable(curveAddress, null, typeof(UnityEngine.AnimationCurve));
+    check(UnityEngine.Mathf.Abs(udonEvaluate(20f) - 0.75f) < 0.0001f, "compiled Udon legacy fallback");
+    var udonFallback = program.Heap.GetHeapVariable<UnityEngine.AnimationCurve>(curveAddress);
+    for (int i = 0; i <= 400; i++)
+        check(UnityEngine.Mathf.Abs(udonFallback.Evaluate(i * 0.1f) - saved.Evaluate(i * 0.1f)) < 0.00001f,
+            "compiled Udon default matches prefab");
+
+    // A missing value on an older instance must generate exactly the same curve.
+    contact.powerCurve = null;
+    contact.EvaluateRawPower(1f);
+    for (int i = 0; i <= 400; i++)
+        check(UnityEngine.Mathf.Abs(contact.EvaluateRawPower(i * 0.1f) - saved.Evaluate(i * 0.1f)) < 0.00001f,
+            "legacy instance default");
+    contact.powerCurve = UnityEngine.AnimationCurve.Linear(5f, 0.2f, 20f, 0.8f);
+    contact.powerCurve.preWrapMode = UnityEngine.WrapMode.Loop;
+    contact.powerCurve.postWrapMode = UnityEngine.WrapMode.PingPong;
+    check(UnityEngine.Mathf.Abs(contact.EvaluateRawPower(1f) - 0.2f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.EvaluateRawPower(30f) - 0.8f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(contact.EvaluateRawPower(10f) - 0.4f) < 0.0001f, "custom curve and endpoint clamp");
+    contact.powerCurve = UnityEngine.AnimationCurve.Linear(0f, -1f, 20f, 2f);
+    check(contact.EvaluateRawPower(1f) == 0f && contact.EvaluateRawPower(20f) == 1f, "custom output clamp");
+    contact.powerCurve = new UnityEngine.AnimationCurve();
+    check(contact.EvaluateRawPower(10f) == 0f, "empty custom curve");
+
+    instance = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(source, scene);
+    check(UnityEditor.PrefabUtility.SaveAsPrefabAsset(instance, variantPath) != null, "create temporary variant");
+    UnityEngine.Object.DestroyImmediate(instance); instance = null;
+    var variant = UnityEditor.PrefabUtility.LoadPrefabContents(variantPath);
+    try
+    {
+        var motion = findMotion(variant);
+        var first = new UnityEngine.Keyframe(0f, 0.15f, 0f, 0.005f);
+        first.outWeight = 0.15f;
+        first.weightedMode = UnityEngine.WeightedMode.Out;
+        var middle = new UnityEngine.Keyframe(20f, 0.55f, 0.06f, 0.06f);
+        middle.inWeight = 0.22f;
+        middle.weightedMode = UnityEngine.WeightedMode.In;
+        var edited = new UnityEngine.AnimationCurve(first, middle, new UnityEngine.Keyframe(40f, 0.95f, 0.005f, 0f));
+        var assembly = typeof(VVBC.Editor.VVBCTSharpProgramAsset).Assembly;
+        var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+        var write = assembly.GetType("VVBC.Editor.UdonFields").GetMethod("Write", flags);
+        write.Invoke(null, new object[] { motion, "powerCurve", typeof(AnimationCurve), edited, "fixture" });
+        UnityEditor.PrefabUtility.SaveAsPrefabAsset(variant, variantPath);
+    }
+    finally { UnityEditor.PrefabUtility.UnloadPrefabContents(variant); }
+    UnityEditor.AssetDatabase.ImportAsset(variantPath, UnityEditor.ImportAssetOptions.ForceUpdate);
+    var reloaded = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(variantPath);
+    UnityEngine.AnimationCurve restored;
+    check(UnityEditor.PrefabUtility.GetPrefabAssetType(reloaded) == UnityEditor.PrefabAssetType.Variant &&
+        findMotion(reloaded).publicVariables.TryGetVariableValue("powerCurve", out restored) &&
+        restored != null, "reload variant curve");
+    findMotion(reloaded).publicVariables.TryGetVariableValue("powerCurve", out restored);
+    contact.powerCurve = restored;
+    check(UnityEngine.Mathf.Abs(contact.EvaluateRawPower(20f) - 0.55f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(saved.Evaluate(20f) - 0.75f) < 0.0001f && restored.length == 3 &&
+        restored.keys[0].weightedMode == UnityEngine.WeightedMode.Out &&
+        UnityEngine.Mathf.Abs(restored.keys[0].outWeight - 0.15f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(restored.keys[1].inTangent - 0.06f) < 0.0001f,
+        "variant key, tangent and weight edits persist independently");
+    program.Heap.SetHeapVariable(curveAddress, restored, typeof(UnityEngine.AnimationCurve));
+    check(UnityEngine.Mathf.Abs(udonEvaluate(20f) - 0.55f) < 0.0001f &&
+        UnityEngine.Mathf.Abs(udonEvaluate(12.5f) - restored.Evaluate(12.5f)) < 0.0001f,
+        "compiled Udon uses reloaded variant curve and tangents");
+    return "PASS prefab curve, Udon VM, legacy fallback, 40001 samples, custom editing, clamps and variant reload; max error=" + maximumError;
+}
+finally
+{
+    if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
+    if (testObject != null) UnityEngine.Object.DestroyImmediate(testObject);
+    UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(scene);
+    if (UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(variantPath) != null)
+        UnityEditor.AssetDatabase.DeleteAsset(variantPath);
+}

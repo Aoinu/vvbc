@@ -10,14 +10,15 @@ physics validation. Scene instances may override prefab settings.
 
 Each player gets a Bat under their `VVBCPlayerObjectTemplate`. The owner alone
 can spawn, pick up and drive it; other players see its synchronized Body and a
-local visual correction. The Bat represents a held or released object, not a
-ball-contact, power or result calculation.
+local visual correction. The Bat represents a held or released object and owns
+the local player's batting parameters; HomePlate's Contact evaluates geometry
+and applies the ball result.
 
 | Code | Responsibility |
 |---|---|
 | `BatBehaviour` | Manual Sync state and authorized transitions, input, spawn, physics and presentation changes, pickup reconciliation and Motion lifecycle. |
 | `BatGripBehaviour` | One relay per Pickup: resolves the holding hand and forwards Pickup/Drop to Bat. |
-| `BatMotionBehaviour` | Active `PostLateUpdate` work: local Body pose and release velocity, available proxy following, remote visual correction and release interpolation. |
+| `BatMotionBehaviour` | Active `PostLateUpdate` work, Bat batting settings and active contact-listener history: local Body pose and release velocity, available proxy following, remote visual correction and release interpolation. |
 | `BatBodyOwnershipBehaviour` | Relays Body ownership changes to Bat; Body's callback is separate from Bat's. |
 | `BatSpawnSwitchBehaviour` | On interaction, resolve exactly one locally owned Bat among local PlayerObjects and request Respawn. |
 | `BatGripLogic`, `BatGripConstants` | Pure grip transitions and stable integer identifiers. |
@@ -131,6 +132,32 @@ promotion. Spawn/respawn is a separate kinematic, gravity-off placement; it does
 not immediately make the newly spawned idle Body dynamic. Exact release physics
 and interaction with other objects still require real-client validation.
 
+### Bat geometry and swing reference
+
+`BatMotionBehaviour` owns the batting shape in Body local coordinates: local +Y
+runs from the root at 0 to the tip at `batLength`. The packaged length is
+0.855 m. `radiusCurve` maps normalized position `localY / batLength` to the
+physical Bat radius in metres; it may grow and then narrow. The default curve
+holds 0.0084 m through `0.100 / 0.855` and increases linearly to 0.0334 m at
+the tip. The contact range starts at 11.7% and ends at 100%; the default sweet
+spot is 79.5%. These values affect only sampled batting geometry and do not
+change the model, Rigidbody, or physical Collider transforms.
+
+Contact adds the scaled radius of the Ball's assigned SphereCollider and the
+nonnegative `contactMargin` to the evaluated Bat radius. Ball radius is not
+stored on the Bat. `minimumQuality` still defines the linear falloff from 1.0
+at the sweet spot to the minimum at either contact-range end; the Radius Curve
+does not affect quality. Swing reference velocity is measured at the sweet
+spot. Changing `batLength` or `sweetSpotNormalized` through the runtime API
+clears contact and measured-speed history before recording at the new point.
+The local contact plane remains based on the sampled Body origin and rotation,
+independent of Rigidbody center of mass and the observer's Visual correction.
+
+The packaged Bat previously saved its sweet spot at 0.72 m. Its migration keeps
+that saved value as 84.2% of 0.855 m; newly authored settings use the 0.68 m
+default. See [bat contact](bat-contact.md) for the conversion details and
+Inspector workflow.
+
 ## Synchronization and authority
 
 `BatBehaviour` uses Manual Sync for `isSpawned`, `gripState`, `lowerHand`,
@@ -211,9 +238,20 @@ Real-client release dynamics, forced drops, multiple-client ownership ordering,
 and tracking-loss and avatar variation need further validation; do not infer
 their success from static compilation or simulated tests.
 
-For a future Ball subsystem, Body's world Transform, Rigidbody, collider and the
-internally calculated release velocities are the existing physical facts. There
-is currently no dedicated public contact, swing velocity, power or hit-result
-API, and no guarantee that the private release samples are a suitable contact
-measurement. Any Ball/Contact integration and its authority and timing must be
-specified and validated separately; do not treat visual correction as physics.
+The optional local Ball integration records a separate driven-pose history
+after the held Bat pose update. Contact uses that physical Body history rather
+than remote visual correction or the Rigidbody's held velocity. Its setup,
+limits and validation steps are in [bat contact](bat-contact.md).
+
+## Bat contact sound and haptics
+
+The Body's existing `FeedbackImpactAudioBehaviour` owns drop audio, contact
+audio and local haptics. Assign a contact clip and adjust its volume and pitch
+ranges and haptic settings there. `Contact Audio` is a direct child of the Bat root
+(not Body), so it does not follow the swing; it is moved once to the contact
+position when a hit is played and is never moved during playback. It is a
+separate spatial AudioSource from `Body/Drop Audio`, so the two effects do not
+interrupt each other. Remote hits use the synchronized player's Bat and do not vibrate the
+observer. The package does not supply clips. See
+[batting feedback](batting-feedback.md) and the
+[Ball network prototype](ball-network-prototype.md).

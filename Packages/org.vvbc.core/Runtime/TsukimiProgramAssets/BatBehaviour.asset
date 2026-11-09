@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Script: {fileID: 11500000, guid: f9a7b89c02db4ea99a275917b647a31c, type: 3}
   m_Name: BatBehaviour
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 214469e3a8084b84cb9f4581a1faf789,
@@ -18,7 +18,8 @@ MonoBehaviour:
     %UnityEngineTransform, null\n    visualRoot: %UnityEngineTransform, null\n   
     body: %UnityEngineRigidbody, null\n    objectSync: %VRCSDK3ComponentsVRCObjectSync,
     null\n    gripA: %VRCSDK3ComponentsVRCPickup, null\n    gripB: %VRCSDK3ComponentsVRCPickup,
-    null\n    motion: %VRCUdonUdonBehaviour, null\n    debugGripTransitions: %SystemBoolean,
+    null\n    motion: %VRCUdonUdonBehaviour, null\n    vvbcBatContactEffects: %VRCUdonUdonBehaviour,
+    null\n    .export vvbcBatContactEffects\n    debugGripTransitions: %SystemBoolean,
     null\n    isSpawned: %SystemBoolean, null\n    .sync isSpawned, none\n    gripState:
     %SystemInt32, 0\n    .sync gripState, none\n    lowerHand: %SystemInt32, 0\n   
     .sync lowerHand, none\n    upperHand: %SystemInt32, 0\n    .sync upperHand, none\n   
@@ -34838,7 +34839,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: f637635007b221041858a4310bfbb5f8, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 97064fd9b0fd2c2f149743efd82fcb86572bfb2e3f4b3f5bd48ab5c915474a02
+  sourceFingerprint: 5ec306f0785db710499c3937266ca2aabe7039c649dd750448d16c16ff0bbd51
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -34849,6 +34850,14 @@ MonoBehaviour:
     header: Scene References
     tooltip: 
     hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: vvbcBatContactEffects
+    header: 
+    tooltip: 
+    hidden: 1
     space: 0
     hasRange: 0
     rangeMin: 0
@@ -34870,8 +34879,10 @@ MonoBehaviour:
   - gripA
   - gripB
   - motion
+  - vvbcBatContactEffects
   - debugGripTransitions
   inspectorPaths:
+  - 
   - 
   - 
   - 
@@ -34885,7 +34896,8 @@ MonoBehaviour:
     %UnityEngineTransform, null\n    visualRoot: %UnityEngineTransform, null\n   
     body: %UnityEngineRigidbody, null\n    objectSync: %VRCSDK3ComponentsVRCObjectSync,
     null\n    gripA: %VRCSDK3ComponentsVRCPickup, null\n    gripB: %VRCSDK3ComponentsVRCPickup,
-    null\n    motion: %VRCUdonUdonBehaviour, null\n    debugGripTransitions: %SystemBoolean,
+    null\n    motion: %VRCUdonUdonBehaviour, null\n    vvbcBatContactEffects: %VRCUdonUdonBehaviour,
+    null\n    .export vvbcBatContactEffects\n    debugGripTransitions: %SystemBoolean,
     null\n    isSpawned: %SystemBoolean, null\n    .sync isSpawned, none\n    gripState:
     %SystemInt32, 0\n    .sync gripState, none\n    lowerHand: %SystemInt32, 0\n   
     .sync lowerHand, none\n    upperHand: %SystemInt32, 0\n    .sync upperHand, none\n   
@@ -69706,7 +69718,8 @@ MonoBehaviour:
     %UnityEngineTransform, null\n    visualRoot: %UnityEngineTransform, null\n   
     body: %UnityEngineRigidbody, null\n    objectSync: %VRCSDK3ComponentsVRCObjectSync,
     null\n    gripA: %VRCSDK3ComponentsVRCPickup, null\n    gripB: %VRCSDK3ComponentsVRCPickup,
-    null\n    motion: %VRCUdonUdonBehaviour, null\n    debugGripTransitions: %SystemBoolean,
+    null\n    motion: %VRCUdonUdonBehaviour, null\n    vvbcBatContactEffects: %VRCUdonUdonBehaviour,
+    null\n    .export vvbcBatContactEffects\n    debugGripTransitions: %SystemBoolean,
     null\n    isSpawned: %SystemBoolean, null\n    .sync isSpawned, none\n    gripState:
     %SystemInt32, 0\n    .sync gripState, none\n    lowerHand: %SystemInt32, 0\n   
     .sync lowerHand, none\n    upperHand: %SystemInt32, 0\n    .sync upperHand, none\n   

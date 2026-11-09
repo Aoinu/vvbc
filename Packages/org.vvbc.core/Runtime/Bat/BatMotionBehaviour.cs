@@ -99,6 +99,11 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
         int upperProxy, int leftProxy, int rightProxy, int revision, VRCPlayerApi owner,
         bool resetVelocity, bool solveNow, bool recaptureLock, BatBehaviour controller)
     {
+        if (_mode != mode || stateRevision != revision || _lowerProxy != lowerProxy || _upperProxy != upperProxy)
+        {
+            ResetContactHistory();
+            contactRevision++;
+        }
         bool resetVisual = _mode != mode || _remoteRevision != revision ||
             (_owner != null && owner != null && _owner.playerId != owner.playerId);
         if (gripState == BatGripConstants.GripLocked && state != BatGripConstants.GripLocked)
@@ -133,6 +138,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
 
     public void StopMotion()
     {
+        ResetContactHistory();
         _mode = Inactive;
         _hasPreviousDrivenPose = false;
         _dropVelocity = Vector3.zero;
@@ -185,7 +191,15 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
             return;
         }
         if (_mode == RemoteHeld) { UpdateRemoteVisualCorrection(); return; }
-        if (_mode == LocalHeld && SolveOwnerPose()) UpdateDropVelocity(Time.deltaTime);
+        if (_mode == LocalHeld)
+        {
+            if (SolveOwnerPose())
+            {
+                UpdateDropVelocity(Time.deltaTime);
+                if (HasActiveContactListener()) RecordContactPose(Time.time);
+            }
+            else if (HasActiveContactListener()) ResetContactHistory();
+        }
         FollowAvailableProxy(_lowerProxy, lowerGrip);
         if (_mode == LocalHeld) FollowAvailableProxy(_upperProxy, upperGrip);
     }

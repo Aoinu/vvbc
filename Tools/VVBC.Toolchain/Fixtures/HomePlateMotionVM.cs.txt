@@ -1,0 +1,74 @@
+// Run in Play Mode. The SDK's object security filter requires Play Mode.
+if (!UnityEditor.EditorApplication.isPlaying) throw new Exception("Play Mode is required");
+var holder = new GameObject("__VVBC_MotionVM_Test");
+holder.SetActive(false);
+try
+{
+    var listenerA = holder.AddComponent<VRC.Udon.UdonBehaviour>();
+    var listenerB = holder.AddComponent<VRC.Udon.UdonBehaviour>();
+    var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TsukimiCode.UdonTools.Editor.TsukimiProgramAsset>(
+        "Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/BatMotionBehaviour.asset");
+    var program = asset.SerializedProgramAssetNoCreate.RetrieveProgram();
+    var vm = new VRC.Udon.ClientBindings.UdonClientInterface().ConstructUdonVM();
+    if (program == null || vm == null) throw new Exception("Missing compiled Bat Motion program");
+    vm.LoadProgram(program);
+    var symbols = program.SymbolTable;
+    var registerName = "RegisterContactListener__VRCUdonUdonBehaviour_SystemBoolean";
+    var setActiveName = "SetContactListenerActive__VRCUdonUdonBehaviour_SystemBoolean";
+    System.Action<string, VRC.Udon.UdonBehaviour, bool> call = (name, listener, active) =>
+    {
+        program.Heap.SetHeapVariable(symbols.GetAddressFromSymbol("__" + name + "_p_0"), listener, typeof(VRC.Udon.UdonBehaviour));
+        program.Heap.SetHeapVariable(symbols.GetAddressFromSymbol("__" + name + "_p_1"), active);
+        vm.SetProgramCounter(program.EntryPoints.GetAddressFromSymbol(name));
+        if (vm.Interpret() != 0) throw new Exception("Compiled Bat Motion Udon call failed: " + name);
+    };
+    var listenersAddress = symbols.GetAddressFromSymbol("_contactListeners");
+    var activeAddress = symbols.GetAddressFromSymbol("_contactListenerActive");
+    var previousListeners = program.Heap.GetHeapVariable(listenersAddress);
+    var previousActive = program.Heap.GetHeapVariable(activeAddress);
+    try
+    {
+        call(registerName, listenerA, false);
+        call(registerName, listenerB, true);
+        call(registerName, listenerA, true);
+        call(setActiveName, listenerB, false);
+        var listeners = (Array)program.Heap.GetHeapVariable(listenersAddress);
+        var active = (bool[])program.Heap.GetHeapVariable(activeAddress);
+        if (listeners.Length != 2 || listeners.GetValue(0) != listenerA || listeners.GetValue(1) != listenerB || !active[0] || active[1])
+            throw new Exception("Compiled Bat Motion did not preserve independent listener states");
+    }
+    finally
+    {
+        program.Heap.SetHeapVariable(listenersAddress, previousListeners, symbols.GetSymbolType("_contactListeners"));
+        program.Heap.SetHeapVariable(activeAddress, previousActive, symbols.GetSymbolType("_contactListenerActive"));
+    }
+    var ballAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TsukimiCode.UdonTools.Editor.TsukimiProgramAsset>(
+        "Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/BallBehaviour.asset");
+    var ballProgram = ballAsset.SerializedProgramAssetNoCreate.RetrieveProgram();
+    var ballVm = new VRC.Udon.ClientBindings.UdonClientInterface().ConstructUdonVM();
+    if (ballProgram == null || ballVm == null) throw new Exception("Missing compiled Ball program");
+    ballVm.LoadProgram(ballProgram);
+    var ballSymbols = ballProgram.SymbolTable;
+    var ballListenersAddress = ballSymbols.GetAddressFromSymbol("_presentationListeners");
+    var previousBallListeners = ballProgram.Heap.GetHeapVariable(ballListenersAddress);
+    try
+    {
+        var name = "RegisterPresentationListener__VRCUdonUdonBehaviour";
+        var input = ballSymbols.GetAddressFromSymbol("__" + name + "_p_0");
+        foreach (var listener in new[] { listenerA, listenerB, listenerA })
+        {
+            ballProgram.Heap.SetHeapVariable(input, listener, typeof(VRC.Udon.UdonBehaviour));
+            ballVm.SetProgramCounter(ballProgram.EntryPoints.GetAddressFromSymbol(name));
+            if (ballVm.Interpret() != 0) throw new Exception("Compiled Ball listener registration failed");
+        }
+        var ballListeners = (Array)ballProgram.Heap.GetHeapVariable(ballListenersAddress);
+        if (ballListeners.Length != 2 || ballListeners.GetValue(0) != listenerA || ballListeners.GetValue(1) != listenerB)
+            throw new Exception("Compiled Ball did not retain both pitcher presentation listeners");
+    }
+    finally
+    {
+        ballProgram.Heap.SetHeapVariable(ballListenersAddress, previousBallListeners, ballSymbols.GetSymbolType("_presentationListeners"));
+    }
+    return "PASS compiled Udon VM: independent contact listeners and two pitcher presentation listeners";
+}
+finally { UnityEngine.Object.Destroy(holder); }

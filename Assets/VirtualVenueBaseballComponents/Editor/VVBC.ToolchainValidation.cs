@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Tsukimi;
 using TsukimiCode.UdonTools.Editor;
+using VRC.Udon;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace VVBC.Toolchain
@@ -46,7 +47,7 @@ namespace VVBC.Toolchain
                     throw new InvalidOperationException("Wait for Unity compilation/import to finish.");
                 if (Application.unityVersion != "2022.3.22f1")
                     throw new InvalidOperationException("Unexpected Unity version.");
-                foreach (var expected in new[] { "com.vrchat.worlds@3.10.5", "com.tsukimicode.udon-tools@0.10.1" })
+                foreach (var expected in new[] { "com.vrchat.worlds@3.10.5", "com.tsukimicode.udon-tools@0.10.1", "org.vvbc.assets@0.0.1" })
                     if (!report.packages.Contains(expected)) throw new InvalidOperationException("Required package missing: " + expected);
                 if (!registered.Any(p => p.name == "org.vvbc.core"))
                     throw new InvalidOperationException("Required core package missing.");
@@ -54,6 +55,7 @@ namespace VVBC.Toolchain
                     Directory.Exists("Assets/VirtualVenueBaseballComponents") ||
                     AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name.IndexOf("UnityMCP", StringComparison.OrdinalIgnoreCase) >= 0)))
                     throw new InvalidOperationException("Consumer contains development project dependencies.");
+                ValidateHomePlate();
                 var assets = AssetDatabase.FindAssets("t:TsukimiProgramAsset", new[] { Runtime.TrimEnd('/') })
                     .Select(guid => AssetDatabase.LoadAssetAtPath<TsukimiProgramAsset>(AssetDatabase.GUIDToAssetPath(guid))).ToArray();
                 var scripts = AssetDatabase.FindAssets("t:MonoScript", new[] { Runtime.TrimEnd('/') })
@@ -74,6 +76,7 @@ namespace VVBC.Toolchain
                     var serialized = program.SerializedProgramAssetNoCreate;
                     if (serialized == null || serialized.RetrieveProgram() == null)
                         throw new InvalidOperationException("Actual serialized UdonProgram missing: " + script.name);
+                    AssetDatabase.SaveAssetIfDirty(program);
                     report.udonPrograms++;
                 }
                 if (assets.Any(p => p.sourceCsScript == null || !scripts.Contains(p.sourceCsScript) ||
@@ -82,7 +85,6 @@ namespace VVBC.Toolchain
                     throw new InvalidOperationException("Program Asset has missing/outside runtime source.");
                 if (request.scope == "fixture" && report.programEntries == 0)
                     throw new InvalidOperationException("Fixture validation must compile an actual program.");
-                AssetDatabase.SaveAssets();
                 report.success = errors.Count == 0 && report.udonPrograms == report.programEntries;
             }
             catch (Exception exception) { errors.Add(exception.ToString()); }
@@ -95,6 +97,66 @@ namespace VVBC.Toolchain
                 File.WriteAllText(resultPath, JsonUtility.ToJson(report, true) + "\n", new System.Text.UTF8Encoding(false));
             }
             return report;
+        }
+
+        private static void ValidateHomePlate()
+        {
+            var core = AssetDatabase.LoadAssetAtPath<GameObject>(Runtime + "Prefabs/HomePlate.prefab");
+            var visual = AssetDatabase.LoadAssetAtPath<GameObject>(Runtime + "Samples/Prefabs/HomePlateVisual.prefab");
+            if (core == null || visual == null || PrefabUtility.GetPrefabAssetType(visual) != PrefabAssetType.Variant ||
+                PrefabUtility.GetCorrespondingObjectFromSource(visual) != core)
+                throw new InvalidOperationException("HomePlate Visual must be a variant of HomePlate.");
+            foreach (var plate in new[] { core, visual })
+            {
+                var left = plate.transform.Find("BatterBoxLeft");
+                var right = plate.transform.Find("BatterBoxRight");
+                var colliders = plate.GetComponentsInChildren<Collider>(true);
+                if (left == null || right == null || colliders.Length != 2 ||
+                    colliders.Any(c => !(c is BoxCollider) || !c.isTrigger || (c.transform != left && c.transform != right)) ||
+                    left.GetComponents<Collider>().Length != 1 || right.GetComponents<Collider>().Length != 1)
+                    throw new InvalidOperationException("HomePlate must contain only two BatterBox trigger colliders.");
+                var plateZone = plate.GetComponent<UdonBehaviour>();
+                var leftBehaviour = left.GetComponent<UdonBehaviour>();
+                var rightBehaviour = right.GetComponent<UdonBehaviour>();
+                if (leftBehaviour == null || rightBehaviour == null || Reference(leftBehaviour, "homePlate") != plateZone ||
+                    Reference(rightBehaviour, "homePlate") != plateZone)
+                    throw new InvalidOperationException("HomePlate BatterBox references are invalid.");
+            }
+            var zone = core.GetComponent<UdonBehaviour>();
+            var contact = core.transform.Find("ContactZone")?.GetComponent<UdonBehaviour>();
+            var crossing = core.transform.Find("PitchCrossing")?.GetComponent<UdonBehaviour>();
+            var phantom = core.transform.Find("BallPhantom")?.GetComponent<UdonBehaviour>();
+            if (zone == null || zone.SyncMethod != VRC.SDKBase.Networking.SyncType.Manual || contact == null || crossing == null || phantom == null ||
+                Reference(contact, "strikeZone") != zone || Reference(crossing, "zone") != zone ||
+                Reference(crossing, "phantom") != phantom || Reference(zone, "contactListener") != contact || Reference(zone, "ball") != null)
+                throw new InvalidOperationException("HomePlate internal references are invalid.");
+            var phantomFilter = phantom.GetComponent<MeshFilter>();
+            var phantomRenderer = phantom.GetComponent<MeshRenderer>();
+            if (phantomFilter == null || phantomFilter.sharedMesh == null || phantomRenderer == null || phantomRenderer.sharedMaterial == null ||
+                AssetDatabase.GetAssetPath(phantomFilter.sharedMesh) != "Packages/org.vvbc.assets/Runtime/Props/Models/Ball.fbx" ||
+                AssetDatabase.GetAssetPath(phantomRenderer.sharedMaterial) != "Packages/org.vvbc.assets/Runtime/Props/Materials/MT_BallPhantom.mat")
+                throw new InvalidOperationException("HomePlate phantom mesh or material is missing.");
+            var size = phantomFilter.sharedMesh.bounds.size;
+            var meshDiameter = Mathf.Max(size.x, size.y, size.z);
+            if (meshDiameter <= 0f ||
+                !phantom.publicVariables.TryGetVariableValue("meshDiameter", out float udonDiameter) ||
+                Mathf.Abs(meshDiameter - udonDiameter) > meshDiameter * 0.0001f)
+                throw new InvalidOperationException("HomePlate phantom mesh diameter is inconsistent.");
+            foreach (var name in new[] { "HomeBase", "BatterBox" })
+            {
+                var child = visual.transform.Find("Visual/" + name);
+                var filter = child != null ? child.GetComponent<MeshFilter>() : null;
+                var renderer = child != null ? child.GetComponent<MeshRenderer>() : null;
+                if (filter == null || filter.sharedMesh == null ||
+                    AssetDatabase.GetAssetPath(filter.sharedMesh) != "Packages/org.vvbc.assets/Runtime/Props/Models/" + name + ".fbx" ||
+                    renderer == null || renderer.sharedMaterials.Length == 0 || renderer.sharedMaterials.Any(m => m == null))
+                    throw new InvalidOperationException("HomePlate visual model or material missing: " + name);
+            }
+        }
+
+        private static UdonBehaviour Reference(UdonBehaviour behaviour, string symbol)
+        {
+            return behaviour.publicVariables.TryGetVariableValue(symbol, out UdonBehaviour actual) ? actual : null;
         }
 
         public static void Run()
