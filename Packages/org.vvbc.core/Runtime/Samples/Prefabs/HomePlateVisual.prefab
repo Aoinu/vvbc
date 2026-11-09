@@ -212,16 +212,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: HomePlateVisual
       objectReference: {fileID: 0}
-    - target: {fileID: 959081723419059662, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: 77efa7747bf24e40ab0507b44616895a
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610651810357592529, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: e25738a2d2bf4a8f8aa5a2fd24a31238
-      objectReference: {fileID: 0}
     - target: {fileID: 3363655790564532801, guid: 01237ea139a85dc49aaf0a3ea126720d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -271,31 +261,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3882782307843313807, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: fca4709fba0c4c32ab7dac116f055b00
-      objectReference: {fileID: 0}
-    - target: {fileID: 5625597305388357927, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: ac6d450d39b44e78b338ae39582b0d5d
-      objectReference: {fileID: 0}
-    - target: {fileID: 6166947869641082284, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: 1327e0e8677a4395ab9cfe3195324623
-      objectReference: {fileID: 0}
-    - target: {fileID: 6758497573637842802, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: a17713859bb54a59a7ee7bde53eed90b
-      objectReference: {fileID: 0}
-    - target: {fileID: 7270934395229756101, guid: 01237ea139a85dc49aaf0a3ea126720d,
-        type: 3}
-      propertyPath: migrationId
-      value: f16672e32dd84bf3a0ceacc6bf28b5da
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

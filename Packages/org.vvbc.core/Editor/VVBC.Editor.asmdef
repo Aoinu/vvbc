@@ -1,7 +1,6 @@
 {
 	"name": "VVBC.Editor",
 	"references": [
-		"VVBC.Authoring",
 		"VVBC.Runtime",
 		"TsukimiCode.UdonTools.Editor",
 		"VRC.Udon",

@@ -5,31 +5,14 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VRC.Udon;
-using VVBC.Authoring;
 
 namespace VVBC.Editor
 {
-    // Authoring-only wiring. The per-field representation is the source of
-    // prefab overrides; the Udon table is updated through the normal sync path.
-    [InitializeOnLoad]
+    // Editor-time wiring of HomePlate's child behaviours and the Ball. Values live
+    // in UdonBehaviour.publicVariables and are written only when they change.
     internal static class HomePlateConnections
     {
         private static bool syncing;
-
-        static HomePlateConnections()
-        {
-            TSharpPrefabValues.Changed += Changed;
-        }
-
-        private static void Changed(TSharpPrefabValues values)
-        {
-            if (syncing || values == null || !IsProgram(values.target, "StrikeZoneBehaviour")) return;
-            EditorApplication.delayCall += () =>
-            {
-                if (values != null && values.target != null && !EditorApplication.isPlayingOrWillChangePlaymode)
-                    Synchronize(values.target);
-            };
-        }
 
         internal static bool IsProgram(UdonBehaviour value, string program)
         {
@@ -62,37 +45,12 @@ namespace VVBC.Editor
 
         internal static UdonBehaviour ReadReference(UdonBehaviour behaviour, string symbol)
         {
-            if (behaviour == null) return null;
-            var values = behaviour.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == behaviour);
-            var slot = values != null ? values.fields.FirstOrDefault(f => f.symbol == symbol) : null;
-            return slot == null || slot.isNull ? null : slot.objectValue as UdonBehaviour;
+            return UdonFields.ReadReference(behaviour, symbol);
         }
 
         internal static void SetReference(UdonBehaviour behaviour, string symbol, UdonBehaviour value)
         {
-            var values = TSharpPrefabOverrides.EnsureAuthoringData(behaviour, true);
-            var slot = values.fields.FirstOrDefault(f => f.symbol == symbol);
-            if (slot == null) throw new InvalidOperationException("Missing T# field " + symbol + " on " + behaviour.name);
-            if (slot.isNull == (value == null) && (value == null || slot.objectValue == value)) return;
-            Undo.RecordObject(values, "Connect HomePlate");
-            Undo.RecordObject(behaviour, "Connect HomePlate");
-            TSharpPrefabValueCodec.Set(slot, typeof(UdonBehaviour), value);
-            PrefabUtility.RecordPrefabInstancePropertyModifications(values);
-            EditorUtility.SetDirty(values);
-            TSharpPrefabFieldSync.Apply(values, false);
-            if (values.gameObject.scene.IsValid()) EditorSceneManager.MarkSceneDirty(values.gameObject.scene);
-        }
-
-        internal static void SetVector2(UdonBehaviour behaviour, string symbol, Vector2 value)
-        {
-            var values = TSharpPrefabOverrides.EnsureAuthoringData(behaviour, true);
-            var slot = values.fields.First(f => f.symbol == symbol);
-            Undo.RecordObject(values, "Move strike zone center");
-            Undo.RecordObject(behaviour, "Move strike zone center");
-            TSharpPrefabValueCodec.Set(slot, typeof(Vector2), value);
-            PrefabUtility.RecordPrefabInstancePropertyModifications(values);
-            EditorUtility.SetDirty(values);
-            TSharpPrefabFieldSync.Apply(values, false);
+            UdonFields.Write(behaviour, symbol, typeof(UdonBehaviour), value, "Connect HomePlate");
         }
 
         internal static string Check(UdonBehaviour zone)
@@ -116,22 +74,14 @@ namespace VVBC.Editor
                     return "Each BatterBox requires exactly one BoxCollider trigger.";
                 if (ReadReference(box, "homePlate") != zone) return "BatterBox HomePlate reference is incorrect.";
             }
-            var leftValues = left.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == left);
-            var rightValues = rightBox.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == rightBox);
-            var leftSide = leftValues?.fields.FirstOrDefault(f => f.symbol == "isLeft");
-            var rightSide = rightValues?.fields.FirstOrDefault(f => f.symbol == "isLeft");
-            if (leftSide == null || rightSide == null || !leftSide.booleanValue || rightSide.booleanValue)
+            if (!UdonFields.Read(left, "isLeft", false) || UdonFields.Read(rightBox, "isLeft", false))
                 return "BatterBox left/right settings are incorrect.";
             var allColliders = root.GetComponentsInChildren<Collider>(true);
             if (allColliders.Length != 2 || allColliders.Any(c => c.gameObject != left.gameObject && c.gameObject != rightBox.gameObject))
                 return "Only the two BatterBox trigger colliders are allowed.";
-            var values = zone.GetComponents<TSharpPrefabValues>().FirstOrDefault(v => v.target == zone);
-            if (values == null) return "HomePlate T# authoring data is missing.";
-            var occupancy = values.fields.FirstOrDefault(f => f.symbol == "useBatterOccupancy");
-            if (occupancy == null || !occupancy.booleanValue) return "HomePlate occupancy is disabled.";
-            var origin = values.fields.FirstOrDefault(f => f.symbol == "plateOrigin");
-            if (origin != null && !origin.isNull && origin.objectValue != null && origin.objectValue != root)
-                return "HomePlate origin must be its root Transform.";
+            if (!UdonFields.Read(zone, "useBatterOccupancy", false)) return "HomePlate occupancy is disabled.";
+            var origin = UdonFields.Read<Transform>(zone, "plateOrigin");
+            if (origin != null && origin != root) return "HomePlate origin must be its root Transform.";
             var matrix = root.localToWorldMatrix;
             Vector3 right = matrix.MultiplyVector(Vector3.right);
             Vector3 up = matrix.MultiplyVector(Vector3.up);

@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEngine;
 using Tsukimi;
 using TsukimiCode.UdonTools.Editor;
-using VVBC.Authoring;
 using VRC.Udon;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
@@ -139,9 +138,7 @@ namespace VVBC.Toolchain
                 throw new InvalidOperationException("HomePlate phantom mesh or material is missing.");
             var size = phantomFilter.sharedMesh.bounds.size;
             var meshDiameter = Mathf.Max(size.x, size.y, size.z);
-            var phantomValues = phantom.GetComponents<TSharpPrefabValues>().Single(v => v.target == phantom);
-            var diameter = phantomValues.fields.Single(f => f.symbol == "meshDiameter").singleValue;
-            if (meshDiameter <= 0f || Mathf.Abs(meshDiameter - diameter) > meshDiameter * 0.0001f ||
+            if (meshDiameter <= 0f ||
                 !phantom.publicVariables.TryGetVariableValue("meshDiameter", out float udonDiameter) ||
                 Mathf.Abs(meshDiameter - udonDiameter) > meshDiameter * 0.0001f)
                 throw new InvalidOperationException("HomePlate phantom mesh diameter is inconsistent.");
@@ -159,12 +156,7 @@ namespace VVBC.Toolchain
 
         private static UdonBehaviour Reference(UdonBehaviour behaviour, string symbol)
         {
-            var values = behaviour.GetComponents<TSharpPrefabValues>().Single(v => v.target == behaviour);
-            var field = values.fields.Single(f => f.symbol == symbol);
-            var expected = field.isNull ? null : field.objectValue as UdonBehaviour;
-            if (expected != null && (!behaviour.publicVariables.TryGetVariableValue(symbol, out UdonBehaviour actual) || actual != expected))
-                throw new InvalidOperationException("HomePlate authoring/Udon reference mismatch: " + symbol);
-            return expected;
+            return behaviour.publicVariables.TryGetVariableValue(symbol, out UdonBehaviour actual) ? actual : null;
         }
 
         public static void Run()

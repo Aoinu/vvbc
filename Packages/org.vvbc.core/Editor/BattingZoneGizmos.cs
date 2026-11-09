@@ -123,7 +123,7 @@ public static class BattingZoneGizmos
             Vector3 delta = moved - center;
             Vector2 offset = Read(behaviour, "zoneCenterOffset", Vector2.zero);
             offset += new Vector2(Vector3.Dot(delta, right), delta.y);
-            VVBC.Editor.HomePlateConnections.SetVector2(behaviour, "zoneCenterOffset", offset);
+            VVBC.Editor.UdonFields.Write(behaviour, "zoneCenterOffset", typeof(Vector2), offset, "Move strike zone center");
         }
         }
     }

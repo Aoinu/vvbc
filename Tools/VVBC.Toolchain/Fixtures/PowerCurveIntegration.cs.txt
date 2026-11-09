@@ -141,13 +141,8 @@ try
         var edited = new UnityEngine.AnimationCurve(first, middle, new UnityEngine.Keyframe(40f, 0.95f, 0.005f, 0f));
         var assembly = typeof(VVBC.Editor.VVBCTSharpProgramAsset).Assembly;
         var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
-        var ensure = assembly.GetType("VVBC.Editor.TSharpPrefabOverrides").GetMethod("EnsureAuthoringData", flags);
-        var set = assembly.GetType("VVBC.Editor.TSharpPrefabValueCodec").GetMethod("Set", flags);
-        var apply = assembly.GetType("VVBC.Editor.TSharpPrefabFieldSync").GetMethod("Apply", flags);
-        var authoring = (VVBC.Authoring.TSharpPrefabValues)ensure.Invoke(null, new object[] { motion, true });
-        var slot = authoring.fields.Single(f => f.symbol == "powerCurve");
-        set.Invoke(null, new object[] { slot, typeof(AnimationCurve), edited });
-        apply.Invoke(null, new object[] { authoring, false });
+        var write = assembly.GetType("VVBC.Editor.UdonFields").GetMethod("Write", flags);
+        write.Invoke(null, new object[] { motion, "powerCurve", typeof(AnimationCurve), edited, "fixture" });
         UnityEditor.PrefabUtility.SaveAsPrefabAsset(variant, variantPath);
     }
     finally { UnityEditor.PrefabUtility.UnloadPrefabContents(variant); }

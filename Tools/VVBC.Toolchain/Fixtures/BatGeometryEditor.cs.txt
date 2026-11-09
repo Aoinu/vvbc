@@ -2,9 +2,6 @@
 // isuzu-unity-cli call execute_code --file Tools/VVBC.Toolchain/Fixtures/BatGeometryEditor.cs.txt
 // All temporary objects live in a preview scene and are discarded afterwards.
 var scene = UnityEditor.SceneManagement.EditorSceneManager.NewPreviewScene();
-var editorAssembly = typeof(VVBC.Editor.VVBCTSharpProgramAsset).Assembly;
-var ensure = editorAssembly.GetType("VVBC.Editor.TSharpPrefabOverrides").GetMethod("EnsureAuthoringData",
-    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 var asset = AssetDatabase.LoadAssetAtPath<VVBC.Editor.VVBCTSharpProgramAsset>(
     "Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/BatMotionBehaviour.asset");
 System.Action<bool, string> check = (condition, message) =>
@@ -13,36 +10,21 @@ System.Action<bool, string> check = (condition, message) =>
 };
 try
 {
-    check(ensure != null && asset != null, "Editor migration or Program Asset missing");
-    var legacyObject = new GameObject("LegacyBatGeometry");
-    UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(legacyObject, scene);
-    var legacy = legacyObject.AddComponent<VRC.Udon.UdonBehaviour>();
-    legacy.programSource = asset;
-    string[] names = { "minContactX", "maxContactX", "sweetSpotX", "widthAtGrip", "widthAtBarrel", "powerReferenceLocalY" };
-    float[] old = { 0.1f, 0.9f, 0.72f, 0.05f, 0.08f, 0.71f };
-    for (int i = 0; i < names.Length; i++)
-        check(legacy.publicVariables.TryAddVariable(new VRC.Udon.Common.UdonVariable<float>(names[i], old[i])),
-            "cannot seed " + names[i]);
-    var values = (VVBC.Authoring.TSharpPrefabValues)ensure.Invoke(null, new object[] { legacy, true });
-    Func<string, VVBC.Authoring.TSharpPrefabValue> field = name => values.fields.Find(f => f.symbol == name);
-    check(Mathf.Abs(field("batLength").singleValue - 0.9f) < 0.00001f &&
-        Mathf.Abs(field("sweetSpotNormalized").singleValue - 0.8f) < 0.00001f &&
-        Mathf.Abs(field("radiusCurve").curveValue.Evaluate(1f) - 0.0434f) < 0.00001f &&
-        !names.Any(name => values.fields.Any(f => f.symbol == name)), "legacy values were not preserved");
-    check(legacy.publicVariables.TryGetVariableValue("radiusCurve", out AnimationCurve migrated) && migrated != null &&
-        Mathf.Abs(migrated.Evaluate(1f) - 0.0434f) < 0.00001f, "Udon curve differs from authoring data");
-
+    check(asset != null, "Program Asset missing");
+    var editorAssembly = typeof(VVBC.Editor.VVBCTSharpProgramAsset).Assembly;
+    var write = editorAssembly.GetType("VVBC.Editor.UdonFields").GetMethod("Write",
+        System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
     var freshObject = new GameObject("FreshBatGeometry");
     UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(freshObject, scene);
     var fresh = freshObject.AddComponent<VRC.Udon.UdonBehaviour>();
     fresh.programSource = asset;
-    var freshValues = (VVBC.Authoring.TSharpPrefabValues)ensure.Invoke(null, new object[] { fresh, true });
-    var freshCurve = freshValues.fields.Find(f => f.symbol == "radiusCurve");
-    check(!freshCurve.isNull && freshCurve.curveValue != null &&
-        Mathf.Abs(freshCurve.curveValue.Evaluate(1f) - 0.0334f) < 0.00001f &&
-        fresh.publicVariables.TryGetVariableValue("radiusCurve", out AnimationCurve publicCurve) &&
-        publicCurve != null && Mathf.Abs(publicCurve.Evaluate(1f) - 0.0334f) < 0.00001f,
-        "new authoring data lacks the default curve");
+    var curve = new AnimationCurve(new Keyframe(0f, 0.01f), new Keyframe(1f, 0.03f));
+    check((bool)write.Invoke(null, new object[] { fresh, "radiusCurve", typeof(AnimationCurve), curve, "fixture" }),
+        "first write must change the value");
+    check(!(bool)write.Invoke(null, new object[] { fresh, "radiusCurve", typeof(AnimationCurve),
+        new AnimationCurve(curve.keys), "fixture" }), "an equal curve must not be rewritten");
+    check(fresh.publicVariables.TryGetVariableValue("radiusCurve", out AnimationCurve stored) && stored != null &&
+        Mathf.Abs(stored.Evaluate(1f) - 0.03f) < 0.00001f, "Udon curve was not stored");
 
     var batPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/Bat.prefab");
     var bat = (GameObject)PrefabUtility.InstantiatePrefab(batPrefab, scene);
@@ -59,7 +41,7 @@ try
         (VRC.Udon.UdonBehaviour)findMotion.Invoke(null, new object[] { body.transform }) == motion &&
         findMotion.Invoke(null, new object[] { sibling.transform }) == null,
         "Gizmo must follow Bat root and Body selection without selecting siblings");
-    return "PASS Bat geometry Editor fixture: legacy migration, Udon synchronization, default curve and Gizmo selection";
+    return "PASS Bat geometry Editor fixture: direct Udon write and Gizmo selection";
 }
 finally
 {

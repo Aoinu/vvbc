@@ -130,12 +130,12 @@ try
         if (!filter.sharedMesh) throw new Exception("Missing visual mesh: " + filter.name);
     foreach (var renderer in visualPrefab.GetComponentsInChildren<MeshRenderer>(true))
         foreach (var material in renderer.sharedMaterials) if (!material) throw new Exception("Missing visual material: " + renderer.name);
-    var phantomData = platePrefab.transform.Find("BallPhantom").GetComponent<VVBC.Authoring.TSharpPrefabValues>();
-    var diameter = phantomData.fields.Find(f => f.symbol == "meshDiameter");
+    var phantomBehaviour = platePrefab.transform.Find("BallPhantom").GetComponent<VRC.Udon.UdonBehaviour>();
+    phantomBehaviour.publicVariables.TryGetVariableValue("meshDiameter", out float diameter);
     var phantomMesh = platePrefab.transform.Find("BallPhantom").GetComponent<MeshFilter>().sharedMesh;
     var meshSize = phantomMesh.bounds.size;
     var meshDiameter = Mathf.Max(meshSize.x, meshSize.y, meshSize.z);
-    if (meshDiameter <= 0f || Mathf.Abs(diameter.singleValue - meshDiameter) > meshDiameter * 0.0001f)
+    if (meshDiameter <= 0f || Mathf.Abs(diameter - meshDiameter) > meshDiameter * 0.0001f)
         throw new Exception("Phantom mesh diameter is incorrect");
 
     var plates = new GameObject[2];
@@ -219,13 +219,8 @@ try
     finally { UnityEditor.SceneManagement.EditorSceneManager.ClosePreviewScene(otherScene); }
     var occupantObject = new GameObject("OccupantOnly0");
     UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(occupantObject, scene);
-    var authoring = firstZone.GetComponents<VVBC.Authoring.TSharpPrefabValues>().Single(v => v.target == firstZone);
-    var occupantSlot = authoring.fields.Single(f => f.symbol == "occupantOnlyObjects");
-    var codec = assembly.GetType("VVBC.Editor.TSharpPrefabValueCodec").GetMethod("Set", flags);
-    var applyFields = assembly.GetType("VVBC.Editor.TSharpPrefabFieldSync").GetMethod("Apply", flags);
-    codec.Invoke(null, new object[] { occupantSlot, typeof(GameObject[]), new[] { occupantObject, null } });
-    applyFields.Invoke(null, new object[] { authoring, false });
-    UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(authoring);
+    var writeField = assembly.GetType("VVBC.Editor.UdonFields").GetMethod("Write", flags);
+    writeField.Invoke(null, new object[] { firstZone, "occupantOnlyObjects", typeof(GameObject[]), new[] { occupantObject, null }, "fixture" });
     if (!UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene, scenePath)) throw new Exception("Scene save failed");
     UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scene, true);
     scene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(scenePath, UnityEditor.SceneManagement.OpenSceneMode.Additive);
@@ -244,13 +239,10 @@ try
         if (get(pitcher, "strikeZone") != zone) throw new Exception("Pitcher target did not survive scene reload");
         if (i == 0)
         {
-            var slot = zone.GetComponents<VVBC.Authoring.TSharpPrefabValues>().Single(v => v.target == zone)
-                .fields.Single(f => f.symbol == "occupantOnlyObjects");
-            if (slot.isNull || slot.objectArray.Length != 2 || slot.objectArray[0] != Array.Find(roots, g => g.name == "OccupantOnly0") || slot.objectArray[1] != null)
-                throw new Exception("Occupant-only object override did not survive scene reload");
             if (!zone.publicVariables.TryGetVariableValue("occupantOnlyObjects", out GameObject[] storedObjects) ||
-                storedObjects == null || storedObjects.Length != 2 || storedObjects[0] != slot.objectArray[0] || storedObjects[1] != null)
-                throw new Exception("Occupant-only Udon variables do not match the saved override");
+                storedObjects == null || storedObjects.Length != 2 ||
+                storedObjects[0] != Array.Find(roots, g => g.name == "OccupantOnly0") || storedObjects[1] != null)
+                throw new Exception("Occupant-only object override did not survive scene reload");
         }
         if (!UnityEditor.PrefabUtility.IsPartOfPrefabInstance(zone)) throw new Exception("Prefab connection lost");
     }
