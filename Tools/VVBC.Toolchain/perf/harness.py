@@ -129,6 +129,10 @@ RULES = [
          'flight.ContactPathOutsideBox(start, boundary, contact.maxExtrapolation, contact.contactZone, contact.zoneHalfSize)',
          'flight.ContactPathOutsideLocalBox(start, boundary, contact.maxExtrapolation, contact.perfZoneCenter, Quaternion.identity, Vector3.one, contact.zoneHalfSize, PerfUnity.Gravity())',
          {'BattingFeedbackBehaviour.Scan.cs': 1, 'BattingFeedbackBehaviour.Trail.cs': 1}, others='no other file calls the broad phase'),
+    # World settings: not part of any scenario, but Mimic.Join() raises its OnPlayerJoined, whose
+    # VRCPlayerApi Set*Speed / SetVoiceDistance* calls the runner does not model.
+    rule('World settings join', '            if (!Utilities.IsValid(player)) return;\n            if (player.isLocal)',
+         '            return;\n            if (player.isLocal)', 1, files=['WorldSettingsBehaviour.cs']),
     # Ball collider / contact zone Transform (feedback).
     rule('Feedback ball collider presence', 'flight.ballCollider != null', 'flight.perfBallRadius > 0f', 1,
          files=['BattingFeedbackBehaviour.Scan.cs']),

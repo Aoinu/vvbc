@@ -118,6 +118,7 @@ and the `harness/*.Perf.cs` seams):
 | `BallBehaviour.ApplyContactResult` (Ball hand-off, network queue, physics apply) | `PerfUnity.HandOff` returns true | **excluded** from the Contact "hit" cost |
 | `motion.IgnoreBallCollision` (once per pitch), `GetComponentInParent<BatBehaviour>` | removed / null | excluded |
 | `Rigidbody.velocity/angularVelocity` on drop, hand-tracking reads in `RecordContactPose` (`_owner` is null) | removed / skipped | excluded |
+| `WorldSettingsBehaviour.OnPlayerJoined` (`VRCPlayerApi.Set*Speed`, `SetJumpImpulse`, `SetVoiceDistance*`), raised by `Mimic.Join()` | returns at once | excluded; it runs once per join, never inside a measured call |
 
 So absolute numbers are for the harness, not for VRChat; **comparisons across commits are meaningful**
 because the same stubs apply to both. A regression inside a stand-in-replaced call (e.g. making a curve

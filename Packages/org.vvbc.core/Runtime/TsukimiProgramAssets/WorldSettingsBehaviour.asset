@@ -1,0 +1,427 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Name: WorldSettingsBehaviour
+  m_EditorClassIdentifier: 
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 527956527a579b846b847cbbd073b5d1,
+    type: 2}
+  udonAssembly: ".data_start\n    walkSpeed: %SystemSingle, 2\n    .export walkSpeed\n   
+    runSpeed: %SystemSingle, 4\n    .export runSpeed\n    strafeSpeed: %SystemSingle,
+    2\n    .export strafeSpeed\n    jumpImpulse: %SystemSingle, 3\n    .export jumpImpulse\n   
+    voiceDistanceNear: %SystemSingle, 0\n    .export voiceDistanceNear\n    voiceDistanceFar:
+    %SystemSingle, 25\n    .export voiceDistanceFar\n    __refl_typeid: %SystemInt64,
+    null\n    __refl_typename: %SystemString, \"VVBC.World.WorldSettingsBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    onPlayerJoinedPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerJoined___inl0__player: %VRCSDKBaseVRCPlayerApi, null\n   
+    __OnPlayerJoined___inl1__player: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerJoined___inl_t1:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5__near: %SystemSingle, 0\n   
+    __OnPlayerJoined___inl5__far: %SystemSingle, 0\n    __OnPlayerJoined___inl5____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5____t1: %SystemBoolean, null\n   
+    __OnPlayerJoined___inl5____inl3__value: %SystemSingle, 0\n    __OnPlayerJoined___inl5____inl3____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5____inl4__value: %SystemSingle,
+    0\n    __OnPlayerJoined___inl5____inl4____t0: %SystemBoolean, null\n    __OnPlayerJoined_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __ValidAmount__SystemSingle_p_0: %SystemSingle,
+    0\n    __ValidAmount__SystemSingle___t0: %SystemBoolean, null\n    __ValidAmount__SystemSingle_ret:
+    %SystemBoolean, null\n    __ValidAmount__SystemSingle_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __const_0: %VRCSDKBaseVRCPlayerApi, null\n    __const_1: %SystemBoolean,
+    null\n    __const_2: %SystemSingle, 0\n    __OnPlayerJoined_intnl_0: %SystemBoolean,
+    null\n    __retaddr_0: %SystemUInt32, 0x0000016C\n    __retaddr_1: %SystemUInt32,
+    0x000001C4\n    __retaddr_2: %SystemUInt32, 0x0000021C\n    __retaddr_3: %SystemUInt32,
+    0x00000274\n    __const_3: %SystemSingle, null\n.data_end\n.code_start\n    .export
+    _onPlayerJoined\n    _onPlayerJoined:\n        PUSH, __const_0\n        PUSH,
+    __OnPlayerJoined___inl0__player\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5__near\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5__far\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5____inl3__value\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____inl3____t0\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____inl4____t0\n        COPY\n        PUSH, onPlayerJoinedPlayer\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        JUMP_IF_FALSE, __OnPlayerJoined_L0\n       
+    JUMP, __OnPlayerJoined_L1\n    __OnPlayerJoined_L0:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n   
+    __OnPlayerJoined_L1:\n        PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined_intnl_0\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerJoined_intnl_0\n        JUMP_IF_FALSE, __OnPlayerJoined_L2\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    COPY\n        PUSH, walkSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_0\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L5\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, walkSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetWalkSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L5:\n        PUSH, runSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_1\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L7\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, runSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetRunSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L7:\n        PUSH, strafeSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_2\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L9\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, strafeSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetStrafeSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L9:\n        PUSH, jumpImpulse\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_3\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L11\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, jumpImpulse\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetJumpImpulse__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L11:\n        JUMP, __OnPlayerJoined_L20\n    __OnPlayerJoined_L2:\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __OnPlayerJoined___inl5__near\n       
+    COPY\n        PUSH, voiceDistanceFar\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __OnPlayerJoined___inl5____inl3__value\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __const_2\n        PUSH,
+    __OnPlayerJoined___inl5____inl3____t0\n        EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___inl5____inl3____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L13\n       
+    PUSH, __OnPlayerJoined___inl5____inl3__value\n        PUSH, __const_3\n       
+    PUSH, __OnPlayerJoined___inl5____inl3____t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __OnPlayerJoined_L13:\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L15\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        COPY\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __const_2\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___inl5____inl4____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L17\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        PUSH, __const_3\n       
+    PUSH, __OnPlayerJoined___inl5____inl4____t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __OnPlayerJoined_L17:\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n    __OnPlayerJoined_L15:\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        PUSH, __OnPlayerJoined___inl5____t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5____t1\n        JUMP_IF_FALSE, __OnPlayerJoined_L19\n       
+    PUSH, __OnPlayerJoined___inl5__near\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __OnPlayerJoined___inl5____t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __OnPlayerJoined_L19:\n        PUSH, __OnPlayerJoined___inl5____t0\n        JUMP_IF_FALSE,
+    __OnPlayerJoined_L20\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    PUSH, voiceDistanceNear\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetVoiceDistanceNear__SystemSingle__SystemVoid\"\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        PUSH, voiceDistanceFar\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetVoiceDistanceFar__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L20:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n    ValidAmount__SystemSingle:\n       
+    PUSH, __ValidAmount__SystemSingle_p_0\n        PUSH, __const_2\n        PUSH,
+    __ValidAmount__SystemSingle___t0\n        EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ValidAmount__SystemSingle___t0\n        JUMP_IF_FALSE, __ValidAmount__SystemSingle_L1\n       
+    PUSH, __ValidAmount__SystemSingle_p_0\n        PUSH, __const_3\n        PUSH,
+    __ValidAmount__SystemSingle___t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __ValidAmount__SystemSingle_L1:\n        PUSH, __ValidAmount__SystemSingle___t0\n       
+    PUSH, __ValidAmount__SystemSingle_ret\n        COPY\n        JUMP_INDIRECT, __ValidAmount__SystemSingle_retjump\n       
+    JUMP_INDIRECT, __ValidAmount__SystemSingle_retjump\n.code_end\n"
+  assemblyError: 
+  sourceCsScript: {fileID: 11500000, guid: 733ea4ae7054a354bb464fd65e18f243, type: 3}
+  unresolvedCompileErrors: []
+  sourceFingerprint: 26087ba55774ebdd99f55d7c9c1e8410b2b2882f4c3b090441325695cd8fbacb
+  compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
+  generatedGpuAssets: []
+  gpuLoadSourceFields: []
+  generatedGpuMaterials: []
+  declaredBehaviourSyncMode: 1
+  fieldLabels:
+  - symbol: walkSpeed
+    header: Movement (local player, m/s)
+    tooltip: Walk speed, in m/s. Default 2.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: runSpeed
+    header: 
+    tooltip: Run speed, in m/s. Default 4.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: strafeSpeed
+    header: 
+    tooltip: Strafe speed, in m/s. Default 2.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: jumpImpulse
+    header: 
+    tooltip: Jump impulse, in m/s. Default 3.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: voiceDistanceNear
+    header: Voice (remote players, m)
+    tooltip: Distance where voice falloff begins, in metres. Default 0.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: voiceDistanceFar
+    header: 
+    tooltip: Distance where voice becomes silent, in metres. Default 25.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  inspectorFields:
+  - walkSpeed
+  - runSpeed
+  - strafeSpeed
+  - jumpImpulse
+  - voiceDistanceNear
+  - voiceDistanceFar
+  inspectorPaths:
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  optBeforeUasm: ".data_start\n    walkSpeed: %SystemSingle, 2\n    .export walkSpeed\n   
+    runSpeed: %SystemSingle, 4\n    .export runSpeed\n    strafeSpeed: %SystemSingle,
+    2\n    .export strafeSpeed\n    jumpImpulse: %SystemSingle, 3\n    .export jumpImpulse\n   
+    voiceDistanceNear: %SystemSingle, 0\n    .export voiceDistanceNear\n    voiceDistanceFar:
+    %SystemSingle, 25\n    .export voiceDistanceFar\n    __refl_typeid: %SystemInt64,
+    null\n    __refl_typename: %SystemString, \"VVBC.World.WorldSettingsBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    onPlayerJoinedPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerJoined___inl0__player: %VRCSDKBaseVRCPlayerApi, null\n   
+    __OnPlayerJoined___inl1__player: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerJoined___inl_t1:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5__near: %SystemSingle, 0\n   
+    __OnPlayerJoined___inl5__far: %SystemSingle, 0\n    __OnPlayerJoined___inl5____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5____t1: %SystemBoolean, null\n   
+    __OnPlayerJoined___inl5____inl3__value: %SystemSingle, 0\n    __OnPlayerJoined___inl5____inl3____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5____inl4__value: %SystemSingle,
+    0\n    __OnPlayerJoined___inl5____inl4____t0: %SystemBoolean, null\n    __OnPlayerJoined_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __ValidAmount__SystemSingle_p_0: %SystemSingle,
+    0\n    __ValidAmount__SystemSingle___t0: %SystemBoolean, null\n    __ValidAmount__SystemSingle_ret:
+    %SystemBoolean, null\n    __ValidAmount__SystemSingle_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __const_0: %VRCSDKBaseVRCPlayerApi, null\n    __const_1: %SystemBoolean,
+    null\n    __const_2: %SystemSingle, 0\n    __OnPlayerJoined_intnl_0: %SystemBoolean,
+    null\n    __OnPlayerJoined_intnl_1: %SystemBoolean, null\n    __retaddr_0: %SystemUInt32,
+    0x00000180\n    __OnPlayerJoined_intnl_2: %SystemBoolean, null\n    __retaddr_1:
+    %SystemUInt32, 0x000001EC\n    __OnPlayerJoined_intnl_3: %SystemBoolean, null\n   
+    __retaddr_2: %SystemUInt32, 0x00000258\n    __OnPlayerJoined_intnl_4: %SystemBoolean,
+    null\n    __retaddr_3: %SystemUInt32, 0x000002C4\n    __OnPlayerJoined_intnl_5:
+    %SystemBoolean, null\n    __OnPlayerJoined_intnl_6: %SystemBoolean, null\n   
+    __const_3: %SystemSingle, null\n    __OnPlayerJoined_intnl_7: %SystemBoolean,
+    null\n    __OnPlayerJoined_intnl_8: %SystemBoolean, null\n    __OnPlayerJoined_intnl_9:
+    %SystemBoolean, null\n    __OnPlayerJoined_intnl_10: %SystemBoolean, null\n   
+    __ValidAmount__SystemSingle_intnl_0: %SystemBoolean, null\n    __ValidAmount__SystemSingle_intnl_1:
+    %SystemBoolean, null\n.data_end\n.code_start\n    .export _onPlayerJoined\n   
+    _onPlayerJoined:\n        PUSH, __const_0\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerJoined___inl_t1\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __OnPlayerJoined___inl5__near\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerJoined___inl5____t0\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerJoined___inl5____t1\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __OnPlayerJoined___inl5____inl3__value\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __OnPlayerJoined___inl5____inl4__value\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    COPY\n        PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined_intnl_0\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        JUMP_IF_FALSE, __OnPlayerJoined_L0\n       
+    JUMP, __OnPlayerJoined_L1\n    __OnPlayerJoined_L0:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n   
+    __OnPlayerJoined_L1:\n        PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined_intnl_1\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerJoined_intnl_1\n        JUMP_IF_FALSE, __OnPlayerJoined_L2\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    COPY\n        PUSH, walkSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_0\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    PUSH, __OnPlayerJoined_intnl_2\n        COPY\n        PUSH, __OnPlayerJoined_intnl_2\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L5\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, walkSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetWalkSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L5:\n        PUSH, runSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_1\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    PUSH, __OnPlayerJoined_intnl_3\n        COPY\n        PUSH, __OnPlayerJoined_intnl_3\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L7\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, runSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetRunSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L7:\n        PUSH, strafeSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_2\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        COPY\n        PUSH, __OnPlayerJoined_intnl_4\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L9\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, strafeSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetStrafeSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L9:\n        PUSH, jumpImpulse\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_3\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    PUSH, __OnPlayerJoined_intnl_5\n        COPY\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L11\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, jumpImpulse\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetJumpImpulse__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L11:\n        JUMP, __OnPlayerJoined_L20\n    __OnPlayerJoined_L2:\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __OnPlayerJoined___inl5__near\n       
+    COPY\n        PUSH, voiceDistanceFar\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5__near\n        PUSH, __OnPlayerJoined___inl5____inl3__value\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5____inl3__value\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n        JUMP_IF_FALSE,
+    __OnPlayerJoined_L13\n        PUSH, __OnPlayerJoined___inl5____inl3__value\n       
+    PUSH, __const_3\n        PUSH, __OnPlayerJoined_intnl_7\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_7\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    COPY\n    __OnPlayerJoined_L13:\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n        PUSH, __OnPlayerJoined___inl5____t1\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L15\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        COPY\n        PUSH, __OnPlayerJoined___inl5____inl4__value\n       
+    PUSH, __const_2\n        PUSH, __OnPlayerJoined_intnl_8\n        EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_8\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n        JUMP_IF_FALSE,
+    __OnPlayerJoined_L17\n        PUSH, __OnPlayerJoined___inl5____inl4__value\n       
+    PUSH, __const_3\n        PUSH, __OnPlayerJoined_intnl_9\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_9\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    COPY\n    __OnPlayerJoined_L17:\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n    __OnPlayerJoined_L15:\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        PUSH, __OnPlayerJoined___inl5____t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L19\n       
+    PUSH, __OnPlayerJoined___inl5__near\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __OnPlayerJoined_intnl_10\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_10\n        PUSH, __OnPlayerJoined___inl5____t0\n       
+    COPY\n    __OnPlayerJoined_L19:\n        PUSH, __OnPlayerJoined___inl5____t0\n       
+    PUSH, __OnPlayerJoined___inl_t1\n        COPY\n        PUSH, __OnPlayerJoined___inl_t1\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L20\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    PUSH, voiceDistanceNear\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetVoiceDistanceNear__SystemSingle__SystemVoid\"\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        PUSH, voiceDistanceFar\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetVoiceDistanceFar__SystemSingle__SystemVoid\"\n       
+    JUMP, __OnPlayerJoined_L20\n    __OnPlayerJoined_L20:\n        JUMP_INDIRECT,
+    __OnPlayerJoined_retjump\n    ValidAmount__SystemSingle:\n        PUSH, __const_1\n       
+    PUSH, __ValidAmount__SystemSingle___t0\n        COPY\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    PUSH, __const_2\n        PUSH, __ValidAmount__SystemSingle_intnl_0\n        EXTERN,
+    \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ValidAmount__SystemSingle_intnl_0\n        PUSH, __ValidAmount__SystemSingle___t0\n       
+    COPY\n        PUSH, __ValidAmount__SystemSingle___t0\n        JUMP_IF_FALSE,
+    __ValidAmount__SystemSingle_L1\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    PUSH, __const_3\n        PUSH, __ValidAmount__SystemSingle_intnl_1\n        EXTERN,
+    \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ValidAmount__SystemSingle_intnl_1\n        PUSH, __ValidAmount__SystemSingle___t0\n       
+    COPY\n    __ValidAmount__SystemSingle_L1:\n        PUSH, __ValidAmount__SystemSingle___t0\n       
+    PUSH, __ValidAmount__SystemSingle_ret\n        COPY\n        JUMP_INDIRECT, __ValidAmount__SystemSingle_retjump\n       
+    JUMP_INDIRECT, __ValidAmount__SystemSingle_retjump\n.code_end\n"
+  optAfterUasm: ".data_start\n    walkSpeed: %SystemSingle, 2\n    .export walkSpeed\n   
+    runSpeed: %SystemSingle, 4\n    .export runSpeed\n    strafeSpeed: %SystemSingle,
+    2\n    .export strafeSpeed\n    jumpImpulse: %SystemSingle, 3\n    .export jumpImpulse\n   
+    voiceDistanceNear: %SystemSingle, 0\n    .export voiceDistanceNear\n    voiceDistanceFar:
+    %SystemSingle, 25\n    .export voiceDistanceFar\n    __refl_typeid: %SystemInt64,
+    null\n    __refl_typename: %SystemString, \"VVBC.World.WorldSettingsBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    onPlayerJoinedPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerJoined___inl0__player: %VRCSDKBaseVRCPlayerApi, null\n   
+    __OnPlayerJoined___inl1__player: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerJoined___inl_t1:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5__near: %SystemSingle, 0\n   
+    __OnPlayerJoined___inl5__far: %SystemSingle, 0\n    __OnPlayerJoined___inl5____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5____t1: %SystemBoolean, null\n   
+    __OnPlayerJoined___inl5____inl3__value: %SystemSingle, 0\n    __OnPlayerJoined___inl5____inl3____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined___inl5____inl4__value: %SystemSingle,
+    0\n    __OnPlayerJoined___inl5____inl4____t0: %SystemBoolean, null\n    __OnPlayerJoined_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __ValidAmount__SystemSingle_p_0: %SystemSingle,
+    0\n    __ValidAmount__SystemSingle___t0: %SystemBoolean, null\n    __ValidAmount__SystemSingle_ret:
+    %SystemBoolean, null\n    __ValidAmount__SystemSingle_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __const_0: %VRCSDKBaseVRCPlayerApi, null\n    __const_1: %SystemBoolean,
+    null\n    __const_2: %SystemSingle, 0\n    __OnPlayerJoined_intnl_0: %SystemBoolean,
+    null\n    __retaddr_0: %SystemUInt32, 0x0000016C\n    __retaddr_1: %SystemUInt32,
+    0x000001C4\n    __retaddr_2: %SystemUInt32, 0x0000021C\n    __retaddr_3: %SystemUInt32,
+    0x00000274\n    __const_3: %SystemSingle, null\n.data_end\n.code_start\n    .export
+    _onPlayerJoined\n    _onPlayerJoined:\n        PUSH, __const_0\n        PUSH,
+    __OnPlayerJoined___inl0__player\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5__near\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5__far\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5____inl3__value\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____inl3____t0\n        COPY\n        PUSH, __const_2\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        COPY\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerJoined___inl5____inl4____t0\n        COPY\n        PUSH, onPlayerJoinedPlayer\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        JUMP_IF_FALSE, __OnPlayerJoined_L0\n       
+    JUMP, __OnPlayerJoined_L1\n    __OnPlayerJoined_L0:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n   
+    __OnPlayerJoined_L1:\n        PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined_intnl_0\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerJoined_intnl_0\n        JUMP_IF_FALSE, __OnPlayerJoined_L2\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    COPY\n        PUSH, walkSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_0\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L5\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, walkSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetWalkSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L5:\n        PUSH, runSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_1\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L7\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, runSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetRunSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L7:\n        PUSH, strafeSpeed\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_2\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L9\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, strafeSpeed\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetStrafeSpeed__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L9:\n        PUSH, jumpImpulse\n        PUSH, __ValidAmount__SystemSingle_p_0\n       
+    COPY\n        PUSH, __retaddr_3\n        PUSH, __ValidAmount__SystemSingle_retjump\n       
+    COPY\n        JUMP, ValidAmount__SystemSingle\n        PUSH, __ValidAmount__SystemSingle_ret\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L11\n        PUSH, __OnPlayerJoined___inl0__player\n       
+    PUSH, jumpImpulse\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetJumpImpulse__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L11:\n        JUMP, __OnPlayerJoined_L20\n    __OnPlayerJoined_L2:\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __OnPlayerJoined___inl5__near\n       
+    COPY\n        PUSH, voiceDistanceFar\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __OnPlayerJoined___inl5____inl3__value\n       
+    COPY\n        PUSH, voiceDistanceNear\n        PUSH, __const_2\n        PUSH,
+    __OnPlayerJoined___inl5____inl3____t0\n        EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___inl5____inl3____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L13\n       
+    PUSH, __OnPlayerJoined___inl5____inl3__value\n        PUSH, __const_3\n       
+    PUSH, __OnPlayerJoined___inl5____inl3____t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __OnPlayerJoined_L13:\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n        PUSH, __OnPlayerJoined___inl5____inl3____t0\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L15\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        COPY\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __const_2\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___inl5____inl4____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L17\n       
+    PUSH, __OnPlayerJoined___inl5____inl4__value\n        PUSH, __const_3\n       
+    PUSH, __OnPlayerJoined___inl5____inl4____t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __OnPlayerJoined_L17:\n        PUSH, __OnPlayerJoined___inl5____inl4____t0\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        COPY\n    __OnPlayerJoined_L15:\n       
+    PUSH, __OnPlayerJoined___inl5____t1\n        PUSH, __OnPlayerJoined___inl5____t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl5____t1\n        JUMP_IF_FALSE, __OnPlayerJoined_L19\n       
+    PUSH, __OnPlayerJoined___inl5__near\n        PUSH, __OnPlayerJoined___inl5__far\n       
+    PUSH, __OnPlayerJoined___inl5____t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __OnPlayerJoined_L19:\n        PUSH, __OnPlayerJoined___inl5____t0\n        JUMP_IF_FALSE,
+    __OnPlayerJoined_L20\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    PUSH, voiceDistanceNear\n        EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetVoiceDistanceNear__SystemSingle__SystemVoid\"\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        PUSH, voiceDistanceFar\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__SetVoiceDistanceFar__SystemSingle__SystemVoid\"\n   
+    __OnPlayerJoined_L20:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n    ValidAmount__SystemSingle:\n       
+    PUSH, __ValidAmount__SystemSingle_p_0\n        PUSH, __const_2\n        PUSH,
+    __ValidAmount__SystemSingle___t0\n        EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
+    PUSH, __ValidAmount__SystemSingle___t0\n        JUMP_IF_FALSE, __ValidAmount__SystemSingle_L1\n       
+    PUSH, __ValidAmount__SystemSingle_p_0\n        PUSH, __const_3\n        PUSH,
+    __ValidAmount__SystemSingle___t0\n        EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n   
+    __ValidAmount__SystemSingle_L1:\n        PUSH, __ValidAmount__SystemSingle___t0\n       
+    PUSH, __ValidAmount__SystemSingle_ret\n        COPY\n        JUMP_INDIRECT, __ValidAmount__SystemSingle_retjump\n       
+    JUMP_INDIRECT, __ValidAmount__SystemSingle_retjump\n.code_end\n"
+  optBeforeInject:
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=7778661062176095315\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=7778661062176095315"
+  - "=__const_3\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
+  optAfterInject:
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=7778661062176095315\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=7778661062176095315"
+  - "=__const_3\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
+  networkCallableSlots: []
+  optExternBefore: 15
+  optExternAfter: 15
+  optInsnBefore: 213
+  optInsnAfter: 170
+  optBytesBefore: 1536
+  optBytesAfter: 1248
+  optStage: ran
