@@ -102,6 +102,13 @@ next preparation.
   events); `Update` returns at once unless the aim solver is iterating. Delayed
   events that run early re-arm themselves for the remaining time.
 
+While a fielder holds the ball (in a glove or hand, including an unconfirmed
+local catch), the Owner neither stages nor reserves a pitch. The Ball notifies
+the pitcher on every possession change; once the ball is free the Owner waits
+`resetSeconds` and prepares the next pitch, waiting again if the ball was
+caught in the meantime. A delayed release never moves a held ball. See
+[fielding system](fielding-system.md).
+
 `PitchSettingsBehaviour` drafts edits locally and commits them once after
 `commitDelaySeconds` of quiet (slider drag, click and keyboard all raise
 `onValueChanged`; Udon has no pointer-up event). The commit takes pitcher Ownership and

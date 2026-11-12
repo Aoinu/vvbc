@@ -8,6 +8,11 @@ through pending ownership, publication, serialization and retry. Receivers advan
 receive time and then simulate the Rigidbody locally. No transform stream or
 periodic correction is used.
 
+The fielding system adds Throw and Possession snapshots, a possession state
+(`_hold`, `_holderId`) and the publisher's player ID. Receivers accept a
+snapshot only from the publisher they see as owner and keep each other
+publisher's newest snapshot as a candidate until ownership settles; see [fielding system](fielding-system.md).
+
 ## Scene setup
 
 1. Place `Runtime/Prefabs/Ball.prefab` and connect its BallBehaviour to the

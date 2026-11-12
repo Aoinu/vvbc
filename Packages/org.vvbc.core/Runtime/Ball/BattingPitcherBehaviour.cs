@@ -85,6 +85,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private int _pendingMask, _pendingType;
     private UdonBehaviour _settingsListener;
 
+    // A held ball stops the cycle; release schedules one resume after resetSeconds.
+    private bool _waitingForBall;
+    private bool _resumePending;
+    private double _resumeAt;
+
     private void Start()
     {
         if (strikeZone != null) ball = strikeZone.ball;
@@ -273,6 +278,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private void BeginPreparation()
     {
         if (!CanPrepare() || _preparing || _reserving) return;
+        if (ball.IsHeld())
+        {
+            _waitingForBall = true;
+            return;
+        }
         _preparing = true;
         pitchSequence++;
         _solvingSequence = pitchSequence;
@@ -313,6 +323,12 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private void TryReserve()
     {
         if (!CanPrepare()) { _preparing = false; return; }
+        if (ball.IsHeld())
+        {
+            _preparing = false;
+            _waitingForBall = true;
+            return;
+        }
         if (!ball.ReadyForPitch())
         {
             if (!ball.AwaitingStage()) ball.QueueState(1, _stagePosition, Vector3.zero, Vector3.zero, ServerNow());
@@ -529,7 +545,43 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     public void OnBallPresentationChanged()
     {
-        if (animationBall != null && ball != null) animationBall.SetActive(!ball.flying);
+        if (ball == null) return;
+        bool held = ball.IsHeld();
+        if (animationBall != null) animationBall.SetActive(!ball.flying && !held);
+        if (!_waitingForBall || held) return;
+        ScheduleResume(ServerNow());
+    }
+
+    private void ScheduleResume(double now)
+    {
+        _waitingForBall = false;
+        _resumePending = true;
+        _resumeAt = now + Mathf.Max(0.1f, resetSeconds);
+        SendCustomEventDelayedSeconds(nameof(_ResumeAfterBallRelease), Mathf.Max(0.1f, resetSeconds));
+    }
+
+    // Runs once per release; an early event re-arms for the remainder, and a ball held
+    // again keeps the cycle waiting for the next release.
+    public void _ResumeAfterBallRelease()
+    {
+        if (!_resumePending) return;
+        ResumeIfDue(ServerLate(_resumeAt));
+    }
+
+    private void ResumeIfDue(float late)
+    {
+        if (!IsDue(late))
+        {
+            SendCustomEventDelayedSeconds(nameof(_ResumeAfterBallRelease), -late);
+            return;
+        }
+        _resumePending = false;
+        if (ball != null && ball.IsHeld())
+        {
+            _waitingForBall = true;
+            return;
+        }
+        BeginPreparation();
     }
 
     private int CountCourses(int mask)

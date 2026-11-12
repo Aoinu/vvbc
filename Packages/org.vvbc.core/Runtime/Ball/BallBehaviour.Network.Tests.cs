@@ -26,6 +26,12 @@ public partial class BallBehaviour
     [TsukimiTest]
     public void DuplicateAndOlderSnapshotsDoNotAdvanceAcceptedSequence()
     {
+        // The snapshots come from the current owner, a remote player.
+        Mimic.Join();
+        VRCPlayerApi owner = Mimic.Join();
+        Networking.SetOwner(owner, gameObject);
+        _acceptedPublisherId = owner.playerId;
+        _publisherId = owner.playerId;
         _acceptedSequence = 5;
         _acceptedKind = 3;
         _sequence = 5;
@@ -47,6 +53,12 @@ public partial class BallBehaviour
     [TsukimiTest]
     public void ResetWinsAnEqualSequenceRaceWithAnOldHit()
     {
+        // The snapshots come from the current owner, a remote player.
+        Mimic.Join();
+        VRCPlayerApi owner = Mimic.Join();
+        Networking.SetOwner(owner, gameObject);
+        _acceptedPublisherId = owner.playerId;
+        _publisherId = owner.playerId;
         _acceptedSequence = 7;
         _acceptedKind = 3;
         _sequence = 7;

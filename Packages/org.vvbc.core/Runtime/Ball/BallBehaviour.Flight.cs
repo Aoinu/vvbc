@@ -13,6 +13,8 @@ public partial class BallBehaviour
 
     public void Stage(Vector3 position)
     {
+        ExitHold();
+        _releaseReassert = false;
         flying = false;
         if (contactListener != null) contactListener.SendCustomEvent("OnBallPitchStopped");
         EndFlight();
@@ -53,6 +55,7 @@ public partial class BallBehaviour
     private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
     {
         if (body == null) return;
+        ExitHold();
         flightSequence++;
         contactConsumed = !pitch;
         _contactPending = false;
@@ -87,11 +90,19 @@ public partial class BallBehaviour
 
     public void FixedUpdate()
     {
+        if (_releaseReassert) ReassertRelease();
         if (!flying || body == null || body.isKinematic) return;
         if (_contactPending && _pendingSequence == flightSequence && Time.fixedTime >= _pendingTime)
             ApplyPendingContact(Time.fixedTime);
         UpdateFlightVisual();
         UpdateWind();
+        // Only this client's glove is tested, before the new sample replaces the previous one.
+        if (_localHold == HoldFree)
+        {
+            GloveBehaviour glove = ReadyCatchGlove();
+            if (glove != null) CheckLocalCatch(glove, body.position);
+        }
+        if (!flying) return;
         RecordMotion(Time.fixedTime, body.position, body.velocity, body.angularVelocity);
         if (!contactConsumed && motionObserver != null) motionObserver.AcceptSample(Time.fixedTime, body.position, body.velocity);
         body.AddForce(BallFlightModel.AerodynamicAcceleration(body.velocity, body.angularVelocity,

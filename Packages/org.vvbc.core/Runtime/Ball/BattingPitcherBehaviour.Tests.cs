@@ -168,4 +168,28 @@ public partial class BattingPitcherBehaviour
         Assert.AreEqual(4, SelectCourse(0, 0));
         Assert.AreEqual(0, CountCourses(1 << 12));
     }
+
+    [TsukimiTest]
+    public void AHeldBallPausesTheCycleUntilItIsReleased()
+    {
+        Mimic.Join();
+        _initialized = true;
+        _ownerReady = true;
+        ball.SetProgramVariable("_localHold", BallBehaviour.HoldGlove);
+        BeginPreparation();
+        Assert.IsTrue(_waitingForBall, "a held ball is not staged");
+        Assert.IsFalse(_preparing);
+        ball.SetProgramVariable("_localHold", BallBehaviour.HoldFree);
+        ScheduleResume(100.0);
+        Assert.IsFalse(_waitingForBall);
+        Assert.IsTrue(_resumePending);
+        Assert.AreEqual(100.0 + resetSeconds, _resumeAt);
+        ResumeIfDue(-1f);
+        Assert.IsTrue(_resumePending, "an early event re-arms instead of resuming");
+        ball.SetProgramVariable("_localHold", BallBehaviour.HoldHand);
+        ResumeIfDue(0f);
+        Assert.IsFalse(_resumePending);
+        Assert.IsTrue(_waitingForBall, "caught again before the reset: keep waiting");
+        Assert.IsFalse(_preparing);
+    }
 }
