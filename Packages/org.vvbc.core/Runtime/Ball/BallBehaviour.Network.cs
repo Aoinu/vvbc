@@ -85,6 +85,11 @@ public partial class BallBehaviour
     private int _maxSeenSequence;
     private bool _conflictCheckScheduled;
     private int _conflictRepublishes;
+    // The newest other player seen as owner. Only that player's snapshot may hand the ball
+    // over to this client when it becomes owner without an accepted state of its own.
+    private int _lastRemoteOwner;
+    private bool _ownerRecheckScheduled;
+    private int _ownerRechecks;
 
     // Speculation: a local fielding action shown before it is the accepted state. It ends
     // when this client publishes it as owner, or is abandoned when another player is the
@@ -283,48 +288,87 @@ public partial class BallBehaviour
     }
 
     // The contest was lost or never granted: drop the local action and show the owner's
-    // state, or a local free ball until the owner's state arrives.
+    // state, or a local free ball until the owner's state arrives. A local throw that was
+    // never published is stopped as well; it is not the network state.
     private void AbandonSpeculation()
     {
+        bool releasedLocally = _pending && _pendingKind == ThrowState;
         _pending = false;
         _lossSuspected = false;
         _ownershipRequested = false;
         int owner = OwnerId();
-        if (owner > 0 && AcceptCandidateOf(owner))
-        {
-            ApplyAccepted();
-            return;
-        }
-        if (_acceptedSequence > 0 && owner > 0 && _acceptedPublisherId == owner) ApplyAccepted();
-        else DropLocalSpeculation();
+        bool ownerState = owner > 0 &&
+            (AcceptCandidateOf(owner) || (_acceptedSequence > 0 && _acceptedPublisherId == owner));
+        // The owner's state replaces a held speculation by itself; a released one is stopped
+        // first, since not every accepted state restarts the flight.
+        if (!ownerState || releasedLocally) DropLocalSpeculation(releasedLocally);
+        if (ownerState) ApplyAccepted();
     }
 
+    // The owner as it is now decides, not the order notifications arrive in: a notification
+    // that arrives late for an earlier transfer is settled against the current owner, so
+    // the named player's candidate is never taken unless that player still owns the ball.
     public override void OnOwnershipTransferred(VRCPlayerApi player)
     {
         if (!Utilities.IsValid(player)) return;
-        if (player.isLocal)
+        SettleOwnership();
+    }
+
+    private void SettleOwnership()
+    {
+        int owner = OwnerId();
+        if (owner <= 0)
         {
-            _lossSuspected = false;
-            _ownershipRequested = false;
-            if (!IsLocalOwner()) return;
-            if (_pending)
-            {
-                PublishPending();
-                return;
-            }
-            ReclaimOwnPossession();
-            AdoptAcceptedState();
-            // Ownership can pass to this client because the holder left; check once the
-            // player list has settled.
-            if (IsHeld()) SendCustomEventDelayedFrames(nameof(CheckHolderPresent), 1);
+            ScheduleOwnerRecheck();
             return;
         }
+        _ownerRechecks = 0;
+        int local = LocalId();
+        if (owner == local) SettleLocalOwnership();
+        else SettleRemoteOwnership(owner);
+    }
+
+    // An owner unknown when a notification arrives is looked up again a bounded number of times.
+    private void ScheduleOwnerRecheck()
+    {
+        if (_ownerRecheckScheduled || _ownerRechecks >= maximumSerializationRetries) return;
+        _ownerRechecks++;
+        _ownerRecheckScheduled = true;
+        SendCustomEventDelayedSeconds(nameof(RecheckOwnership), ownershipCheckSeconds);
+    }
+
+    public void RecheckOwnership()
+    {
+        _ownerRecheckScheduled = false;
+        SettleOwnership();
+    }
+
+    private void SettleLocalOwnership()
+    {
+        _lossSuspected = false;
+        _ownershipRequested = false;
+        if (_pending)
+        {
+            PublishPending();
+            return;
+        }
+        ReclaimOwnPossession();
+        if (_acceptedSequence > 0) AdoptAcceptedState();
+        else TakeOverFromPreviousOwner();
+        // Ownership can pass to this client because the holder left; check once the
+        // player list has settled.
+        if (IsHeld()) SendCustomEventDelayedFrames(nameof(CheckHolderPresent), 1);
+    }
+
+    private void SettleRemoteOwnership(int owner)
+    {
+        NoteOwner(owner);
         // A pitcher or hit request cannot be published by this client any more.
         if (_pending && !IsFieldingKind(_pendingKind)) _pending = false;
-        // The new owner's newest candidate becomes the accepted state.
-        bool accepted = AcceptCandidateOf(player.playerId);
-        // A notification alone does not decide a contest: it can be an earlier transfer
-        // reported late. A local fielding action keeps running and is resolved once.
+        // The owner's newest candidate becomes the accepted state.
+        bool accepted = AcceptCandidateOf(owner);
+        // A notification alone does not decide a contest: ownership can still be on its way
+        // here. A local fielding action keeps running and is resolved once.
         if (FieldingPending() || HeldLocally())
         {
             _lossSuspected = true;
@@ -333,6 +377,21 @@ public partial class BallBehaviour
         }
         _ownershipRequested = false;
         if (accepted) ApplyAccepted();
+    }
+
+    private void NoteOwner(int owner)
+    {
+        if (owner > 0 && owner != LocalId()) _lastRemoteOwner = owner;
+    }
+
+    // This client owns the ball but has never accepted a state, so it has nothing to
+    // republish. Only a snapshot of the player last seen as owner here is taken over; with
+    // no such player known, nothing is assumed and the ball stays as it is.
+    private void TakeOverFromPreviousOwner()
+    {
+        if (_pending || _acceptedSequence > 0 || _lastRemoteOwner <= 0 || !AcceptCandidateOf(_lastRemoteOwner)) return;
+        ApplyAccepted();
+        AdoptAcceptedState();
     }
 
     // This client owns the ball and the accepted state is its own possession, but the local
@@ -549,7 +608,12 @@ public partial class BallBehaviour
             return;
         }
         _candidateChecks = 0;
-        if (owner != LocalId() && AcceptCandidateOf(owner)) ApplyAccepted();
+        if (owner == LocalId()) TakeOverFromPreviousOwner();
+        else
+        {
+            NoteOwner(owner);
+            if (AcceptCandidateOf(owner)) ApplyAccepted();
+        }
     }
 
     // The owner always serializes the accepted snapshot, including for late joiners.
@@ -580,22 +644,50 @@ public partial class BallBehaviour
     {
         if (_sequence > _maxSeenSequence) _maxSeenSequence = _sequence;
         int owner = OwnerId();
+        NoteOwner(owner);
         int decision = SnapshotDecision(_sequence, _kind, _publisherId, owner);
         if (decision == SnapshotAccept)
         {
-            // A new owner republishing the state it adopted: same content, new publisher.
-            bool sameContent = _acceptedSequence > 0 && _publisherId != _acceptedPublisherId &&
-                _kind == _acceptedKind && _serverTime == _acceptedServerTime &&
-                _hold == _acceptedHold && _holderId == _acceptedHolderId && _position == _acceptedPosition;
+            // The same state sent again (a new owner adopting it, or a conflict republish) is
+            // not applied again while the ball already shows it; a ball showing something else
+            // converges on it.
+            bool repeated = SameAsAccepted();
             AcceptSynced();
-            if (!sameContent) ApplyAccepted();
+            if (!repeated || !ShowsAccepted()) ApplyAccepted();
+            else if (_pending && !IsFieldingKind(_pendingKind)) _pending = false;
         }
         else if (decision == SnapshotStash)
         {
             StoreCandidate();
             if (owner <= 0) ScheduleCandidateCheck();
-            else if (IsLocalOwner()) ScheduleConflictCheck();
+            else if (owner == LocalId())
+            {
+                // The previous owner's snapshot reaching a new owner that has nothing of its
+                // own is the hand-over; anything else is a conflict.
+                if (_acceptedSequence <= 0 && _publisherId == _lastRemoteOwner) TakeOverFromPreviousOwner();
+                else ScheduleConflictCheck();
+            }
         }
+    }
+
+    // The received snapshot describes the accepted state: every field that gives it meaning
+    // matches. Sequence and publisher are not compared; they only order the streams.
+    private bool SameAsAccepted()
+    {
+        return _acceptedSequence > 0 && _kind == _acceptedKind && _serverTime == _acceptedServerTime &&
+            _position == _acceptedPosition && _velocity == _acceptedVelocity && _spin == _acceptedSpin &&
+            _batterId == _acceptedBatterId && _hitStrength == _acceptedHitStrength &&
+            _hold == _acceptedHold && _holderId == _acceptedHolderId;
+    }
+
+    // Whether the local ball presents the accepted state: the same holder and hold for a
+    // possession, a ball held by nobody for a motion state. A free ball's flight is left to
+    // physics once applied, so it is not compared.
+    private bool ShowsAccepted()
+    {
+        if (_acceptedKind != PossessionState) return _localHold == HoldFree;
+        if (_localHold != _acceptedHold || _localHolderId != _acceptedHolderId) return false;
+        return _acceptedHold != HoldHand || _localHolderId == LocalId() || _holdOffset == _acceptedVelocity;
     }
 
     // Only the current owner's snapshot is accepted; one publisher's stream stays in order;

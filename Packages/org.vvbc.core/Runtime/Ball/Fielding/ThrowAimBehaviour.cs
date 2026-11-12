@@ -1,10 +1,12 @@
 using Tsukimi;
 using UnityEngine;
+using UnityEngine.UI;
 using VRC.SDKBase;
 
 // Local-only aim markers and release computation. Its GameObject is active only while
-// the local player holds the ball in the throwing hand; the Ball activates it, calls
-// BeginHold, and reads the release values once before deactivating it.
+// the local player holds the ball in the throwing hand, and while the optional release
+// feedback is shown; the Ball activates it and calls BeginHold, reads the release values
+// once, and calls EndHold, after which it deactivates itself.
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public partial class ThrowAimBehaviour : TsukimiBehaviour
 {
@@ -62,12 +64,33 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     [Tooltip("Below this arm speed the aim ray uses the head direction, in m/s. Default 1.")]
     public float minDirectionSpeed = 1f;
 
+    [Header("Release Feedback (debug, local only)")]
+    [Tooltip("After each release, show the selected target, where the arm ray crossed the marker sphere and the aim errors. Local, not synced. Default off.")]
+    public bool showReleaseFeedback = false;
+    [Tooltip("How long the release feedback stays visible, in seconds. Default 3.")]
+    public float releaseFeedbackSeconds = 3f;
+    [Tooltip("Marker placed where the arm ray crossed the marker sphere. Inactive until shown.")]
+    public Transform aimPointMarker;
+    [Tooltip("Highlight placed on the selected target's marker. Inactive until shown.")]
+    public Transform selectedHighlight;
+    [Tooltip("Text naming the selected target and the aim errors.")]
+    public Text feedbackLabel;
+    [Tooltip("Transform moved next to the feedback and turned toward the player (the label's world-space canvas).")]
+    public Transform feedbackLabelRoot;
+
     // Release result, read once by the Ball.
     [HideInInspector] public int selectedTarget = NoTarget;
     [HideInInspector] public Vector3 releaseVelocity;
     [HideInInspector] public Vector3 releaseSpin;
+    // Perpendicular distance from the arm ray to the selected marker; drives the control error.
     [HideInInspector] public float releaseMiss;
     [HideInInspector] public float releaseArmSpeed;
+    // Where the arm ray left the marker sphere (centre: the marker origin, radius: aimDistance).
+    // Recorded for feedback only; it never affects the throw.
+    [HideInInspector] public bool releaseAimValid;
+    [HideInInspector] public Vector3 releaseAimPoint;
+    // Distance on that sphere from the aim point to the selected marker; -1 without a crossing or a target.
+    [HideInInspector] public float releaseAimError = -1f;
 
     private readonly float[] _times = new float[Capacity];
     private readonly Vector3[] _positions = new Vector3[Capacity];
@@ -82,9 +105,12 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     private readonly Vector3[] _markerPositions = new Vector3[TargetCount];
     private readonly Vector3[] _targetPositions = new Vector3[TargetCount];
     private readonly bool[] _markerValid = new bool[TargetCount];
+    private bool _feedbackVisible;
+    private float _feedbackHideTime;
 
     public void BeginHold(Transform ball)
     {
+        HideReleaseFeedback();
         _ball = ball;
         ResetSamples();
         _hasOrigin = false;
@@ -97,9 +123,11 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         UpdateMarkers();
     }
 
+    // The aim stops; the object stays active only while release feedback is shown.
     public void EndHold()
     {
         _ball = null;
+        if (!_feedbackVisible) gameObject.SetActive(false);
     }
 
     public override void PostLateUpdate()
@@ -253,7 +281,109 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         Vector3 direction = FieldingMath.LaunchDirection(heading, elevation + radius * Mathf.Sin(randomAngle), radius * Mathf.Cos(randomAngle));
         releaseVelocity = direction * speed;
         releaseSpin = FieldingMath.Backspin(direction, throwSpinRpm);
+        RecordAimPoint(releasePosition, ray);
     }
+
+    // The aim ray is the one the target was chosen with. Its exit from the marker sphere is
+    // recorded only when the ray really crosses the sphere; nothing is made up otherwise.
+    private void RecordAimPoint(Vector3 rayOrigin, Vector3 ray)
+    {
+        float distance = _hasOrigin ? FieldingMath.RaySphereExit(rayOrigin, ray, _origin, aimDistance) : -1f;
+        releaseAimValid = distance >= 0f;
+        releaseAimPoint = releaseAimValid ? rayOrigin + ray * distance : Vector3.zero;
+        releaseAimError = releaseAimValid && selectedTarget != NoTarget
+            ? (releaseAimPoint - _markerPositions[selectedTarget]).magnitude : -1f;
+    }
+
+    public static string TargetName(int index)
+    {
+        switch (index)
+        {
+            case 0: return "FirstBase";
+            case 1: return "SecondBase";
+            case 2: return "ThirdBase";
+            case 3: return "HomePlate";
+            default: return "NoTarget";
+        }
+    }
+
+    public string ReleaseFeedbackText()
+    {
+        string text = "Target: " + TargetName(selectedTarget);
+        text += releaseAimValid
+            ? (releaseAimError >= 0f ? "\nSphere error: " + releaseAimError.ToString("F2") + " m" : "\nSphere error: -")
+            : "\nSphere: no crossing";
+        if (selectedTarget != NoTarget) text += "\nRay distance: " + releaseMiss.ToString("F2") + " m";
+        text += "\nArm speed: " + releaseArmSpeed.ToString("F1") + " m/s";
+        return text;
+    }
+
+    // Called by the Ball right after a release, while this object is still active, with the
+    // current Time.time. Reuses the feedback objects; the markers stay where they were for
+    // the same time.
+    public void ShowReleaseFeedback(float now)
+    {
+        if (!showReleaseFeedback) return;
+        string text = ReleaseFeedbackText();
+        Debug.Log("ThrowAim: " + text.Replace("\n", ", "));
+        bool selected = selectedTarget != NoTarget;
+        if (aimPointMarker != null)
+        {
+            aimPointMarker.gameObject.SetActive(releaseAimValid);
+            if (releaseAimValid) aimPointMarker.position = releaseAimPoint;
+        }
+        if (selectedHighlight != null)
+        {
+            selectedHighlight.gameObject.SetActive(selected);
+            if (selected) selectedHighlight.position = _markerPositions[selectedTarget];
+        }
+        if (feedbackLabel != null) feedbackLabel.text = text;
+        if (feedbackLabelRoot != null)
+        {
+            feedbackLabelRoot.gameObject.SetActive(true);
+            PlaceLabel(selected);
+        }
+        _feedbackVisible = true;
+        float seconds = Mathf.Max(0.1f, releaseFeedbackSeconds);
+        _feedbackHideTime = now + seconds;
+        SendCustomEventDelayedSeconds(nameof(EndReleaseFeedback), seconds);
+    }
+
+    private void PlaceLabel(bool selected)
+    {
+        Vector3 anchor = releaseAimValid ? releaseAimPoint : selected ? _markerPositions[selectedTarget] : _origin;
+        Vector3 position = anchor + Vector3.up * 0.25f;
+        feedbackLabelRoot.position = position;
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (!Utilities.IsValid(player)) return;
+        Vector3 away = position - player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).position;
+        away.y = 0f;
+        if (away.sqrMagnitude > 0.0001f) feedbackLabelRoot.rotation = Quaternion.LookRotation(away);
+    }
+
+    public void EndReleaseFeedback()
+    {
+        EndReleaseFeedbackAt(Time.time);
+    }
+
+    // A later release or a new hold makes an earlier timer stale.
+    private void EndReleaseFeedbackAt(float now)
+    {
+        if (!_feedbackVisible || now + 0.05f < _feedbackHideTime) return;
+        HideReleaseFeedback();
+        if (_ball == null) gameObject.SetActive(false);
+    }
+
+    private void HideReleaseFeedback()
+    {
+        if (!_feedbackVisible) return;
+        _feedbackVisible = false;
+        if (aimPointMarker != null) aimPointMarker.gameObject.SetActive(false);
+        if (selectedHighlight != null) selectedHighlight.gameObject.SetActive(false);
+        if (feedbackLabelRoot != null) feedbackLabelRoot.gameObject.SetActive(false);
+    }
+
+    public bool ReleaseFeedbackVisible() { return _feedbackVisible; }
 
     private Vector3 FlatForward(Vector3 forward)
     {

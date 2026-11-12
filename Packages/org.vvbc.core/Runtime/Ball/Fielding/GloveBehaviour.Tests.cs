@@ -152,6 +152,58 @@ public partial class GloveBehaviour
         Assert.IsFalse(equipped);
     }
 
+    [TsukimiTest]
+    public void TheCatchVolumeIsShownOnlyToTheOwnerWhenEnabled()
+    {
+        Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        Start();
+        SetEquipped(true);
+        Assert.IsFalse(showCatchVolume, "off by default");
+        Assert.IsFalse(CatchVolumeVisible());
+        SetCatchVolumeVisible(true);
+        Assert.IsTrue(CatchVolumeVisible(), "worn by the owner");
+        SetEquipped(false);
+        Assert.IsFalse(CatchVolumeVisible(), "not while the glove is off");
+        Assert.IsTrue(BeginCalibration());
+        Assert.IsTrue(CatchVolumeVisible(), "shown while calibrating");
+        Mimic.Deliver();
+        Mimic.Become(other);
+        Start();
+        showCatchVolume = true;
+        Assert.IsTrue(equipped, "the glove is worn as far as this client knows");
+        Assert.IsFalse(CatchVolumeVisible(), "never for another player's glove");
+    }
+
+    [TsukimiTest]
+    public void TheCatchVolumeDisplayDoesNotChangeCatching()
+    {
+        Mimic.Join();
+        Start();
+        SetEquipped(true);
+        catchReady = true;
+        catchRadius = 0.12f;
+        catchCenter = new Vector3(1f, 2f, 3f);
+        SetCatchVolumeVisible(true);
+        SetCatchVolumeVisible(false);
+        Assert.IsTrue(catchReady);
+        Assert.AreEqual(0.12f, catchRadius);
+        Assert.AreEqual(new Vector3(1f, 2f, 3f), catchCenter);
+    }
+
+    [TsukimiTest]
+    public void TheCatchVolumeMeshMatchesTheTriggerSphere()
+    {
+        // Uniform glove scale: the unit mesh is the trigger's diameter in local units.
+        Assert.IsTrue((CatchVolumeLocalScale(0.12f, new Vector3(1.2f, 1.2f, 1.2f)) - new Vector3(0.24f, 0.24f, 0.24f)).sqrMagnitude < 0.00000001f);
+        // Non-uniform parent: every world axis equals the collider's world diameter (radius x largest axis).
+        Vector3 parent = new Vector3(1f, 2f, 0.5f);
+        Vector3 local = CatchVolumeLocalScale(0.12f, parent);
+        Vector3 world = new Vector3(local.x * parent.x, local.y * parent.y, local.z * parent.z);
+        Assert.IsTrue(Mathf.Abs(world.x - 0.48f) < 0.0001f && Mathf.Abs(world.y - 0.48f) < 0.0001f && Mathf.Abs(world.z - 0.48f) < 0.0001f);
+        Assert.IsTrue((CatchVolumeLocalScale(0.12f, Vector3.zero) - new Vector3(0.24f, 0.24f, 0.24f)).sqrMagnitude < 0.00000001f, "degenerate parent");
+    }
+
     [CostLimit(steps: 49, externs: 3)]
     [TsukimiTest]
     public void AnIdleGloveReturnsImmediately()

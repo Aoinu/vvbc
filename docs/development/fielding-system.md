@@ -45,13 +45,17 @@ VVBCPlayerObjectTemplate (VRCPlayerObject)
     ├── Mount                              written in PostLateUpdate: hand bone x fitting
     │   ├── GloveVisual (Animator, placeholder mesh)
     │   ├── CatchTrigger (SphereCollider trigger, kinematic Rigidbody; Default layer)
+    │   │   └── CatchVolume (debug sphere mesh, no collider, inactive)
     │   └── BallSocket
     └── CalibrationHandle (VRCPickup, kinematic Rigidbody, collider; Pickup layer, inactive)
 
-ThrowAim (scene, local only)
+ThrowAim (scene, local only; root active and named ThrowAim)
 ├── Targets/FirstBase, SecondBase, ThirdBase, HomePlate   (Transforms placed by the world author)
 └── Tracker (ThrowAimBehaviour, inactive until local HandHeld)
-    └── Marker0..3
+    ├── Marker1B, Marker2B, Marker3B, MarkerHome
+    └── Feedback (debug, see Release feedback)
+        ├── AimPoint, SelectedHighlight          (inactive until shown)
+        └── Label (world-space Canvas + UI Text, inactive until shown)
 
 GloveLocker (scene)
 ├── GloveLockerBehaviour
@@ -80,8 +84,15 @@ radius times the Mount scale is the catch radius.
 2. Place `Runtime/Prefabs/ThrowAim.prefab` with its root on the rear tip of
    home plate (+Z toward the pitcher, like HomePlate). Move `Targets/*` to the
    receiving point of each base (default: 27.43 m base paths at 1.1 m height,
-   home plate at 1.0 m). Assign its `Tracker` UdonBehaviour to the Ball's
-   `throwAim` field. Without it, throws go straight ahead at the fallback speed.
+   home plate at 1.0 m). The Ball finds it by itself: with `throwAim` left
+   empty, it looks up the active scene object named `ThrowAim` with
+   `GameObject.Find` and takes the `ThrowAimBehaviour` below it, including the
+   inactive `Tracker` (`GetComponentInChildren(true)`). Udon has no
+   `FindObjectsOfType` or scene root listing, so the root must stay active and
+   keep its name, and only one instance is supported. The search runs at
+   `Start` and again when the ball is taken into the hand, at most three times
+   in all; a found reference is kept. An assigned `throwAim` always wins and is
+   never searched for. Without one, throws go straight ahead at the fallback speed.
 3. Place `Runtime/Prefabs/GloveLocker.prefab` off the field. Its world-space
    canvas has a VRC_UiShape collider that physically blocks the ball.
 4. `Ball.prefab` binds its own `pickup`; scene instances saved before this field
@@ -227,16 +238,48 @@ applies only to pitcher and hit requests (Stage, Pitch, Hit), as before.
    checked again after `ownershipCheckSeconds`, at most
    `maximumSerializationRetries` times.
 
-On `OnOwnershipTransferred(X)` the newest candidate of X becomes Accepted, so a
-snapshot that arrived before its ownership notification is not lost and a
-lower sequence of the confirmed owner wins over a higher one of another player.
+An ownership notification is settled against the owner as it is now
+(`Networking.GetOwner`), not against the player it names: notifications can
+arrive late or out of order. When the current owner is another player O, the
+newest candidate of O becomes Accepted, so a snapshot that arrived before its
+ownership notification is not lost and a lower sequence of the confirmed owner
+wins over a higher one of another player. A late notification for a player who
+no longer owns the ball takes nothing from that player's candidates and drops
+no local speculation; when the owner is this client, the notification runs the
+local-owner path (publish the pending action, or adopt). With the owner
+unreadable, the settlement is retried after `ownershipCheckSeconds`, at most
+`maximumSerializationRetries` times.
 
 A new owner that obtained ownership without a local action (an automatic
 transfer, or VRCPickup taking ownership before `OnPickup`) republishes its
 Accepted state once under its own publisher ID, because late joiners accept
-only the owner's snapshots. Receivers recognise the same content from a new
-publisher and do not apply it again. The owner serializes the Accepted snapshot
-in `OnPreSerialization`.
+only the owner's snapshots. The owner serializes the Accepted snapshot in
+`OnPreSerialization`.
+
+A received snapshot whose meaningful fields (kind, time, position, velocity or
+grab offset, spin, batter, strength, hold, holder) equal the Accepted state, such
+as that republish or a conflict republish, becomes Accepted but is applied again
+only when the local ball does not show it: a possession with another hold or
+holder (or another remote grab offset), or a motion state while the ball is
+held. A ball that diverged (for example after a dropped speculation) therefore
+converges, and a ball already showing the state is not restarted. A pitcher or
+hit request is still superseded by it. An exact duplicate of the same
+publisher's sequence is ignored as before.
+
+### Hand-over without an Accepted state
+
+A new owner that never accepted a state (typically a late joiner whose first
+snapshot was still a candidate) has nothing to adopt. It takes over only a
+snapshot of the player it last saw as owner (`_lastRemoteOwner`, noted when a
+snapshot or notification is handled with another player as owner). Every
+snapshot was serialized by its publisher while that publisher held ownership, so
+the last seen owner's newest snapshot is the hand-over; a candidate of any other
+player is never taken. The take-over happens when ownership arrives, when that
+snapshot reaches the new owner later, or at the bounded candidate check, and is
+then republished as the new owner's own (`max(accepted, seen) + 1`), which late
+joiners receive. With no previous owner known, nothing is adopted and nothing is
+published. No synced field was added for this; the residual limit is that an
+owner seen before an unseen intermediate owner would be taken as the source.
 
 ### Settling a contest
 
@@ -252,7 +295,12 @@ candidate into Accepted and marks the outcome as unresolved; one check after
   request ownership again, at most `maximumSerializationRetries` times;
 - otherwise abandon: drop the pending action and show the owner's Accepted
   state, or release the ball in place as a non-authoritative free ball until
-  the owner's state arrives. Teleporting on convergence is accepted.
+  the owner's state arrives. Teleporting on convergence is accepted. This also
+  covers a speculation that already ended in a local throw: the unpublished
+  flight is stopped where it is (its release re-assertion is cancelled) before
+  the owner's state is applied, or it falls as a free ball until that state
+  arrives. The throw is never published; the owner's later snapshots apply
+  normally.
 
 Local actions are never blocked while a contest is unresolved.
 
@@ -270,7 +318,10 @@ outside this path, the adoption above and the existing serialization retry.
 ### Aim markers
 
 Shown only during local HandHeld. The marker origin is the player position
-plus the eye height captured at grab time. For each base target (Inspector
+plus the eye height captured at grab time
+(`Player.GetPosition() + up × eyeHeight`). It deliberately does not follow the
+HMD position or rotation: head motion during the throwing motion would move the
+markers and make them harder to aim at. For each base target (Inspector
 Transforms) the marker lies `aimDistance` (1.5 m) from the origin toward the
 target's horizontal direction, raised by
 
@@ -303,7 +354,38 @@ All values are decided once on the releasing client:
 The Throw flight uses the existing Ball flight and catch-up model. Remote
 clients reproduce the synced release; they do not draw random numbers.
 
+### Release feedback (debug, local only)
+
+`ThrowAimBehaviour.showReleaseFeedback` (default off; Inspector on
+`ThrowAim/Tracker`) shows the result of each release for
+`releaseFeedbackSeconds` (3 s). Every release records, whether shown or not:
+
+| Value | Meaning |
+|---|---|
+| `selectedTarget` | FirstBase, SecondBase, ThirdBase, HomePlate or NoTarget |
+| `releaseAimPoint`, `releaseAimValid` | Where the aim ray (release position along the arm-velocity direction, or the head fallback) leaves the marker sphere: centre = marker origin above, radius = `aimDistance`. From inside the sphere this is the only forward crossing; from outside, the far one (the side the ray travels toward, where the markers are); a tangent touches once. No crossing, or no marker origin, is recorded as invalid; no point is made up and nothing non-finite is kept. |
+| `releaseAimError` | Distance on that sphere from the aim point to the selected marker; −1 without a crossing or a target. |
+| `releaseMiss` | Unchanged: perpendicular distance from the ray to the selected marker (`RayDistance`), the input of the control error. |
+
+When shown, `Feedback/AimPoint` (a small magenta sphere, unlike the markers)
+marks the aim point, `Feedback/SelectedHighlight` (a translucent green sphere)
+surrounds the selected marker, and `Feedback/Label` (a world-space canvas
+turned toward the player) lists the target name, the sphere error, the ray
+distance and the arm speed; the same line goes to the log. The markers stay
+where they were at release. Tracker stays active until the feedback ends (a
+later release or a new hold restarts it), then deactivates itself; without
+feedback it deactivates at once, as before. All objects are reused, nothing is
+synced, and the computation runs once per release, after the release values:
+target choice, speed, launch direction, spin, control error and the order of
+`Random` draws are unchanged (a test pins the values computed before this
+feature).
+
 ## Catch detection
+
+The catch volume is a sphere and catches from every direction: a ball entering
+from the face or the back of the glove is caught alike. There is no restriction
+by glove orientation, no normal test and no box shape; this is the intended
+rule, not a placeholder.
 
 Ball's existing `FixedUpdate` runs only while a free ball is flying. When the
 local player's glove is ready (owner, equipped, not calibrating, valid bone),
@@ -320,6 +402,21 @@ radius, which is why the segment test is required. The trigger collider is a
 second path for slow balls and is enabled only on the owner's client. No
 Physics query, scene search or allocation is made. A catch candidate sends
 nothing by itself; only an accepted catch queues one snapshot.
+
+### Catch volume display (debug, local only)
+
+`GloveBehaviour.showCatchVolume` (default off; Inspector on the PlayerObject
+template's `Glove`, or `SetCatchVolumeVisible(bool)` for a future UI) shows
+`Mount/CatchTrigger/CatchVolume`, a translucent unit sphere without collider or
+Rigidbody, to the glove's owner while the glove is worn or calibrating; other
+players never see it. As a child of `CatchTrigger` it follows the bone,
+calibration pose and glove scale through the hierarchy. Its local position is
+the trigger's `center` and its local scale makes its world size equal to the
+collider's effective radius (radius × largest absolute lossy-scale axis), so
+editing the trigger's radius or center is followed while the display is on.
+The trigger itself is not modified and catching does not read the display.
+While it is off, nothing runs for it; while on, the trigger radius and center
+are compared once per frame in the worn glove's existing update.
 
 ## Batting pitcher
 
@@ -340,8 +437,11 @@ the physical ball is neither flying nor held.
 | Glove `PostLateUpdate` | every frame per glove | early return unless equipped, calibrating or presenting the ball |
 | Catch broad phase | Ball fixed step | only flying, Free, local glove ready |
 | Catch narrow phase | fixed step | broad phase passed |
-| ThrowAim `PostLateUpdate` | every frame | object active only during local HandHeld |
-| Network | on change | equip, calibration save/restore, possession change, release, bounded conflict recovery |
+| ThrowAim `PostLateUpdate` | every frame | object active only during local HandHeld (and, with release feedback on, until it ends; then returns at once) |
+| ThrowAim scene search | Start, hand pickups | only while `throwAim` is unset, at most 3 searches |
+| Aim-sphere crossing | per release | — |
+| Catch volume display | worn glove's frame | only while `showCatchVolume` is on |
+| Network | on change | equip, calibration save/restore, possession change, release, bounded conflict recovery, bounded owner recheck |
 
 Udon instruction and extern counts are held by `[CostLimit]` tests (Tsukimi
 test runner, default Udon path). They are not CPU time.
@@ -370,3 +470,11 @@ computed state on the next fixed step), two simultaneous catches, ownership
 notification ordering, late joiners during possession, holder leaving, PlayerData
 restore timing, hand-bone frames on varied avatars, and the feel of the aim and
 speed curves.
+
+Not verified on real clients either: stale and reordered ownership
+notifications and the take-over by an owner without an Accepted state (tested
+only with the Tsukimi multi-client simulation, where notifications are called
+by hand), how a lost speculative throw looks when it is stopped, the
+`GameObject.Find` binding of ThrowAim in an uploaded world, the readability of
+the release feedback label in VR, and the catch volume display's transparency
+on the target platforms.

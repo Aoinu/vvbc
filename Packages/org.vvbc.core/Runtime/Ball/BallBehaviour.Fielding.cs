@@ -11,7 +11,7 @@ public partial class BallBehaviour
     [Header("Fielding")]
     [Tooltip("VRCPickup on the Ball root, reused for holding the ball in the throwing hand.")]
     public VRC_Pickup pickup;
-    [Tooltip("Local aim and release helper (the Tracker of a ThrowAim instance). Without it, throws go along the head direction at fallbackThrowSpeedKmh.")]
+    [Tooltip("Local aim and release helper (the Tracker of a ThrowAim instance). Optional: when empty, the Tracker under the active scene object named ThrowAim is found. Without one, throws go along the head direction at fallbackThrowSpeedKmh.")]
     public ThrowAimBehaviour throwAim;
     [Tooltip("Time after the local player's own release during which their glove cannot catch, in seconds. Default 0.3.")]
     public float selfCatchDelay = 0.3f;
@@ -42,12 +42,28 @@ public partial class BallBehaviour
     private int _releaseFlight;
     private float _releaseTime;
     private Vector3 _releasePosition, _releaseVelocity, _releaseSpin;
+    // Root of the ThrowAim prefab instance; it stays active while its Tracker is inactive.
+    private const string ThrowAimRootName = "ThrowAim";
+    private const int MaxThrowAimSearches = 3;
+    private int _throwAimSearches;
 
     // Scene instances saved before the pickup field existed still find the Ball's own pickup.
     private void Start()
     {
         if (pickup == null) pickup = (VRC_Pickup)GetComponent(typeof(VRC_Pickup));
+        ResolveThrowAim();
         UpdatePickupable();
+    }
+
+    // An assigned throwAim is kept. Otherwise the single ThrowAim instance is found: the
+    // active root by name, then its inactive Tracker. Searched at Start and again when the
+    // ball is taken into the hand, at most MaxThrowAimSearches times; once found it is kept.
+    private void ResolveThrowAim()
+    {
+        if (throwAim != null || _throwAimSearches >= MaxThrowAimSearches) return;
+        _throwAimSearches++;
+        GameObject root = GameObject.Find(ThrowAimRootName);
+        if (root != null) throwAim = root.GetComponentInChildren<ThrowAimBehaviour>(true);
     }
 
     // True while anyone holds the ball as far as this client knows, including an
@@ -295,13 +311,15 @@ public partial class BallBehaviour
         EnterHold(_acceptedHold, _acceptedHolderId, _acceptedVelocity);
     }
 
-    // After losing ownership, a local possession that was never confirmed becomes a
-    // local free ball until the owner's state arrives.
-    private void DropLocalSpeculation()
+    // After losing ownership, a local possession that was never confirmed, or a local throw
+    // that was never published, becomes a local free ball dropped where it is until the
+    // owner's state arrives. Nothing is published for it.
+    private void DropLocalSpeculation(bool releasedLocally)
     {
-        if (!HeldLocally()) return;
+        if (!HeldLocally() && !releasedLocally) return;
         Vector3 position = transform.position;
         ExitHold();
+        _releaseReassert = false;
         StartFlight(position, Vector3.zero, Vector3.zero, false);
     }
 
@@ -480,6 +498,7 @@ public partial class BallBehaviour
             throwAim.ComputeRelease(position, forward, dragCoefficient, Random.Range(0f, 2f * Mathf.PI), Random.value);
             velocity = throwAim.releaseVelocity;
             spin = throwAim.releaseSpin;
+            throwAim.ShowReleaseFeedback(Time.time);
         }
         else
         {
@@ -517,18 +536,20 @@ public partial class BallBehaviour
 
     private void BeginAim()
     {
-        if (throwAim == null || _aimActive) return;
+        if (_aimActive) return;
+        ResolveThrowAim();
+        if (throwAim == null) return;
         _aimActive = true;
         throwAim.gameObject.SetActive(true);
         throwAim.BeginHold(transform);
     }
 
+    // ThrowAim deactivates itself, after any release feedback it shows.
     private void EndAim()
     {
         if (!_aimActive) return;
         _aimActive = false;
         if (throwAim == null) return;
         throwAim.EndHold();
-        throwAim.gameObject.SetActive(false);
     }
 }

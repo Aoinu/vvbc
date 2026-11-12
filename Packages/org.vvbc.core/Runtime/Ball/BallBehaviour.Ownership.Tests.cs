@@ -11,9 +11,15 @@ public partial class BallBehaviour
     // A snapshot received from the network.
     private void Arrive(int sequence, int kind, int hold, int holder, int publisher, double time)
     {
+        ArriveAt(sequence, kind, hold, holder, publisher, time, new Vector3(sequence, 1f, 0f));
+    }
+
+    // The same, at a given position, so that a republished state can carry identical content.
+    private void ArriveAt(int sequence, int kind, int hold, int holder, int publisher, double time, Vector3 position)
+    {
         _sequence = sequence;
         _kind = kind;
-        _position = new Vector3(sequence, 1f, 0f);
+        _position = position;
         _velocity = Vector3.zero;
         _spin = Vector3.zero;
         _serverTime = time;
@@ -32,6 +38,7 @@ public partial class BallBehaviour
         VRCPlayerApi b = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         Arrive(4, PitchState, HoldFree, 0, a.playerId, 9.0);
@@ -48,6 +55,7 @@ public partial class BallBehaviour
         VRCPlayerApi b = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         Arrive(4, PitchState, HoldFree, 0, a.playerId, 9.0);
@@ -67,6 +75,7 @@ public partial class BallBehaviour
         VRCPlayerApi b = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         Arrive(4, PitchState, HoldFree, 0, a.playerId, 9.0);
@@ -95,6 +104,7 @@ public partial class BallBehaviour
         VRCPlayerApi c = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         // An earlier transfer to c is reported before the transfer to b.
@@ -183,6 +193,7 @@ public partial class BallBehaviour
         Networking.SetOwner(a, gameObject);
         Mimic.Become(observer);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         Arrive(4, PossessionState, HoldGlove, a.playerId, a.playerId, 2.0);
         Assert.AreEqual(HoldGlove, LocalHoldState());
         // The ball is moved locally (for example by a later local event); a duplicate must
@@ -204,6 +215,7 @@ public partial class BallBehaviour
         VRCPlayerApi b = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         Arrive(4, PossessionState, HoldGlove, a.playerId, a.playerId, 9.9);
@@ -224,6 +236,7 @@ public partial class BallBehaviour
         VRCPlayerApi c = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         Networking.SetOwner(c, gameObject);
@@ -243,6 +256,7 @@ public partial class BallBehaviour
         VRCPlayerApi c = Mimic.Join();
         Mimic.Become(b);
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, b.playerId, Vector3.zero);
         RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
         Arrive(6, PossessionState, HoldGlove, c.playerId, c.playerId, 10.1);
@@ -260,6 +274,7 @@ public partial class BallBehaviour
         VRCPlayerApi p = Mimic.Join();
         VRCPlayerApi x = Mimic.Join();
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldGlove, p.playerId, Vector3.zero);
         QueueSnapshot(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 3.0, -1, 0f, HoldGlove, p.playerId);
         // Moved locally afterwards, so a re-applied snapshot would be visible.
@@ -275,10 +290,253 @@ public partial class BallBehaviour
         Mimic.Deliver();
         Mimic.Become(p);
         Assert.AreEqual(x.playerId, _acceptedPublisherId);
-        Assert.AreEqual(HoldFree, LocalHoldState(), "the same content is not applied again");
+        // The content equals the accepted state, but this ball no longer shows it: it converges.
+        Assert.AreEqual(HoldGlove, LocalHoldState(), "a diverged ball converges on the republished state");
+        Assert.AreEqual(p.playerId, LocalHolderId());
         VRCPlayerApi late = Mimic.Join();
         Mimic.Become(late);
         Assert.AreEqual(2, _acceptedSequence, "a late joiner accepts the owner's snapshot");
         Assert.AreEqual(p.playerId, LocalHolderId());
+    }
+
+    [TsukimiTest]
+    public void ARepublishedStateRestoresAnObserverWhoseBallDiverged()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi x = Mimic.Join();
+        VRCPlayerApi observer = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(observer);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        Vector3 at = new Vector3(2f, 1f, 3f);
+        ArriveAt(4, PossessionState, HoldGlove, a.playerId, a.playerId, 2.0, at);
+        Assert.AreEqual(a.playerId, LocalHolderId());
+        // The local ball shows something else (for example a speculation that was dropped).
+        ExitHold();
+        Networking.SetOwner(x, gameObject);
+        ArriveAt(5, PossessionState, HoldGlove, a.playerId, x.playerId, 2.0, at);
+        Assert.AreEqual(x.playerId, _acceptedPublisherId);
+        Assert.AreEqual(HoldGlove, LocalHoldState(), "the same accepted content is shown again");
+        Assert.AreEqual(a.playerId, LocalHolderId());
+    }
+
+    [TsukimiTest]
+    public void ARepublishedStateIsNotAppliedAgainWhileItIsShown()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi x = Mimic.Join();
+        VRCPlayerApi observer = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(observer);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        Vector3 at = new Vector3(2f, 1f, 3f);
+        ArriveAt(4, PossessionState, HoldGlove, a.playerId, a.playerId, 2.0, at);
+        // EnterHold resets the remote-glove retries; clearing them marks whether it runs again.
+        _holderGloveRetries = 0;
+        Networking.SetOwner(x, gameObject);
+        ArriveAt(5, PossessionState, HoldGlove, a.playerId, x.playerId, 2.0, at);
+        Assert.AreEqual(5, _acceptedSequence);
+        Assert.AreEqual(0, _holderGloveRetries, "the possession is not entered again");
+        // A different content from the same owner is applied.
+        ArriveAt(6, PossessionState, HoldHand, a.playerId, x.playerId, 2.5, at);
+        Assert.AreEqual(HoldHand, LocalHoldState());
+    }
+
+    [TsukimiTest]
+    public void ALateNotificationForAFormerOwnerDoesNotAdoptItsCandidate()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi b = Mimic.Join();
+        VRCPlayerApi c = Mimic.Join();
+        VRCPlayerApi observer = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(observer);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        Arrive(3, PitchState, HoldFree, 0, a.playerId, 1.0);
+        Arrive(5, PossessionState, HoldGlove, b.playerId, b.playerId, 2.0);
+        Assert.AreEqual(3, _acceptedSequence, "b's snapshot is a candidate");
+        // Ownership went from b on to c; the notification for c is handled first.
+        Networking.SetOwner(c, gameObject);
+        // The notification of the earlier transfer to b arrives late.
+        OnOwnershipTransferred(b);
+        Assert.AreEqual(a.playerId, _acceptedPublisherId, "b no longer owns the ball: its candidate is not taken");
+        Assert.AreEqual(3, _acceptedSequence);
+        Assert.IsFalse(IsHeld());
+        Arrive(2, PossessionState, HoldGlove, c.playerId, c.playerId, 2.5);
+        Assert.AreEqual(c.playerId, _acceptedPublisherId, "converged on the current owner");
+        Assert.AreEqual(c.playerId, LocalHolderId());
+        // Further late notifications of b change nothing.
+        OnOwnershipTransferred(b);
+        Assert.AreEqual(c.playerId, LocalHolderId());
+    }
+
+    [TsukimiTest]
+    public void ALateNotificationDoesNotDropALocalCatchThatOwnsTheBall()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi b = Mimic.Join();
+        Mimic.Become(b);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        EnterHold(HoldGlove, b.playerId, Vector3.zero);
+        QueueSnapshot(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
+        Networking.SetOwner(b, gameObject);
+        Assert.AreEqual(b.playerId, _acceptedPublisherId);
+        // A notification about a, from before b took the ball, arrives now.
+        OnOwnershipTransferred(a);
+        Assert.IsFalse(_lossSuspected, "b is the owner now; nothing is in doubt");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(b.playerId, LocalHolderId());
+    }
+
+    [TsukimiTest]
+    public void ANewOwnerWithoutAnAcceptedStateTakesOverThePreviousOwnersSnapshot()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi b = Mimic.Join();
+        VRCPlayerApi n = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(n);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        // n has seen a as the owner but accepted nothing: b's snapshot is only a candidate.
+        Arrive(9, PossessionState, HoldGlove, b.playerId, b.playerId, 5.0);
+        Assert.AreEqual(0, _acceptedSequence);
+        // a's state was on its way when ownership passed to n without an action of n.
+        Networking.SetOwner(n, gameObject);
+        Assert.AreEqual(0, _acceptedSequence, "nothing to take over yet");
+        Arrive(6, PossessionState, HoldGlove, a.playerId, a.playerId, 4.0);
+        Assert.AreEqual(a.playerId, LocalHolderId(), "the previous owner's state is taken over");
+        Assert.AreEqual(n.playerId, _publisherId, "and published as the new owner's own");
+        Assert.AreEqual(10, _sequence, "above every sequence seen");
+        Assert.AreEqual(a.playerId, _holderId);
+        Assert.IsTrue(HasCandidates(), "b's snapshot is still not taken");
+        // A later snapshot of a is now a conflict, not a second take-over.
+        Arrive(7, ThrowState, HoldFree, 0, a.playerId, 4.5);
+        Assert.AreEqual(10, _acceptedSequence);
+        Assert.AreEqual(a.playerId, LocalHolderId());
+        Mimic.Deliver();
+        VRCPlayerApi late = Mimic.Join();
+        Mimic.Become(late);
+        Assert.AreEqual(n.playerId, _acceptedPublisherId, "a late joiner restores the new owner's state");
+        Assert.AreEqual(a.playerId, LocalHolderId());
+    }
+
+    [TsukimiTest]
+    public void ANewOwnerTakesOverACandidateItAlreadyHoldsFromThePreviousOwner()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi n = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(n);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        // The snapshot arrived while the owner could not be read, so it waits as a candidate.
+        _sequence = 4;
+        _kind = PossessionState;
+        _position = Vector3.one;
+        _velocity = Vector3.zero;
+        _spin = Vector3.zero;
+        _serverTime = 3.0;
+        _hold = HoldGlove;
+        _holderId = a.playerId;
+        _publisherId = a.playerId;
+        StoreCandidate();
+        _lastRemoteOwner = a.playerId;
+        Networking.SetOwner(n, gameObject);
+        Assert.AreEqual(a.playerId, LocalHolderId());
+        Assert.AreEqual(n.playerId, _publisherId);
+        Assert.AreEqual(5, _sequence);
+    }
+
+    [TsukimiTest]
+    public void ANewOwnerTakesNothingOverWithoutAKnownPreviousOwner()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi n = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(n);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        // n never learned who owned the ball before it.
+        _lastRemoteOwner = 0;
+        Networking.SetOwner(n, gameObject);
+        Arrive(6, PossessionState, HoldGlove, a.playerId, a.playerId, 4.0);
+        Assert.AreEqual(0, _acceptedSequence, "no state is adopted without a basis");
+        Assert.IsFalse(IsHeld());
+        Assert.AreEqual(0, _publishedSequence, "nothing is published");
+    }
+
+    [TsukimiTest]
+    public void ALostSpeculativeThrowIsStoppedAndNeverPublished()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi b = Mimic.Join();
+        VRCPlayerApi c = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(b);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        Arrive(4, PitchState, HoldFree, 0, a.playerId, 9.0);
+        EnterHold(HoldGlove, b.playerId, Vector3.zero);
+        RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldGlove, b.playerId);
+        EnterHold(HoldHand, b.playerId, Vector3.forward * 0.05f);
+        RecordPending(PossessionState, Vector3.one, Vector3.forward * 0.05f, Vector3.zero, 10.5, -1, 0f, HoldHand, b.playerId);
+        // Released: ReleaseThrow shows the flight and re-asserts it on the next fixed step.
+        ExitHold();
+        _releaseReassert = true;
+        RecordPending(ThrowState, Vector3.one, new Vector3(0f, 3f, 30f), Vector3.right, 11.0, -1, 0f, HoldFree, 0);
+        // c wins the ball; its state has not arrived.
+        Networking.SetOwner(c, gameObject);
+        Assert.IsTrue(_pending, "the contest is settled by the delayed check, not the notification");
+        CheckPendingOwnership();
+        Assert.IsFalse(_pending);
+        Assert.IsFalse(_releaseReassert, "the local throw is stopped where it is");
+        Assert.AreEqual(a.playerId, _acceptedPublisherId, "the throw was never accepted");
+        Assert.AreNotEqual(ThrowState, _kind, "nor sent");
+        Assert.IsFalse(IsHeld());
+        Arrive(2, PossessionState, HoldGlove, c.playerId, c.playerId, 10.4);
+        Assert.AreEqual(c.playerId, LocalHolderId(), "the owner's later state is applied");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+    }
+
+    [TsukimiTest]
+    public void ALostSpeculativeThrowConvergesOnAnOwnerStateThatArrivedFirst()
+    {
+        VRCPlayerApi a = Mimic.Join();
+        VRCPlayerApi b = Mimic.Join();
+        VRCPlayerApi c = Mimic.Join();
+        Networking.SetOwner(a, gameObject);
+        Mimic.Become(b);
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        EnterHold(HoldHand, b.playerId, Vector3.zero);
+        RecordPending(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 10.0, -1, 0f, HoldHand, b.playerId);
+        ExitHold();
+        _releaseReassert = true;
+        RecordPending(ThrowState, Vector3.one, new Vector3(0f, 3f, 30f), Vector3.right, 11.0, -1, 0f, HoldFree, 0);
+        Arrive(3, PossessionState, HoldGlove, c.playerId, c.playerId, 10.4);
+        Networking.SetOwner(c, gameObject);
+        Assert.AreEqual(c.playerId, _acceptedPublisherId, "taken when c is confirmed");
+        Assert.AreEqual(HoldFree, LocalHoldState(), "the local throw is still shown while unsettled");
+        CheckPendingOwnership();
+        Assert.IsFalse(_releaseReassert);
+        Assert.AreEqual(c.playerId, LocalHolderId(), "converged on the owner");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+    }
+
+    [TsukimiTest]
+    public void OwnerRechecksAreBounded()
+    {
+        Mimic.Join();
+        for (int i = 0; i < 10; i++)
+        {
+            ScheduleOwnerRecheck();
+            _ownerRecheckScheduled = false;
+        }
+        Assert.AreEqual(maximumSerializationRetries, _ownerRechecks);
     }
 }

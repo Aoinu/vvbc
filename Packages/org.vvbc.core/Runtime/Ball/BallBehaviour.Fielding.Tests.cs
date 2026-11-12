@@ -236,6 +236,7 @@ public partial class BallBehaviour
         VRCPlayerApi me = Mimic.Join();
         VRCPlayerApi other = Mimic.Join();
         throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
         EnterHold(HoldHand, me.playerId, Vector3.zero);
         QueueSnapshot(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 1.0, -1, 0f, HoldHand, me.playerId);
         ExitHold();
@@ -274,6 +275,29 @@ public partial class BallBehaviour
         Assert.IsTrue(CanRepublishConflict());
         _conflictRepublishes = maximumSerializationRetries;
         Assert.IsFalse(CanRepublishConflict(), "no further republish after the limit");
+    }
+
+    [TsukimiTest]
+    public void AnAssignedThrowAimIsKeptWithoutSearching()
+    {
+        ThrowAimBehaviour assigned = throwAim;
+        Assert.IsNotNull(assigned, "the runner wires the ThrowAim of this folder");
+        ResolveThrowAim();
+        ResolveThrowAim();
+        Assert.IsTrue(throwAim == assigned, "the Inspector reference wins");
+        Assert.AreEqual(0, _throwAimSearches, "no scene search");
+    }
+
+    [TsukimiTest]
+    public void ThrowAimSearchesAreBoundedAndAMissingOneFallsBack()
+    {
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        ResolveThrowAim();
+        Assert.IsNull(throwAim);
+        Assert.AreEqual(MaxThrowAimSearches, _throwAimSearches, "no further search");
+        BeginAim();
+        Assert.IsFalse(_aimActive, "without ThrowAim the release uses the fallback throw");
     }
 
     [TsukimiTest]

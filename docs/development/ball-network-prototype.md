@@ -11,7 +11,10 @@ periodic correction is used.
 The fielding system adds Throw and Possession snapshots, a possession state
 (`_hold`, `_holderId`) and the publisher's player ID. Receivers accept a
 snapshot only from the publisher they see as owner and keep each other
-publisher's newest snapshot as a candidate until ownership settles; see [fielding system](fielding-system.md).
+publisher's newest snapshot as a candidate until ownership settles. Ownership
+notifications are settled against the current owner, not their arrival order,
+and a snapshot equal to the accepted one is applied again only when the local
+ball no longer shows it; see [fielding system](fielding-system.md).
 
 ## Scene setup
 

@@ -114,6 +114,24 @@ public static class FieldingMath
         return (offset - direction * along).magnitude;
     }
 
+    // Distance along a ray (in units of direction) to where it leaves a sphere, or -1 when it
+    // does not reach the sphere ahead of its origin. The exit is the crossing on the side the
+    // ray travels toward: the only forward crossing from inside the sphere, and the far one
+    // from outside. A tangent ray touches it once. Non-finite input gives -1.
+    public static float RaySphereExit(Vector3 origin, Vector3 direction, Vector3 center, float radius)
+    {
+        if (!Finite(radius) || !(radius > 0f)) return -1f;
+        float lengthSquared = direction.sqrMagnitude;
+        if (!Finite(lengthSquared) || !(lengthSquared > 0.000001f)) return -1f;
+        Vector3 offset = origin - center;
+        float half = Vector3.Dot(offset, direction) / lengthSquared;
+        float constant = (offset.sqrMagnitude - radius * radius) / lengthSquared;
+        float discriminant = half * half - constant;
+        if (!Finite(discriminant) || discriminant < 0f) return -1f;
+        float distance = Mathf.Sqrt(discriminant) - half;
+        return Finite(distance) && distance >= 0f ? distance : -1f;
+    }
+
     // Control error cone (degrees) from how far the arm ray missed the marker.
     public static float ErrorDegrees(float miss, float perfectRadius, float wildRadius, float minError, float maxError)
     {

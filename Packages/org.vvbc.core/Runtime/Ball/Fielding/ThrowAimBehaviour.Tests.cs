@@ -141,6 +141,172 @@ public partial class ThrowAimBehaviour
         Assert.IsTrue(off <= cone * Mathf.Sqrt(radius) + 0.05f, "error within the cone");
     }
 
+    // Values computed by ComputeRelease before the feedback existed (commit c04532a) for one
+    // fixed release. Speed, direction, spin and the control input must stay identical.
+    [TsukimiTest]
+    public void FeedbackLeavesTheReleaseUnchanged()
+    {
+        StandardRelease();
+        Assert.IsTrue(Near(0.04714846f, releaseVelocity.x), "velocity x");
+        Assert.IsTrue(Near(4.6966975f, releaseVelocity.y), "velocity y");
+        Assert.IsTrue(Near(36.72263f, releaseVelocity.z), "velocity z");
+        Assert.IsTrue(Near(-157.0795f, releaseSpin.x), "spin x");
+        Assert.IsTrue(Near(0f, releaseSpin.y), "spin y");
+        Assert.IsTrue(Near(0.20167553f, releaseSpin.z), "spin z");
+        Assert.IsTrue(Near(0.29352925f, releaseMiss), "ray distance");
+        Assert.AreEqual(1, selectedTarget);
+        Vector3 velocity = releaseVelocity;
+        Vector3 spin = releaseSpin;
+        showReleaseFeedback = true;
+        StandardRelease();
+        Assert.AreEqual(velocity, releaseVelocity, "the feedback setting changes nothing");
+        Assert.AreEqual(spin, releaseSpin);
+    }
+
+    [TsukimiTest]
+    public void TheAimPointIsWhereTheArmRayLeavesTheMarkerSphere()
+    {
+        StandardRelease();
+        Assert.IsTrue(releaseAimValid);
+        Assert.IsTrue(Near(aimDistance, (releaseAimPoint - _origin).magnitude), "on the sphere");
+        Vector3 release = _origin + new Vector3(0.3f, -0.2f, 0f);
+        Vector3 ray = ArmVelocity().normalized;
+        Assert.IsTrue(Vector3.Dot(releaseAimPoint - release, ray) > 0f, "ahead of the release");
+        Assert.IsTrue(FieldingMath.RayDistance(release, ray, releaseAimPoint) < 0.001f, "on the arm ray");
+        Assert.IsTrue(Near((releaseAimPoint - _markerPositions[1]).magnitude, releaseAimError), "distance to the selected marker");
+        // The ray distance is the closest approach; the sphere error is measured on the sphere.
+        Assert.IsTrue(releaseAimError >= releaseMiss - 0.0001f, "two different measures");
+    }
+
+    [TsukimiTest]
+    public void ARayThroughTheMarkerHasNoAimError()
+    {
+        SetTargets(new Vector3(20f, 1f, 20f), new Vector3(0f, 1f, 38.8f), new Vector3(-20f, 1f, 20f), new Vector3(0f, 1f, 0f));
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        PlaceMarkersFromTargets(origin);
+        Vector3 release = origin + new Vector3(0.3f, -0.2f, 0f);
+        Vector3 toSecond = (_markerPositions[1] - release).normalized;
+        ResetSamples();
+        for (int i = 0; i < 5; i++) Sample(i * 0.02f, release - toSecond * (0.16f * (4 - i)));
+        ComputeRelease(release, Vector3.forward, 0.00622f, 0f, 0f);
+        Assert.AreEqual(1, selectedTarget);
+        Assert.IsTrue(releaseAimValid);
+        Assert.IsTrue(releaseAimError < 0.01f, "the ray leaves the sphere at the marker");
+        Assert.IsTrue(ReleaseFeedbackText().Contains("SecondBase"));
+    }
+
+    [TsukimiTest]
+    public void WithoutTargetsTheFeedbackSaysNoTarget()
+    {
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        _origin = origin;
+        _hasOrigin = true;
+        for (int i = 0; i < 4; i++) _markerValid[i] = false;
+        ResetSamples();
+        ComputeRelease(origin, Vector3.forward, 0.00622f, 0f, 0f);
+        Assert.AreEqual(NoTarget, selectedTarget);
+        Assert.IsTrue(releaseAimValid, "the head ray still crosses the sphere");
+        Assert.AreEqual(-1f, releaseAimError, "no marker to compare with");
+        Assert.IsTrue(ReleaseFeedbackText().Contains("NoTarget"));
+    }
+
+    [TsukimiTest]
+    public void WithoutAMarkerSphereNoAimPointIsMadeUp()
+    {
+        StandardRelease();
+        float miss = releaseMiss;
+        _hasOrigin = false;
+        StandardReleaseKeepingMarkers();
+        Assert.IsFalse(releaseAimValid);
+        Assert.AreEqual(Vector3.zero, releaseAimPoint);
+        Assert.AreEqual(-1f, releaseAimError);
+        Assert.IsTrue(Near(miss, releaseMiss), "the ray distance is still recorded");
+        Assert.IsTrue(ReleaseFeedbackText().Contains("no crossing"));
+    }
+
+    [TsukimiTest]
+    public void RaySphereExitHandlesInsideOutsideTangentAndMisses()
+    {
+        Vector3 center = new Vector3(1f, 2f, 3f);
+        // From the centre: one forward crossing at the radius.
+        Assert.IsTrue(Near(1.5f, FieldingMath.RaySphereExit(center, Vector3.forward, center, 1.5f)), "from inside");
+        // From outside, two forward crossings: the exit (far side) is taken.
+        Assert.IsTrue(Near(6.5f, FieldingMath.RaySphereExit(center - Vector3.forward * 5f, Vector3.forward, center, 1.5f)), "far crossing");
+        // Tangent: touches once.
+        Assert.IsTrue(Near(5f, FieldingMath.RaySphereExit(center + new Vector3(1.5f, 0f, -5f), Vector3.forward, center, 1.5f)), "tangent");
+        Assert.AreEqual(-1f, FieldingMath.RaySphereExit(center + new Vector3(2f, 0f, -5f), Vector3.forward, center, 1.5f), "passes beside");
+        Assert.AreEqual(-1f, FieldingMath.RaySphereExit(center + Vector3.forward * 5f, Vector3.forward, center, 1.5f), "sphere behind");
+        // A direction that is not unit length gives the distance in its own units.
+        Assert.IsTrue(Near(0.75f, FieldingMath.RaySphereExit(center, Vector3.forward * 2f, center, 1.5f)), "scaled direction");
+        Assert.AreEqual(-1f, FieldingMath.RaySphereExit(center, Vector3.zero, center, 1.5f), "no direction");
+        Assert.AreEqual(-1f, FieldingMath.RaySphereExit(center, Vector3.forward, center, 0f), "no sphere");
+        Assert.AreEqual(-1f, FieldingMath.RaySphereExit(new Vector3(float.NaN, 0f, 0f), Vector3.forward, center, 1.5f), "NaN");
+        Assert.AreEqual(-1f, FieldingMath.RaySphereExit(center, new Vector3(0f, 0f, float.PositiveInfinity), center, 1.5f), "infinite");
+    }
+
+    [TsukimiTest]
+    public void TargetNamesFollowTheTargetOrder()
+    {
+        Assert.AreEqual("FirstBase", TargetName(0));
+        Assert.AreEqual("SecondBase", TargetName(1));
+        Assert.AreEqual("ThirdBase", TargetName(2));
+        Assert.AreEqual("HomePlate", TargetName(3));
+        Assert.AreEqual("NoTarget", TargetName(NoTarget));
+    }
+
+    [TsukimiTest]
+    public void FeedbackIsShownOnlyWhenEnabledAndKeepsTheTrackerActiveUntilItEnds()
+    {
+        Mimic.Join();
+        StandardRelease();
+        Assert.IsFalse(showReleaseFeedback, "off by default");
+        ShowReleaseFeedback(10f);
+        Assert.IsFalse(ReleaseFeedbackVisible());
+        showReleaseFeedback = true;
+        ShowReleaseFeedback(10f);
+        Assert.IsTrue(ReleaseFeedbackVisible());
+        EndHold();
+        Assert.IsTrue(gameObject.activeSelf, "kept active while the feedback is shown");
+        // A second release before the first timer fires.
+        ShowReleaseFeedback(12f);
+        EndReleaseFeedbackAt(10f + releaseFeedbackSeconds);
+        Assert.IsTrue(ReleaseFeedbackVisible(), "the first timer does not hide the later release");
+        EndReleaseFeedbackAt(12f + releaseFeedbackSeconds);
+        Assert.IsFalse(ReleaseFeedbackVisible());
+        Assert.IsFalse(gameObject.activeSelf, "deactivated once the feedback ends");
+    }
+
+    [TsukimiTest]
+    public void WithoutFeedbackEndHoldDeactivatesAtOnce()
+    {
+        Mimic.Join();
+        StandardRelease();
+        ShowReleaseFeedback(10f);
+        EndHold();
+        Assert.IsFalse(gameObject.activeSelf);
+    }
+
+    private void StandardRelease()
+    {
+        SetTargets(new Vector3(20f, 1f, 20f), new Vector3(0f, 1f, 38.8f), new Vector3(-20f, 1f, 20f), new Vector3(0f, 1f, 0f));
+        PlaceMarkersFromTargets(new Vector3(0f, 1.5f, 10f));
+        StandardReleaseKeepingMarkers();
+    }
+
+    private void StandardReleaseKeepingMarkers()
+    {
+        Vector3 release = new Vector3(0f, 1.5f, 10f) + new Vector3(0.3f, -0.2f, 0f);
+        Vector3 toSecond = (_markerPositions[1] - release).normalized;
+        ResetSamples();
+        for (int i = 0; i < 5; i++) Sample(i * 0.02f, release - toSecond * (0.16f * (4 - i)) + new Vector3(0f, 0.03f * (4 - i), 0f));
+        ComputeRelease(release, Vector3.forward, 0.00622f, 1.1f, 0.7f);
+    }
+
+    private bool Near(float expected, float actual)
+    {
+        return Mathf.Abs(expected - actual) <= 0.0001f + Mathf.Abs(expected) * 0.000001f;
+    }
+
     private void SetTargets(Vector3 first, Vector3 second, Vector3 third, Vector3 home)
     {
         _targetPositions[0] = first;

@@ -54,6 +54,12 @@ public partial class GloveBehaviour : TsukimiBehaviour
     [Tooltip("Animator bool set while the ball is in this glove.")]
     public string closedParameter = "Closed";
 
+    [Header("Debug (local only)")]
+    [Tooltip("Show the catch volume as a translucent sphere to the glove's owner while worn or calibrating. Local, not synced, no effect on catching. Default off.")]
+    public bool showCatchVolume = false;
+    [Tooltip("Display-only sphere (unit mesh, no collider) under the catch trigger; it is fitted to the trigger's center and radius.")]
+    [SerializeField] private Transform catchVolumeVisual;
+
     // Synced fitting; written only by the owner, sent only on change.
     [UdonSynced, HideInInspector] public bool equipped;
     [UdonSynced, HideInInspector] public int throwHand = HandRight;
@@ -87,6 +93,9 @@ public partial class GloveBehaviour : TsukimiBehaviour
     private Vector3 _ballOffset;
     private bool _closed;
     private GloveLockerBehaviour _listener;
+    private bool _catchVolumeShown;
+    private float _catchVolumeRadius = -1f;
+    private Vector3 _catchVolumeCenter;
 
     private void Start()
     {
@@ -175,6 +184,54 @@ public partial class GloveBehaviour : TsukimiBehaviour
         if (catchTrigger != null) catchTrigger.enabled = _isLocalOwner && equipped && !_calibrating;
         if (!_isLocalOwner || !equipped || _calibrating) catchReady = false;
         ApplyClosed();
+        UpdateCatchVolumeVisual();
+    }
+
+    // The catch volume is drawn only for the owner, while the glove is worn or calibrating.
+    public bool CatchVolumeVisible()
+    {
+        return showCatchVolume && _isLocalOwner && (equipped || _calibrating);
+    }
+
+    // For a future settings UI; the Inspector field works the same way.
+    public void SetCatchVolumeVisible(bool value)
+    {
+        showCatchVolume = value;
+        UpdateCatchVolumeVisual();
+    }
+
+    // The visual is a child of the trigger, so it follows Mount (bone, calibration and scale)
+    // through the hierarchy. Only its local fit to the trigger's center and radius is written,
+    // and only when they change. Nothing runs here while the display is off.
+    private void UpdateCatchVolumeVisual()
+    {
+        if (catchVolumeVisual == null) return;
+        bool show = catchTrigger != null && CatchVolumeVisible();
+        if (show != _catchVolumeShown)
+        {
+            _catchVolumeShown = show;
+            catchVolumeVisual.gameObject.SetActive(show);
+        }
+        if (!show) return;
+        float radius = catchTrigger.radius;
+        Vector3 center = catchTrigger.center;
+        if (radius == _catchVolumeRadius && center == _catchVolumeCenter) return;
+        _catchVolumeRadius = radius;
+        _catchVolumeCenter = center;
+        catchVolumeVisual.localPosition = center;
+        catchVolumeVisual.localScale = CatchVolumeLocalScale(radius, catchVolumeVisual.parent.lossyScale);
+    }
+
+    // A SphereCollider's world radius is its radius times the largest absolute axis of its
+    // lossy scale; a unit sphere mesh under it is scaled per axis. This local scale makes the
+    // mesh that same sphere, also under a non-uniform parent scale.
+    public static Vector3 CatchVolumeLocalScale(float radius, Vector3 parentLossy)
+    {
+        float x = Mathf.Abs(parentLossy.x), y = Mathf.Abs(parentLossy.y), z = Mathf.Abs(parentLossy.z);
+        float largest = Mathf.Max(x, Mathf.Max(y, z));
+        float diameter = 2f * radius * largest;
+        if (!(x > 0.000001f) || !(y > 0.000001f) || !(z > 0.000001f)) return Vector3.one * (2f * radius);
+        return new Vector3(diameter / x, diameter / y, diameter / z);
     }
 
     private void ApplyClosed()
@@ -219,6 +276,8 @@ public partial class GloveBehaviour : TsukimiBehaviour
         }
         catchReady = valid && _isLocalOwner && equipped && !_calibrating && catchTrigger != null;
         if (catchReady) catchCenter = _catchTransform.TransformPoint(catchTrigger.center);
+        // Debug only: picks up the Inspector toggle and trigger edits while the display is on.
+        if (showCatchVolume || _catchVolumeShown) UpdateCatchVolumeVisual();
     }
 
     // While held, the handle owns the glove pose and the draft offset follows it; the
