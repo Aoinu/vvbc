@@ -31,7 +31,8 @@ the fielding Behaviours live in a subfolder of `Ball`:
 | `Ball/BallBehaviour.Network.cs` | Snapshot publication and acceptance, extended with possession, publisher identity, per-publisher candidates, settling a contest and conflict recovery. |
 | `Ball/BallBehaviour.Flight.cs` | Existing flight; calls the catch check from the existing `FixedUpdate`. |
 | `Ball/BattingPitcherBehaviour.cs` | Waits for the ball to be released before staging. |
-| `Fielding/GloveBehaviour` | Per-player glove: synced fitting, bone following, calibration, PlayerData persistence, open/closed state, catch volume, presentation of a ball held by its owner. |
+| `Ball/BallBehaviour.CatchEffects.cs` | Local-only flight origin, catch-effect decision (local and remote) and duplicate suppression. |
+| `Fielding/GloveBehaviour` | Per-player glove: synced fitting, bone following, calibration, PlayerData persistence, open/closed state, catch volume, presentation of a ball held by its owner. `GloveBehaviour.CatchEffects.cs`: catch sound and haptics. |
 | `Fielding/GloveLockerBehaviour` | Locker UI that drives the local player's glove. |
 | `Fielding/ThrowAimBehaviour` | Local-only aim markers, release-hand sampling and release computation. |
 | `Fielding/FieldingMath` | Pure math: swept catch test, offsets, aim elevation, arm-speed curve, launch angle, control error. |
@@ -47,6 +48,7 @@ VVBCPlayerObjectTemplate (VRCPlayerObject)
     │   ├── CatchTrigger (SphereCollider trigger, kinematic Rigidbody; Default layer)
     │   │   └── CatchVolume (debug sphere mesh, no collider, inactive)
     │   └── BallSocket
+    ├── CatchAudio1, CatchAudio2           3D AudioSources, moved only when a catch sound starts
     └── CalibrationHandle (VRCPickup, kinematic Rigidbody, collider; Pickup layer, inactive)
 
 ThrowAim (scene, local only; root active and named ThrowAim)
@@ -418,6 +420,100 @@ The trigger itself is not modified and catching does not read the display.
 While it is off, nothing runs for it; while on, the trigger radius and center
 are compared once per frame in the worn glove's existing update.
 
+## Catch sound and haptics
+
+A catch plays a 3D sound fixed at the catch position, and vibrates the
+catcher's glove-hand controller. No synced field, network event or extra
+serialization is added; the Ball still has 11 synced variables.
+
+### Clip, volume and pitch
+
+Two clips on `GloveBehaviour` (Inspector of the PlayerObject template's `Glove`):
+
+| Flight | Ball speed just before the catch | Clip |
+|---|---|---|
+| Pitch | ≥ `fastPitchThresholdKmh` (130; 130 itself included) | `fastPitchCatchClip` |
+| Pitch | < 130 km/h | `normalCatchClip` |
+| Hit, Throw, unknown | any | `normalCatchClip` |
+
+A missing `fastPitchCatchClip` falls back to `normalCatchClip`; without
+`normalCatchClip` nothing plays, and catching is unaffected. Speed is
+`m/s × 3.6`; a NaN, infinite or negative speed counts as 0 km/h (unknown).
+
+A pitch that bounced is still a pitch: a bounce never changes the flight kind.
+The speed is the speed at the catch, so a bounce's slow-down lowers the volume
+and pitch and can take a pitch below 130 km/h.
+
+Volume and pitch rise linearly with speed between `catchSlowSpeedKmh` (30) and
+`catchFastSpeedKmh` (150): volume `catchMinVolume`..`catchMaxVolume` (0.35..1,
+clamped to 0..1), pitch `catchMinPitch`..`catchMaxPitch` (0.9..1.1, clamped to
+0.5..2). A non-finite result is replaced by a safe value before it reaches the
+AudioSource. An `AnimationCurve` was considered: Udon accepts it, but a field
+shown in the Inspector cannot be given a default in T# (TUKI0001) and the test
+runner does not model `AnimationCurve.Evaluate`, so the speed range with
+min/max values is used and is unit-tested.
+
+### Flight origin
+
+`BallBehaviour._flightOrigin` (local, not synced) records what started the flight
+this client shows: `StartFlight` sets Pitch for a pitch and unknown otherwise; a
+local hit (`ApplyPendingContact`) sets Hit; an applied Hit/Throw snapshot sets
+its kind; a local release sets Throw. Drops (lost speculation, rejected pickup,
+holder left) stay unknown and use the normal clip. `_acceptedKind` is not used,
+because during an ownership transfer or a stale snapshot it need not describe
+the flight on screen.
+
+### Local catch
+
+`LocalCatch` (both SweptCatch and the trigger) reads position and speed before
+`EnterHold` stops the flight, applies the hold, queues the possession and then
+requests the effect at once, without waiting for ownership or serialization.
+The effect is requested after the hold, so a fault in the effect cannot stop
+the catch. A catch the client later loses keeps its sound and haptics (accepted
+for a low-latency speculative action).
+
+### Remote catch
+
+A client plays a remote catch when it applies (`ApplyPossession`) an accepted
+`PossessionState` that is GloveHeld by another player while it still shows the
+ball flying freely in a flight it has not played a catch for. The server time
+is read only then, and the catch must be at most `maximumCatchAudioAge` (0.75 s;
+0.25 s of clock difference tolerated) old. The sound is placed at the
+snapshot's catch position. The speed is this client's own flight at the catch
+time, from the fixed-step history (current velocity when the catch is newer
+than the last sample, otherwise unknown); the clip uses this client's flight
+origin. No haptics are played for a remote catch.
+
+### Duplicate suppression
+
+One effect per flight: `_catchEffectFlight` records the flight sequence that
+played. This covers SweptCatch plus trigger, and a repeated, republished
+(new owner or conflict recovery) or re-applied possession, since after the
+first application the ball is held, not flying. A late joiner never saw the
+flight, so nothing plays. A stand-in drop after lost speculation is marked as
+played, so the winner's catch is not heard again on the loser's client. The
+catcher's own possession never plays remotely on the catcher's client.
+
+### Sound placement
+
+`catchAudioSources` (two in `Glove.prefab`: `CatchAudio1`, `CatchAudio2`)
+are direct children of the Glove root, which never moves, so no source follows
+the ball, `Mount`, `BallSocket` or a hand bone. A catch takes the next idle
+source, sets its world position once, then plays; a playing source is never
+moved (if every source is busy, that catch is silent). No per-frame position
+update, Instantiate or Destroy. Spatial Blend (1), Min/Max Distance and Rolloff
+are set on each AudioSource. The remote client uses the catcher's glove found
+through their PlayerObjects (once per catch).
+
+### Haptics
+
+Only for a local catch, only on the glove's owner, only in VR:
+`VRCPlayerApi.PlayHapticEventInHand(hand, duration, amplitude, frequency)` on the
+glove hand — Left when `throwHand` is Right, Right when it is Left.
+`catchHaptics` (on), `catchHapticDuration` (0.05 s, ≤ 0.5),
+`catchHapticAmplitude` (0.3, 0..1), `catchHapticFrequency` (0.5, as the bat
+contact haptics, 0..320). Strength does not follow speed.
+
 ## Batting pitcher
 
 `BallBehaviour.IsHeld()` is true for an accepted or local possession and for a
@@ -441,6 +537,7 @@ the physical ball is neither flying nor held.
 | ThrowAim scene search | Start, hand pickups | only while `throwAim` is unset, at most 3 searches |
 | Aim-sphere crossing | per release | — |
 | Catch volume display | worn glove's frame | only while `showCatchVolume` is on |
+| Catch sound/haptics | per catch | nothing per frame; remote: server time read only for a flying ball's GloveHeld of another player |
 | Network | on change | equip, calibration save/restore, possession change, release, bounded conflict recovery, bounded owner recheck |
 
 Udon instruction and extern counts are held by `[CostLimit]` tests (Tsukimi
@@ -478,3 +575,10 @@ by hand), how a lost speculative throw looks when it is stopped, the
 `GameObject.Find` binding of ThrowAim in an uploaded world, the readability of
 the release feedback label in VR, and the catch volume display's transparency
 on the target platforms.
+
+Catch effects not verified on real clients: how the clips sound and how strong
+the haptics feel; that the glove hand vibrates on varied controllers; the
+desktop skip (`IsUserInVR` is not modelled by the test runner); remote clip
+choice near 130 km/h and after a bounce, which uses the remote client's own
+simulated flight and can differ from what the catcher heard (no data is synced
+for it); and the age limit under real latency.

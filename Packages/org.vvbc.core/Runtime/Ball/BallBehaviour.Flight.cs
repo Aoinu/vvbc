@@ -69,6 +69,8 @@ public partial class BallBehaviour
         body.angularVelocity = angularVelocity;
         _nextSample = 0;
         _sampleCount = 0;
+        // A non-pitch caller that knows the origin (hit, throw) sets it after this.
+        _flightOrigin = pitch ? PitchState : FlightOriginUnknown;
         flying = true;
         SetPresentation(true);
         BeginFlight();
@@ -183,6 +185,7 @@ public partial class BallBehaviour
         body.position = state.position;
         body.velocity = state.velocity;
         body.angularVelocity = state.spin;
+        _flightOrigin = HitState;
         OnLocalHitApplied();
         _nextSample = 0;
         _sampleCount = 0;

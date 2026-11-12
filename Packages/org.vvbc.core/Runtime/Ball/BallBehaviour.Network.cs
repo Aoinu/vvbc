@@ -745,7 +745,11 @@ public partial class BallBehaviour
                 bool batted = _acceptedKind != PitchState;
                 BallFlightState state = AdvanceSnapshot(_acceptedPosition, _acceptedVelocity, _acceptedSpin, Physics.gravity,
                     dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
-                if (batted) ApplyRemoteHit(state.position, state.velocity, state.spin);
+                if (batted)
+                {
+                    ApplyRemoteHit(state.position, state.velocity, state.spin);
+                    _flightOrigin = _acceptedKind;
+                }
                 else Launch(state.position, state.velocity, _acceptedSpin);
             }
         }

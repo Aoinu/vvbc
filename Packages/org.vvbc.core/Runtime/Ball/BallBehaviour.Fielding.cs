@@ -140,10 +140,18 @@ public partial class BallBehaviour
     {
         int local = LocalId();
         if (local <= 0 || body == null) return;
-        Vector3 position = body.position;
+        // The speed is read here, before EnterHold stops the flight and clears the velocity.
+        CatchLocally(glove, local, body.position, body.velocity.magnitude, Networking.GetServerTimeInSeconds());
+    }
+
+    private void CatchLocally(GloveBehaviour glove, int local, Vector3 position, float speed, double serverTime)
+    {
+        int flight = flightSequence;
+        int origin = _flightOrigin;
         EnterHold(HoldGlove, local, Vector3.zero);
-        QueueSnapshot(PossessionState, position, Vector3.zero, Vector3.zero,
-            Networking.GetServerTimeInSeconds(), -1, 0f, HoldGlove, local);
+        QueueSnapshot(PossessionState, position, Vector3.zero, Vector3.zero, serverTime, -1, 0f, HoldGlove, local);
+        // Played at once, without waiting for ownership or serialization.
+        RequestCatchEffect(flight, glove, position, speed, origin, true);
     }
 
     private float BallRadius()
@@ -307,8 +315,7 @@ public partial class BallBehaviour
             EnterHold(HoldGlove, local, Vector3.zero);
             return;
         }
-        if (body != null) body.position = _acceptedPosition;
-        EnterHold(_acceptedHold, _acceptedHolderId, _acceptedVelocity);
+        ApplyRemotePossession();
     }
 
     // After losing ownership, a local possession that was never confirmed, or a local throw
@@ -321,6 +328,9 @@ public partial class BallBehaviour
         ExitHold();
         _releaseReassert = false;
         StartFlight(position, Vector3.zero, Vector3.zero, false);
+        // This drop only stands in until the owner's state arrives; that state's catch was
+        // either this client's own (already played) or a contest it lost, so it plays nothing.
+        _catchEffectFlight = flightSequence;
     }
 
     public override void OnPlayerLeft(VRCPlayerApi player)
@@ -509,6 +519,7 @@ public partial class BallBehaviour
         ExitHold();
         _catchBlockedUntil = Time.time + Mathf.Max(0f, selfCatchDelay);
         StartFlight(position, velocity, spin, false);
+        _flightOrigin = ThrowState;
         _releaseReassert = true;
         _releaseFlight = flightSequence;
         _releaseTime = Time.time;
