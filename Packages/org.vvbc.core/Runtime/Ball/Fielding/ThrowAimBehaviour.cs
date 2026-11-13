@@ -1,3 +1,4 @@
+using TMPro;
 using Tsukimi;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,14 +12,38 @@ using VRC.SDKBase;
 public partial class ThrowAimBehaviour : TsukimiBehaviour
 {
     public const int NoTarget = -1;
+    // releaseReach values (see FieldingMath.SolveLaunchElevation).
+    public const int ReachNoTarget = FieldingMath.ReachNoTarget;
+    public const int ReachExact = FieldingMath.ReachExact;
+    public const int ReachShortAtLimit = FieldingMath.ReachShortAtLimit;
+    public const int ReachHighAtLimit = FieldingMath.ReachHighAtLimit;
+    public const int ReachApproximate = FieldingMath.ReachApproximate;
     private const int Capacity = 16;
-    private const int TargetCount = 4;
+    private const int DefaultTargetCount = 4;
 
-    [Header("Targets")]
-    [Tooltip("Throw targets in order: first base, second base, third base, home plate. Place each at receiving height.")]
-    public Transform[] baseTargets = new Transform[TargetCount];
-    [Tooltip("Marker for each target, shown near the thrower while the ball is held.")]
-    public Transform[] markers = new Transform[TargetCount];
+    // Every array below is read at the same index as baseTargets; a missing entry takes
+    // the default named in its tooltip, so a target can be added by growing baseTargets.
+    [Header("Targets (one entry per index)")]
+    [Tooltip("Target Transform per target: the point a throw is aimed at, placed at receiving height. Any number of targets (bases, relay points). An empty entry is skipped.")]
+    public Transform[] baseTargets = new Transform[DefaultTargetCount];
+    [Tooltip("Display name per target, written to its Label and used by the release feedback. Missing or empty: the target Transform's name.")]
+    public string[] targetNames = { "FirstBase", "SecondBase", "ThirdBase", "HomePlate" };
+    [Tooltip("Marker Root per target (with Reticle and Label children): positioned, turned toward the player and shown or hidden by ThrowAim.")]
+    public Transform[] markers = new Transform[DefaultTargetCount];
+    [Tooltip("Reticle MeshRenderer per target (a quad with the shared reticle material). Its colour comes from Marker Colors.")]
+    public MeshRenderer[] reticleRenderers = new MeshRenderer[DefaultTargetCount];
+    // TextMeshPro rather than TextMesh: Udon exposes no UnityEngine.TextMesh member, so a TextMesh
+    // label could neither be referenced nor given the target name at runtime.
+    [Tooltip("Label TextMeshPro per target; its text is set to the target name once. Its own colour is kept.")]
+    public TextMeshPro[] labelTexts = new TextMeshPro[DefaultTargetCount];
+    [Tooltip("Reticle colour per target, applied once with a MaterialPropertyBlock (the material is shared). Missing: white.")]
+    public Color[] markerColors = new Color[0];
+    [Tooltip("Shortest horizontal (XZ) distance from the thrower at which the target is shown and selectable, in metres. 0 or missing: no minimum.")]
+    public float[] minDistances = new float[DefaultTargetCount];
+    [Tooltip("Longest horizontal (XZ) distance from the thrower at which the target is shown and selectable, in metres. 0 or missing: no maximum. Must not be below the minimum when both are set.")]
+    public float[] maxDistances = new float[DefaultTargetCount];
+    [Tooltip("Whether each target is used at all. Missing: enabled.")]
+    public bool[] targetEnabled = { true, true, true, true };
 
     [Header("Aim Markers")]
     [Tooltip("Distance of the markers from the thrower's eye point, in metres. Default 1.5.")]
@@ -51,10 +76,10 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     public float perfectAimRadius = 0.15f;
     [Tooltip("Arm-ray miss at or above which the largest error applies, in metres. Default 1.0.")]
     public float wildAimRadius = 1f;
-    [Tooltip("Smallest error cone, in degrees. Default 0.5.")]
-    public float minErrorDegrees = 0.5f;
-    [Tooltip("Largest error cone, in degrees. Default 8.")]
-    public float maxErrorDegrees = 8f;
+    [Tooltip("Smallest error cone, in degrees. Default 0 (no random error).")]
+    public float minErrorDegrees = 0f;
+    [Tooltip("Largest error cone, in degrees. Default 0 (no random error); 8 was the earlier tuning.")]
+    public float maxErrorDegrees = 0f;
 
     [Header("Arm Tracking")]
     [Tooltip("Newest span of hand samples used for the arm velocity, in seconds. Default 0.08.")]
@@ -65,12 +90,14 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     public float minDirectionSpeed = 1f;
 
     [Header("Release Feedback (debug, local only)")]
-    [Tooltip("After each release, show the selected target, where the arm ray crossed the marker sphere and the aim errors. Local, not synced. Default off.")]
+    [Tooltip("After each release, show the input aim point, the selected target, the final launch direction and the solver result. Local, not synced. Default off.")]
     public bool showReleaseFeedback = false;
     [Tooltip("How long the release feedback stays visible, in seconds. Default 3.")]
     public float releaseFeedbackSeconds = 3f;
-    [Tooltip("Marker placed where the arm ray crossed the marker sphere. Inactive until shown.")]
+    [Tooltip("Marker placed where the arm (input) ray crossed the marker sphere. Inactive until shown.")]
     public Transform aimPointMarker;
+    [Tooltip("Marker placed where the final launch direction crosses the marker sphere. Inactive until shown.")]
+    public Transform launchDirectionMarker;
     [Tooltip("Highlight placed on the selected target's marker. Inactive until shown.")]
     public Transform selectedHighlight;
     [Tooltip("Text naming the selected target and the aim errors.")]
@@ -91,26 +118,47 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     [HideInInspector] public Vector3 releaseAimPoint;
     // Distance on that sphere from the aim point to the selected marker; -1 without a crossing or a target.
     [HideInInspector] public float releaseAimError = -1f;
+    // Where the final launch velocity (target choice, elevation and control error applied)
+    // leaves the same sphere. A direction, not where the curved flight arrives.
+    [HideInInspector] public bool releaseDirectionValid;
+    [HideInInspector] public Vector3 releaseDirectionPoint;
+    // Elevation solver result for the selected target (before the control error).
+    [HideInInspector] public int releaseReach = ReachNoTarget;
+    [HideInInspector] public float releaseDistance;
+    [HideInInspector] public float releaseElevation;
+    [HideInInspector] public float releasePredictedHeight;
+    [HideInInspector] public float releaseHeightError;
+    [HideInInspector] public int releaseSolverEvaluations;
 
     private readonly float[] _times = new float[Capacity];
     private readonly Vector3[] _positions = new Vector3[Capacity];
     private int _next;
     private int _count;
     private int _rejected;
-    private Vector3 _armVelocity;
     private Transform _ball;
     private float _eyeHeight = 1.5f;
     private Vector3 _origin;
     private bool _hasOrigin;
-    private readonly Vector3[] _markerPositions = new Vector3[TargetCount];
-    private readonly Vector3[] _targetPositions = new Vector3[TargetCount];
-    private readonly bool[] _markerValid = new bool[TargetCount];
+    // Per-target runtime data, sized to baseTargets once (EnsureTargets).
+    private int _targetCount = -1;
+    private Vector3[] _markerPositions = new Vector3[0];
+    private Vector3[] _markerDirections = new Vector3[0];
+    private Vector3[] _targetPositions = new Vector3[0];
+    // A target exists (Transform set, enabled, valid range) and its position is known.
+    private bool[] _targetPresent = new bool[0];
+    // Shown and selectable: present and inside its distance range. One flag for both, so a
+    // hidden target can never be chosen.
+    private bool[] _markerValid = new bool[0];
+    private bool[] _targetUsable = new bool[0];
+    private float[] _minDistanceSquared = new float[0];
+    private float[] _maxDistanceSquared = new float[0];
     private bool _feedbackVisible;
     private float _feedbackHideTime;
 
     public void BeginHold(Transform ball)
     {
         HideReleaseFeedback();
+        EnsureTargets();
         _ball = ball;
         ResetSamples();
         _hasOrigin = false;
@@ -144,7 +192,7 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         PlaceMarkers(player.GetPosition() + Vector3.up * _eyeHeight, false);
     }
 
-    // Brings markers and target positions up to date immediately before a release.
+    // Brings markers, target positions and distance culling up to date immediately before a release.
     public void RefreshMarkers()
     {
         VRCPlayerApi player = Networking.LocalPlayer;
@@ -156,31 +204,159 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     public void PlaceMarkers(Vector3 origin, bool force)
     {
         if (!force && _hasOrigin && (origin - _origin).sqrMagnitude < 0.0004f) return;
+        EnsureTargets();
+        ReadTargetPositions();
+        PlaceMarkersAt(origin);
+    }
+
+    // Sizes the per-target data to baseTargets, validates the settings and applies the label
+    // texts and reticle colours. Runs once; the arrays are not resized while playing. A missing
+    // (null) array is read as empty, so an incomplete setup still throws without targets.
+    public void EnsureTargets()
+    {
+        int count = baseTargets != null ? baseTargets.Length : 0;
+        if (count == _targetCount) return;
+        _targetCount = count;
+        if (baseTargets == null) baseTargets = new Transform[0];
+        if (targetNames == null) targetNames = new string[0];
+        if (markers == null) markers = new Transform[0];
+        if (reticleRenderers == null) reticleRenderers = new MeshRenderer[0];
+        if (labelTexts == null) labelTexts = new TextMeshPro[0];
+        if (markerColors == null) markerColors = new Color[0];
+        if (minDistances == null) minDistances = new float[0];
+        if (maxDistances == null) maxDistances = new float[0];
+        if (targetEnabled == null) targetEnabled = new bool[0];
+        _markerPositions = new Vector3[count];
+        _markerDirections = new Vector3[count];
+        _targetPositions = new Vector3[count];
+        _targetPresent = new bool[count];
+        _markerValid = new bool[count];
+        _targetUsable = new bool[count];
+        _minDistanceSquared = new float[count];
+        _maxDistanceSquared = new float[count];
+        WarnLength("targetNames", targetNames.Length, count);
+        WarnLength("markers", markers.Length, count);
+        WarnLength("reticleRenderers", reticleRenderers.Length, count);
+        WarnLength("labelTexts", labelTexts.Length, count);
+        WarnLength("markerColors", markerColors.Length, count);
+        WarnLength("minDistances", minDistances.Length, count);
+        WarnLength("maxDistances", maxDistances.Length, count);
+        WarnLength("targetEnabled", targetEnabled.Length, count);
+        MaterialPropertyBlock block = null;
+        for (int i = 0; i < count; i++)
+        {
+            ConfigureTarget(i);
+            TextMeshPro label = i < labelTexts.Length ? labelTexts[i] : null;
+            if (label != null) label.text = TargetName(i);
+            MeshRenderer reticle = i < reticleRenderers.Length ? reticleRenderers[i] : null;
+            if (reticle != null)
+            {
+                if (block == null) block = new MaterialPropertyBlock();
+                block.SetColor("_Color", i < markerColors.Length ? markerColors[i] : Color.white);
+                reticle.SetPropertyBlock(block);
+            }
+        }
+    }
+
+    // Distance range and enabled flag of one target; an invalid range disables it with a warning.
+    private void ConfigureTarget(int index)
+    {
+        float rawMin = index < minDistances.Length ? minDistances[index] : 0f;
+        float rawMax = index < maxDistances.Length ? maxDistances[index] : 0f;
+        float min = DistanceLimit(rawMin);
+        float max = DistanceLimit(rawMax);
+        bool enabled = index >= targetEnabled.Length || targetEnabled[index];
+        if (min != rawMin || max != rawMax)
+            Debug.LogWarning("ThrowAim: target " + index + " has a negative or invalid distance; it is treated as no limit.");
+        if (!DistanceRangeValid(min, max))
+        {
+            Debug.LogWarning("ThrowAim: target " + index + " has maxDistance below minDistance; it is disabled.");
+            enabled = false;
+        }
+        _targetUsable[index] = enabled;
+        _minDistanceSquared[index] = min * min;
+        _maxDistanceSquared[index] = max > 0f ? max * max : -1f;
+    }
+
+    // A distance limit in metres; 0 means none, and a negative or non-finite value is read as 0.
+    public static float DistanceLimit(float value)
+    {
+        return value > 0f && FieldingMath.Finite(value) ? value : 0f;
+    }
+
+    // Both limits set and the maximum below the minimum: no distance can satisfy them.
+    public static bool DistanceRangeValid(float min, float max)
+    {
+        return !(max > 0f && max < min);
+    }
+
+    private void WarnLength(string field, int length, int count)
+    {
+        if (length != 0 && length != count)
+            Debug.LogWarning("ThrowAim: " + field + " has " + length + " entries for " + count + " targets; missing entries use defaults.");
+    }
+
+    // Target position acquisition, kept apart from culling and selection: fixed targets are
+    // read from their Transforms.
+    private void ReadTargetPositions()
+    {
+        for (int i = 0; i < _targetCount; i++)
+        {
+            Transform target = baseTargets[i];
+            bool present = _targetUsable[i] && target != null;
+            _targetPresent[i] = present;
+            if (present) _targetPositions[i] = target.position;
+        }
+    }
+
+    // Distance culling, marker placement and marker visibility from the known target positions.
+    public void PlaceMarkersAt(Vector3 origin)
+    {
         _origin = origin;
         _hasOrigin = true;
         float referenceSpeed = referenceSpeedKmh / 3.6f;
-        for (int i = 0; i < TargetCount; i++)
+        for (int i = 0; i < _targetCount; i++)
         {
-            Transform target = baseTargets != null && i < baseTargets.Length ? baseTargets[i] : null;
-            _markerValid[i] = target != null;
-            if (target != null)
+            bool valid = false;
+            if (_targetPresent[i])
             {
-                _targetPositions[i] = target.position;
                 Vector3 horizontal = _targetPositions[i] - origin;
                 horizontal.y = 0f;
-                float elevation = FieldingMath.AimElevationDegrees(horizontal.magnitude, referenceSpeed, aimElevationGain, maxAimElevation);
-                _markerPositions[i] = origin + FieldingMath.LaunchDirection(horizontal, elevation, 0f) * aimDistance;
+                float distanceSquared = horizontal.sqrMagnitude;
+                valid = distanceSquared >= _minDistanceSquared[i] &&
+                    (_maxDistanceSquared[i] < 0f || distanceSquared <= _maxDistanceSquared[i]);
+                if (valid)
+                {
+                    float elevation = FieldingMath.AimElevationDegrees(Mathf.Sqrt(distanceSquared), referenceSpeed, aimElevationGain, maxAimElevation);
+                    _markerDirections[i] = FieldingMath.LaunchDirection(horizontal, elevation, 0f);
+                    _markerPositions[i] = origin + _markerDirections[i] * aimDistance;
+                }
             }
-            Transform marker = markers != null && i < markers.Length ? markers[i] : null;
+            _markerValid[i] = valid;
+            Transform marker = i < markers.Length ? markers[i] : null;
             if (marker == null) continue;
-            if (marker.gameObject.activeSelf != _markerValid[i]) marker.gameObject.SetActive(_markerValid[i]);
-            if (_markerValid[i]) marker.position = _markerPositions[i];
+            if (marker.gameObject.activeSelf != valid) marker.gameObject.SetActive(valid);
+            if (!valid) continue;
+            // The marker's +Z points away from the eye point. A Quad's visible face and TextMeshPro's
+            // readable side both look along -Z, so they face the thrower unmirrored, and the reticle
+            // material keeps back-face culling. The unit direction is never zero, whatever aimDistance.
+            marker.SetPositionAndRotation(_markerPositions[i], Quaternion.LookRotation(_markerDirections[i], Vector3.up));
         }
     }
 
     public Vector3 MarkerPosition(int index)
     {
         return _markerPositions[index];
+    }
+
+    public bool MarkerShown(int index)
+    {
+        return index >= 0 && index < _targetCount && _markerValid[index];
+    }
+
+    public int TargetCount()
+    {
+        return _targetCount < 0 ? 0 : _targetCount;
     }
 
     public void ResetSamples()
@@ -240,17 +416,21 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     }
 
     // Decides the release once from the markers placed last (call RefreshMarkers first).
-    // randomAngle (0..2pi) and randomRadius (0..1) are drawn
-    // by the caller so that the decision is reproducible in tests.
-    public void ComputeRelease(Vector3 releasePosition, Vector3 headForward, float drag, float randomAngle, float randomRadius)
+    // The flight parameters are the Ball's (drag, Magnus, spin half-life, gravity magnitude
+    // and fixed step), so the elevation is solved for the flight the Ball will really fly.
+    // randomAngle (0..2pi) and randomRadius (0..1) are drawn by the caller so that the
+    // decision is reproducible in tests.
+    public void ComputeRelease(Vector3 releasePosition, Vector3 headForward, float drag, float magnus,
+        float spinHalfLife, float gravity, float fixedStep, float randomAngle, float randomRadius)
     {
+        EnsureTargets();
         Vector3 arm = ArmVelocity();
         releaseArmSpeed = arm.magnitude;
         Vector3 ray = releaseArmSpeed >= minDirectionSpeed ? arm / releaseArmSpeed : FlatForward(headForward);
         selectedTarget = NoTarget;
         releaseMiss = 0f;
         float best = float.MaxValue;
-        for (int i = 0; i < TargetCount; i++)
+        for (int i = 0; i < _targetCount; i++)
         {
             if (!_markerValid[i]) continue;
             float miss = FieldingMath.RayDistance(releasePosition, ray, _markerPositions[i]);
@@ -269,19 +449,42 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
             Vector3 target = _targetPositions[selectedTarget];
             heading = target - releasePosition;
             heading.y = 0f;
-            elevation = FieldingMath.LaunchElevationDegrees(speed, heading.magnitude, target.y - releasePosition.y, drag, maxLaunchElevation);
+            releaseDistance = heading.magnitude;
+            // Ground plane: the thrower's feet, below the eye point the markers were placed from.
+            float ground = _hasOrigin ? _origin.y - _eyeHeight - releasePosition.y : float.NaN;
+            elevation = SolveElevation(speed, releaseDistance, target.y - releasePosition.y, drag, magnus, spinHalfLife, gravity, fixedStep, ground);
+            releasePredictedHeight = target.y + releaseHeightError;
             error = FieldingMath.ErrorDegrees(best, perfectAimRadius, wildAimRadius, minErrorDegrees, maxErrorDegrees);
         }
         else
         {
             heading = ray;
             elevation = Mathf.Clamp(Mathf.Asin(Mathf.Clamp(ray.y, -1f, 1f)) * Mathf.Rad2Deg, -maxLaunchElevation, maxLaunchElevation);
+            releaseReach = ReachNoTarget;
+            releaseDistance = 0f;
+            releasePredictedHeight = 0f;
+            releaseHeightError = 0f;
+            releaseSolverEvaluations = 0;
         }
+        releaseElevation = elevation;
         float radius = error * Mathf.Sqrt(Mathf.Clamp01(randomRadius));
         Vector3 direction = FieldingMath.LaunchDirection(heading, elevation + radius * Mathf.Sin(randomAngle), radius * Mathf.Cos(randomAngle));
         releaseVelocity = direction * speed;
         releaseSpin = FieldingMath.Backspin(direction, throwSpinRpm);
         RecordAimPoint(releasePosition, ray);
+        RecordDirectionPoint(releasePosition, direction);
+    }
+
+    // Solves the elevation for the Ball's flight and records the solver result.
+    private float SolveElevation(float speed, float distance, float height, float drag, float magnus,
+        float spinHalfLife, float gravity, float step, float ground)
+    {
+        Vector4 solved = FieldingMath.SolveLaunchElevation(speed, distance, height, drag, magnus, throwSpinRpm,
+            spinHalfLife, gravity, step, maxLaunchElevation, ground);
+        releaseHeightError = solved.y;
+        releaseReach = (int)solved.z;
+        releaseSolverEvaluations = (int)solved.w;
+        return solved.x;
     }
 
     // The aim ray is the one the target was chosen with. Its exit from the marker sphere is
@@ -295,15 +498,32 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
             ? (releaseAimPoint - _markerPositions[selectedTarget]).magnitude : -1f;
     }
 
-    public static string TargetName(int index)
+    // The final launch direction projected on the same sphere, for comparison with the aim point.
+    private void RecordDirectionPoint(Vector3 rayOrigin, Vector3 direction)
     {
-        switch (index)
+        float distance = _hasOrigin ? FieldingMath.RaySphereExit(rayOrigin, direction, _origin, aimDistance) : -1f;
+        releaseDirectionValid = distance >= 0f;
+        releaseDirectionPoint = releaseDirectionValid ? rayOrigin + direction * distance : Vector3.zero;
+    }
+
+    public string TargetName(int index)
+    {
+        if (baseTargets == null || index < 0 || index >= baseTargets.Length) return "NoTarget";
+        string name = targetNames != null && index < targetNames.Length ? targetNames[index] : "";
+        if (!string.IsNullOrEmpty(name)) return name;
+        Transform target = baseTargets[index];
+        return target != null ? target.name : "Target" + index;
+    }
+
+    public static string ReachName(int reach)
+    {
+        switch (reach)
         {
-            case 0: return "FirstBase";
-            case 1: return "SecondBase";
-            case 2: return "ThirdBase";
-            case 3: return "HomePlate";
-            default: return "NoTarget";
+            case ReachExact: return "reached";
+            case ReachShortAtLimit: return "short at max elevation";
+            case ReachHighAtLimit: return "high at min elevation";
+            case ReachApproximate: return "not converged";
+            default: return "-";
         }
     }
 
@@ -315,6 +535,10 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
             : "\nSphere: no crossing";
         if (selectedTarget != NoTarget) text += "\nRay distance: " + releaseMiss.ToString("F2") + " m";
         text += "\nArm speed: " + releaseArmSpeed.ToString("F1") + " m/s";
+        text += "\nThrow: " + (releaseVelocity.magnitude * 3.6f).ToString("F0") + " km/h, elev " + releaseElevation.ToString("F1") + " deg";
+        if (selectedTarget != NoTarget)
+            text += "\nDistance: " + releaseDistance.ToString("F1") + " m, height error " + releaseHeightError.ToString("F2") +
+                " m (" + ReachName(releaseReach) + ")";
         return text;
     }
 
@@ -331,6 +555,11 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         {
             aimPointMarker.gameObject.SetActive(releaseAimValid);
             if (releaseAimValid) aimPointMarker.position = releaseAimPoint;
+        }
+        if (launchDirectionMarker != null)
+        {
+            launchDirectionMarker.gameObject.SetActive(releaseDirectionValid);
+            if (releaseDirectionValid) launchDirectionMarker.position = releaseDirectionPoint;
         }
         if (selectedHighlight != null)
         {
@@ -379,6 +608,7 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         if (!_feedbackVisible) return;
         _feedbackVisible = false;
         if (aimPointMarker != null) aimPointMarker.gameObject.SetActive(false);
+        if (launchDirectionMarker != null) launchDirectionMarker.gameObject.SetActive(false);
         if (selectedHighlight != null) selectedHighlight.gameObject.SetActive(false);
         if (feedbackLabelRoot != null) feedbackLabelRoot.gameObject.SetActive(false);
     }

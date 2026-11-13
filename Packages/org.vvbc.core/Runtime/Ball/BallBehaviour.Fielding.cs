@@ -505,7 +505,8 @@ public partial class BallBehaviour
         {
             throwAim.Sample(Time.time, position);
             throwAim.RefreshMarkers();
-            throwAim.ComputeRelease(position, forward, dragCoefficient, Random.Range(0f, 2f * Mathf.PI), Random.value);
+            throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, battedSpinHalfLife,
+                -Physics.gravity.y, Time.fixedDeltaTime, Random.Range(0f, 2f * Mathf.PI), Random.value);
             velocity = throwAim.releaseVelocity;
             spin = throwAim.releaseSpin;
             throwAim.ShowReleaseFeedback(Time.time);

@@ -320,4 +320,85 @@ public partial class BallBehaviour
         Assert.AreEqual(ThrowState, _acceptedKind, "the new owner publishes the drop");
         Assert.AreEqual(me.playerId, _acceptedPublisherId);
     }
+
+    // ---- Throw elevation against the Ball's own flight model ----
+
+    // ThrowAim's elevation is solved with a planar prediction. Here the solved launch flies
+    // in 3D with BallFlightModel.Step, the throw backspin (FieldingMath.Backspin, 1500 rpm)
+    // and BallFlightModel.DecaySpin with this Ball's coefficients, as AdvanceDecayingSpin
+    // and the Rigidbody do. Speeds 90/115/145 km/h; 6 m to 65 m; release 0.7 m and 1.5 m
+    // above, level with and 0.5 m below the target.
+    [TsukimiTest(seeds: 3)]
+    public void SolvedThrowsPassTheTargetAtItsHeightInTheBallFlightModel(int seed)
+    {
+        float speed = (seed == 0 ? 90f : seed == 1 ? 115f : 145f) / 3.6f;
+        float[] distances = { 6f, 18f, 27.43f, 38.8f, 50f, 65f };
+        float[] heights = { -0.7f, -1.5f, 0f, 0.5f };
+        Vector3 heading = new Vector3(0.6f, 0f, 0.8f);
+        int reached = 0;
+        for (int d = 0; d < distances.Length; d++)
+        {
+            for (int h = 0; h < heights.Length; h++)
+            {
+                Vector4 solved = FieldingMath.SolveLaunchElevation(speed, distances[d], heights[h], dragCoefficient,
+                    magnusCoefficient, 1500f, battedSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
+                if ((int)solved.z != FieldingMath.ReachExact) continue;
+                reached++;
+                Vector3 direction = FieldingMath.LaunchDirection(heading, solved.x, 0f);
+                float flown = FlyThrow(direction * speed, FieldingMath.Backspin(direction, 1500f), distances[d]);
+                Assert.IsTrue(Mathf.Abs(flown - heights[h]) < 0.01f,
+                    "speed " + speed + " distance " + distances[d] + " height " + heights[h] + ": " + (flown - heights[h]));
+            }
+        }
+        // With the 12 degree limit, 90 km/h reaches catch height only to about 27 m.
+        Assert.IsTrue(reached >= (seed == 0 ? 9 : 14), "reachable cases at " + speed + ": " + reached);
+    }
+
+    [TsukimiTest]
+    public void ThePlanarThrowPredictionMatchesBallFlightModel()
+    {
+        Vector3 direction = FieldingMath.LaunchDirection(new Vector3(-0.3f, 0f, -0.9f), 7f, 0f);
+        float speed = 35f;
+        float predicted = FieldingMath.PredictThrowHeight(speed, 7f, 40f, dragCoefficient, magnusCoefficient,
+            1500f * 2f * Mathf.PI / 60f, Mathf.Pow(0.5f, 0.02f / battedSpinHalfLife), 9.81f, 0.02f, -100f, 512);
+        float flown = FlyThrow(direction * speed, FieldingMath.Backspin(direction, 1500f), 40f);
+        Assert.IsTrue(Mathf.Abs(predicted - flown) < 0.002f, "planar " + predicted + " vs 3D " + flown);
+    }
+
+    // The earlier closed form ignored Magnus lift: at 115 km/h its second-base throw passed
+    // the target well above the receiving height.
+    [TsukimiTest]
+    public void TheClosedFormThrewHighAndTheSolverDoesNot()
+    {
+        float speed = 115f / 3.6f;
+        Vector3 heading = Vector3.forward;
+        float old = FieldingMath.LaunchElevationDegrees(speed, 38.8f, -0.7f, dragCoefficient, 12f);
+        Vector3 oldDirection = FieldingMath.LaunchDirection(heading, old, 0f);
+        float oldHeight = FlyThrow(oldDirection * speed, FieldingMath.Backspin(oldDirection, 1500f), 38.8f) + 0.7f;
+        Vector4 solved = FieldingMath.SolveLaunchElevation(speed, 38.8f, -0.7f, dragCoefficient, magnusCoefficient,
+            1500f, battedSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
+        Vector3 newDirection = FieldingMath.LaunchDirection(heading, solved.x, 0f);
+        float newHeight = FlyThrow(newDirection * speed, FieldingMath.Backspin(newDirection, 1500f), 38.8f) + 0.7f;
+        Assert.IsTrue(oldHeight > 0.5f, "old: " + oldHeight + " m above the target");
+        Assert.IsTrue(Mathf.Abs(newHeight) < 0.01f, "new: " + newHeight);
+    }
+
+    // Height relative to the start where the flight crosses the horizontal distance,
+    // interpolated between fixed steps.
+    private float FlyThrow(Vector3 velocity, Vector3 spin, float distance)
+    {
+        BallFlightState state = new BallFlightState();
+        state.velocity = velocity;
+        Vector3 gravity = new Vector3(0f, -9.81f, 0f);
+        for (int i = 0; i < 1000; i++)
+        {
+            Vector3 previous = state.position;
+            state = BallFlightModel.Step(state, spin, gravity, dragCoefficient, magnusCoefficient, 0.02f);
+            spin = BallFlightModel.DecaySpin(spin, battedSpinHalfLife, 0.02f);
+            float before = new Vector2(previous.x, previous.z).magnitude;
+            float after = new Vector2(state.position.x, state.position.z).magnitude;
+            if (after >= distance) return previous.y + (state.position.y - previous.y) * ((distance - before) / (after - before));
+        }
+        return float.NegativeInfinity;
+    }
 }

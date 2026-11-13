@@ -83,10 +83,11 @@ public static class FieldingMath
         return minSpeed + (maxSpeed - minSpeed) * smooth;
     }
 
-    // Low-trajectory launch elevation (degrees) that reaches a point at horizontal
-    // distance d and relative height h. Horizontal flight time uses the closed form
-    // for quadratic drag on a flat path, t = (e^{kd} - 1) / (k v); the vertical
-    // component then covers h against gravity. One refinement uses v cos(theta).
+    // Closed-form estimate of the low-trajectory launch elevation (degrees) that reaches a
+    // point at horizontal distance d and relative height h, ignoring Magnus lift. Horizontal
+    // flight time uses the closed form for quadratic drag on a flat path,
+    // t = (e^{kd} - 1) / (k v); the vertical component then covers h against gravity. One
+    // refinement uses v cos(theta). ThrowAim uses it only as the solver's first guess.
     public static float LaunchElevationDegrees(float speed, float distance, float height, float drag, float maxDegrees)
     {
         if (!(speed > 0.1f) || !(distance > 0.01f)) return 0f;
@@ -102,6 +103,152 @@ public static class FieldingMath
         }
         float limit = Mathf.Max(0f, maxDegrees);
         return Mathf.Clamp(theta * Mathf.Rad2Deg, -limit, limit);
+    }
+
+    // Height above the release point at which a throw crosses the horizontal distance
+    // `distance`, predicted with the Ball's own flight steps (BallFlightModel.Step with the
+    // spin decayed after each step, as AdvanceDecayingSpin and the Rigidbody angularDrag do).
+    // Backspin (FieldingMath.Backspin) has a horizontal axis perpendicular to the heading, so
+    // drag and Magnus stay in the vertical plane of the heading and the flight reduces to two
+    // dimensions: Magnus = magnus * spin * (-vy, vx) in (along, up). spinRate is in rad/s;
+    // spinDecay is the factor applied to it after every step (1 = no decay). A throw that
+    // stops moving forward, or falls below `floor` while descending, or runs out of steps,
+    // never reaches the distance: it returns min(height, floor), so it always reads as short.
+    public static float PredictThrowHeight(float speed, float elevationDegrees, float distance,
+        float drag, float magnus, float spinRate, float spinDecay, float gravity, float step, float floor, int maxSteps)
+    {
+        float radians = elevationDegrees * Mathf.Deg2Rad;
+        float vx = speed * Mathf.Cos(radians);
+        float vy = speed * Mathf.Sin(radians);
+        float x = 0f;
+        float y = 0f;
+        // Coefficients pre-multiplied by the step: v += (g + a) dt in fewer Udon operations.
+        float dragStep = drag * step;
+        float gravityStep = gravity * step;
+        float lift = magnus * step * spinRate;
+        for (int i = 0; i < maxSteps; i++)
+        {
+            float dragSpeed = dragStep * Mathf.Sqrt(vx * vx + vy * vy);
+            float nextVx = vx - dragSpeed * vx - lift * vy;
+            vy = vy - gravityStep - dragSpeed * vy + lift * vx;
+            vx = nextVx;
+            float previousX = x;
+            float previousY = y;
+            x += vx * step;
+            y += vy * step;
+            lift *= spinDecay;
+            if (x >= distance)
+            {
+                float span = x - previousX;
+                return span > 0.000001f ? previousY + (y - previousY) * ((distance - previousX) / span) : y;
+            }
+            if (vx <= 0f || (vy < 0f && y < floor)) return Mathf.Min(y, floor);
+        }
+        return Mathf.Min(y, floor);
+    }
+
+    // SolveLaunchElevation result w: how the elevation relates to the target.
+    public const int ReachNoTarget = 0;
+    public const int ReachExact = 1;
+    // Even the largest elevation passes the target's distance below it, or never gets there
+    // (it stops moving forward, or descends below the ground plane first).
+    public const int ReachShortAtLimit = 2;
+    // Even the lowest elevation passes the target's distance above it.
+    public const int ReachHighAtLimit = 3;
+    // Every evaluation was used without coming within SolverTolerance; the best one is returned.
+    public const int ReachApproximate = 4;
+    public const int MaxSolverEvaluations = 6;
+    public const int MaxPredictionSteps = 512;
+    public const float SolverTolerance = 0.005f;
+    // Without a known ground plane, a predicted flight that falls this far below the target
+    // while descending is short.
+    private const float ShortFloor = 20f;
+
+    // Launch elevation (degrees, within ±maxDegrees) whose predicted flight
+    // (PredictThrowHeight) passes horizontal distance `distance` at relative height `height`.
+    // The predicted height rises with the elevation over this range, so the search keeps a
+    // bracket: the closed-form estimate, one step along the geometric slope d/cos²θ, then
+    // secant steps (bisection when a secant leaves the bracket). A bound that still misses
+    // on the same side means the target cannot be reached; that bound is returned and
+    // reported. Bounded: MaxSolverEvaluations predictions of at most MaxPredictionSteps steps.
+    // ground is the height of a horizontal ground plane relative to the release (negative), or
+    // NaN when unknown. A flight that descends below it before the target distance counts as
+    // short, so ReachExact means the predicted free flight passes the target's distance at its
+    // height without first going below that plane. Terrain above the plane (a mound, a fence)
+    // is not modelled. A target below the plane uses its own height as the floor instead.
+    // Returns (elevation, predicted minus wanted height, reach, evaluations).
+    public static Vector4 SolveLaunchElevation(float speed, float distance, float height, float drag, float magnus,
+        float spinRpm, float spinHalfLife, float gravity, float step, float maxDegrees, float ground)
+    {
+        float limit = Finite(maxDegrees) ? Mathf.Max(0f, maxDegrees) : 0f;
+        if (!(distance >= 0.05f) || !Finite(distance) || !(speed > 0.1f) || !Finite(speed) || !(step > 0f) || !Finite(height))
+        {
+            // Too close (or nothing to fly): straight at the point within the limits.
+            float safeHeight = Finite(height) ? height : 0f;
+            float safeDistance = Finite(distance) ? Mathf.Max(distance, 0f) : 0f;
+            float direct = Mathf.Atan2(safeHeight, Mathf.Max(safeDistance, 0.0001f)) * Mathf.Rad2Deg;
+            float clamped = Mathf.Clamp(direct, -limit, limit);
+            int reach = direct > limit ? ReachShortAtLimit : direct < -limit ? ReachHighAtLimit : ReachExact;
+            return new Vector4(clamped, Mathf.Tan(clamped * Mathf.Deg2Rad) * safeDistance - safeHeight, reach, 0f);
+        }
+        float spinRate = Mathf.Max(0f, spinRpm) * 2f * Mathf.PI / 60f;
+        float decay = spinHalfLife > 0f ? Mathf.Pow(0.5f, step / spinHalfLife) : 1f;
+        float floor = Finite(ground) ? Mathf.Min(ground, height) : height - ShortFloor;
+        float lo = -limit;
+        float hi = limit;
+        bool loKnown = false;
+        bool hiKnown = false;
+        float bestAngle = 0f;
+        float bestError = float.MaxValue;
+        float previousAngle = 0f;
+        float previousError = 0f;
+        int evaluations = 0;
+        float angle = Mathf.Clamp(LaunchElevationDegrees(speed, distance, height, drag, limit), -limit, limit);
+        while (true)
+        {
+            float error = PredictThrowHeight(speed, angle, distance, drag, magnus, spinRate, decay,
+                gravity, step, floor, MaxPredictionSteps) - height;
+            evaluations++;
+            if (Mathf.Abs(error) < Mathf.Abs(bestError))
+            {
+                bestAngle = angle;
+                bestError = error;
+            }
+            if (Mathf.Abs(error) <= SolverTolerance) return new Vector4(angle, error, ReachExact, evaluations);
+            if (error < 0f)
+            {
+                if (angle >= limit) return new Vector4(angle, error, ReachShortAtLimit, evaluations);
+                lo = angle;
+                loKnown = true;
+            }
+            else
+            {
+                if (angle <= -limit) return new Vector4(angle, error, ReachHighAtLimit, evaluations);
+                hi = angle;
+                hiKnown = true;
+            }
+            if (evaluations >= MaxSolverEvaluations) break;
+            float next;
+            if (evaluations == 1)
+            {
+                // Height gained per degree, from the geometry of a straight line.
+                float cosine = Mathf.Max(0.2f, Mathf.Cos(angle * Mathf.Deg2Rad));
+                next = angle - error / (distance * Mathf.Deg2Rad / (cosine * cosine));
+            }
+            else
+            {
+                float change = error - previousError;
+                next = Mathf.Abs(change) > 0.000001f ? angle - error * (angle - previousAngle) / change : 0.5f * (lo + hi);
+            }
+            next = Mathf.Clamp(next, -limit, limit);
+            bool inside = (loKnown ? next > lo : next >= lo) && (hiKnown ? next < hi : next <= hi);
+            if (!inside || !Finite(next))
+                next = loKnown && hiKnown ? 0.5f * (lo + hi) : (hiKnown ? -limit : limit);
+            previousAngle = angle;
+            previousError = error;
+            angle = next;
+        }
+        return new Vector4(bestAngle, bestError, ReachApproximate, evaluations);
     }
 
     // Perpendicular distance from a point to a forward ray; behind the origin it is

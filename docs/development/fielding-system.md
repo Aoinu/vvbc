@@ -34,8 +34,8 @@ the fielding Behaviours live in a subfolder of `Ball`:
 | `Ball/BallBehaviour.CatchEffects.cs` | Local-only flight origin, catch-effect decision (local and remote) and duplicate suppression. |
 | `Fielding/GloveBehaviour` | Per-player glove: synced fitting, bone following, calibration, PlayerData persistence, open/closed state, catch volume, presentation of a ball held by its owner. `GloveBehaviour.CatchEffects.cs`: catch sound and haptics. |
 | `Fielding/GloveLockerBehaviour` | Locker UI that drives the local player's glove. |
-| `Fielding/ThrowAimBehaviour` | Local-only aim markers, release-hand sampling and release computation. |
-| `Fielding/FieldingMath` | Pure math: swept catch test, offsets, aim elevation, arm-speed curve, launch angle, control error. |
+| `Fielding/ThrowAimBehaviour` | Local-only throw targets (variable count, distance culling), aim markers, release-hand sampling and release computation. |
+| `Fielding/FieldingMath` | Pure math: swept catch test, offsets, aim elevation, arm-speed curve, throw-flight prediction and launch-elevation solver, control error. |
 
 ## Prefabs
 
@@ -52,11 +52,14 @@ VVBCPlayerObjectTemplate (VRCPlayerObject)
     └── CalibrationHandle (VRCPickup, kinematic Rigidbody, collider; Pickup layer, inactive)
 
 ThrowAim (scene, local only; root active and named ThrowAim)
-├── Targets/FirstBase, SecondBase, ThirdBase, HomePlate   (Transforms placed by the world author)
+├── Targets/FirstBase, SecondBase, ThirdBase, HomePlate   (Transforms placed by the world
+│                                                          author; relay targets go here)
 └── Tracker (ThrowAimBehaviour, inactive until local HandHeld)
-    ├── Marker1B, Marker2B, Marker3B, MarkerHome
+    ├── Marker1B, Marker2B, Marker3B, MarkerHome          (Marker Roots, one per target)
+    │   ├── Reticle (Quad MeshFilter + MeshRenderer, MT_ThrowAimReticle)
+    │   └── Label (TextMeshPro, 3D)
     └── Feedback (debug, see Release feedback)
-        ├── AimPoint, SelectedHighlight          (inactive until shown)
+        ├── AimPoint, LaunchDirection, SelectedHighlight  (inactive until shown)
         └── Label (world-space Canvas + UI Text, inactive until shown)
 
 GloveLocker (scene)
@@ -86,7 +89,8 @@ radius times the Mount scale is the catch radius.
 2. Place `Runtime/Prefabs/ThrowAim.prefab` with its root on the rear tip of
    home plate (+Z toward the pitcher, like HomePlate). Move `Targets/*` to the
    receiving point of each base (default: 27.43 m base paths at 1.1 m height,
-   home plate at 1.0 m). The Ball finds it by itself: with `throwAim` left
+   home plate at 1.0 m). Relay targets are added as described in
+   [Throw targets](#throw-targets). The Ball finds it by itself: with `throwAim` left
    empty, it looks up the active scene object named `ThrowAim` with
    `GameObject.Find` and takes the `ThrowAimBehaviour` below it, including the
    inactive `Tracker` (`GetComponentInChildren(true)`). Udon has no
@@ -317,21 +321,99 @@ outside this path, the adoption above and the existing serialization retry.
 
 ## Throwing
 
+### Throw targets
+
+`ThrowAimBehaviour` (Inspector on `ThrowAim/Tracker`) has any number of fixed
+targets. A target is one index across parallel arrays. An array of a
+`[Serializable]` struct compiles in T#, but Tsukimi stores it as one Udon
+variable per member under names that are not a stable interface, so it cannot
+be set reliably from the Inspector or an editor script; parallel arrays are
+plain Udon variables. `baseTargets` and `markers` keep their earlier names so
+existing scene references survive.
+
+| Array | Per target | Missing entry |
+|---|---|---|
+| `baseTargets` (Transform) | Target Transform: the point a throw is aimed at, at receiving height. Its length is the number of targets. | — (an empty entry is skipped) |
+| `targetNames` (string) | Name written to the Label and used by the feedback | the Transform's name |
+| `markers` (Transform) | Marker Root: moved, turned and shown/hidden by ThrowAim | no marker shown; the target is still selectable while in range |
+| `reticleRenderers` (MeshRenderer) | Reticle quad | no colour applied |
+| `labelTexts` (TextMeshPro) | Label | no text set |
+| `markerColors` (Color) | Reticle colour | white |
+| `minDistances`, `maxDistances` (float, m) | Distance culling range | 0 = no limit |
+| `targetEnabled` (bool) | Whether the target is used | enabled |
+
+The label is a 3D `TextMeshPro` (no canvas), not the Unity `TextMesh` the
+original specification named: the Udon node registry of the declared Worlds SDK
+has no `UnityEngine.TextMesh` node at all (checked with
+`UdonEditorManager.GetNodeDefinitions`, and T# does not resolve the type), so a
+`TextMesh` could neither be referenced nor named from `targetNames` at runtime,
+while `TMPro.TextMeshPro.set_text` is exposed. `MaterialPropertyBlock` (ctor,
+`SetColor`) and `MeshRenderer.SetPropertyBlock` are exposed and appear in the
+generated UdonProgram. Arrays whose length differs from `baseTargets` are
+logged once (`ThrowAim: … missing entries use defaults`). The arrays are read
+at the first hold (`EnsureTargets`) and are not resized while playing.
+
+**Distance culling.** The distance is the horizontal (XZ) distance from the
+thrower (player position) to the target Transform. A target is shown and
+selectable when `minDistance <= distance <= maxDistance` (squared distances
+are compared; 0 means no limit on that side). A negative or non-finite limit is
+logged and read as 0. A maximum below the minimum is logged and disables the
+target. Visibility and selection read one flag per target, computed in the
+same pass that places the markers, so a hidden target can never be chosen.
+The pass runs in the existing `PostLateUpdate` when the eye point moved more
+than 2 cm, and again (forced) immediately before each release. There is no
+hysteresis or fade: a marker switches at the boundary. The defaults (all
+limits 0, all enabled) show the four bases as before.
+
+**Relay targets.** Add a Transform under `ThrowAim/Targets` at the relay
+point and receiving height, duplicate a Marker Root (for example `MarkerHome`)
+under `Tracker`, then append one entry to every array above: the new target,
+its name, the new Marker Root, its `Reticle` renderer, its `Label`, a colour
+and the distance range (for example a cutoff shown only beyond 45 m). Relay
+targets use the same selection, culling and launch computation as the bases.
+No coordinates are built in; the world author places them.
+
+The target position is read from the Transform in one place
+(`ReadTargetPositions`); culling, markers, selection and launch use only the
+positions it produced. A future fielder-following target needs only another
+source for that position. Fielder targets, Grip mode switching and movement
+prediction are not implemented.
+
+With no target, an empty or missing (null) array, only null Transforms, every target disabled or
+every target culled, the release is `NoTarget` and uses the head/arm direction
+fallback as before.
+
 ### Aim markers
 
 Shown only during local HandHeld. The marker origin is the player position
 plus the eye height captured at grab time
 (`Player.GetPosition() + up × eyeHeight`). It deliberately does not follow the
 HMD position or rotation: head motion during the throwing motion would move the
-markers and make them harder to aim at. For each base target (Inspector
-Transforms) the marker lies `aimDistance` (1.5 m) from the origin toward the
-target's horizontal direction, raised by
+markers and make them harder to aim at. For each shown target the Marker Root
+lies `aimDistance` (1.5 m) from the origin toward the target's horizontal
+direction, raised by
 
 `elevation = min(maxAimElevation (30°), aimElevationGain (1.5) × ½ asin(g·d / vRef²))`
 
-with `vRef` = 110 km/h. This is a game cue, not the launch angle. Markers are
-recomputed only when the origin moved more than 2 cm. `BallAimSolverBehaviour`
-is not used.
+with `vRef` = 110 km/h. The root is turned to face away from the origin
+(`LookRotation` of the unit marker direction), so the quad (visible from its −Z
+side) and the TextMeshPro text (read along +Z) face the thrower unmirrored;
+the reticle material keeps back-face culling rather than hiding a wrong facing; this happens in the same
+gated pass, not every frame. This is a game cue, not the launch angle.
+`BallAimSolverBehaviour` is not used.
+
+**Marker prefab.** Each Marker Root holds `Reticle`, a Unity Quad with
+`MT_ThrowAimReticle` (`VVBC/Unlit Transparent`, `Runtime/Textures/reticle.png`:
+white ring with four ticks on a transparent background, no colour baked in,
+Cull Back, imported at 256 px), and `Label`, a 3D TextMeshPro above it (LiberationSans SDF from TMP
+Essentials, which VRChat projects include). Size and offset of reticle and
+label are set on those children in the prefab; replacing the texture keeps the
+setup. The texture and material are shared by every target; `markerColors[i]`
+is applied once per reticle with a `MaterialPropertyBlock` (`_Color`), so no
+material is instantiated and one target's colour never changes another's. The
+label colour is the TextMeshPro's own and is independent of the reticle and of
+the debug highlight. Text and colours are applied once at the first hold. A
+hidden Marker Root hides both Reticle and Label.
 
 ### Release
 
@@ -343,18 +425,77 @@ All values are decided once on the releasing client:
   previous accepted sample is discarded; two consecutive discards restart the
   buffer.
 - **Speed**: arm speed ≤ 2 m/s → 90 km/h, ≥ 10 m/s → 145 km/h, smoothstep in
-  between.
-- **Target**: the base whose marker is closest to the forward arm ray
-  (perpendicular distance). Below `minDirectionSpeed` the ray uses the head's
-  horizontal forward.
+  between. Unchanged.
+- **Target**: among the shown targets, the one whose marker is closest to the
+  forward arm ray (perpendicular distance). Below `minDirectionSpeed` the ray
+  uses the head's horizontal forward.
 - **Control**: error cone `lerp(minError, maxError, (miss − perfectRadius) /
   (wildRadius − perfectRadius))`, sampled once with `Random`.
-- **Launch**: azimuth toward the selected base; elevation from a closed-form
-  drag-aware low-trajectory estimate (`t = (e^{kd} − 1)/(k v)`), clamped to
-  ±12°. Long throws may bounce. Backspin `throwSpinRpm` (1500).
+  `minErrorDegrees` and `maxErrorDegrees` default to **0** (source and
+  `ThrowAim.prefab`) for the current real-client verification: with a target
+  selected, the launch does not depend on the random numbers. The Ball still
+  draws them, in the same order. The cone code is kept; setting for example
+  0.5 / 8 (the earlier tuning) restores it, which a test covers.
+- **Launch**: azimuth toward the selected target; elevation from the solver
+  below, within ±`maxLaunchElevation` (12°). Backspin `throwSpinRpm` (1500).
 
 The Throw flight uses the existing Ball flight and catch-up model. Remote
 clients reproduce the synced release; they do not draw random numbers.
+
+### Launch elevation
+
+The earlier closed form (`t = (e^{kd} − 1)/(k v)`, gravity and drag only)
+ignored the Magnus lift of the 1500 rpm backspin (about 4 m/s² at 115 km/h),
+so throws passed the target too high. The elevation is now solved against the
+Ball's own flight model; the flight itself is unchanged.
+
+- **Prediction** (`FieldingMath.PredictThrowHeight`): the Ball's semi-implicit
+  Euler step (`BallFlightModel.Step`: aerodynamics from the velocity before the
+  step, `v += (g + a)·dt`, then `x += v·dt`), with the throw's spin decayed by
+  `0.5^(dt / battedSpinHalfLife)` after every step, as `AdvanceDecayingSpin` and
+  the Rigidbody `angularDrag` set by `StartFlight` do. `FieldingMath.Backspin`
+  gives a horizontal axis perpendicular to the heading, so drag and Magnus stay
+  in the vertical plane and the flight is computed in 2D: Magnus =
+  `magnus · ω · (−vy, vx)` in (along, up), ω in rad/s (positive backspin lifts).
+  The Ball passes `dragCoefficient`, `magnusCoefficient`, `battedSpinHalfLife`,
+  `−Physics.gravity.y` and `Time.fixedDeltaTime`. The height at the target's
+  horizontal distance is interpolated between the two fixed steps around it.
+  The target point is the target Transform's position.
+- **Solver** (`FieldingMath.SolveLaunchElevation`): the closed form gives the
+  first guess, one step along the geometric slope `d / cos²θ` follows, then
+  secant steps inside a bracket (bisection when a secant leaves it). It stops
+  within 5 mm. At most 6 predictions of at most 512 fixed steps; a prediction
+  stops early, as short, when the ball descends below the ground plane (the
+  thrower's feet: eye point minus eye height; the target's own height if that is
+  lower), or 20 m below the target when no eye point is known.
+- **What `reached` guarantees**: the predicted free flight crosses the target's
+  horizontal distance within 5 mm of its height without first descending below
+  that ground plane. Terrain above the plane (the mound, fences, slopes) and
+  colliders are not modelled, so a bounce on them is not excluded. With the
+  current coefficients the Magnus lift (≈4 m/s² at 115 km/h) stays below
+  gravity, so the path is concave and a reached flight to a target above the
+  plane cannot touch the plane first; the floor makes this explicit and ends
+  short predictions sooner. Over
+  84 cases (90/115/145 km/h, 6–80 m, release 1.5 m above to 0.5 m below the
+  target) it needed at most 3 predictions.
+- **Reach** (`releaseReach`): `reached`; `short at max elevation` (even 12°
+  passes below the target or never gets there: the throw uses 12° and
+  bounces); `high at min elevation` (even −12° passes above, for example close
+  and far below); `not converged` (every prediction used, the best is taken;
+  not seen in testing). Unreachable throws are not forced to the target; NaN,
+  zero speed, zero distance and a zero fixed step give a finite angle within
+  the limits. The 12° limit is unchanged. With it, a release 0.7 m above the
+  target reaches catch height to about 27 m at 90 km/h, 45 m at 115 km/h and
+  63 m at 145 km/h; longer throws bounce, as before.
+- It runs once per release, never per frame, and allocates nothing.
+
+The Ball tests `ThePlanarThrowPredictionMatchesBallFlightModel`,
+`SolvedThrowsPassTheTargetAtItsHeightInTheBallFlightModel` and
+`TheClosedFormThrewHighAndTheSolverDoesNot` fly the launch in 3D with
+`BallFlightModel.Step`; solved throws must pass within 1 cm of the target
+height. The remaining difference to the real Rigidbody (PhysX integration and
+angular damping, release between fixed steps) is reported in
+[Validation limits](#validation-limits).
 
 ### Release feedback (debug, local only)
 
@@ -364,23 +505,36 @@ clients reproduce the synced release; they do not draw random numbers.
 
 | Value | Meaning |
 |---|---|
-| `selectedTarget` | FirstBase, SecondBase, ThirdBase, HomePlate or NoTarget |
-| `releaseAimPoint`, `releaseAimValid` | Where the aim ray (release position along the arm-velocity direction, or the head fallback) leaves the marker sphere: centre = marker origin above, radius = `aimDistance`. From inside the sphere this is the only forward crossing; from outside, the far one (the side the ray travels toward, where the markers are); a tangent touches once. No crossing, or no marker origin, is recorded as invalid; no point is made up and nothing non-finite is kept. |
+| `selectedTarget` | Index of the selected target (`TargetName(i)` gives its name), or `NoTarget` |
+| `releaseAimPoint`, `releaseAimValid` | Input aim: where the aim ray (release position along the arm-velocity direction, or the head fallback) leaves the marker sphere: centre = marker origin above, radius = `aimDistance`. From inside the sphere this is the only forward crossing; from outside, the far one (the side the ray travels toward, where the markers are); a tangent touches once. No crossing, or no marker origin, is recorded as invalid; no point is made up and nothing non-finite is kept. |
+| `releaseDirectionPoint`, `releaseDirectionValid` | Final launch direction: the same sphere crossing (`RaySphereExit`) for the ray from the release position along the final `releaseVelocity` (target choice, solved elevation and control error applied), with the same invalid handling. A direction only: it is not where the curved flight arrives. |
 | `releaseAimError` | Distance on that sphere from the aim point to the selected marker; −1 without a crossing or a target. |
 | `releaseMiss` | Unchanged: perpendicular distance from the ray to the selected marker (`RayDistance`), the input of the control error. |
+| `releaseDistance`, `releaseElevation`, `releasePredictedHeight`, `releaseHeightError`, `releaseReach`, `releaseSolverEvaluations` | Solver result for the selected target: horizontal distance, solved elevation (before control error), predicted height at the target's distance, its difference to the target height, reach and number of predictions. |
 
-When shown, `Feedback/AimPoint` (a small magenta sphere, unlike the markers)
-marks the aim point, `Feedback/SelectedHighlight` (a translucent green sphere)
-surrounds the selected marker, and `Feedback/Label` (a world-space canvas
-turned toward the player) lists the target name, the sphere error, the ray
-distance and the arm speed; the same line goes to the log. The markers stay
-where they were at release. Tracker stays active until the feedback ends (a
-later release or a new hold restarts it), then deactivates itself; without
-feedback it deactivates at once, as before. All objects are reused, nothing is
-synced, and the computation runs once per release, after the release values:
-target choice, speed, launch direction, spin, control error and the order of
-`Random` draws are unchanged (a test pins the values computed before this
-feature).
+When shown, `Feedback/AimPoint` (small magenta sphere) marks the input aim
+point, `Feedback/LaunchDirection` (small cyan cube) marks the final launch
+direction, `Feedback/SelectedHighlight` (translucent green sphere) surrounds
+the selected marker, and `Feedback/Label` (a world-space canvas turned toward
+the player) lists the target name, sphere error, ray distance, arm speed,
+throw speed and elevation, and the target distance with the predicted height
+error and reach; the same line goes to the log. These debug colours are
+independent of `markerColors`. Markers, points and label stay where they were
+at release while the player moves. Tracker stays active until the feedback
+ends (a later release replaces it, a new hold hides it), then deactivates
+itself; without feedback it deactivates at once, as before. All objects are
+reused, only the local player sees them, nothing is synced, and the
+computation runs once per release after the release values: the feedback
+setting does not change speed, direction, spin or the order of `Random` draws
+(tested).
+
+**Real-client check.** Turn on `showReleaseFeedback`, hold the ball and throw
+at each base: the cyan point should lie on the selected marker's azimuth and
+above or below it by the solved elevation versus the marker's game-cue
+elevation; the label should say `reached` with a height error of a few
+millimetres for reachable throws, and the ball should arrive at the glove
+height of a fielder standing at the base. Then throw from beyond the reach
+listed above and check `short at max elevation` and a bounce.
 
 ## Catch detection
 
@@ -535,7 +689,10 @@ the physical ball is neither flying nor held.
 | Catch narrow phase | fixed step | broad phase passed |
 | ThrowAim `PostLateUpdate` | every frame | object active only during local HandHeld (and, with release feedback on, until it ends; then returns at once) |
 | ThrowAim scene search | Start, hand pickups | only while `throwAim` is unset, at most 3 searches |
-| Aim-sphere crossing | per release | — |
+| Target culling, marker placement and facing | ThrowAim `PostLateUpdate` | only when the eye point moved > 2 cm, and once before each release |
+| Target names and reticle colours | first hold | once (`EnsureTargets`) |
+| Launch-elevation solver | per release | 1–3 predictions in practice; at most 6 × 512 fixed steps |
+| Aim-point and launch-direction crossings | per release | — |
 | Catch volume display | worn glove's frame | only while `showCatchVolume` is on |
 | Catch sound/haptics | per catch | nothing per frame; remote: server time read only for a flying ball's GloveHeld of another player |
 | Network | on change | equip, calibration save/restore, possession change, release, bounded conflict recovery, bounded owner recheck |
@@ -558,6 +715,40 @@ ClientSim run a 150 km/h shot (0.46 m per 90 Hz step) was caught after 8
 broad-phase tests, 2 of which reached the narrow phase. Real-client CPU time
 was not measured.
 
+### Throw accuracy and cost (measured)
+
+Height error where the throw crosses the target's horizontal distance, release
+1.8 m, target 1.1 m (rows) and also 0.3 m and 2.3 m, measured with a real
+Rigidbody in an isolated Editor physics scene: `useGravity`, `angularDrag` from
+`battedSpinHalfLife`, the Ball's `AddForce` before every `Simulate`, backspin
+1500 rpm, project fixed step 1/90 s.
+
+| km/h | 8 m | 18 m | 27.43 m | 38.8 m | 50 m | 63 m |
+|---|---|---|---|---|---|---|
+| 90, closed form (before) | +0.12 | +0.51 | +0.73 | short | short | short |
+| 90, solver (now) | 0.000 | −0.001 | −0.001 | short | short | short |
+| 115, closed form | +0.10 | +0.44 | +0.89 | +1.48 | short | short |
+| 115, solver | 0.000 | +0.005 | −0.001 | −0.002 | short | short |
+| 145, closed form | +0.09 | +0.37 | +0.78 | +1.38 | +1.96 | +1.07 |
+| 145, solver | 0.000 | +0.001 | 0.000 | −0.002 | −0.003 | −0.005 |
+
+Over all 37 reachable cases per step size the solver's error in the PhysX run
+was at most 6 mm at 1/90 s and 10 mm at 0.02 s (prediction itself ≤ 5 mm);
+"short" means `short at max elevation` (12° is used and the ball bounces). Not
+included: the release happening between fixed steps, and a held ball's
+position at release.
+
+The table and the ClientSim times below were measured before the ground-plane
+floor was added; that floor does not change any reached case (tests
+`AReachedThrowDoesNotGoBelowTheGroundFirst`, `ReachableThrowsPassTheTargetAtItsHeight`)
+and only shortens short predictions. Cost: one solve is 1–3 predictions. Tsukimi test runner (default Udon path,
+0.02 s step): second base at 115 km/h 3 predictions, about 35.5k instructions,
+5.4k externs (`SolveCostSecondBase`, limited by `[CostLimit]`); 145 km/h at 60 m
+and the unreachable cases are also limited. Editor ClientSim wall time of the
+whole `ComputeRelease` (Udon VM, warm, 1/90 s step) was 0.04–0.47 ms per
+release; the first call in a session took 3.7 ms. These are Editor numbers on a
+desktop CPU; Quest CPU time was not measured.
+
 ## Validation limits
 
 Static compilation and simulated tests do not establish VR behavior. The
@@ -573,7 +764,10 @@ notifications and the take-over by an owner without an Accepted state (tested
 only with the Tsukimi multi-client simulation, where notifications are called
 by hand), how a lost speculative throw looks when it is stopped, the
 `GameObject.Find` binding of ThrowAim in an uploaded world, the readability of
-the release feedback label in VR, and the catch volume display's transparency
+the release feedback label in VR, the reticle and label size and readability
+on varied headsets, the reticle texture on Quest, the solver's CPU spike on
+Quest, whether throws arrive at glove height in a real client (two clients:
+the remote client reproduces the synced release), and the catch volume display's transparency
 on the target platforms.
 
 Catch effects not verified on real clients: how the clips sound and how strong
