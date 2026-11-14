@@ -1,9 +1,38 @@
 # Batting pitcher development setup
 
-The initial pitcher supports a single-client development setup. The Sandbox integration uses
-`Assets/Development/Prefabs/VVBC Batting Pitcher.prefab`; this development asset
-references the existing local Shinano avatar, copied pitching animation and
-controller, and the assets package ball model. It is ignored by Git and is not
+## Prefabs
+
+Every prefab below depends only on `org.vvbc.core`, `org.vvbc.assets` and the VRChat SDK
+(plus the SDK's generated `Assets/SerializedUdonPrograms` caches).
+
+- `Runtime/Prefabs/BattingPitcher.prefab` is the gimmick only: the root carries the Manual
+  sync `BattingPitcherBehaviour` (seven preset spin axes baked), `Visual` is the empty model
+  slot, `ReleasePoint` and `AimSolver` (`BallAimSolverBehaviour`, no sync) are siblings. Place
+  the root on the mound with +Z toward home plate and assign `strikeZone`. It has no model, so
+  `animator` is assigned by the variant that adds one.
+- `Runtime/Samples/Prefabs/BattingPitcherMachine.prefab` is a variant with the assets
+  package `PitchingMachine.fbx` under `Visual` (turned 180 degrees so its exit faces +Z). Its
+  Animator uses `Runtime/Animations/BattingMachine/Batting Machine.controller`, whose
+  `Pitch Idle` and `Pitching` states play `Machine Idle` and `Machine Pitching`. The animated
+  `Ball` inside the model is `animationBall`; `ReleasePoint` sits where that ball is at the
+  release frame. `releaseOffsetSeconds` (4.0) and `motionSeconds` (5.0) follow the clip. When
+  the clip changes, update both values and `ReleasePoint`; the clip carries no Animation Event.
+- `Runtime/Samples/Prefabs/HomePlateSet.prefab` groups the `HomePlate` (models under its
+  `Visual`), the `Ball` and two `BatSpawnSwitch` siblings, with `ball`, `frame`,
+  `motionObserver` and `occupantOnlyObjects` wired. The switches stay outside `HomePlate`
+  because only the two batter-box triggers may be colliders under it.
+- `PitchSettingsPanel.prefab` (see [Pitch UI](#pitch-ui)) is placed separately and its page's
+  `pitcher` assigned. It is not part of the pitcher prefab because it also depends on
+  `black.kit.vrcui` and TextMesh Pro Essentials.
+
+A nested prefab instance stores its Udon variables as one table, so adding or removing
+children of `HomePlate.prefab` can drop references held by instances (`frame` was lost
+once). After such a change, compare the instance references with their source and run the
+HomePlate validation below.
+
+The older Sandbox integration uses `Assets/Development/Prefabs/VVBC Batting Pitcher.prefab`;
+this development asset references the existing local Shinano avatar, copied pitching
+animation and controller, and the assets package ball model. It is ignored by Git and is not
 a dependency of `org.vvbc.core`.
 
 On `HumanoidVisual`, configure the `BattingPitcherBehaviour` Udon component. Players
@@ -47,10 +76,9 @@ generic prefab asset is expected.
 
 `Runtime/Prefabs/Ball.prefab` contains the Rigidbody, collider, Pickup,
 Manual Sync BallBehaviour, speed trail, world-space flight path and bounce and
-wind sources. Assign a ball mesh and material to `Visual/BallModel`, and clips
-to BallBehaviour's `impactClip` and `windClip`. The package does not contain
-these assets; the ignored Sandbox instance uses the assets-package ball model
-and local audio clips. The trail appears at 80 km/h by default; the path records
+wind sources. `Visual/BallModel` uses the assets package ball model and `windClip` its
+`wind_noise.ogg`. `impactClip` is left unassigned because neither package has a bounce
+sound yet; the bounce source then stays silent. The trail appears at 80 km/h by default; the path records
 actual flight and is cleared on Stage. Its threshold, sampling distance and
 point limit are adjustable on BallBehaviour.
 
