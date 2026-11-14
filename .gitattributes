@@ -8,6 +8,7 @@
 /Packages/org.vvbc.core/Runtime/**/*.meta whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.asset whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.prefab whitespace=-blank-at-eol
+/Packages/org.vvbc.core/Runtime/**/*.unity whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.mat whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.controller whitespace=-blank-at-eol
 /Packages/org.vvbc.core/Runtime/**/*.anim whitespace=-blank-at-eol
