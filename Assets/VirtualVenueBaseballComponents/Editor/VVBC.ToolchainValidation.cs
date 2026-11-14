@@ -134,7 +134,7 @@ namespace VVBC.Toolchain
             var phantomRenderer = phantom.GetComponent<MeshRenderer>();
             if (phantomFilter == null || phantomFilter.sharedMesh == null || phantomRenderer == null || phantomRenderer.sharedMaterial == null ||
                 AssetDatabase.GetAssetPath(phantomFilter.sharedMesh) != "Packages/org.vvbc.assets/Runtime/Props/Models/Ball.fbx" ||
-                AssetDatabase.GetAssetPath(phantomRenderer.sharedMaterial) != "Packages/org.vvbc.assets/Runtime/Props/Materials/MT_BallPhantom.mat")
+                AssetDatabase.GetAssetPath(phantomRenderer.sharedMaterial) != "Packages/org.vvbc.core/Runtime/Materials/MT_BallPhantom.mat")
                 throw new InvalidOperationException("HomePlate phantom mesh or material is missing.");
             var size = phantomFilter.sharedMesh.bounds.size;
             var meshDiameter = Mathf.Max(size.x, size.y, size.z);

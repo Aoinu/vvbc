@@ -141,8 +141,8 @@ position and half extents; changing the strike zone does not move it. This is a 
 height-based approximation; MLB's traditional umpire-called zone is determined
 from the batter's stance and body landmarks.
 
-The prefab's `BallPhantom` uses the assets package's `Ball.fbx` mesh and
-`MT_BallPhantom` material. Its `meshDiameter` is 0.0720021948 in the mesh's
+The prefab's `BallPhantom` uses the assets package's `Ball.fbx` mesh and core's
+`Runtime/Materials/MT_BallPhantom.mat` material. Its `meshDiameter` is 0.0720021948 in the mesh's
 unscaled coordinates. If replacing the mesh, set `meshDiameter` to the new
 mesh's unscaled diameter. The three display colours, including alpha, are
 adjustable on the behaviour. The ball's SphereCollider supplies
