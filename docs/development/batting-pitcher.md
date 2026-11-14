@@ -6,14 +6,19 @@ references the existing local Shinano avatar, copied pitching animation and
 controller, and the assets package ball model. It is ignored by Git and is not
 a dependency of `org.vvbc.core`.
 
-On `HumanoidVisual`, configure the `BattingPitcherBehaviour` Udon component:
+On `HumanoidVisual`, configure the `BattingPitcherBehaviour` Udon component. Players
+change the shared settings through the pitch UI (see [Pitch UI](#pitch-ui)); the Inspector
+values are only the initial state:
 
-- `speedKmh`, `spinRpm`, and `resetSeconds` set the next cycle. Reset time is
-  measured from release; the next pitch also waits for the motion to end.
-- The 3-by-3 course buttons are arranged from the batter's view: columns run
-  from batter-left to batter-right and rows run from high to low. Width and
-  height are in metres. `courseColumn` and `courseRow` show the course chosen
-  for the current cycle; the next course is selected from `courseMask`.
+- `speedKmh` (60-160, default 120), `spinRpm` (0-3000, default 2500) and `resetSeconds`
+  (Reset Delay, 3-15 s, default 3) apply from the next pitch. Speed and spin are shared by
+  every pitch type; each type keeps its baked spin axis. The pitcher starts **Stopped** and
+  never pitches on its own at startup.
+- `contactFallbackSeconds` (default 15) is the On Event fallback described below.
+- The 3-by-3 courses are arranged from the batter's view: columns run from batter-left to
+  batter-right and rows run from high to low (zone 1 top-left, zone 5 center, zone 9
+  bottom-right), matching `StrikeZoneGeometry`. `courseColumn`, `courseRow`,
+  `selectedCourse`, `selectedPitchType` and `selectedItemId` show the current choice.
 - `ReleasePoint` is a fixed child of the prefab root, independent of the
   Animator. Assign the target HomePlate's `StrikeZoneBehaviour` to `strikeZone`.
   Its assigned Ball and the HomePlate geometry supply the pitcher target; no
@@ -25,8 +30,8 @@ as viewed by the batter; rows run high to low. Each cell center uses one third
 of the configured width and height, including `zoneCenterOffset`. The plane
 normal points opposite the HomePlate forward direction.
 
-The solver captures the settings and transforms before each motion. Changes
-made during a cycle take effect on the next one. If the solver cannot converge,
+The solver captures the settings, the playlist item and the transforms before each motion.
+Changes made during a cycle take effect on the next one. If the solver cannot converge,
 the pitcher still uses its best direction. The Rigidbody is a sibling of the
 animated Humanoid; only the display ball follows its hand.
 
@@ -66,19 +71,82 @@ with the pitcher Udon component selected (Edit Mode). The bake stores the clip
 length and the animator's local pose every `rootMotionStep` seconds so a client
 that receives a schedule late can jump to the middle of the clip.
 
+## Pitch playlist
+
+The playlist holds at most `PitchPlaylist.MaxItems` (10) items. Each item is one packed
+`int` (see `Runtime/Ball/PitchPlaylist.cs`): bits 0-8 course mask, 9-12 pitch type (the
+preset index), 13-28 a 16-bit item id, 29-31 reserved. The order of the synced array is
+the playlist order. A second packed `int` holds the count, a done bit per array index, the
+mode (Random/Sequence), Start/Stop and the reset mode (On Event/On Timer). The next item is
+always the first not-done item from the top, so no separate cursor is stored.
+
+Pitch types are the seven preset indices (0 Four-Seam, 1 Curve, 2 Slider, 3 Sweeper,
+4 Split, 5 Screw, 6 Sinker); the UI lists them as Four-Seam, Slider, Curveball, Sinker,
+Splitter, Screwball, Sweeper. An unknown type pitches as Four-Seam. A course mask of 0 is
+kept and pitches to zone 5. An empty list pitches the fallback Four-Seam to zone 5; it is not
+a list item and marks nothing.
+
+- **Random**: the Owner shuffles the array itself (local seeded LCG; the result is synced),
+  so the UI shows the real order. Every item is pitched once per lap. A new lap reshuffles
+  when every item is done, when Random is selected, and on Start while nothing of the lap has
+  been pitched. A multi-course item picks one of its courses at random for each pitch.
+- **Sequence**: top to bottom, wrapping to the top. Switching modes starts a new lap from the
+  next unconfirmed pitch; Random to Sequence keeps the current order.
+- Add appends a not-done item with a new id. Edit keeps the id, position and done bit.
+  Move Up/Down swap neighbours, and their done bits move with them. Delete removes the item
+  and shifts the done bits. Ids never change and are not reused while present
+  (`_nextItemId` is synced). Saving an item that another player deleted meanwhile appends it
+  with a new id; a full list reports the failure and the UI keeps the draft.
+- The chosen item is marked done in the same send that publishes its reservation. A send
+  that finally fails gives the item back; an unconfirmed preparation marks nothing.
+
+## Reset rules
+
+The reset rule (`On Event` or `On Timer`) and the delay are captured into the committed
+snapshot (`_resetOnTimer`, `_resetDelay`), so changing them only affects the next pitch.
+The next pitch can be prepared once all of these hold:
+
+- the motion has ended (`_readyTime`, also when the animator returns to the idle pose);
+- **On Timer**: release + delay has passed;
+- **On Event** (default): the first catch or ground bounce after the release + delay has
+  passed. Later bounces never restart it. Without any contact, release + 15 s
+  (`contactFallbackSeconds`) is used;
+- the pitcher is running and the ball is not held (`BallBehaviour.IsHeld`: GloveHeld or
+  HandHeld, including an unconfirmed local hold). Releasing the ball does not restart the
+  timer: if it has already run out, the next pitch is prepared at once.
+
+Every client detects the contact itself: a new hold after the release arrives through
+`OnBallPresentationChanged`, and a ground bounce through `OnBallGroundContact`, which
+`BallBehaviour.OnCollisionEnter` sends to its presentation listeners for every bounce on
+`groundLayers` during a flight. The Owner also syncs the first contact time together with the
+start time of its pitch (`_eventTime`, `_eventPitchStart`) so a late joiner or a new Owner
+uses the same contact. Stop does not skip any of this: Start re-enters the same gate, which
+still waits for the committed pitch's reset.
+
 ## Network synchronization
 
-`BattingPitcherBehaviour` is Manual sync and the only synchronized state. It syncs
-the settings (speed, spin, course mask, pitch type, reset seconds) and a committed
-pitch snapshot (id, start, release and ready server times, release position,
-velocity and spin). Settings never alter a committed snapshot; they apply at the
-next preparation.
+`BattingPitcherBehaviour` is Manual sync and the only synchronized state of the pitcher. It
+syncs the settings (speed, spin, reset delay), the packed playlist and state, the id counter,
+the committed pitch snapshot (id, start, release and ready server times, release position,
+velocity and spin, and its reset rule) and the first contact. Settings never alter a
+committed snapshot; they apply at the next preparation. Settings and pitching are not owned
+separately: there is no settings object.
 
+- Any player may edit. A request (Start/Stop, mode, settings, item save/move/delete) is
+  queued locally and Ownership is taken with `Networking.SetOwner`. Once Owner with a synced
+  state (`OnOwnershipTransferred`, `_OwnerSettled` or `OnDeserialization`), the client
+  applies the queue in order to the synced arrays and sends the whole state once. Item edits
+  name the item by id, never by index. If someone else wins Ownership first, the queue is
+  dropped and a pending save reports *interrupted*; concurrent edits converge to the last
+  state sent. A failed send is retried `maximumSerializationRetries` times, then retried
+  every 5 x `serializationRetrySeconds` until it succeeds, so Start/Stop always converges.
 - The Owner stages the ball, solves the aim, writes a snapshot starting
   `leadSeconds` ahead and calls `RequestSerialization`. The Owner starts that pitch
-  only after `OnPostSerialization` succeeds for that snapshot's id and Owner epoch.
-  A failed send retries a bounded number of times with fresh times and a new id;
-  after the limit the next preparation is retried later.
+  only after `OnPostSerialization` succeeds for that snapshot's id and start time. A schedule
+  that left the client is also played there after Ownership moved on, so every receiver and
+  the sender play the same pitch. A failed send retries a bounded number of times with fresh
+  times and a new id; after the limit the item is given back and the preparation is retried
+  later.
 - Every client, on receiving a new id, arms three delayed events from server
   time: motion start (plays `Pitching` from the elapsed position, restoring the
   baked root pose when late), release, and cycle ready. Events ignore themselves
@@ -89,31 +157,68 @@ next preparation.
   publishes the formal Pitch snapshot, carrying the same release time, so receivers
   and the Ball's own publication do not launch it again; a Stage older than that pitch
   cannot reset the flight. A new Owner publishes the Pitch only while the Ball
-  still holds the Stage.
-- Cycle ready is the later of release + `resetSeconds` and motion start +
-  `motionSeconds`. At that time every client returns to the idle pose and the
-  Owner prepares the next pitch.
+  still holds the Stage. Release velocity and spin come only from the snapshot; a
+  non-Owner never runs the aim solver.
+- Cycle ready plays the idle pose on every client. The Owner then enters one cycle gate
+  (`TryAdvanceCycle`) from every trigger (Start, ready, contact, ball release, Ownership);
+  when the gate is not open yet it arms a single check for the earliest time it can open,
+  replacing a later one.
 - Ownership changes only drop the Owner's unfinished preparation. The motion,
   release schedule and ball flight continue. A new Owner waits
   `ownerSettleSeconds` and until it has received a synced state before reserving a
   pitch. Schedules are ordered by start time rather than id, so an id reused from
   stale state is still accepted when newer, and repeats are ignored.
+- Stop cancels only a preparation that has not been sent. A reservation in flight, the
+  motion and the flight always complete.
 - The Behaviour is never disabled (a disabled Udon Behaviour may not run delayed
   events); `Update` returns at once unless the aim solver is iterating. Delayed
   events that run early re-arm themselves for the remaining time.
 
-While a fielder holds the ball (in a glove or hand, including an unconfirmed
-local catch), the Owner neither stages nor reserves a pitch. The Ball notifies
-the pitcher on every possession change; once the ball is free the Owner waits
-`resetSeconds` and prepares the next pitch, waiting again if the ball was
-caught in the meantime. A delayed release never moves a held ball. See
-[fielding system](fielding-system.md).
+Server time differences inside the gate use `ServerDelta`, which folds the 32-bit
+millisecond wrap as `Networking.CalculateServerDeltaTime` does, so the gate can be tested
+without the server clock.
 
-`PitchSettingsBehaviour` drafts edits locally and commits them once after
-`commitDelaySeconds` of quiet (slider drag, click and keyboard all raise
-`onValueChanged`; Udon has no pointer-up event). The commit takes pitcher Ownership and
-writes the settings. The Owner name is read from `Networking.GetOwner` and is
-refreshed on state changes, Ownership transfer and player leave.
+## Pitch UI
+
+`Runtime/Prefabs/PitchSettingsPage.prefab` is the UI itself: a 1280 x 720 (16:9)
+`RectTransform` without a Canvas, carrying the `PitchSettingsBehaviour` Udon component.
+Assign the pitcher's `BattingPitcherBehaviour` to its `pitcher` field. It can be placed as a
+page or tab inside any other Canvas (a future VVBC menu); several pages may watch the same
+pitcher. `Runtime/Prefabs/PitchSettingsPanel.prefab` is a standalone host: a World Space
+Canvas (scale 0.0012, about 1.54 m x 0.86 m) with `GraphicRaycaster`, `VRCUiShape` and a
+trigger `BoxCollider`, containing one page instance; set `pitcher` on that nested page.
+`PitchPlaylistRow.prefab` is the reusable playlist row. The look comes from
+`black.kit.vrcui` (a VPM dependency of core) and its `black.kit.launchpadicons` icons; VRCUI
+prefabs are nested, never copied.
+
+The page shows, top to bottom: the header (`VVBC / PITCHING SYSTEM`, `Batting Pitcher`,
+`CURRENT OWNER` from `Networking.GetOwner`, `Connecting...` while unknown, shortened to
+`ownerNameLimit`), `RUNNING`/`STOPPED` and `START`/`STOP`; the Next Pitch progress; the main
+content with the vertically scrolling `Pitch Playlist` (about 31%, `ADD PITCH` fixed below the
+`ScrollRect`, `RectMask2D` viewport, `LOCATE NEXT`, `NEXT`/`DONE` badges, move and delete
+buttons) and the right side with `CONTROLS` / `PITCH EDITOR` tabs and the `RANDOM` /
+`SEQUENCE` switch; and a one-line footer.
+
+- Controls: `RESET & TIMING` (On Event (Catch / Bounce), On Timer (After Release), Reset
+  Delay) and `PITCHER SPECIFICATION` (Pitch Speed, Spin Rate, Pitching Motion: Standard,
+  read only). Slider edits are drafted locally and committed once after
+  `commitDelaySeconds` of quiet (Udon has no pointer-up event).
+- Pitch Editor: `TARGET ZONES` (3 x 3 in batter's view, multi-select, count, `CLEAR ALL`) and
+  `PITCH CONFIGURATION` (Pitch Type dropdown and the empty `PitchBuilderSlot`, the extension
+  point for the Phase 2 Pitch Builder), with `CANCEL` and `SAVE PITCH`. A row opens the item;
+  `ADD PITCH` or the tab opens a new Four-Seam to zone 5. The draft stays open until the
+  Owner confirms the save.
+- Next Pitch: `STOPPED`, `AWAITING CONTACT` (seconds to the fallback), `RESET IN PROGRESS`
+  (seconds until the next pitch can be *prepared*, not the pitch itself), `BALL HELD`,
+  `PREPARING` (elapsed time and a sweeping gauge), `PITCH SCHEDULED` (seconds to the
+  committed motion start, the only true start countdown) and `SYNCING`. Values are computed
+  locally from the synced state; nothing about the display is synced. The page's `Update`
+  refreshes them every `displayInterval` only while the page is active, and rewrites the
+  seconds only when the shown tenth changes. Playlist rows are rebuilt only on state
+  changes, and a reshuffle never scrolls the list.
+
+Tabs, scroll position, drafts and countdowns are local. The UI never writes the pitcher's
+synced fields; it calls the request methods.
 
 The scene-independent Ball integration fixture uses a disposable Unity preview
 scene. Run the following to check Stage, Pitch, Hit, reset and snapshot

@@ -671,11 +671,12 @@ contact haptics, 0..320). Strength does not follow speed.
 ## Batting pitcher
 
 `BallBehaviour.IsHeld()` is true for an accepted or local possession and for a
-pending one. The pitcher's preparation and reservation stop while it is true
-and set a wait flag. Ball notifies its presentation listeners on every
-possession change; when the ball becomes free, the pitcher schedules one
-resume after `resetSeconds` (re-armed if it fires early, ignored if the ball is
-held again). `LaunchPitchLocal` refuses while held and when the accepted
+pending one. The pitcher's preparation and reservation stop while it is true.
+Ball notifies its presentation listeners on every possession change (a new hold
+after the release is the pitcher's catch event) and sends `OnBallGroundContact`
+for every ground bounce of a flight. When the ball becomes free the pitcher
+re-enters its cycle gate without restarting the reset timer; see the reset rules
+in [batting pitcher](batting-pitcher.md). `LaunchPitchLocal` refuses while held and when the accepted
 Throw/Possession is newer than the pitch release time, so a delayed release
 event cannot move a fielded ball. The animated hand ball is shown only while
 the physical ball is neither flying nor held.
