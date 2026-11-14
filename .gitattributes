@@ -13,3 +13,5 @@
 /Packages/org.vvbc.core/Runtime/**/*.anim whitespace=-blank-at-eol
 /Tools/VVBC.Toolchain/Fixtures/**/*.meta whitespace=-blank-at-eol
 /Tools/VVBC.Toolchain/Fixtures/**/*.asset whitespace=-blank-at-eol
+# VPM tools write the manifest with CRLF line endings.
+/Packages/vpm-manifest.json whitespace=cr-at-eol

@@ -3,7 +3,11 @@
 VVBC runtime is authored directly in `Packages/org.vvbc.core`. Required versions:
 Unity 2022.3.22f1, Worlds SDK 3.10.5, and `com.tsukimicode.udon-tools` 0.10.1.
 The compiler ID/version were verified against installed `package.json` metadata.
-Both SDK and compiler are formal VPM dependencies of core. There is no generated
+Both SDK and compiler are formal VPM dependencies of core, as is the UI theme
+`black.kit.vrcui` 0.14.2 (with its `black.kit.launchpadicons` and `black.kit.toybox`
+dependencies) from its author's listing `https://kurone-kito.github.io/vpm/index.json`.
+The development project installs it through VPM (`Packages/vpm-manifest.json`); the
+clean consumer adds it with the VPM CLI. It is never copied into core. There is no generated
 UdonSharp distribution or Export compatibility gate.
 
 ## Layout

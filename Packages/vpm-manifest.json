@@ -8,6 +8,9 @@
     },
     "jp.lilxyzw.liltoon": {
       "version": "2.4.1"
+    },
+    "black.kit.vrcui": {
+      "version": "0.14.2"
     }
   },
   "locked": {
@@ -34,6 +37,24 @@
     "jp.lilxyzw.liltoon": {
       "version": "2.4.1",
       "dependencies": {}
+    },
+    "black.kit.launchpadicons": {
+      "version": "0.14.1",
+      "dependencies": {}
+    },
+    "black.kit.toybox": {
+      "version": "0.11.3",
+      "dependencies": {
+        "com.vrchat.worlds": "^3.8.2"
+      }
+    },
+    "black.kit.vrcui": {
+      "version": "0.14.2",
+      "dependencies": {
+        "black.kit.launchpadicons": "^0.14.1",
+        "black.kit.toybox": "^0.11.2",
+        "com.vrchat.worlds": "^3.8.2"
+      }
     }
   }
 }

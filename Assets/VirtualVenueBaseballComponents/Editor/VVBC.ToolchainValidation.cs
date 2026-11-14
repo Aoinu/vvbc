@@ -47,7 +47,7 @@ namespace VVBC.Toolchain
                     throw new InvalidOperationException("Wait for Unity compilation/import to finish.");
                 if (Application.unityVersion != "2022.3.22f1")
                     throw new InvalidOperationException("Unexpected Unity version.");
-                foreach (var expected in new[] { "com.vrchat.worlds@3.10.5", "com.tsukimicode.udon-tools@0.10.1", "org.vvbc.assets@0.0.1" })
+                foreach (var expected in new[] { "com.vrchat.worlds@3.10.5", "com.tsukimicode.udon-tools@0.10.1", "org.vvbc.assets@0.0.1", "black.kit.vrcui@0.14.2" })
                     if (!report.packages.Contains(expected)) throw new InvalidOperationException("Required package missing: " + expected);
                 if (!registered.Any(p => p.name == "org.vvbc.core"))
                     throw new InvalidOperationException("Required core package missing.");
