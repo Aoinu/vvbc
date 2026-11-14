@@ -15,7 +15,7 @@ try
     System.Action<VRC.Udon.UdonBehaviour, string, VRC.Udon.UdonBehaviour> assign = (b, s, v) =>
         set.Invoke(null, new object[] { b, s, v });
     var platePrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab");
-    var visualPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Samples/Prefabs/HomePlateVisual.prefab");
+    var visualPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/HomePlateVisual.prefab");
     var ballPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Packages/org.vvbc.core/Runtime/Prefabs/Ball.prefab");
     var listenerTest = new GameObject("Listener test");
     UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(listenerTest, scene);

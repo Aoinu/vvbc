@@ -13,6 +13,9 @@ namespace VVBC.Editor
     internal static class HomePlateConnections
     {
         private static bool syncing;
+        internal const string HomePlatePrefab = "Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab";
+        internal const string HomePlateSetPrefab = "Packages/org.vvbc.core/Runtime/Prefabs/HomePlateSet.prefab";
+        internal const string LocalRigPrefab = "Packages/org.vvbc.core/Runtime/Prefabs/HomePlateLocalRig.prefab";
 
         internal static bool IsProgram(UdonBehaviour value, string program)
         {
@@ -29,12 +32,11 @@ namespace VVBC.Editor
         {
             string path = EditorUtility.IsPersistent(zone) ? AssetDatabase.GetAssetPath(zone) :
                 PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(zone);
-            if (path == "Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab" ||
-                path == "Packages/org.vvbc.core/Runtime/Samples/Prefabs/HomePlateVisual.prefab") return true;
+            if (path == HomePlatePrefab || path == "Packages/org.vvbc.core/Runtime/Prefabs/HomePlateVisual.prefab") return true;
             var source = zone;
             while (source != null)
             {
-                if (AssetDatabase.GetAssetPath(source) == "Packages/org.vvbc.core/Runtime/Prefabs/HomePlate.prefab") return true;
+                if (AssetDatabase.GetAssetPath(source) == HomePlatePrefab) return true;
                 var next = PrefabUtility.GetCorrespondingObjectFromSource(source);
                 if (next == source) break;
                 source = next;
@@ -119,6 +121,103 @@ namespace VVBC.Editor
             return error == null ? null : "Pitcher HomePlate: " + error;
         }
 
+        // Every object reference held by a behaviour of this lane must stay inside the lane, so
+        // copies of the prefab never share a Ball, a pitcher or a UI.
+        internal static string CheckInsideRoot(Transform root)
+        {
+            foreach (var behaviour in root.GetComponentsInChildren<UdonBehaviour>(true))
+            foreach (var symbol in behaviour.publicVariables.VariableSymbols)
+            {
+                if (!behaviour.publicVariables.TryGetVariableValue(symbol, out object value)) continue;
+                foreach (var item in value is Array array ? array.Cast<object>() : new[] { value })
+                {
+                    Transform target = item is Component component && component != null ? component.transform
+                        : item is GameObject gameObject && gameObject != null ? gameObject.transform : null;
+                    // Assets (a prefab to instantiate, a clip) are shared on purpose; only objects of
+                    // the same scene or prefab asset are lane objects.
+                    if (target == null || EditorUtility.IsPersistent(target) != EditorUtility.IsPersistent(root) ||
+                        (EditorUtility.IsPersistent(root) && AssetDatabase.GetAssetPath(target) != AssetDatabase.GetAssetPath(root)))
+                        continue;
+                    if (!target.IsChildOf(root))
+                        return behaviour.name + "." + symbol + " points outside " + root.name + " (" + target.name + ").";
+                }
+            }
+            return null;
+        }
+
+        internal static string CheckSet(UdonBehaviour set)
+        {
+            if (!IsProgram(set, "HomePlateSetBehaviour")) return null;
+            var root = set.transform;
+            if (set.SyncMethod != VRC.SDKBase.Networking.SyncType.Manual) return "HomePlateSet must use Manual Sync.";
+            var pitcher = ReadReference(set, "sharedPitcher");
+            var zone = ReadReference(set, "sharedHomePlate");
+            var page = ReadReference(set, "settingsPage");
+            if (!IsProgram(pitcher, "BattingPitcherBehaviour") || !IsProgram(zone, "StrikeZoneBehaviour") ||
+                !IsProgram(page, "PitchSettingsBehaviour")) return "HomePlateSet lane references are missing.";
+            if (ReadReference(pitcher, "strikeZone") != zone) return "The shared pitcher must aim at the HomePlate of its lane.";
+            if (ReadReference(page, "pitcher") != pitcher || ReadReference(page, "lane") != set)
+                return "PitchSettingsPage must edit the shared pitcher of its lane and name the lane.";
+            // A nested page keeps its Udon variables as one table: fields added to the page prefab
+            // must be present at every nesting level.
+            foreach (var symbol in new[] { "modeBar", "endPracticeButton", "joinOverlay", "confirmDialog" })
+            {
+                var target = UdonFields.Read<GameObject>(page, symbol);
+                if (target == null || !target.transform.IsChildOf(page.transform))
+                    return "PitchSettingsPage " + symbol + " is not connected to the page's own object.";
+            }
+            foreach (var symbol in new[] { "modeText", "modeButtonText", "footerText" })
+            {
+                var target = page.publicVariables.TryGetVariableValue(symbol, out object value) ? value as Component : null;
+                if (target == null || !target.transform.IsChildOf(page.transform))
+                    return "PitchSettingsPage " + symbol + " is not connected to the page's own object.";
+            }
+            if (UdonFields.Read(pitcher, "localOnly", false) || UdonFields.Read(zone, "localOnly", false))
+                return "The SharedRig must not be local-only.";
+            var ball = ReadReference(zone, "ball");
+            if (ball == null) return "HomePlateSet HomePlate has no Ball.";
+            if (UdonFields.Read(ball, "localOnly", false)) return "The shared Ball must not be local-only.";
+            var anchor = UdonFields.Read<Transform>(set, "localRigAnchor");
+            if (anchor == null || !anchor.IsChildOf(root)) return "LocalRig anchor must be inside the HomePlateSet.";
+            if (anchor.localScale != Vector3.one) return "LocalRig anchor must have unit scale.";
+            var rig = UdonFields.Read<GameObject>(set, "localRigPrefab");
+            if (rig == null || !EditorUtility.IsPersistent(rig)) return "LocalRig prefab asset is not assigned.";
+            string rigError = CheckLocalRig(rig);
+            if (rigError != null) return "LocalRig: " + rigError;
+            var occupantObjects = UdonFields.Read<GameObject[]>(zone, "occupantOnlyObjects");
+            if (occupantObjects != null && occupantObjects.Any(o => o == null || !o.transform.IsChildOf(root)))
+                return "The bat switches must belong to the lane.";
+            return CheckPitcher(pitcher) ?? Check(zone) ?? CheckInsideRoot(root);
+        }
+
+        internal static string CheckLocalRig(GameObject rig)
+        {
+            var behaviours = rig.GetComponentsInChildren<UdonBehaviour>(true);
+            var pitchers = behaviours.Where(b => IsProgram(b, "BattingPitcherBehaviour")).ToArray();
+            var zones = behaviours.Where(b => IsProgram(b, "StrikeZoneBehaviour")).ToArray();
+            var balls = behaviours.Where(b => IsProgram(b, "BallBehaviour")).ToArray();
+            if (pitchers.Length != 1 || zones.Length != 1 || balls.Length != 1)
+                return "needs exactly one pitcher, one HomePlate and one Ball.";
+            if (behaviours.Any(b => IsProgram(b, "HomePlateSetBehaviour") || IsProgram(b, "PitchSettingsBehaviour") ||
+                IsProgram(b, "BatSpawnSwitchBehaviour")))
+                return "must not contain a lane controller, UI or bat switches.";
+            if (rig.GetComponentsInChildren<Component>(true).Any(c => c != null && c.GetType().Name == "VRCObjectSync"))
+                return "must not contain VRCObjectSync.";
+            if (!UdonFields.Read(pitchers[0], "localOnly", false) || !UdonFields.Read(zones[0], "localOnly", false) ||
+                !UdonFields.Read(balls[0], "localOnly", false)) return "pitcher, HomePlate and Ball must be local-only.";
+            // Instantiate copies the prefab asset as stored; the Editor never fills the program in
+            // for it as it does for scene instances, and a missing program does not run.
+            foreach (var behaviour in behaviours)
+            {
+                var stored = new SerializedObject(behaviour).FindProperty("serializedProgramAsset").objectReferenceValue;
+                if (behaviour.programSource == null || stored == null || stored != (UnityEngine.Object)behaviour.programSource.SerializedProgramAsset)
+                    return behaviour.name + " does not store its serialized program.";
+            }
+            if (ReadReference(pitchers[0], "strikeZone") != zones[0] || ReadReference(zones[0], "ball") != balls[0])
+                return "pitcher, HomePlate and Ball are not connected.";
+            return CheckPitcher(pitchers[0]) ?? Check(zones[0]) ?? CheckInsideRoot(rig.transform);
+        }
+
         internal static void Synchronize(UdonBehaviour zone)
         {
             if (syncing || zone == null || EditorUtility.IsPersistent(zone)) return;
@@ -154,6 +253,17 @@ namespace VVBC.Editor
                 foreach (var root in scene.GetRootGameObjects())
                 foreach (var zone in root.GetComponentsInChildren<UdonBehaviour>(true))
                 {
+                    if (IsProgram(zone, "HomePlateSetBehaviour"))
+                    {
+                        count++;
+                        string setError = CheckSet(zone);
+                        if (setError != null)
+                        {
+                            errors++;
+                            Debug.LogError("HomePlateSet " + zone.name + ": " + setError, zone);
+                        }
+                        continue;
+                    }
                     if (IsProgram(zone, "BattingPitcherBehaviour"))
                     {
                         count++;
@@ -182,6 +292,23 @@ namespace VVBC.Editor
                 }
             }
             Debug.Log("HomePlate validation: " + count + " checked, " + errors + " errors.");
+        }
+
+        // The package prefabs themselves: the HomePlateSet source asset and its LocalRig.
+        [MenuItem("Tools/VVBC/HomePlate/Validate Package Prefabs")]
+        internal static string ValidatePackagePrefabs()
+        {
+            var set = AssetDatabase.LoadAssetAtPath<GameObject>(HomePlateSetPrefab);
+            var rig = AssetDatabase.LoadAssetAtPath<GameObject>(LocalRigPrefab);
+            var controller = set == null ? null
+                : set.GetComponents<UdonBehaviour>().FirstOrDefault(b => IsProgram(b, "HomePlateSetBehaviour"));
+            string error = set == null ? "HomePlateSet.prefab is missing."
+                : rig == null ? "HomePlateLocalRig.prefab is missing."
+                : controller == null ? "HomePlateSet.prefab has no HomePlateSetBehaviour on its root."
+                : CheckSet(controller) ?? CheckLocalRig(rig);
+            if (error != null) Debug.LogError("HomePlate package prefabs: " + error);
+            else Debug.Log("HomePlate package prefabs: valid.");
+            return error;
         }
     }
 }

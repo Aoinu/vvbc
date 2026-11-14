@@ -102,7 +102,7 @@ namespace VVBC.Toolchain
         private static void ValidateHomePlate()
         {
             var core = AssetDatabase.LoadAssetAtPath<GameObject>(Runtime + "Prefabs/HomePlate.prefab");
-            var visual = AssetDatabase.LoadAssetAtPath<GameObject>(Runtime + "Samples/Prefabs/HomePlateVisual.prefab");
+            var visual = AssetDatabase.LoadAssetAtPath<GameObject>(Runtime + "Prefabs/HomePlateVisual.prefab");
             if (core == null || visual == null || PrefabUtility.GetPrefabAssetType(visual) != PrefabAssetType.Variant ||
                 PrefabUtility.GetCorrespondingObjectFromSource(visual) != core)
                 throw new InvalidOperationException("HomePlate Visual must be a variant of HomePlate.");
