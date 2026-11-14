@@ -4,8 +4,9 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common;
 
-// The Owner decides settings and each pitch schedule; every client plays the committed
-// schedule from shared server time with delayed events, so Ownership changes never restart it.
+// The Owner decides settings, the playlist and each pitch schedule; every client plays the
+// committed schedule from shared server time with delayed events, so Ownership changes never
+// restart it. See docs/development/batting-pitcher.md.
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public partial class BattingPitcherBehaviour : TsukimiBehaviour
 {
@@ -20,9 +21,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     // Settings: applied from the next pitch preparation.
     [UdonSynced] public float speedKmh = 120f;
     [UdonSynced] public float spinRpm = 2500f;
-    [UdonSynced] public int courseMask = 16;
-    [UdonSynced] public int pitchType;
-    [UdonSynced] public float resetSeconds = 7f;
+    [UdonSynced] public float resetSeconds = 3f;
     public int courseColumn = 1;
     public int courseRow = 1;
     // Baked from the editor preset asset; no ScriptableObject is read at runtime.
@@ -36,6 +35,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public float releaseOffsetSeconds = 2f;
     [Tooltip("Length of the Pitching clip in seconds. Set by Bake Root Motion.")]
     public float motionSeconds = 5.2f;
+    [Tooltip("On Event reset: seconds after the release when no catch or bounce was seen.")]
+    public float contactFallbackSeconds = 15f;
     [Tooltip("Baked local pose of the animator transform every rootMotionStep seconds (Tools > VVBC > Pitcher).")]
     public Vector3[] rootMotionPositions = new Vector3[0];
     public Quaternion[] rootMotionRotations = new Quaternion[0];
@@ -55,11 +56,21 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     [UdonSynced] private Vector3 _releasePosition;
     [UdonSynced] private Vector3 _releaseVelocity;
     [UdonSynced] private Vector3 _releaseSpin;
+    // Reset rule of the committed pitch, captured at the reservation.
+    [UdonSynced] private bool _resetOnTimer;
+    [UdonSynced] private float _resetDelay = 3f;
+    // First catch or bounce of the pitch that started at _eventPitchStart (On Event reset).
+    [UdonSynced] private double _eventTime;
+    [UdonSynced] private double _eventPitchStart;
 
     // Local copy of the pitch being played. Delayed events read only these.
     private int _appliedId;
     private double _appliedStart, _appliedRelease, _appliedReady;
     private Vector3 _appliedPosition, _appliedVelocity, _appliedSpin;
+    private bool _appliedOnTimer;
+    private float _appliedDelay = 3f;
+    private bool _appliedHasEvent;
+    private double _appliedEventTime;
     private int _motionStartedId, _releasedId, _localLaunchId, _publishedReleaseId, _readyHandledId;
     private const float EventTolerance = 0.02f;
 
@@ -69,26 +80,27 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public bool lastAimConverged;
     public int selectedCourse;
     public int selectedPitchType;
+    public int selectedItemId;
 
     // Owner-only preparation.
     private int _startAttempts;
     private bool _preparing, _solving, _reserving, _retryScheduled, _ownerReady, _initialized, _stateKnown;
     private int _solvingSequence, _ownerEpoch, _reserveEpoch, _serializedPitchId, _serializationRetries;
+    private double _serializedStart;
     private float _speedSnapshot, _resetSnapshot;
+    private bool _timerSnapshot;
+    private int _preparedItemId, _reservedItemId;
     private Vector3 _stagePosition;
     private Vector3 _visualStartPosition;
     private Quaternion _visualStartRotation;
 
-    // Settings requested by the UI, waiting for Ownership.
-    private bool _settingsPending;
-    private float _pendingSpeed, _pendingSpin, _pendingReset;
-    private int _pendingMask, _pendingType;
-    private UdonBehaviour _settingsListener;
+    // One pending cycle check: the earliest time the next preparation may start.
+    private bool _checkPending;
+    private double _checkAt;
 
-    // A held ball stops the cycle; release schedules one resume after resetSeconds.
-    private bool _waitingForBall;
-    private bool _resumePending;
-    private double _resumeAt;
+    private UdonBehaviour[] _listeners = new UdonBehaviour[0];
+    // Owner-local shuffle seed, drawn once at Start.
+    private int _shuffleSeed = 12345;
 
     private void Start()
     {
@@ -110,6 +122,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             Debug.LogError("BattingPitcher: a baked pitch axis is zero");
             return;
         }
+        _shuffleSeed = Random.Range(1, int.MaxValue);
         _visualStartPosition = animator.transform.localPosition;
         _visualStartRotation = animator.transform.localRotation;
         ball.RegisterPresentationListener(GetComponent<UdonBehaviour>());
@@ -118,7 +131,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _StartController();
     }
 
-    // The initial Owner starts the cycle on its own; a missing LocalPlayer retries by event.
+    // The initial Owner holds the state from the start; it stays Stopped until someone starts it.
     public void _StartController()
     {
         if (!_initialized || _ownerReady) return;
@@ -132,12 +145,26 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         if (!IsPitchController()) return;
         _stateKnown = true;
         _ownerReady = true;
-        BeginPreparation();
+        ApplyPendingEdits();
+        TryAdvanceCycle();
+        NotifyListeners();
     }
 
+    // UIs register to hear about synced state, Ownership and cycle changes.
     public void RegisterSettingsListener(UdonBehaviour listener)
     {
-        _settingsListener = listener;
+        if (listener == null) return;
+        for (int i = 0; i < _listeners.Length; i++) if (_listeners[i] == listener) return;
+        UdonBehaviour[] next = new UdonBehaviour[_listeners.Length + 1];
+        for (int i = 0; i < _listeners.Length; i++) next[i] = _listeners[i];
+        next[next.Length - 1] = listener;
+        _listeners = next;
+    }
+
+    private void NotifyListeners()
+    {
+        for (int i = 0; i < _listeners.Length; i++)
+            if (_listeners[i] != null) _listeners[i].SendCustomEvent("_OnPitcherStateChanged");
     }
 
     private bool IsPitchController()
@@ -173,6 +200,29 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         return (float)Networking.CalculateServerDeltaTime(ServerNow(), target);
     }
 
+    // Server time comes from a wrapping 32-bit millisecond clock; a difference of nearby times
+    // is folded into half a period either way, as Networking.CalculateServerDeltaTime does.
+    private const double ServerTimePeriod = 4294967.296;
+
+    private double ServerDelta(double a, double b)
+    {
+        double delta = a - b;
+        if (delta > ServerTimePeriod * 0.5) delta -= ServerTimePeriod;
+        else if (delta < -ServerTimePeriod * 0.5) delta += ServerTimePeriod;
+        return delta;
+    }
+
+    private double Later(double a, double b)
+    {
+        return ServerDelta(a, b) >= 0.0 ? a : b;
+    }
+
+    private int NextShuffleSeed()
+    {
+        _shuffleSeed = PitchPlaylist.NextSeed(_shuffleSeed);
+        return _shuffleSeed;
+    }
+
     // Offset from the motion start: the later of release + reset and the end of the motion.
     private float ReadyOffset(float releaseOffset, float reset, float motion)
     {
@@ -190,11 +240,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         if (player != null && player.isLocal && IsPitchController())
         {
             SendCustomEventDelayedSeconds(nameof(_OwnerSettled), Mathf.Max(0f, ownerSettleSeconds));
-            if (_settingsPending) CommitPendingSettings();
+            ApplyPendingEdits();
             TryRelease();
         }
-        else _settingsPending = false;
-        NotifySettingsListener();
+        else DropPendingEdits();
+        NotifyListeners();
     }
 
     // Ownership changed: preparation state is discarded, the committed pitch is untouched.
@@ -218,89 +268,150 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             return;
         }
         _ownerReady = true;
-        CommitPendingSettings();
-        ResumeCycle();
-    }
-
-    private void ResumeCycle()
-    {
-        if (!CanPrepare() || _preparing || _reserving) return;
-        if (IsDue(ServerLate(_appliedReady))) BeginPreparation();
-    }
-
-    // UI entry point: settings become effective only once this client is Owner.
-    public void SubmitSettings(float speed, float spin, float reset, int mask, int type)
-    {
-        _pendingSpeed = speed;
-        _pendingSpin = spin;
-        _pendingReset = reset;
-        _pendingMask = mask;
-        _pendingType = type;
-        _settingsPending = true;
-        if (IsPitchController())
+        // Keep a contact this client saw for the current pitch for later joiners.
+        if (_appliedHasEvent && _eventPitchStart != _appliedStart)
         {
-            CommitPendingSettings();
-            return;
+            _eventTime = _appliedEventTime;
+            _eventPitchStart = _appliedStart;
+            RequestSerialization();
         }
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        ApplyPendingEdits();
+        TryAdvanceCycle();
+        NotifyListeners();
     }
 
-    private void CommitPendingSettings()
+    // ---- Cycle gate ----
+
+    // The earliest server time the next pitch may be prepared: after the motion, and after the
+    // committed reset rule. A held ball is checked separately.
+    private double ResetAt()
     {
-        if (!_settingsPending || !IsPitchController() || !_stateKnown) return;
-        _settingsPending = false;
-        speedKmh = _pendingSpeed;
-        spinRpm = _pendingSpin;
-        resetSeconds = _pendingReset;
-        courseMask = _pendingMask;
-        pitchType = _pendingType;
-        RequestSerialization();
-        NotifySettingsListener();
+        if (_appliedOnTimer) return _appliedRelease + Mathf.Max(0.1f, _appliedDelay);
+        if (_appliedHasEvent) return _appliedEventTime + Mathf.Max(0.1f, _appliedDelay);
+        return FallbackAt();
     }
 
-    private void NotifySettingsListener()
+    // On Event without any contact: the reset is assumed this long after the release.
+    private double FallbackAt()
     {
-        if (_settingsListener != null) _settingsListener.SendCustomEvent("_OnPitcherStateChanged");
+        return _appliedRelease + Mathf.Max(0.1f, contactFallbackSeconds);
     }
 
-    // Owner: snapshot the settings, stage the ball and solve the aim. The animator is untouched.
-    public void _BeginPreparation()
+    private double CycleReadyAt()
     {
-        float late = ServerLate(_appliedReady);
-        if (_appliedId != 0 && !IsDue(late))
+        return Later(_appliedReady, ResetAt());
+    }
+
+    // Owner: prepares the next pitch when running, free and reset; otherwise arms one check.
+    // Every entry point (start, ready event, bounce, catch release, Ownership) funnels here.
+    private void TryAdvanceCycle()
+    {
+        if (!CanPrepare() || _preparing || _reserving || !IsRunning()) return;
+        if (ball.IsHeld()) return;
+        if (_appliedId != 0)
         {
-            SendCustomEventDelayedSeconds(nameof(_BeginPreparation), -late);
-            return;
+            double now = ServerNow();
+            float remaining = (float)ServerDelta(CycleReadyAt(), now);
+            if (remaining > EventTolerance)
+            {
+                ScheduleCycleCheck(remaining, now);
+                return;
+            }
         }
         BeginPreparation();
     }
 
+    // A later check is replaced by an earlier one; the later one finds nothing to do.
+    private void ScheduleCycleCheck(float seconds, double now)
+    {
+        double at = now + seconds;
+        if (_checkPending && ServerDelta(_checkAt, at) <= EventTolerance) return;
+        _checkPending = true;
+        _checkAt = at;
+        SendCustomEventDelayedSeconds(nameof(_CheckCycle), seconds);
+    }
+
+    public void _CheckCycle()
+    {
+        if (_checkPending)
+        {
+            float late = ServerLate(_checkAt);
+            if (!IsDue(late))
+            {
+                SendCustomEventDelayedSeconds(nameof(_CheckCycle), -late);
+                return;
+            }
+            _checkPending = false;
+        }
+        TryAdvanceCycle();
+    }
+
+    // Retry paths re-enter the gate; it waits for the committed pitch's reset itself.
+    public void _BeginPreparation()
+    {
+        TryAdvanceCycle();
+    }
+
+    // Owner: snapshot the settings, pick the next playlist item, stage the ball and solve the aim.
     private void BeginPreparation()
     {
-        if (!CanPrepare() || _preparing || _reserving) return;
-        if (ball.IsHeld())
-        {
-            _waitingForBall = true;
-            return;
-        }
+        if (!CanPrepare() || _preparing || _reserving || !IsRunning()) return;
+        if (ball.IsHeld()) return;
         _preparing = true;
         pitchSequence++;
         _solvingSequence = pitchSequence;
         _stagePosition = releasePoint.position;
-        _speedSnapshot = Mathf.Max(1f, speedKmh) / 3.6f;
-        _resetSnapshot = Mathf.Max(0.1f, resetSeconds);
-        int count = CountCourses(courseMask);
-        selectedCourse = SelectCourse(courseMask, count == 0 ? 0 : Random.Range(0, count));
+        _speedSnapshot = Mathf.Clamp(speedKmh, MinSpeedKmh, MaxSpeedKmh) / 3.6f;
+        _resetSnapshot = Mathf.Clamp(resetSeconds, MinResetSeconds, MaxResetSeconds);
+        _timerSnapshot = PitchPlaylist.Has(_playlistState, PitchPlaylist.TimerFlag);
+        int item = ChooseNextItem();
+        _preparedItemId = PitchPlaylist.Id(item);
+        int type = PitchPlaylist.SafeType(PitchPlaylist.Type(item), pitchSpinAxes.Length);
+        int mask = PitchPlaylist.Mask(item);
+        selectedItemId = _preparedItemId;
+        int count = PitchPlaylist.CountCourses(mask);
+        selectedCourse = PitchPlaylist.SelectCourse(mask, count == 0 ? 0 : Random.Range(0, count));
         courseColumn = selectedCourse % 3;
         courseRow = selectedCourse / 3;
         Vector3 target = strikeZone.AimPoint(courseColumn, courseRow);
-        selectedPitchType = Mathf.Clamp(pitchType, 0, 6);
+        selectedPitchType = type;
         Vector3 axis = pitchSpinAxes[selectedPitchType];
-        Vector3 localSpin = axis.normalized * (Mathf.Max(0f, spinRpm) * (2f * Mathf.PI / 60f));
+        float rpm = Mathf.Clamp(spinRpm, MinSpinRpm, MaxSpinRpm);
+        Vector3 localSpin = axis.normalized * (rpm * (2f * Mathf.PI / 60f));
         ball.QueueState(1, _stagePosition, Vector3.zero, Vector3.zero, ServerNow());
         solver.BeginSolveRelativeSpin(_stagePosition, target, -StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward), _speedSnapshot,
             localSpin, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
         _solving = true;
+        NotifyListeners();
+    }
+
+    // The next playlist item, or the fallback (id 0: Four-Seam to Zone 5) for an empty list.
+    // A completed lap restarts first (Random reshuffles). Nothing is marked pitched here.
+    private int ChooseNextItem()
+    {
+        int lap = PitchPlaylist.BeginLapIfComplete(_playlist, _playlistState, NextShuffleSeed());
+        if (lap != _playlistState)
+        {
+            _playlistState = lap;
+            RequestSerialization();
+            NotifyListeners();
+        }
+        int index = PitchPlaylist.FirstPending(_playlistState);
+        if (index < 0) return PitchPlaylist.Pack(0, PitchPlaylist.DefaultType, PitchPlaylist.CenterMask);
+        return _playlist[index];
+    }
+
+    // A reservation that could not be sent gives its item back to the lap.
+    private void ReturnReservedItem()
+    {
+        int index = PitchPlaylist.IndexOf(_playlist, _playlistState, _reservedItemId);
+        if (index >= 0) _playlistState = PitchPlaylist.MarkDone(_playlistState, index, false);
+    }
+
+    private void MarkReservedItem()
+    {
+        int index = PitchPlaylist.IndexOf(_playlist, _playlistState, _reservedItemId);
+        if (index >= 0) _playlistState = PitchPlaylist.MarkDone(_playlistState, index, true);
     }
 
     // Does work only while the solver iterates. The Behaviour stays enabled so delayed events always run.
@@ -322,11 +433,12 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void TryReserve()
     {
-        if (!CanPrepare()) { _preparing = false; return; }
+        if (!CanPrepare() || !IsRunning()) { _preparing = false; NotifyListeners(); return; }
         if (ball.IsHeld())
         {
+            // The release of the ball re-enters the cycle gate.
             _preparing = false;
-            _waitingForBall = true;
+            NotifyListeners();
             return;
         }
         if (!ball.ReadyForPitch())
@@ -344,18 +456,26 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _releasePosition = _stagePosition;
         _releaseVelocity = solver.launchDirection * _speedSnapshot;
         _releaseSpin = solver.launchSpin;
+        _resetOnTimer = _timerSnapshot;
+        _resetDelay = _resetSnapshot;
         _serializationRetries = 0;
+        _reservedItemId = _preparedItemId;
         Reserve();
     }
 
-    // Publishes a schedule. Nothing is played until the send is confirmed.
+    // Publishes a schedule together with the chosen item marked as pitched. Nothing is played
+    // until the send is confirmed; a send that finally fails gives the item back.
     private void Reserve()
     {
         double now = ServerNow();
         _pitchId++;
         _startTime = now + Mathf.Max(0f, leadSeconds);
         _releaseTime = _startTime + Mathf.Max(0f, releaseOffsetSeconds);
-        _readyTime = _startTime + ReadyOffset(releaseOffsetSeconds, _resetSnapshot, motionSeconds);
+        float ready = _resetOnTimer
+            ? ReadyOffset(releaseOffsetSeconds, _resetDelay, motionSeconds)
+            : Mathf.Max(Mathf.Max(0f, motionSeconds), Mathf.Max(0f, releaseOffsetSeconds));
+        _readyTime = _startTime + ready;
+        MarkReservedItem();
         _reserving = true;
         _reserveEpoch = _ownerEpoch;
         RequestSerialization();
@@ -369,11 +489,13 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _reserving = false;
         _preparing = false;
         ApplyPitch();
+        NotifyListeners();
     }
 
     public override void OnPreSerialization()
     {
         _serializedPitchId = _pitchId;
+        _serializedStart = _startTime;
     }
 
     public override void OnPostSerialization(SerializationResult result)
@@ -383,20 +505,27 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         {
             _serializationRetries = 0;
             // An older send that predates this schedule does not confirm it.
-            if (current && _serializedPitchId == _pitchId)
-                CommitReservation();
+            if (_serializedPitchId != _pitchId || _serializedStart != _startTime) return;
+            if (current) CommitReservation();
+            // A schedule that left this client is played here too, even after Ownership moved on.
+            else if (ApplyPitch()) NotifyListeners();
             return;
         }
         if (!IsPitchController()) return;
         if (_serializationRetries >= maximumSerializationRetries)
         {
             Debug.LogWarning("BattingPitcher: serialization failed after retries");
+            _serializationRetries = 0;
             if (current)
             {
                 _reserving = false;
                 _preparing = false;
+                ReturnReservedItem();
                 SendCustomEventDelayedSeconds(nameof(_BeginPreparation), Mathf.Max(0.1f, serializationRetrySeconds) * 3f);
+                NotifyListeners();
             }
+            // State edits (Start/Stop, playlist) keep being offered at a slower pace.
+            else SendCustomEventDelayedSeconds(nameof(_RetrySerialization), Mathf.Max(0.1f, serializationRetrySeconds) * 5f);
             return;
         }
         _serializationRetries++;
@@ -418,6 +547,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         // Incoming data overwrote this Owner's unsent reservation fields.
         bool lostWork = owner && (_reserving || _preparing);
         _reserving = false;
+        _playlistState = PitchPlaylist.Sanitize(_playlist, _playlistState);
         if (ApplyPitch() && owner) { _preparing = false; _solving = false; }
         else if (lostWork)
         {
@@ -425,8 +555,10 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             _solving = false;
             SendCustomEventDelayedSeconds(nameof(_BeginPreparation), Mathf.Max(0.1f, serializationRetrySeconds));
         }
-        if (_stateKnown && _ownerReady) CommitPendingSettings();
-        NotifySettingsListener();
+        AdoptSyncedEvent();
+        if (!IsRunning()) StopPreparation();
+        if (_stateKnown && _ownerReady) ApplyPendingEdits();
+        NotifyListeners();
     }
 
     // Copies the synced schedule and arms the motion, release and cycle-ready events.
@@ -454,7 +586,18 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _appliedPosition = _releasePosition;
         _appliedVelocity = _releaseVelocity;
         _appliedSpin = _releaseSpin;
+        _appliedOnTimer = _resetOnTimer;
+        _appliedDelay = _resetDelay;
+        _appliedHasEvent = false;
         return true;
+    }
+
+    // A synced contact for the pitch being played fills in one this client did not see.
+    private void AdoptSyncedEvent()
+    {
+        if (_appliedId == 0 || _appliedHasEvent || _eventPitchStart != _appliedStart) return;
+        _appliedHasEvent = true;
+        _appliedEventTime = _eventTime;
     }
 
     // Plays the shared motion, from its middle if the schedule was received late.
@@ -526,7 +669,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         ball.QueueState(2, _appliedPosition, _appliedVelocity, _appliedSpin, _appliedRelease);
     }
 
-    // Everyone returns to the idle pose; the Owner starts the next preparation.
+    // Everyone returns to the idle pose; the Owner moves on once the reset rule allows it.
     public void _OnCycleReady()
     {
         if (animator == null || _appliedId == 0 || _readyHandledId == _appliedId) return;
@@ -540,65 +683,46 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         animator.transform.localPosition = _visualStartPosition;
         animator.transform.localRotation = _visualStartRotation;
         animator.Play("Pitch Idle", 0, 0f);
-        BeginPreparation();
+        TryAdvanceCycle();
     }
 
+    // Ball possession changed (catch, pickup, drop, stage, launch). A new hold after the release
+    // is the catch event; a release of the ball re-enters the cycle gate without restarting the timer.
     public void OnBallPresentationChanged()
     {
         if (ball == null) return;
         bool held = ball.IsHeld();
         if (animationBall != null) animationBall.SetActive(!ball.flying && !held);
-        if (!_waitingForBall || held) return;
-        ScheduleResume(ServerNow());
+        if (held) RecordContact();
+        else TryAdvanceCycle();
+        NotifyListeners();
     }
 
-    private void ScheduleResume(double now)
+    // Ball: a ground contact during a flight. Only the first contact after the release counts.
+    public void OnBallGroundContact()
     {
-        _waitingForBall = false;
-        _resumePending = true;
-        _resumeAt = now + Mathf.Max(0.1f, resetSeconds);
-        SendCustomEventDelayedSeconds(nameof(_ResumeAfterBallRelease), Mathf.Max(0.1f, resetSeconds));
+        RecordContact();
     }
 
-    // Runs once per release; an early event re-arms for the remainder, and a ball held
-    // again keeps the cycle waiting for the next release.
-    public void _ResumeAfterBallRelease()
+    private void RecordContact()
     {
-        if (!_resumePending) return;
-        ResumeIfDue(ServerLate(_resumeAt));
-    }
-
-    private void ResumeIfDue(float late)
-    {
-        if (!IsDue(late))
+        if (!ContactCounts(ServerLate(_appliedRelease))) return;
+        double now = ServerNow();
+        _appliedHasEvent = true;
+        _appliedEventTime = now;
+        if (IsPitchController())
         {
-            SendCustomEventDelayedSeconds(nameof(_ResumeAfterBallRelease), -late);
-            return;
+            _eventTime = now;
+            _eventPitchStart = _appliedStart;
+            RequestSerialization();
         }
-        _resumePending = false;
-        if (ball != null && ball.IsHeld())
-        {
-            _waitingForBall = true;
-            return;
-        }
-        BeginPreparation();
+        TryAdvanceCycle();
+        NotifyListeners();
     }
 
-    private int CountCourses(int mask)
+    // A contact counts once per pitch, On Event only, and only after that pitch's release.
+    private bool ContactCounts(float sinceRelease)
     {
-        int count = 0;
-        for (int i = 0; i < 9; i++) if ((mask & (1 << i)) != 0) count++;
-        return count;
-    }
-
-    private int SelectCourse(int mask, int choice)
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            if ((mask & (1 << i)) == 0) continue;
-            if (choice == 0) return i;
-            choice--;
-        }
-        return 4;
+        return _appliedId != 0 && !_appliedOnTimer && !_appliedHasEvent && sinceRelease >= -EventTolerance;
     }
 }

@@ -863,6 +863,13 @@ public partial class BallBehaviour
             if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallPresentationChanged");
     }
 
+    // Every ground bounce of a flight; listeners keep only the first one they need.
+    private void NotifyGroundContactListeners()
+    {
+        for (int i = 0; i < _presentationListeners.Length; i++)
+            if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallGroundContact");
+    }
+
     public void RegisterPresentationListener(UdonBehaviour listener)
     {
         if (listener == null) return;

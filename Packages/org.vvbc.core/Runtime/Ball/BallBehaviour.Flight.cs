@@ -118,6 +118,7 @@ public partial class BallBehaviour
             // Every ground bounce kills most of the spin; angularDrag then also acts as rolling resistance.
             body.angularVelocity *= bounceSpinRetention;
             body.angularDrag = rollingAngularDrag;
+            NotifyGroundContactListeners();
         }
         PlayImpact(collision);
         if (contactConsumed) return;
