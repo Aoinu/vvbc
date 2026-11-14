@@ -10,20 +10,21 @@ Every prefab below depends only on `org.vvbc.core`, `org.vvbc.assets` and the VR
   slot, `ReleasePoint` and `AimSolver` (`BallAimSolverBehaviour`, no sync) are siblings. Place
   the root on the mound with +Z toward home plate and assign `strikeZone`. It has no model, so
   `animator` is assigned by the variant that adds one.
-- `Runtime/Samples/Prefabs/BattingPitcherMachine.prefab` is a variant with the assets
+- `Runtime/Prefabs/BattingPitcherMachine.prefab` is a variant with the assets
   package `PitchingMachine.fbx` under `Visual` (turned 180 degrees so its exit faces +Z). Its
   Animator uses `Runtime/Animations/BattingMachine/Batting Machine.controller`, whose
   `Pitch Idle` and `Pitching` states play `Machine Idle` and `Machine Pitching`. The animated
   `Ball` inside the model is `animationBall`; `ReleasePoint` sits where that ball is at the
   release frame. `releaseOffsetSeconds` (4.0) and `motionSeconds` (5.0) follow the clip. When
   the clip changes, update both values and `ReleasePoint`; the clip carries no Animation Event.
-- `Runtime/Samples/Prefabs/HomePlateSet.prefab` groups the `HomePlate` (models under its
-  `Visual`), the `Ball` and two `BatSpawnSwitch` siblings, with `ball`, `frame`,
-  `motionObserver` and `occupantOnlyObjects` wired. The switches stay outside `HomePlate`
-  because only the two batter-box triggers may be colliders under it.
-- `PitchSettingsPanel.prefab` (see [Pitch UI](#pitch-ui)) is placed separately and its page's
-  `pitcher` assigned. It is not part of the pitcher prefab because it also depends on
-  `black.kit.vrcui` and TextMesh Pro Essentials.
+- `Runtime/Prefabs/HomePlateSet.prefab` is the complete lane: `HomePlate` (models under its
+  `Visual`), `Ball`, `BattingPitcherMachine`, the two `BatSpawnSwitch` and a
+  `PitchSettingsPanel`, all wired, plus the optional Local practice mode. Placement, layout
+  and the Shared / Local modes are in [HomePlateSet](home-plate-set.md). The switches stay
+  outside `HomePlate` because only the two batter-box triggers may be colliders under it.
+- `PitchSettingsPanel.prefab` (see [Pitch UI](#pitch-ui)) can also be placed on its own with
+  its page's `pitcher` assigned. It is not part of the pitcher prefab because it also depends
+  on `black.kit.vrcui` and TextMesh Pro Essentials.
 
 A nested prefab instance stores its Udon variables as one table, so adding or removing
 children of `HomePlate.prefab` can drop references held by instances (`frame` was lost
@@ -67,7 +68,7 @@ animated Humanoid; only the display ball follows its hand.
 The HomePlate root is the rear tip of the plate, with local +Z toward the
 pitcher and +X to its right. Height is world vertical. Place it with unit
 effective scale and yaw-only rotation, including any parent Transform. For a
-visual presentation, `Runtime/Samples/Prefabs/HomePlateVisual.prefab` is a
+visual presentation, `Runtime/Prefabs/HomePlateVisual.prefab` is a
 Prefab Variant using models and materials from `org.vvbc.assets`; the base
 gimmick prefab does not include a home-base or batter-box model or Collider.
 Use **Tools > VVBC > HomePlate > Validate Open Scenes** to report missing or
