@@ -98,6 +98,29 @@ public partial class BatMotionBehaviour
         if (!wasActive && HasActiveContactListener()) ResetContactHistory();
     }
 
+    // A listener that goes away (a LocalRig ending) is removed, together with destroyed ones.
+    public void UnregisterContactListener(UdonBehaviour listener)
+    {
+        int keep = 0;
+        for (int i = 0; i < _contactListeners.Length; i++)
+            if (_contactListeners[i] != null && _contactListeners[i] != listener) keep++;
+        if (keep == _contactListeners.Length) return;
+        UdonBehaviour[] listeners = new UdonBehaviour[keep];
+        bool[] activeStates = new bool[keep];
+        int n = 0;
+        for (int i = 0; i < _contactListeners.Length; i++)
+        {
+            if (_contactListeners[i] == null || _contactListeners[i] == listener) continue;
+            listeners[n] = _contactListeners[i];
+            activeStates[n] = _contactListenerActive[i];
+            n++;
+        }
+        _contactListeners = listeners;
+        _contactListenerActive = activeStates;
+    }
+
+    public int ContactListenerCount() { return _contactListeners.Length; }
+
     public void SetContactListenerActive(UdonBehaviour listener, bool active)
     {
         bool wasActive = HasActiveContactListener();

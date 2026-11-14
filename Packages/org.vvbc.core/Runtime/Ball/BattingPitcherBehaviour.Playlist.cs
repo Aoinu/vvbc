@@ -75,7 +75,8 @@ public partial class BattingPitcherBehaviour
     private int CyclePhaseAt(double now)
     {
         if (!_stateKnown) return PhaseSyncing;
-        if (_appliedId != 0 && ServerDelta(_appliedStart, now) > 0.0) return PhaseScheduled;
+        if (_suspended) return PhaseStopped;
+        if (_appliedId != 0 && _motionStartedId != _appliedId && ServerDelta(_appliedStart, now) > 0.0) return PhaseScheduled;
         if (!IsRunning()) return PhaseStopped;
         if (ball != null && ball.IsHeld()) return PhaseBallHeld;
         if (_appliedId != 0 && ServerDelta(CycleReadyAt(), now) > 0.0)
@@ -240,7 +241,7 @@ public partial class BattingPitcherBehaviour
             if (_pendingRunning && !wasRunning && !IsSequence() && PitchPlaylist.History(_playlistState) == 0)
                 _playlistState = PitchPlaylist.Shuffle(_playlist, _playlistState, NextShuffleSeed());
         }
-        RequestSerialization();
+        Sync();
         if (IsRunning()) TryAdvanceCycle();
         else StopPreparation();
         NotifyListeners();

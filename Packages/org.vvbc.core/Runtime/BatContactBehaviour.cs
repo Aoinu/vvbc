@@ -35,6 +35,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private bool _opportunityEnded;
     private float _activationTime = -float.MaxValue;
     private bool _bindRetryPending;
+    private bool _shutdown;
     private Vector3 _previousY;
     private Vector3 _centerDirectionSnapshot;
     private bool _hasPreviousY;
@@ -129,7 +130,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public void BindMotion()
     {
         _bindRetryPending = false;
-        if (!CanUseContact()) return;
+        if (_shutdown || !CanUseContact()) return;
         if (motion == null)
         {
             VRCPlayerApi player = Networking.LocalPlayer;
@@ -161,9 +162,20 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         }
     }
 
+    // The LocalRig is ending: no further contact, and the Bat forgets this listener.
+    public void Shutdown()
+    {
+        _shutdown = true;
+        UdonBehaviour self = GetComponent<UdonBehaviour>();
+        if (motion != null) motion.UnregisterContactListener(self);
+        motion = null;
+        contactValid = false;
+        if (flight != null && flight.contactListener == self) flight.contactListener = null;
+    }
+
     private bool CanUseContact()
     {
-        return strikeZone == null || !strikeZone.useBatterOccupancy || strikeZone.IsLocalOccupant();
+        return !_shutdown && strikeZone == null || !strikeZone.useBatterOccupancy || strikeZone.IsLocalOccupant();
     }
 
     public void OnOccupancyChanged()

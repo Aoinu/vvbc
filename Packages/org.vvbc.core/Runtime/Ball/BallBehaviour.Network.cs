@@ -118,6 +118,7 @@ public partial class BallBehaviour
     public bool IsLocalOwner()
     {
         VRCPlayerApi player = Networking.LocalPlayer;
+        if (localOnly) return player != null;
         return player != null && Networking.IsOwner(player, gameObject);
     }
 
@@ -129,6 +130,7 @@ public partial class BallBehaviour
 
     private int OwnerId()
     {
+        if (localOnly) return LocalId();
         VRCPlayerApi owner = Networking.GetOwner(gameObject);
         return Utilities.IsValid(owner) ? owner.playerId : -1;
     }
@@ -416,7 +418,7 @@ public partial class BallBehaviour
         _publishedKind = _acceptedKind;
         _serializationRetries = 0;
         CopyAccepted();
-        RequestSerialization();
+        Send();
     }
 
     private void PublishPending()
@@ -460,7 +462,7 @@ public partial class BallBehaviour
         {
             if (!IsLocalPitch(_acceptedServerTime)) Launch(_acceptedPosition, _acceptedVelocity, _acceptedSpin);
         }
-        RequestSerialization();
+        Send();
         NotifyPresentationListeners();
     }
 
@@ -482,6 +484,12 @@ public partial class BallBehaviour
         _hold = _acceptedHold;
         _holderId = _acceptedHolderId;
         _publisherId = _acceptedPublisherId;
+    }
+
+    // A LocalRig ball accepts its own actions at once (QueueSnapshot -> PublishPending) and never sends.
+    private void Send()
+    {
+        if (!localOnly) RequestSerialization();
     }
 
     private void AcceptSynced()
@@ -637,7 +645,7 @@ public partial class BallBehaviour
 
     public void RetrySerialization()
     {
-        if (IsLocalOwner() && _publishedSequence == _acceptedSequence && _publishedKind == _acceptedKind) RequestSerialization();
+        if (IsLocalOwner() && _publishedSequence == _acceptedSequence && _publishedKind == _acceptedKind) Send();
     }
 
     public override void OnDeserialization()
@@ -784,7 +792,7 @@ public partial class BallBehaviour
         _publishedKind = _acceptedKind;
         _serializationRetries = 0;
         CopyAccepted();
-        RequestSerialization();
+        Send();
     }
 
     private bool CanRepublishConflict()

@@ -10,6 +10,20 @@ using VRC.Udon;
 public partial class PitchSettingsBehaviour : TsukimiBehaviour
 {
     public BattingPitcherBehaviour pitcher;
+    [Tooltip("Optional lane (HomePlateSet). When set, the lane decides which pitcher this page edits.")]
+    public HomePlateSetBehaviour lane;
+
+    [Header("Lane mode")]
+    public GameObject modeBar;
+    public TextMeshProUGUI modeText;
+    public TextMeshProUGUI modeButtonText;
+    public GameObject endPracticeButton;
+    public GameObject joinOverlay;
+    public GameObject confirmDialog;
+    public TextMeshProUGUI footerText;
+    [Tooltip("Footer shown in Local Mode; the Shared footer is the text authored on footerText.")]
+    public string localFooter = "Local practice: your pitcher, ball, playlist and settings stay on this client.";
+    private string _sharedFooter;
 
     [Header("Header")]
     public TextMeshProUGUI ownerText;
@@ -102,16 +116,90 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
 
     private void Start()
     {
-        if (pitcher == null) return;
+        if (footerText != null) _sharedFooter = footerText.text;
+        if (lane != null) pitcher = lane.ActivePitcher();
+        HideConfirm();
+        RefreshMode();
         applying = true;
         if (speedSlider != null) { speedSlider.minValue = BattingPitcherBehaviour.MinSpeedKmh; speedSlider.maxValue = BattingPitcherBehaviour.MaxSpeedKmh; }
         if (spinSlider != null) { spinSlider.minValue = BattingPitcherBehaviour.MinSpinRpm; spinSlider.maxValue = BattingPitcherBehaviour.MaxSpinRpm; }
         if (resetSlider != null) { resetSlider.minValue = BattingPitcherBehaviour.MinResetSeconds; resetSlider.maxValue = BattingPitcherBehaviour.MaxResetSeconds; }
         applying = false;
-        pitcher.RegisterSettingsListener(GetComponent<UdonBehaviour>());
+        if (pitcher != null) pitcher.RegisterSettingsListener(GetComponent<UdonBehaviour>());
         ShowEditor(false);
         _OnPitcherStateChanged();
     }
+
+    // Points the page at another pitcher (Shared, a LocalRig's, or none). The old pitcher stops
+    // notifying this page, and drafts meant for it are dropped rather than sent to the new one.
+    public void SetPitcher(BattingPitcherBehaviour next)
+    {
+        if (next == pitcher) return;
+        UdonBehaviour self = GetComponent<UdonBehaviour>();
+        if (pitcher != null) pitcher.UnregisterSettingsListener(self);
+        pitcher = next;
+        commitScheduled = false;
+        saveToken = 0;
+        editing = false;
+        ShowEditorMessage("");
+        ShowEditor(false);
+        if (pitcher != null)
+        {
+            pitcher.RegisterSettingsListener(self);
+            _OnPitcherStateChanged();
+        }
+    }
+
+    // The lane mode or this client's LocalRig changed.
+    public void _OnLaneChanged()
+    {
+        if (lane == null) return;
+        SetPitcher(lane.ActivePitcher());
+        if (!lane.IsLocalMode()) HideConfirm();
+        RefreshMode();
+        RefreshHeader();
+    }
+
+    private void RefreshMode()
+    {
+        bool switching = lane != null && lane.allowModeSwitching;
+        bool local = lane != null && lane.IsLocalMode();
+        bool rig = lane != null && lane.HasLocalRig();
+        if (modeBar != null) modeBar.SetActive(switching);
+        if (modeText != null) modeText.text = local ? "LOCAL MODE" : "SHARED MODE";
+        if (modeButtonText != null) modeButtonText.text = local ? "SWITCH TO SHARED" : "SWITCH TO LOCAL";
+        if (endPracticeButton != null) endPracticeButton.SetActive(local && rig);
+        if (joinOverlay != null) joinOverlay.SetActive(local && !rig);
+        if (footerText != null && _sharedFooter != null) footerText.text = local ? localFooter : _sharedFooter;
+    }
+
+    private void HideConfirm()
+    {
+        if (confirmDialog != null) confirmDialog.SetActive(false);
+    }
+
+    // Shared -> Local at once; Local -> Shared asks first.
+    public void _ToggleMode()
+    {
+        if (lane == null || !lane.allowModeSwitching) return;
+        if (!lane.IsLocalMode())
+        {
+            lane.RequestLocalMode();
+            return;
+        }
+        if (confirmDialog != null) confirmDialog.SetActive(true);
+        else lane.RequestSharedMode();
+    }
+
+    public void _ConfirmShared()
+    {
+        HideConfirm();
+        if (lane != null) lane.RequestSharedMode();
+    }
+
+    public void _CancelShared() { HideConfirm(); }
+    public void _JoinPractice() { if (lane != null) lane.JoinPractice(); }
+    public void _EndPractice() { if (lane != null) lane.EndPractice(); }
 
     // Synced state, Ownership or the cycle changed. A pending local draft is not overwritten.
     public void _OnPitcherStateChanged()
@@ -174,6 +262,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
 
     private string OwnerLabel()
     {
+        if (pitcher.localOnly) return "LOCAL";
         VRCPlayerApi owner = Networking.GetOwner(pitcher.gameObject);
         if (!Utilities.IsValid(owner)) return "Connecting...";
         return Shorten(owner.displayName, ownerNameLimit);

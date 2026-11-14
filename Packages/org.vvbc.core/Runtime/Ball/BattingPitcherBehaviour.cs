@@ -17,6 +17,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     [Tooltip("HomePlate to aim at. Its Ball is used for this pitcher.")]
     public StrikeZoneBehaviour strikeZone;
     public GameObject animationBall;
+    [Tooltip("Local practice copy (LocalRig): no Ownership, no serialization; reservations commit at once.")]
+    public bool localOnly;
 
     // Settings: applied from the next pitch preparation.
     [UdonSynced] public float speedKmh = 120f;
@@ -101,6 +103,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private UdonBehaviour[] _listeners = new UdonBehaviour[0];
     // Owner-local shuffle seed, drawn once at Start.
     private int _shuffleSeed = 12345;
+    // Lane in Local Mode (or LocalRig ending): nothing is prepared, played or sent.
+    private bool _suspended;
 
     private void Start()
     {
@@ -135,7 +139,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public void _StartController()
     {
         if (!_initialized || _ownerReady) return;
-        VRCPlayerApi owner = Networking.LocalPlayer == null ? null : Networking.GetOwner(gameObject);
+        VRCPlayerApi owner = Networking.LocalPlayer == null ? null
+            : localOnly ? Networking.LocalPlayer : Networking.GetOwner(gameObject);
         if (!Utilities.IsValid(owner))
         {
             // LocalPlayer or Owner not settled yet: a limited number of delayed retries.
@@ -161,6 +166,88 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _listeners = next;
     }
 
+    public void UnregisterSettingsListener(UdonBehaviour listener)
+    {
+        int keep = 0;
+        for (int i = 0; i < _listeners.Length; i++) if (_listeners[i] != null && _listeners[i] != listener) keep++;
+        if (keep == _listeners.Length) return;
+        UdonBehaviour[] next = new UdonBehaviour[keep];
+        int n = 0;
+        for (int i = 0; i < _listeners.Length; i++)
+            if (_listeners[i] != null && _listeners[i] != listener) next[n++] = _listeners[i];
+        _listeners = next;
+    }
+
+    // Lane switched to Local Mode, or this LocalRig is ending. A forced stop, unlike Stop: the
+    // committed motion, an unsent reservation and the flight end now, and leftover delayed events
+    // find their pitch already handled. Settings and the playlist are kept.
+    public void Suspend()
+    {
+        SuspendAt(ServerNow());
+    }
+
+    private void SuspendAt(double now)
+    {
+        _suspended = true;
+        DropOwnerWork();
+        _checkPending = false;
+        MarkAppliedHandled(now);
+        if (animator != null)
+        {
+            animator.transform.localPosition = _visualStartPosition;
+            animator.transform.localRotation = _visualStartRotation;
+            if (_initialized && animator.isActiveAndEnabled) animator.Play("Pitch Idle", 0, 0f);
+        }
+        if (ball != null && ball.body != null && !ball.IsHeld()) ball.Stage(ball.body.position);
+        NotifyListeners();
+    }
+
+    // Back to Shared Mode: an old schedule is never replayed; the cycle gate starts from now.
+    public void Resume()
+    {
+        ResumeAt(ServerNow());
+    }
+
+    private void ResumeAt(double now)
+    {
+        if (!_suspended) return;
+        _suspended = false;
+        MarkAppliedHandled(now);
+        if (_initialized && _stateKnown && IsPitchController()) _ownerReady = true;
+        else _StartController();
+        TryAdvanceCycle();
+        NotifyListeners();
+    }
+
+    public bool IsSuspended() { return _suspended; }
+
+    // Hides the model while this client practises on a LocalRig in the same place.
+    public void SetVisualHidden(bool hidden)
+    {
+        if (animator != null && animator.gameObject != gameObject) animator.gameObject.SetActive(!hidden);
+    }
+
+    // The pitch being played counts as finished: its events do nothing and it no longer holds
+    // the cycle gate.
+    private void MarkAppliedHandled(double now)
+    {
+        _motionStartedId = _appliedId;
+        _releasedId = _appliedId;
+        _readyHandledId = _appliedId;
+        _publishedReleaseId = _appliedId;
+        if (_appliedId == 0) return;
+        // _appliedStart stays: schedules are ordered by it, so this one is never taken again.
+        _appliedRelease = now - 1.0;
+        _appliedReady = now;
+        _appliedOnTimer = true;
+        _appliedDelay = 0.1f;
+    }
+
+    private void Sync()
+    {
+        if (!localOnly) RequestSerialization();
+    }
+
     private void NotifyListeners()
     {
         for (int i = 0; i < _listeners.Length; i++)
@@ -169,13 +256,14 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private bool IsPitchController()
     {
+        if (localOnly) return Networking.LocalPlayer != null;
         VRCPlayerApi player = Networking.LocalPlayer;
         return player != null && Networking.IsOwner(player, gameObject);
     }
 
     private bool CanPrepare()
     {
-        return _initialized && ball != null && _ownerReady && IsPitchController();
+        return _initialized && !_suspended && ball != null && _ownerReady && IsPitchController();
     }
 
     private double ServerNow()
@@ -273,7 +361,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         {
             _eventTime = _appliedEventTime;
             _eventPitchStart = _appliedStart;
-            RequestSerialization();
+            Sync();
         }
         ApplyPendingEdits();
         TryAdvanceCycle();
@@ -393,7 +481,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         if (lap != _playlistState)
         {
             _playlistState = lap;
-            RequestSerialization();
+            Sync();
             NotifyListeners();
         }
         int index = PitchPlaylist.FirstPending(_playlistState);
@@ -478,10 +566,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         MarkReservedItem();
         _reserving = true;
         _reserveEpoch = _ownerEpoch;
-        RequestSerialization();
+        Sync();
         // With nobody else in the instance there is no receiver to confirm the send (ClientSim
-        // never calls OnPostSerialization either), so the schedule is committed directly.
-        if (VRCPlayerApi.GetPlayerCount() <= 1) CommitReservation();
+        // never calls OnPostSerialization either), so the schedule is committed directly. A
+        // LocalRig never sends and always commits here.
+        if (localOnly || VRCPlayerApi.GetPlayerCount() <= 1) CommitReservation();
     }
 
     private void CommitReservation()
@@ -566,6 +655,9 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     {
         float ahead = _appliedId == 0 ? 1f : (float)Networking.CalculateServerDeltaTime(_startTime, _appliedStart);
         if (!AcceptPitch(ahead)) return false;
+        // Suspended: the schedule is kept (for a later Owner) but never played.
+        // Resume opens the cycle gate again from its own time.
+        if (_suspended) { MarkAppliedHandled(_appliedStart); return true; }
         double now = ServerNow();
         SendCustomEventDelayedSeconds(nameof(_OnMotionDue), DelayUntil(_appliedStart, now));
         SendCustomEventDelayedSeconds(nameof(_OnReleaseDue), DelayUntil(_appliedRelease, now));
@@ -648,7 +740,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void TryRelease()
     {
-        if (ball == null || _appliedId == 0) return;
+        if (ball == null || _appliedId == 0 || _suspended) return;
         if (_releasedId != _appliedId)
         {
             if (!IsDue(ServerLate(_appliedRelease))) return;
@@ -706,7 +798,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
 
     private void RecordContact()
     {
-        if (!ContactCounts(ServerLate(_appliedRelease))) return;
+        if (_suspended || !ContactCounts(ServerLate(_appliedRelease))) return;
         double now = ServerNow();
         _appliedHasEvent = true;
         _appliedEventTime = now;
@@ -714,7 +806,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         {
             _eventTime = now;
             _eventPitchStart = _appliedStart;
-            RequestSerialization();
+            Sync();
         }
         TryAdvanceCycle();
         NotifyListeners();

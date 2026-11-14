@@ -27,6 +27,8 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
 
     [Header("Batter Occupancy")]
     public bool useBatterOccupancy;
+    [Tooltip("Local practice copy (LocalRig): standing in a box is enough; nothing is claimed or serialized.")]
+    public bool localOnly;
     public UdonBehaviour contactListener;
     [Header("Occupant Only Objects")]
     public GameObject[] occupantOnlyObjects;
@@ -53,6 +55,9 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
     private bool _claimPending;
     private bool _ownershipLost;
     private bool _confirmedLocal;
+    // Set by the lane while this client practises on a LocalRig: the occupant-only objects
+    // (the bat switches) stay available without claiming the shared plate.
+    private bool _occupantObjectsForced;
 
     public void Start()
     {
@@ -62,6 +67,7 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
     public bool IsLocalOccupant()
     {
         VRCPlayerApi local = Networking.LocalPlayer;
+        if (localOnly) return useBatterOccupancy && Utilities.IsValid(local) && (_insideLeft || _insideRight);
         return useBatterOccupancy && !_ownershipLost && Utilities.IsValid(local) && (_insideLeft || _insideRight) &&
             occupantPlayerId == local.playerId && Networking.IsOwner(gameObject);
     }
@@ -72,6 +78,15 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
         if (left) _insideLeft = inside; else _insideRight = inside;
         VRCPlayerApi local = Networking.LocalPlayer;
         if (!Utilities.IsValid(local)) return;
+        if (localOnly)
+        {
+            bool occupied = _insideLeft || _insideRight;
+            occupantPlayerId = occupied ? local.playerId : -1;
+            if (!(occupied ? SetEyeHeight(local.GetAvatarEyeHeightAsMeters()) || SetHeight(defaultBatterHeight)
+                : SetHeight(defaultBatterHeight))) { syncedZoneBottom = 0f; syncedZoneTop = 0f; }
+            UpdateLocalAccess();
+            return;
+        }
         if (inside)
         {
             if (occupantPlayerId < 0)
@@ -154,6 +169,7 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
 
     public void RepairDepartedOccupant()
     {
+        if (localOnly) return;
         if (occupantPlayerId >= 0 && Networking.IsOwner(gameObject) &&
             !Utilities.IsValid(VRCPlayerApi.GetPlayerById(occupantPlayerId))) ClearOccupant();
     }
@@ -183,7 +199,7 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
         if (!SetEyeHeight(player.GetAvatarEyeHeightAsMeters())) return;
         if (oldBottom != syncedZoneBottom || oldTop != syncedZoneTop)
         {
-            RequestSerialization();
+            if (!localOnly) RequestSerialization();
             if (frame != null) frame.Refresh();
         }
     }
@@ -231,12 +247,19 @@ public partial class StrikeZoneBehaviour : TsukimiBehaviour
 
     private void UpdateLocalAccess()
     {
-        bool active = IsLocalOccupant();
+        bool active = _occupantObjectsForced || IsLocalOccupant();
         if (occupantOnlyObjects != null)
             for (int i = 0; i < occupantOnlyObjects.Length; i++)
                 if (occupantOnlyObjects[i] != null) occupantOnlyObjects[i].SetActive(active);
         if (contactListener != null) contactListener.SendCustomEvent("OnOccupancyChanged");
         if (frame != null) frame.Refresh();
+    }
+
+    public void SetOccupantObjectsForced(bool forced)
+    {
+        if (_occupantObjectsForced == forced) return;
+        _occupantObjectsForced = forced;
+        UpdateLocalAccess();
     }
 
     public void Snapshot()

@@ -21,7 +21,7 @@ public partial class BallBehaviour
         if (collision == null || collision.contactCount == 0 || impactAudio == null || impactClip == null ||
             Time.time < _nextImpactTime || (impactLayers.value != 0 &&
             (impactLayers.value & (1 << collision.gameObject.layer)) == 0)) return;
-        if (requireLocalOwner && (Networking.LocalPlayer == null || !Networking.IsOwner(Networking.LocalPlayer, gameObject))) return;
+        if (requireLocalOwner && !IsLocalOwner()) return;
         ContactPoint point = collision.GetContact(0);
         float speed = Mathf.Abs(Vector3.Dot(collision.relativeVelocity, point.normal));
         float volume = ImpactVolume(speed, minimumSpeed, maximumSpeed, minimumVolume, maximumVolume);

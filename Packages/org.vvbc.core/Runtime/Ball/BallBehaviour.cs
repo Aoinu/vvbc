@@ -16,6 +16,8 @@ public partial class BallBehaviour : TsukimiBehaviour
     [Tooltip("Wind audio source on the ball.")] public AudioSource windAudio;
     [Tooltip("Optional strike-zone observer.")] public PitchCrossingBehaviour motionObserver;
     [HideInInspector] public UdonBehaviour feedbackListener;
+    [Tooltip("Local practice copy (LocalRig): this client is its only publisher and nothing is serialized.")]
+    public bool localOnly;
     [Header("Flight Physics")]
     [Tooltip("Aerodynamic drag coefficient, in inverse metres. Default 0.00622.")] public float dragCoefficient = 0.00622f;
     [Tooltip("Magnus coefficient. Default 0.00063; spin is in radians per second.")] public float magnusCoefficient = 0.00063f;
