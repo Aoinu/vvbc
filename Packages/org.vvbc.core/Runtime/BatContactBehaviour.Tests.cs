@@ -14,6 +14,15 @@ public partial class BatContactBehaviour
     }
 
     [TsukimiTest]
+    public void ShutdownDisablesContactWithOrWithoutHomePlate()
+    {
+        strikeZone = null;
+        Assert.IsTrue(CanUseContact());
+        _shutdown = true;
+        Assert.IsFalse(CanUseContact());
+    }
+
+    [TsukimiTest]
     public void ContactPlaneUsesIncomingVelocityAndIsOrthonormal()
     {
         Vector3 x = new Vector3(1f, 0.4f, 0.2f).normalized;

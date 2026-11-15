@@ -175,7 +175,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
 
     private bool CanUseContact()
     {
-        return !_shutdown && strikeZone == null || !strikeZone.useBatterOccupancy || strikeZone.IsLocalOccupant();
+        return !_shutdown && (strikeZone == null || !strikeZone.useBatterOccupancy || strikeZone.IsLocalOccupant());
     }
 
     public void OnOccupancyChanged()

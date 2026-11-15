@@ -3415,19 +3415,18 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Shutdown_self\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __Shutdown_L5:\n       
     JUMP_INDIRECT, __Shutdown_retjump\n    CanUseContact:\n        PUSH, __const_6\n       
-    PUSH, __CanUseContact___t0\n        COPY\n        PUSH, __const_6\n        PUSH,
-    __CanUseContact___t1\n        COPY\n        PUSH, __const_0\n        PUSH, __CanUseContact___t3\n       
+    PUSH, __CanUseContact___t1\n        COPY\n        PUSH, __const_6\n        PUSH,
+    __CanUseContact___t2\n        COPY\n        PUSH, __const_0\n        PUSH, __CanUseContact___t3\n       
     COPY\n        PUSH, __const_6\n        PUSH, __CanUseContact___t4\n        COPY\n       
     PUSH, __const_0\n        PUSH, __CanUseContact___t5\n        COPY\n        PUSH,
     __const_6\n        PUSH, __CanUseContact___t6\n        COPY\n        PUSH, _shutdown\n       
     PUSH, __CanUseContact_intnl_0\n        EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_0\n        PUSH, __CanUseContact___t2\n        COPY\n       
+    PUSH, __CanUseContact_intnl_0\n        PUSH, __CanUseContact___t0\n        COPY\n       
     PUSH, __CanUseContact_intnl_0\n        JUMP_IF_FALSE, __CanUseContact_L1\n       
     PUSH, strikeZone\n        PUSH, __const_1\n        PUSH, __CanUseContact_intnl_1\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_1\n        PUSH, __CanUseContact___t2\n        COPY\n   
-    __CanUseContact_L1:\n        PUSH, __CanUseContact___t2\n        PUSH, __CanUseContact___t1\n       
-    COPY\n        PUSH, __CanUseContact___t2\n        JUMP_IF_FALSE, __CanUseContact_L2\n       
+    PUSH, __CanUseContact_intnl_1\n        PUSH, __CanUseContact___t2\n        COPY\n       
+    PUSH, __CanUseContact_intnl_1\n        JUMP_IF_FALSE, __CanUseContact_L2\n       
     JUMP, __CanUseContact_L3\n    __CanUseContact_L2:\n        PUSH, strikeZone\n       
     PUSH, __CanUseContact___t3\n        COPY\n        PUSH, __CanUseContact___t3\n       
     PUSH, __const_41\n        PUSH, __CanUseContact_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
@@ -3435,9 +3434,9 @@ MonoBehaviour:
     COPY\n        PUSH, __CanUseContact_intnl_2\n        PUSH, __CanUseContact___t4\n       
     COPY\n        PUSH, __CanUseContact_intnl_2\n        PUSH, __CanUseContact_intnl_4\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_4\n        PUSH, __CanUseContact___t1\n        COPY\n   
-    __CanUseContact_L3:\n        PUSH, __CanUseContact___t1\n        PUSH, __CanUseContact___t0\n       
-    COPY\n        PUSH, __CanUseContact___t1\n        JUMP_IF_FALSE, __CanUseContact_L4\n       
+    PUSH, __CanUseContact_intnl_4\n        PUSH, __CanUseContact___t2\n        COPY\n   
+    __CanUseContact_L3:\n        PUSH, __CanUseContact___t2\n        PUSH, __CanUseContact___t1\n       
+    COPY\n        PUSH, __CanUseContact___t2\n        JUMP_IF_FALSE, __CanUseContact_L4\n       
     JUMP, __CanUseContact_L5\n    __CanUseContact_L4:\n        PUSH, strikeZone\n       
     PUSH, __CanUseContact___t5\n        COPY\n        PUSH, strikeZone\n        PUSH,
     __CanUseContact_intnl_5\n        COPY\n        PUSH, __recStack\n        PUSH,
@@ -3541,10 +3540,11 @@ MonoBehaviour:
     __CanUseContact___t5\n        PUSH, __const_43\n        PUSH, __CanUseContact_intnl_6\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact___t6\n        COPY\n       
-    PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact___t0\n        COPY\n   
-    __CanUseContact_L5:\n        PUSH, __CanUseContact___t0\n        PUSH, __CanUseContact_ret\n       
-    COPY\n        JUMP_INDIRECT, __CanUseContact_retjump\n        JUMP_INDIRECT,
-    __CanUseContact_retjump\n    .export OnOccupancyChanged\n    OnOccupancyChanged:\n       
+    PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact___t1\n        COPY\n   
+    __CanUseContact_L5:\n        PUSH, __CanUseContact___t1\n        PUSH, __CanUseContact___t0\n       
+    COPY\n    __CanUseContact_L1:\n        PUSH, __CanUseContact___t0\n        PUSH,
+    __CanUseContact_ret\n        COPY\n        JUMP_INDIRECT, __CanUseContact_retjump\n       
+    JUMP_INDIRECT, __CanUseContact_retjump\n    .export OnOccupancyChanged\n    OnOccupancyChanged:\n       
     PUSH, __retaddr_end\n        PUSH, __OnOccupancyChanged_retjump\n        COPY\n   
     __OnOccupancyChanged_body:\n        PUSH, __const_0\n        PUSH, __OnOccupancyChanged___t0\n       
     COPY\n        PUSH, __const_0\n        PUSH, __OnOccupancyChanged___t1\n       
@@ -44728,7 +44728,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: d81267966af7f234680f9dfcb873b881, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: a113b2545e35827e44dbeeb8ff6bbca952eb3aed5a0f9755a62a0d90922cbb23
+  sourceFingerprint: c1ec6a2aa3b3f2a43b6e945c3657b1136d03d7b08e2ac1163c855c1f78e48b82
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -48432,13 +48432,12 @@ MonoBehaviour:
     __const_0\n        PUSH, __CanUseContact___t5\n        COPY\n        PUSH, __const_6\n       
     PUSH, __CanUseContact___t6\n        COPY\n        PUSH, _shutdown\n        PUSH,
     __CanUseContact_intnl_0\n        EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_0\n        PUSH, __CanUseContact___t2\n        COPY\n       
-    PUSH, __CanUseContact___t2\n        JUMP_IF_FALSE, __CanUseContact_L1\n       
+    PUSH, __CanUseContact_intnl_0\n        PUSH, __CanUseContact___t0\n        COPY\n       
+    PUSH, __CanUseContact___t0\n        JUMP_IF_FALSE, __CanUseContact_L1\n       
     PUSH, strikeZone\n        PUSH, __const_1\n        PUSH, __CanUseContact_intnl_1\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_1\n        PUSH, __CanUseContact___t2\n        COPY\n   
-    __CanUseContact_L1:\n        PUSH, __CanUseContact___t2\n        PUSH, __CanUseContact___t1\n       
-    COPY\n        PUSH, __CanUseContact___t1\n        JUMP_IF_FALSE, __CanUseContact_L2\n       
+    PUSH, __CanUseContact_intnl_1\n        PUSH, __CanUseContact___t2\n        COPY\n       
+    PUSH, __CanUseContact___t2\n        JUMP_IF_FALSE, __CanUseContact_L2\n       
     JUMP, __CanUseContact_L3\n    __CanUseContact_L2:\n        PUSH, strikeZone\n       
     PUSH, __CanUseContact___t3\n        COPY\n        PUSH, __CanUseContact___t3\n       
     PUSH, __const_41\n        PUSH, __CanUseContact_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
@@ -48446,9 +48445,9 @@ MonoBehaviour:
     COPY\n        PUSH, __CanUseContact_intnl_3\n        PUSH, __CanUseContact___t4\n       
     COPY\n        PUSH, __CanUseContact___t4\n        PUSH, __CanUseContact_intnl_4\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_4\n        PUSH, __CanUseContact___t1\n        COPY\n   
-    __CanUseContact_L3:\n        PUSH, __CanUseContact___t1\n        PUSH, __CanUseContact___t0\n       
-    COPY\n        PUSH, __CanUseContact___t0\n        JUMP_IF_FALSE, __CanUseContact_L4\n       
+    PUSH, __CanUseContact_intnl_4\n        PUSH, __CanUseContact___t2\n        COPY\n   
+    __CanUseContact_L3:\n        PUSH, __CanUseContact___t2\n        PUSH, __CanUseContact___t1\n       
+    COPY\n        PUSH, __CanUseContact___t1\n        JUMP_IF_FALSE, __CanUseContact_L4\n       
     JUMP, __CanUseContact_L5\n    __CanUseContact_L4:\n        PUSH, strikeZone\n       
     PUSH, __CanUseContact___t5\n        COPY\n        PUSH, __CanUseContact___t5\n       
     PUSH, __CanUseContact_intnl_5\n        COPY\n        PUSH, __recStack\n       
@@ -48555,9 +48554,10 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact_intnl_7\n       
     COPY\n        PUSH, __CanUseContact_intnl_7\n        PUSH, __CanUseContact___t6\n       
-    COPY\n        PUSH, __CanUseContact___t6\n        PUSH, __CanUseContact___t0\n       
-    COPY\n    __CanUseContact_L5:\n        PUSH, __CanUseContact___t0\n        PUSH,
-    __CanUseContact_ret\n        COPY\n        JUMP_INDIRECT, __CanUseContact_retjump\n       
+    COPY\n        PUSH, __CanUseContact___t6\n        PUSH, __CanUseContact___t1\n       
+    COPY\n    __CanUseContact_L5:\n        PUSH, __CanUseContact___t1\n        PUSH,
+    __CanUseContact___t0\n        COPY\n    __CanUseContact_L1:\n        PUSH, __CanUseContact___t0\n       
+    PUSH, __CanUseContact_ret\n        COPY\n        JUMP_INDIRECT, __CanUseContact_retjump\n       
     JUMP_INDIRECT, __CanUseContact_retjump\n    .export OnOccupancyChanged\n    OnOccupancyChanged:\n       
     PUSH, __retaddr_end\n        PUSH, __OnOccupancyChanged_retjump\n        COPY\n       
     JUMP, __OnOccupancyChanged_body\n    __OnOccupancyChanged_body:\n        PUSH,
@@ -93738,19 +93738,18 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Shutdown_self\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __Shutdown_L5:\n       
     JUMP_INDIRECT, __Shutdown_retjump\n    CanUseContact:\n        PUSH, __const_6\n       
-    PUSH, __CanUseContact___t0\n        COPY\n        PUSH, __const_6\n        PUSH,
-    __CanUseContact___t1\n        COPY\n        PUSH, __const_0\n        PUSH, __CanUseContact___t3\n       
+    PUSH, __CanUseContact___t1\n        COPY\n        PUSH, __const_6\n        PUSH,
+    __CanUseContact___t2\n        COPY\n        PUSH, __const_0\n        PUSH, __CanUseContact___t3\n       
     COPY\n        PUSH, __const_6\n        PUSH, __CanUseContact___t4\n        COPY\n       
     PUSH, __const_0\n        PUSH, __CanUseContact___t5\n        COPY\n        PUSH,
     __const_6\n        PUSH, __CanUseContact___t6\n        COPY\n        PUSH, _shutdown\n       
     PUSH, __CanUseContact_intnl_0\n        EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_0\n        PUSH, __CanUseContact___t2\n        COPY\n       
+    PUSH, __CanUseContact_intnl_0\n        PUSH, __CanUseContact___t0\n        COPY\n       
     PUSH, __CanUseContact_intnl_0\n        JUMP_IF_FALSE, __CanUseContact_L1\n       
     PUSH, strikeZone\n        PUSH, __const_1\n        PUSH, __CanUseContact_intnl_1\n       
     EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_1\n        PUSH, __CanUseContact___t2\n        COPY\n   
-    __CanUseContact_L1:\n        PUSH, __CanUseContact___t2\n        PUSH, __CanUseContact___t1\n       
-    COPY\n        PUSH, __CanUseContact___t2\n        JUMP_IF_FALSE, __CanUseContact_L2\n       
+    PUSH, __CanUseContact_intnl_1\n        PUSH, __CanUseContact___t2\n        COPY\n       
+    PUSH, __CanUseContact_intnl_1\n        JUMP_IF_FALSE, __CanUseContact_L2\n       
     JUMP, __CanUseContact_L3\n    __CanUseContact_L2:\n        PUSH, strikeZone\n       
     PUSH, __CanUseContact___t3\n        COPY\n        PUSH, __CanUseContact___t3\n       
     PUSH, __const_41\n        PUSH, __CanUseContact_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
@@ -93758,9 +93757,9 @@ MonoBehaviour:
     COPY\n        PUSH, __CanUseContact_intnl_2\n        PUSH, __CanUseContact___t4\n       
     COPY\n        PUSH, __CanUseContact_intnl_2\n        PUSH, __CanUseContact_intnl_4\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
-    PUSH, __CanUseContact_intnl_4\n        PUSH, __CanUseContact___t1\n        COPY\n   
-    __CanUseContact_L3:\n        PUSH, __CanUseContact___t1\n        PUSH, __CanUseContact___t0\n       
-    COPY\n        PUSH, __CanUseContact___t1\n        JUMP_IF_FALSE, __CanUseContact_L4\n       
+    PUSH, __CanUseContact_intnl_4\n        PUSH, __CanUseContact___t2\n        COPY\n   
+    __CanUseContact_L3:\n        PUSH, __CanUseContact___t2\n        PUSH, __CanUseContact___t1\n       
+    COPY\n        PUSH, __CanUseContact___t2\n        JUMP_IF_FALSE, __CanUseContact_L4\n       
     JUMP, __CanUseContact_L5\n    __CanUseContact_L4:\n        PUSH, strikeZone\n       
     PUSH, __CanUseContact___t5\n        COPY\n        PUSH, strikeZone\n        PUSH,
     __CanUseContact_intnl_5\n        COPY\n        PUSH, __recStack\n        PUSH,
@@ -93864,10 +93863,11 @@ MonoBehaviour:
     __CanUseContact___t5\n        PUSH, __const_43\n        PUSH, __CanUseContact_intnl_6\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact___t6\n        COPY\n       
-    PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact___t0\n        COPY\n   
-    __CanUseContact_L5:\n        PUSH, __CanUseContact___t0\n        PUSH, __CanUseContact_ret\n       
-    COPY\n        JUMP_INDIRECT, __CanUseContact_retjump\n        JUMP_INDIRECT,
-    __CanUseContact_retjump\n    .export OnOccupancyChanged\n    OnOccupancyChanged:\n       
+    PUSH, __CanUseContact_intnl_6\n        PUSH, __CanUseContact___t1\n        COPY\n   
+    __CanUseContact_L5:\n        PUSH, __CanUseContact___t1\n        PUSH, __CanUseContact___t0\n       
+    COPY\n    __CanUseContact_L1:\n        PUSH, __CanUseContact___t0\n        PUSH,
+    __CanUseContact_ret\n        COPY\n        JUMP_INDIRECT, __CanUseContact_retjump\n       
+    JUMP_INDIRECT, __CanUseContact_retjump\n    .export OnOccupancyChanged\n    OnOccupancyChanged:\n       
     PUSH, __retaddr_end\n        PUSH, __OnOccupancyChanged_retjump\n        COPY\n   
     __OnOccupancyChanged_body:\n        PUSH, __const_0\n        PUSH, __OnOccupancyChanged___t0\n       
     COPY\n        PUSH, __const_0\n        PUSH, __OnOccupancyChanged___t1\n       
