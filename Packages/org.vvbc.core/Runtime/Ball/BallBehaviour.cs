@@ -37,5 +37,10 @@ public partial class BallBehaviour : TsukimiBehaviour
     private int _pendingSequence;
     private float _pendingTime;
     private Vector3 _pendingPosition, _pendingVelocity, _pendingSpin;
+    // Wake of the pitch in flight, prepared at the release; None for every other flight.
+    // _wakeTime is the flight time of the next FixedUpdate step, _wakeSampleTime that of the
+    // newest motion sample. Only LaunchPitch sets it; ClearWake ends it.
+    private BallWake _wake;
+    private float _wakeTime, _wakeSampleTime;
 
 }

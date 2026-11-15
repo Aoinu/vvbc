@@ -9,6 +9,12 @@ public static class BallFlightModel
         return BallAerodynamics.Acceleration(velocity, spin, drag, magnus);
     }
 
+    public static Vector3 AerodynamicAcceleration(Vector3 velocity, Vector3 spin, float drag, float magnus,
+        BallWake wake, float time)
+    {
+        return BallAerodynamics.Acceleration(velocity, spin, drag, magnus, wake, time);
+    }
+
     public static BallFlightState Step(BallFlightState state, Vector3 spin, Vector3 gravity,
         float drag, float magnus, float dt)
     {
@@ -17,16 +23,37 @@ public static class BallFlightModel
         return state;
     }
 
+    // The wake is evaluated at state.time, the start of the step, as the Ball's FixedUpdate
+    // does before PhysX integrates; state.time then advances by dt. The wake struct is read
+    // here directly rather than passed down another call, so None costs one comparison.
+    public static BallFlightState Step(BallFlightState state, Vector3 spin, Vector3 gravity,
+        float drag, float magnus, BallWake wake, float dt)
+    {
+        Vector3 acceleration = BallAerodynamics.Acceleration(state.velocity, spin, drag, magnus);
+        if (wake.mode != BallAerodynamics.WakeNone)
+            acceleration += BallAerodynamics.WakeAcceleration(wake, state.velocity, state.time);
+        state.velocity += (gravity + acceleration) * dt;
+        state.position += state.velocity * dt;
+        state.time += dt;
+        return state;
+    }
+
     // Semi-implicit Euler with the original fixed and final partial step order.
     public static BallFlightState Advance(BallFlightState state, Vector3 spin, Vector3 gravity,
         float drag, float magnus, float duration, float fixedStep)
+    {
+        return Advance(state, spin, gravity, drag, magnus, new BallWake(), duration, fixedStep);
+    }
+
+    public static BallFlightState Advance(BallFlightState state, Vector3 spin, Vector3 gravity,
+        float drag, float magnus, BallWake wake, float duration, float fixedStep)
     {
         if (duration <= 0f || fixedStep <= 0f) return state;
         float remaining = duration;
         while (remaining > 0.000001f)
         {
             float dt = Mathf.Min(remaining, fixedStep);
-            state = Step(state, spin, gravity, drag, magnus, dt);
+            state = Step(state, spin, gravity, drag, magnus, wake, dt);
             remaining -= dt;
         }
         return state;
@@ -50,6 +77,14 @@ public static class BallFlightModel
     public static BallFlightState AdvanceDecayingSpin(BallFlightState state, Vector3 spin, Vector3 gravity,
         float drag, float magnus, float duration, float fixedStep, float halfLife)
     {
+        return AdvanceDecayingSpin(state, spin, gravity, drag, magnus, new BallWake(), duration, fixedStep, halfLife);
+    }
+
+    // Network catch-up: integrates from state.time with the flight's wake (None for anything
+    // but a pitch). The time reached is returned in state.time.
+    public static BallFlightState AdvanceDecayingSpin(BallFlightState state, Vector3 spin, Vector3 gravity,
+        float drag, float magnus, BallWake wake, float duration, float fixedStep, float halfLife)
+    {
         state.spin = spin;
         if (duration <= 0f || fixedStep <= 0f) return state;
         float remaining = duration;
@@ -57,7 +92,7 @@ public static class BallFlightModel
         {
             float dt = Mathf.Min(remaining, fixedStep);
             Vector3 stepSpin = state.spin;
-            state = Step(state, stepSpin, gravity, drag, magnus, dt);
+            state = Step(state, stepSpin, gravity, drag, magnus, wake, dt);
             state.spin = DecaySpin(stepSpin, halfLife, dt);
             remaining -= dt;
         }

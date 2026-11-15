@@ -254,6 +254,7 @@ public partial class BallBehaviour
 
     private void StopFlightForHold()
     {
+        ClearWake();
         flying = false;
         flightSequence++;
         contactConsumed = true;

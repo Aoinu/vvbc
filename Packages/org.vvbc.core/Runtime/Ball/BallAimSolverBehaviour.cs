@@ -15,6 +15,9 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
     public bool converged;
     public Vector3 launchDirection;
     public Vector3 launchSpin;
+    // World-space WakeProfile.direction for launchDirection; mode, coefficient, cone and
+    // phase are the caller's own and do not depend on the direction.
+    public Vector3 launchWakeDirection;
     public Vector3 predictedCrossing;
     public float errorMeters;
     public int iterations;
@@ -22,6 +25,11 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
     private Vector3 _release, _target, _normal, _right, _spin, _gravity;
     private Vector3 _localSpin, _trialSpin;
     private bool _relativeSpin;
+    // Pitch-local wake (relative to every trial direction, like the spin) and its world form
+    // for the current trial; _time is the trial's flight time since the release.
+    private WakeProfile _localWake;
+    private BallWake _trialWake;
+    private float _time;
     private float _speed, _drag, _magnus, _dt, _yaw, _pitch;
     private float _bestError, _bestYaw, _bestPitch;
     private Vector3 _bestCrossing, _position, _velocity;
@@ -34,6 +42,8 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         float speed, Vector3 spin, Vector3 gravity, float drag, float magnus, float stepSeconds)
     {
         _relativeSpin = false;
+        _localWake = new WakeProfile();
+        launchWakeDirection = Vector3.zero;
         solving = false;
         converged = false;
         iterations = 0;
@@ -73,10 +83,25 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
     public void BeginSolveRelativeSpin(Vector3 release, Vector3 target, Vector3 planeNormal,
         float speed, Vector3 localSpin, Vector3 gravity, float drag, float magnus, float stepSeconds)
     {
+        BeginSolveRelativeSpin(release, target, planeNormal, speed, localSpin,
+            BallAerodynamics.WakeNone, 0f, Vector3.zero, 0f, 0f, gravity, drag, magnus, stepSeconds);
+    }
+
+    // The wake direction is pitch-local like the spin; launchWakeDirection is its world form.
+    public void BeginSolveRelativeSpin(Vector3 release, Vector3 target, Vector3 planeNormal,
+        float speed, Vector3 localSpin, int wakeMode, float wakeCoefficient, Vector3 localWakeDirection,
+        float wakeConeAngle, float wakePhase, Vector3 gravity, float drag, float magnus, float stepSeconds)
+    {
         BeginSolve(release, target, planeNormal, speed, Vector3.zero, gravity, drag, magnus, stepSeconds);
         _relativeSpin = true;
         _localSpin = localSpin;
+        _localWake.mode = wakeMode;
+        _localWake.coefficient = wakeCoefficient;
+        _localWake.direction = localWakeDirection;
+        _localWake.coneAngle = wakeConeAngle;
+        _localWake.initialPhase = wakePhase;
         launchSpin = PitchSpin.ToWorld(localSpin, launchDirection);
+        launchWakeDirection = PitchSpin.ToWorld(localWakeDirection, launchDirection);
         if (solving) StartTrial();
     }
 
@@ -95,6 +120,10 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         Vector3 direction = Direction(yaw, pitch);
         _velocity = direction * _speed;
         _trialSpin = _relativeSpin ? PitchSpin.ToWorld(_localSpin, direction) : _spin;
+        WakeProfile wake = _localWake;
+        wake.direction = PitchSpin.ToWorld(_localWake.direction, direction);
+        _trialWake = BallAerodynamics.PrepareWake(wake, _trialSpin);
+        _time = 0f;
         _step = 0;
     }
 
@@ -107,9 +136,11 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
             BallFlightState state = new BallFlightState();
             state.position = _position;
             state.velocity = _velocity;
-            state = BallFlightModel.Step(state, _trialSpin, _gravity, _drag, _magnus, _dt);
+            state.time = _time;
+            state = BallFlightModel.Step(state, _trialSpin, _gravity, _drag, _magnus, _trialWake, _dt);
             _position = state.position;
             _velocity = state.velocity;
+            _time = state.time;
             _step++;
             float previousSide = Vector3.Dot(previous - _target, _normal);
             float side = Vector3.Dot(_position - _target, _normal);
@@ -162,6 +193,7 @@ public partial class BallAimSolverBehaviour : TsukimiBehaviour
         solving = false;
         launchDirection = Direction(_bestYaw, _bestPitch);
         launchSpin = _relativeSpin ? PitchSpin.ToWorld(_localSpin, launchDirection) : _spin;
+        launchWakeDirection = PitchSpin.ToWorld(_localWake.direction, launchDirection);
         predictedCrossing = _bestCrossing;
         errorMeters = _bestError;
         converged = _bestError <= tolerance;

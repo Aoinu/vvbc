@@ -186,8 +186,9 @@ separately: there is no settings object.
   publishes the formal Pitch snapshot, carrying the same release time, so receivers
   and the Ball's own publication do not launch it again; a Stage older than that pitch
   cannot reset the flight. A new Owner publishes the Pitch only while the Ball
-  still holds the Stage. Release velocity and spin come only from the snapshot; a
-  non-Owner never runs the aim solver.
+  still holds the Stage. Release velocity, spin and the seam-shifted wake come only from
+  the snapshot; a non-Owner never runs the aim solver. The wake model and its data flow
+  are in [Ball flight model](ball-flight-model.md).
 - Cycle ready plays the idle pose on every client. The Owner then enters one cycle gate
   (`TryAdvanceCycle`) from every trigger (Start, ready, contact, ball release, Ownership);
   when the gate is not open yet it arms a single check for the earliest time it can open,

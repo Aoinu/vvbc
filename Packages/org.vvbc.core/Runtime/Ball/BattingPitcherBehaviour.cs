@@ -28,6 +28,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     public int courseRow = 1;
     // Baked from the editor preset asset; no ScriptableObject is read at runtime.
     public Vector3[] pitchSpinAxes = new Vector3[0];
+    [Tooltip("Optional seam-shifted wake per pitch type: the pitch-local (right, up, forward) Fixed wake direction scaled by its coefficient in 1/s (at most 0.055). A missing or zero entry means no wake.")]
+    public Vector3[] pitchWakeVectors = new Vector3[0];
     [HideInInspector] public string presetAssetGuid = "";
 
     [Header("Pitch schedule")]
@@ -58,6 +60,12 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     [UdonSynced] private Vector3 _releasePosition;
     [UdonSynced] private Vector3 _releaseVelocity;
     [UdonSynced] private Vector3 _releaseSpin;
+    // World-space WakeProfile of the committed pitch, decided before the release.
+    [UdonSynced] private int _releaseWakeMode;
+    [UdonSynced] private float _releaseWakeCoefficient;
+    [UdonSynced] private Vector3 _releaseWakeDirection;
+    [UdonSynced] private float _releaseWakeConeAngle;
+    [UdonSynced] private float _releaseWakePhase;
     // Reset rule of the committed pitch, captured at the reservation.
     [UdonSynced] private bool _resetOnTimer;
     [UdonSynced] private float _resetDelay = 3f;
@@ -69,6 +77,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private int _appliedId;
     private double _appliedStart, _appliedRelease, _appliedReady;
     private Vector3 _appliedPosition, _appliedVelocity, _appliedSpin;
+    private WakeProfile _appliedWake;
     private bool _appliedOnTimer;
     private float _appliedDelay = 3f;
     private bool _appliedHasEvent;
@@ -90,6 +99,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private int _solvingSequence, _ownerEpoch, _reserveEpoch, _serializedPitchId, _serializationRetries;
     private double _serializedStart;
     private float _speedSnapshot, _resetSnapshot;
+    // Pitch-local wake of the prepared pitch type; the solver turns its direction into world space.
+    private WakeProfile _wakeSnapshot;
     private bool _timerSnapshot;
     private int _preparedItemId, _reservedItemId;
     private Vector3 _stagePosition;
@@ -466,11 +477,27 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         Vector3 axis = pitchSpinAxes[selectedPitchType];
         float rpm = Mathf.Clamp(spinRpm, MinSpinRpm, MaxSpinRpm);
         Vector3 localSpin = axis.normalized * (rpm * (2f * Mathf.PI / 60f));
+        _wakeSnapshot = TypeWake(selectedPitchType);
         ball.QueueState(1, _stagePosition, Vector3.zero, Vector3.zero, ServerNow());
         solver.BeginSolveRelativeSpin(_stagePosition, target, -StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward), _speedSnapshot,
-            localSpin, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
+            localSpin, _wakeSnapshot.mode, _wakeSnapshot.coefficient, _wakeSnapshot.direction, _wakeSnapshot.coneAngle,
+            _wakeSnapshot.initialPhase, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
         _solving = true;
         NotifyListeners();
+    }
+
+    // The pitch-local wake of a pitch type from pitchWakeVectors; None when it has no entry.
+    private WakeProfile TypeWake(int type)
+    {
+        WakeProfile wake = new WakeProfile();
+        if (pitchWakeVectors == null || type < 0 || type >= pitchWakeVectors.Length) return wake;
+        Vector3 vector = pitchWakeVectors[type];
+        float coefficient = vector.magnitude;
+        if (!(coefficient > 0f && coefficient < float.PositiveInfinity)) return wake;
+        wake.mode = BallAerodynamics.WakeFixed;
+        wake.coefficient = Mathf.Min(coefficient, BallAerodynamics.MaxWakeCoefficient);
+        wake.direction = vector / coefficient;
+        return wake;
     }
 
     // The next playlist item, or the fallback (id 0: Four-Seam to Zone 5) for an empty list.
@@ -544,6 +571,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _releasePosition = _stagePosition;
         _releaseVelocity = solver.launchDirection * _speedSnapshot;
         _releaseSpin = solver.launchSpin;
+        _releaseWakeMode = _wakeSnapshot.mode;
+        _releaseWakeCoefficient = _wakeSnapshot.coefficient;
+        _releaseWakeDirection = solver.launchWakeDirection;
+        _releaseWakeConeAngle = _wakeSnapshot.coneAngle;
+        _releaseWakePhase = _wakeSnapshot.initialPhase;
         _resetOnTimer = _timerSnapshot;
         _resetDelay = _resetSnapshot;
         _serializationRetries = 0;
@@ -678,6 +710,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         _appliedPosition = _releasePosition;
         _appliedVelocity = _releaseVelocity;
         _appliedSpin = _releaseSpin;
+        _appliedWake.mode = _releaseWakeMode;
+        _appliedWake.coefficient = _releaseWakeCoefficient;
+        _appliedWake.direction = _releaseWakeDirection;
+        _appliedWake.coneAngle = _releaseWakeConeAngle;
+        _appliedWake.initialPhase = _releaseWakePhase;
         _appliedOnTimer = _resetOnTimer;
         _appliedDelay = _resetDelay;
         _appliedHasEvent = false;
@@ -745,7 +782,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         {
             if (!IsDue(ServerLate(_appliedRelease))) return;
             _releasedId = _appliedId;
-            if (ball.LaunchPitchLocal(_appliedPosition, _appliedVelocity, _appliedSpin, _appliedRelease))
+            if (ball.LaunchPitchLocal(_appliedPosition, _appliedVelocity, _appliedSpin, _appliedRelease,
+                _appliedWake.mode, _appliedWake.coefficient, _appliedWake.direction, _appliedWake.coneAngle, _appliedWake.initialPhase))
                 _localLaunchId = _appliedId;
         }
         PublishRelease();
@@ -758,7 +796,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         if (!IsPitchController() || _localLaunchId != _appliedId || _publishedReleaseId == _appliedId ||
             !ball.StageAccepted()) return;
         _publishedReleaseId = _appliedId;
-        ball.QueueState(2, _appliedPosition, _appliedVelocity, _appliedSpin, _appliedRelease);
+        ball.QueuePitch(_appliedPosition, _appliedVelocity, _appliedSpin, _appliedRelease,
+            _appliedWake.mode, _appliedWake.coefficient, _appliedWake.direction, _appliedWake.coneAngle, _appliedWake.initialPhase);
     }
 
     // Everyone returns to the idle pose; the Owner moves on once the reset rule allows it.

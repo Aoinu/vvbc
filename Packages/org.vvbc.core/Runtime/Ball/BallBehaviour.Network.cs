@@ -24,6 +24,12 @@ public partial class BallBehaviour
     [UdonSynced] private int _hold;
     [UdonSynced] private int _holderId;
     [UdonSynced] private int _publisherId;
+    // The WakeProfile of a Pitch snapshot (world space); None for every other kind.
+    [UdonSynced] private int _wakeMode;
+    [UdonSynced] private float _wakeCoefficient;
+    [UdonSynced] private Vector3 _wakeDirection;
+    [UdonSynced] private float _wakeConeAngle;
+    [UdonSynced] private float _wakePhase;
 
     private const int StageState = 1;
     private const int PitchState = 2;
@@ -61,6 +67,7 @@ public partial class BallBehaviour
     private int _acceptedBatterId;
     private float _acceptedHitStrength;
     private int _acceptedHold, _acceptedHolderId, _acceptedPublisherId;
+    private WakeProfile _acceptedWake;
 
     // Candidates: received snapshots that could not be accepted yet because their publisher
     // was not the owner (or the owner was unknown). One slot per publisher holds only that
@@ -78,6 +85,7 @@ public partial class BallBehaviour
     private readonly int[] _candidateHold = new int[CandidateSlots];
     private readonly int[] _candidateHolderId = new int[CandidateSlots];
     private readonly int[] _candidatePublisherId = new int[CandidateSlots];
+    private readonly WakeProfile[] _candidateWake = new WakeProfile[CandidateSlots];
     private readonly int[] _candidateArrival = new int[CandidateSlots];
     private int _candidateClock;
     private bool _candidateCheckScheduled;
@@ -109,6 +117,7 @@ public partial class BallBehaviour
     private int _pendingBatterId;
     private float _pendingHitStrength;
     private int _pendingHold, _pendingHolderId;
+    private WakeProfile _pendingWake;
     private int _publishedSequence, _publishedKind;
     private int _serializationRetries;
     // Release time of a pitch this client already launched from the shared schedule.
@@ -151,18 +160,39 @@ public partial class BallBehaviour
     // A held ball, or a fielding event newer than this release, is never moved by a pitch.
     public bool LaunchPitchLocal(Vector3 position, Vector3 velocity, Vector3 spin, double releaseTime)
     {
+        return LaunchPitchLocal(position, velocity, spin, releaseTime, BallAerodynamics.WakeNone, 0f, Vector3.zero, 0f, 0f);
+    }
+
+    // The wake is the pitch's world-space WakeProfile, decided by the pitcher before the release.
+    public bool LaunchPitchLocal(Vector3 position, Vector3 velocity, Vector3 spin, double releaseTime,
+        int wakeMode, float wakeCoefficient, Vector3 wakeDirection, float wakeConeAngle, float wakePhase)
+    {
         if (body == null || IsHeld()) return false;
         if ((_acceptedKind == ThrowState || _acceptedKind == PossessionState) &&
             Networking.CalculateServerDeltaTime(_acceptedServerTime, releaseTime) > 0.0) return false;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), releaseTime);
         if (elapsed < 0.0) elapsed = 0.0;
         if (!CanCatchUp(elapsed, Time.fixedDeltaTime)) return false;
+        WakeProfile wake = MakeWake(PitchState, wakeMode, wakeCoefficient, wakeDirection, wakeConeAngle, wakePhase);
         BallFlightState state = AdvanceSnapshot(position, velocity, spin, Physics.gravity,
-            dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime, 0f);
+            dragCoefficient, magnusCoefficient, BallAerodynamics.PrepareWake(wake, spin), (float)elapsed, Time.fixedDeltaTime, 0f);
         _localPitchTime = releaseTime;
         _hasLocalPitch = true;
-        Launch(state.position, state.velocity, spin);
+        LaunchPitch(state.position, state.velocity, spin, wake, state.time);
         return true;
+    }
+
+    // Anything but a pitch carries no wake.
+    private WakeProfile MakeWake(int kind, int mode, float coefficient, Vector3 direction, float coneAngle, float phase)
+    {
+        WakeProfile wake = new WakeProfile();
+        if (kind != PitchState) return wake;
+        wake.mode = mode;
+        wake.coefficient = coefficient;
+        wake.direction = direction;
+        wake.coneAngle = coneAngle;
+        wake.initialPhase = phase;
+        return wake;
     }
 
     private bool IsLocalPitch(double releaseTime)
@@ -189,6 +219,15 @@ public partial class BallBehaviour
         QueueSnapshot(kind, position, velocity, spin, serverTime, -1, 0f, HoldFree, 0);
     }
 
+    // The formal Pitch snapshot, with the same wake LaunchPitchLocal was given.
+    public void QueuePitch(Vector3 position, Vector3 velocity, Vector3 spin, double releaseTime,
+        int wakeMode, float wakeCoefficient, Vector3 wakeDirection, float wakeConeAngle, float wakePhase)
+    {
+        if (IsHeld() || FieldingPending()) return;
+        QueueSnapshot(PitchState, position, velocity, spin, releaseTime, -1, 0f, HoldFree, 0,
+            MakeWake(PitchState, wakeMode, wakeCoefficient, wakeDirection, wakeConeAngle, wakePhase));
+    }
+
     public void QueueHit(Vector3 position, Vector3 velocity, Vector3 spin, double serverTime, int batterId, float strength)
     {
         QueueSnapshot(HitState, position, velocity, spin, serverTime, batterId, Mathf.Clamp01(strength), HoldFree, 0);
@@ -198,8 +237,14 @@ public partial class BallBehaviour
     private void QueueSnapshot(int kind, Vector3 position, Vector3 velocity, Vector3 spin, double serverTime,
         int batterId, float strength, int hold, int holderId)
     {
+        QueueSnapshot(kind, position, velocity, spin, serverTime, batterId, strength, hold, holderId, new WakeProfile());
+    }
+
+    private void QueueSnapshot(int kind, Vector3 position, Vector3 velocity, Vector3 spin, double serverTime,
+        int batterId, float strength, int hold, int holderId, WakeProfile wake)
+    {
         if (Networking.LocalPlayer == null) return;
-        RecordPending(kind, position, velocity, spin, serverTime, batterId, strength, hold, holderId);
+        RecordPending(kind, position, velocity, spin, serverTime, batterId, strength, hold, holderId, wake);
         if (IsLocalOwner())
         {
             PublishPending();
@@ -245,6 +290,12 @@ public partial class BallBehaviour
     private void RecordPending(int kind, Vector3 position, Vector3 velocity, Vector3 spin, double serverTime,
         int batterId, float strength, int hold, int holderId)
     {
+        RecordPending(kind, position, velocity, spin, serverTime, batterId, strength, hold, holderId, new WakeProfile());
+    }
+
+    private void RecordPending(int kind, Vector3 position, Vector3 velocity, Vector3 spin, double serverTime,
+        int batterId, float strength, int hold, int holderId, WakeProfile wake)
+    {
         _pending = true;
         _pendingBaseSequence = _acceptedSequence;
         _pendingBasePublisher = _acceptedPublisherId;
@@ -257,6 +308,7 @@ public partial class BallBehaviour
         _pendingHitStrength = strength;
         _pendingHold = hold;
         _pendingHolderId = holderId;
+        _pendingWake = kind == PitchState ? wake : new WakeProfile();
     }
 
     // Delayed check of an ownership request. Recovers a missed callback; a fielding action
@@ -443,6 +495,7 @@ public partial class BallBehaviour
         _acceptedHitStrength = _pendingHitStrength;
         _acceptedHold = _pendingHold;
         _acceptedHolderId = _pendingHolderId;
+        _acceptedWake = _pendingWake;
         _acceptedPublisherId = LocalId();
         _publishedSequence = _acceptedSequence;
         _publishedKind = _acceptedKind;
@@ -460,7 +513,7 @@ public partial class BallBehaviour
         }
         else if (_acceptedKind == PitchState)
         {
-            if (!IsLocalPitch(_acceptedServerTime)) Launch(_acceptedPosition, _acceptedVelocity, _acceptedSpin);
+            if (!IsLocalPitch(_acceptedServerTime)) LaunchPitch(_acceptedPosition, _acceptedVelocity, _acceptedSpin, _acceptedWake, 0f);
         }
         Send();
         NotifyPresentationListeners();
@@ -484,6 +537,16 @@ public partial class BallBehaviour
         _hold = _acceptedHold;
         _holderId = _acceptedHolderId;
         _publisherId = _acceptedPublisherId;
+        _wakeMode = _acceptedWake.mode;
+        _wakeCoefficient = _acceptedWake.coefficient;
+        _wakeDirection = _acceptedWake.direction;
+        _wakeConeAngle = _acceptedWake.coneAngle;
+        _wakePhase = _acceptedWake.initialPhase;
+    }
+
+    private WakeProfile SyncedWake()
+    {
+        return MakeWake(_kind, _wakeMode, _wakeCoefficient, _wakeDirection, _wakeConeAngle, _wakePhase);
     }
 
     // A LocalRig ball accepts its own actions at once (QueueSnapshot -> PublishPending) and never sends.
@@ -505,6 +568,7 @@ public partial class BallBehaviour
         _acceptedHold = _hold;
         _acceptedHolderId = _holderId;
         _acceptedPublisherId = _publisherId;
+        _acceptedWake = SyncedWake();
         // The publisher's own older candidate can never be taken any more.
         int slot = FindCandidate(_acceptedPublisherId);
         if (slot >= 0 && !NewerThanAccepted(_candidateSequence[slot], _candidateKind[slot], _acceptedPublisherId))
@@ -572,6 +636,7 @@ public partial class BallBehaviour
         _candidateHold[slot] = _hold;
         _candidateHolderId[slot] = _holderId;
         _candidatePublisherId[slot] = _publisherId;
+        _candidateWake[slot] = SyncedWake();
         _candidateArrival[slot] = ++_candidateClock;
     }
 
@@ -593,6 +658,7 @@ public partial class BallBehaviour
         _acceptedHitStrength = _candidateHitStrength[slot];
         _acceptedHold = _candidateHold[slot];
         _acceptedHolderId = _candidateHolderId[slot];
+        _acceptedWake = _candidateWake[slot];
         _acceptedPublisherId = publisher;
         return true;
     }
@@ -685,7 +751,13 @@ public partial class BallBehaviour
         return _acceptedSequence > 0 && _kind == _acceptedKind && _serverTime == _acceptedServerTime &&
             _position == _acceptedPosition && _velocity == _acceptedVelocity && _spin == _acceptedSpin &&
             _batterId == _acceptedBatterId && _hitStrength == _acceptedHitStrength &&
-            _hold == _acceptedHold && _holderId == _acceptedHolderId;
+            _hold == _acceptedHold && _holderId == _acceptedHolderId && SameWake(SyncedWake(), _acceptedWake);
+    }
+
+    private bool SameWake(WakeProfile a, WakeProfile b)
+    {
+        return a.mode == b.mode && a.coefficient == b.coefficient && a.direction == b.direction &&
+            a.coneAngle == b.coneAngle && a.initialPhase == b.initialPhase;
     }
 
     // Whether the local ball presents the accepted state: the same holder and hold for a
@@ -751,14 +823,15 @@ public partial class BallBehaviour
             else
             {
                 bool batted = _acceptedKind != PitchState;
+                BallWake wake = batted ? new BallWake() : BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin);
                 BallFlightState state = AdvanceSnapshot(_acceptedPosition, _acceptedVelocity, _acceptedSpin, Physics.gravity,
-                    dragCoefficient, magnusCoefficient, (float)elapsed, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
+                    dragCoefficient, magnusCoefficient, wake, (float)elapsed, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
                 if (batted)
                 {
                     ApplyRemoteHit(state.position, state.velocity, state.spin);
                     _flightOrigin = _acceptedKind;
                 }
-                else Launch(state.position, state.velocity, _acceptedSpin);
+                else LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
             }
         }
         VRCPlayerApi localPlayer = Networking.LocalPlayer;
@@ -840,10 +913,17 @@ public partial class BallBehaviour
     private BallFlightState AdvanceSnapshot(Vector3 position, Vector3 velocity, Vector3 spin,
         Vector3 gravity, float drag, float magnus, float elapsed, float step, float spinHalfLife)
     {
+        return AdvanceSnapshot(position, velocity, spin, gravity, drag, magnus, new BallWake(), elapsed, step, spinHalfLife);
+    }
+
+    // Catch-up from the release (flight time 0) to elapsed; state.time is the flight time reached.
+    private BallFlightState AdvanceSnapshot(Vector3 position, Vector3 velocity, Vector3 spin,
+        Vector3 gravity, float drag, float magnus, BallWake wake, float elapsed, float step, float spinHalfLife)
+    {
         BallFlightState state = new BallFlightState();
         state.position = position;
         state.velocity = velocity;
-        return BallFlightModel.AdvanceDecayingSpin(state, spin, gravity, drag, magnus, elapsed, step, spinHalfLife);
+        return BallFlightModel.AdvanceDecayingSpin(state, spin, gravity, drag, magnus, wake, elapsed, step, spinHalfLife);
     }
 
     // Tie-break within one publisher's equal sequence: a reset wins an old hit; a hit or a
