@@ -5,8 +5,25 @@ public partial class BattingPitcherBehaviour
 {
     private int AddItem(int type, int mask)
     {
-        int token = RequestSaveItem(0, type, mask);
+        return AddBuild(type, mask, PitchPlaylist.DefaultBuild);
+    }
+
+    private int AddBuild(int type, int mask, int build)
+    {
+        int token = RequestSaveItem(0, type, mask, build);
         return SaveResult(token) == SaveDone ? SavedItemId() : -1;
+    }
+
+    // The item the next preparation takes, or the fallback for an empty list.
+    private int ChooseNextItem()
+    {
+        int index = ChooseNextIndex();
+        return index < 0 ? FallbackItem : _playlist[index];
+    }
+
+    private int BuildOf(int itemId)
+    {
+        return PlaylistBuild(IndexOfItem(itemId));
     }
 
     // Marks the next item as pitched the way a confirmed reservation does.
@@ -31,9 +48,104 @@ public partial class BattingPitcherBehaviour
         Assert.AreEqual(511, PitchPlaylist.Mask(clipped));
         Assert.AreEqual(3, PitchPlaylist.Type(clipped));
         Assert.AreEqual(1, PitchPlaylist.Id(clipped));
-        // unknown pitch types pitch as Four-Seam
-        Assert.AreEqual(0, PitchPlaylist.SafeType(9, 7));
-        Assert.AreEqual(6, PitchPlaylist.SafeType(6, 7));
+        // unknown pitch types pitch as the 4-Seam
+        Assert.AreEqual(PitchType.FourSeam, PitchPlaylist.Build(PitchPlaylist.Pack(1, 12, 16), PitchPlaylist.DefaultBuild).pitchTypeId);
+        Assert.AreEqual(PitchType.Knuckle, PitchPlaylist.Build(PitchPlaylist.Pack(1, 9, 16), PitchPlaylist.DefaultBuild).pitchTypeId);
+    }
+
+    [TsukimiTest]
+    public void PackedBuildsRoundTripAndKeepUnusedParametersAtTheDefault()
+    {
+        int build = PitchPlaylist.PackBuild(PitchType.Slider, 0f, 0.5f, 1f);
+        Assert.AreEqual(0f, PitchPlaylist.Parameter(build, 0));
+        Assert.AreEqual(0.5f, PitchPlaylist.Parameter(build, 1), "the default is exact");
+        Assert.AreEqual(1f, PitchPlaylist.Parameter(build, 2));
+        Assert.AreEqual(0, build >> 30, "bits 30-31 stay clear");
+        float quarter = PitchPlaylist.Parameter(PitchPlaylist.PackBuild(PitchType.Slider, 0.25f, 0f, 0f), 0);
+        Assert.IsTrue(Mathf.Abs(quarter - 0.25f) < 0.001f, "10-bit steps");
+        Assert.AreEqual(PitchPlaylist.DefaultBuild, PitchPlaylist.PackBuild(PitchType.FourSeam, 0f, 1f, 0.2f),
+            "the 4-Seam has no parameters");
+        int sinker = PitchPlaylist.PackBuild(PitchType.Sinker, 1f, 0f, 0f);
+        Assert.AreEqual(1f, PitchPlaylist.Parameter(sinker, 0));
+        Assert.AreEqual(0f, PitchPlaylist.Parameter(sinker, 1));
+        Assert.AreEqual(0.5f, PitchPlaylist.Parameter(sinker, 2), "C is unused by the Sinker");
+        Assert.AreEqual(PitchPlaylist.PackBuild(PitchType.Sinker, 1f, 0f, 0.5f),
+            PitchPlaylist.NormalizeBuild(PitchType.Sinker, PitchPlaylist.PackBuild(PitchType.Slider, 1f, 0f, 0.9f)));
+        Assert.AreEqual(1f, PitchPlaylist.Parameter(0x3FF, 0), "an out-of-range step is clamped");
+        Assert.AreEqual(PitchPlaylist.PackBuild(PitchType.Knuckle, 0.5f, 0.5f, 0.5f),
+            PitchPlaylist.PackBuild(PitchType.Knuckle, float.NaN, 0.5f, 0.5f), "a non-finite value is the default");
+        PitchBuild unpacked = PitchPlaylist.Build(PitchPlaylist.Pack(4, PitchType.Knuckle, 16), PitchPlaylist.PackBuild(PitchType.Knuckle, 0f, 1f, 0.5f));
+        Assert.AreEqual(PitchType.Knuckle, unpacked.pitchTypeId);
+        Assert.AreEqual(0f, unpacked.parameterA);
+        Assert.AreEqual(1f, unpacked.parameterB);
+        Assert.AreEqual(0.5f, unpacked.parameterC);
+    }
+
+    [TsukimiTest]
+    public void TheSameTypeIsSavedWithDifferentBuilds()
+    {
+        Mimic.Join();
+        _stateKnown = true;
+        int slow = PitchPlaylist.PackBuild(PitchType.Slider, 0f, 1f, 0f);
+        int fast = PitchPlaylist.PackBuild(PitchType.Slider, 1f, 0.2f, 1f);
+        int a = AddBuild(PitchType.Slider, 16, slow);
+        int b = AddBuild(PitchType.Slider, 16, fast);
+        Assert.AreEqual(2, PlaylistCount());
+        Assert.AreEqual(slow, BuildOf(a));
+        Assert.AreEqual(fast, BuildOf(b));
+        // editing one replaces its build only; unused parameters are normalized on save
+        int token = RequestSaveItem(a, PitchType.Sinker, 1, PitchPlaylist.PackBuild(PitchType.Slider, 0.25f, 0.75f, 0f));
+        Assert.AreEqual(SaveDone, SaveResult(token));
+        Assert.AreEqual(PitchPlaylist.PackBuild(PitchType.Sinker, 0.25f, 0.75f, 0.5f), BuildOf(a));
+        Assert.AreEqual(PitchType.Sinker, PitchPlaylist.Type(PlaylistItem(IndexOfItem(a))));
+        Assert.AreEqual(fast, BuildOf(b), "the other item keeps its build");
+    }
+
+    [TsukimiTest]
+    public void BuildsMoveWithTheirItemsAndFreedSlotsAreCleared()
+    {
+        Mimic.Join();
+        _stateKnown = true;
+        RequestSequence(true);
+        int buildA = PitchPlaylist.PackBuild(PitchType.Curve, 0f, 0f, 0.5f);
+        int buildB = PitchPlaylist.PackBuild(PitchType.Curve, 1f, 1f, 0.5f);
+        int buildC = PitchPlaylist.PackBuild(PitchType.Knuckle, 0.1f, 0.9f, 0.3f);
+        int a = AddBuild(PitchType.Curve, 1, buildA);
+        int b = AddBuild(PitchType.Curve, 2, buildB);
+        int c = AddBuild(PitchType.Knuckle, 4, buildC);
+        RequestMoveItem(a, 1);
+        Assert.AreEqual(1, IndexOfItem(a));
+        Assert.AreEqual(buildA, BuildOf(a), "Move Down");
+        Assert.AreEqual(buildB, BuildOf(b));
+        RequestMoveItem(c, -1);
+        Assert.AreEqual(buildC, BuildOf(c), "Move Up");
+        Assert.AreEqual(buildA, BuildOf(a));
+        RequestDeleteItem(c);
+        Assert.AreEqual(0, _playlistBuilds[2], "the freed slot holds no build");
+        int d = AddItem(PitchType.Split, 8);
+        Assert.AreEqual(PitchPlaylist.DefaultBuild, BuildOf(d), "a new item never inherits a deleted build");
+        Assert.AreEqual(buildA, BuildOf(a));
+        Assert.AreEqual(buildB, BuildOf(b));
+    }
+
+    [TsukimiTest]
+    public void ShufflingKeepsEveryBuildWithItsItem()
+    {
+        Mimic.Join();
+        _stateKnown = true;
+        int[] ids = new int[10];
+        for (int i = 0; i < 10; i++) ids[i] = AddBuild(i, 1 << (i % 9), PitchPlaylist.PackBuild(i, i * 0.1f, 1f - i * 0.1f, 0.05f * i));
+        for (int lap = 0; lap < 3; lap++)
+        {
+            RequestSequence(true);
+            RequestSequence(false);
+            for (int i = 0; i < 10; i++)
+            {
+                int index = IndexOfItem(ids[i]);
+                Assert.AreEqual(i, PitchPlaylist.Type(PlaylistItem(index)));
+                Assert.AreEqual(PitchPlaylist.PackBuild(i, i * 0.1f, 1f - i * 0.1f, 0.05f * i), PlaylistBuild(index));
+            }
+        }
     }
 
     [TsukimiTest]
@@ -42,7 +154,8 @@ public partial class BattingPitcherBehaviour
         int state = PitchPlaylist.WithFlag(0, PitchPlaylist.RunningFlag, true);
         state = PitchPlaylist.WithFlag(state, PitchPlaylist.TimerFlag, true);
         int[] items = new int[10];
-        for (int i = 0; i < 10; i++) state = PitchPlaylist.Append(items, state, PitchPlaylist.Pack(i + 1, 0, 16));
+        int[] builds = new int[10];
+        for (int i = 0; i < 10; i++) state = PitchPlaylist.Append(items, builds, state, PitchPlaylist.Pack(i + 1, 0, 16), PitchPlaylist.DefaultBuild);
         state = PitchPlaylist.WithHistory(state, 0x3FF);
         Assert.AreEqual(10, PitchPlaylist.Count(state));
         Assert.AreEqual(0x3FF, PitchPlaylist.History(state));
@@ -59,7 +172,7 @@ public partial class BattingPitcherBehaviour
         _stateKnown = true;
         int item = ChooseNextItem();
         Assert.AreEqual(0, PitchPlaylist.Id(item), "the fallback is not a list item");
-        Assert.AreEqual(PitchPlaylist.DefaultType, PitchPlaylist.Type(item));
+        Assert.AreEqual(PitchType.FourSeam, PitchPlaylist.Type(item));
         Assert.AreEqual(PitchPlaylist.CenterMask, PitchPlaylist.Mask(item));
         Assert.AreEqual(0, PlaylistCount());
     }
@@ -71,7 +184,7 @@ public partial class BattingPitcherBehaviour
         _stateKnown = true;
         for (int i = 0; i < 10; i++) AddItem(i % 7, 1 << (i % 9));
         Assert.AreEqual(10, PlaylistCount());
-        int token = RequestSaveItem(0, 2, 16);
+        int token = RequestSaveItem(0, 2, 16, PitchPlaylist.DefaultBuild);
         Assert.AreEqual(SaveFull, SaveResult(token));
         Assert.AreEqual(10, PlaylistCount());
         // ids are unique
@@ -159,7 +272,7 @@ public partial class BattingPitcherBehaviour
         int a = AddItem(0, 1);
         AddItem(1, 2);
         Assert.AreEqual(a, PitchNext());
-        int token = RequestSaveItem(a, 5, 0x1F0);
+        int token = RequestSaveItem(a, 5, 0x1F0, PitchPlaylist.DefaultBuild);
         Assert.AreEqual(SaveDone, SaveResult(token));
         Assert.AreEqual(a, PitchPlaylist.Id(PlaylistItem(0)));
         Assert.AreEqual(5, PitchPlaylist.Type(PlaylistItem(0)));
@@ -232,7 +345,7 @@ public partial class BattingPitcherBehaviour
         int a = AddItem(0, 1);
         AddItem(1, 2);
         RequestDeleteItem(a);
-        int token = RequestSaveItem(a, 4, 32);
+        int token = RequestSaveItem(a, 4, 32, PitchPlaylist.DefaultBuild);
         Assert.AreEqual(SaveDone, SaveResult(token));
         Assert.AreEqual(2, PlaylistCount());
         int added = PlaylistItem(1);
@@ -316,7 +429,7 @@ public partial class BattingPitcherBehaviour
     {
         Mimic.Join();
         _stateKnown = false;
-        int token = RequestSaveItem(0, 0, 16);
+        int token = RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
         RequestRunning(true);
         Assert.AreEqual(SavePending, SaveResult(token));
         Assert.AreEqual(0, PlaylistCount());
@@ -333,8 +446,8 @@ public partial class BattingPitcherBehaviour
     {
         Mimic.Join();
         _stateKnown = false;
-        int first = RequestSaveItem(0, 1, 2);
-        int second = RequestSaveItem(0, 2, 4);
+        int first = RequestSaveItem(0, 1, 2, PitchPlaylist.DefaultBuild);
+        int second = RequestSaveItem(0, 2, 4, PitchPlaylist.DefaultBuild);
         RequestRunning(true);
         _stateKnown = true;
         ApplyPendingEdits();
@@ -349,12 +462,13 @@ public partial class BattingPitcherBehaviour
     public void AMalformedSnapshotIsSanitized()
     {
         int[] items = new int[10];
+        int[] builds = new int[10];
         items[0] = PitchPlaylist.Pack(3, 0, 16);
         items[1] = PitchPlaylist.Pack(3, 1, 16);
         items[2] = PitchPlaylist.Pack(0, 1, 16);
         items[3] = PitchPlaylist.Pack(7, 2, 16);
         int state = PitchPlaylist.WithHistory(15 | PitchPlaylist.RunningFlag, 0x8);
-        state = PitchPlaylist.Sanitize(items, state);
+        state = PitchPlaylist.Sanitize(items, builds, state);
         Assert.AreEqual(2, PitchPlaylist.Count(state), "count clamped, duplicate and zero ids removed");
         Assert.AreEqual(3, PitchPlaylist.Id(items[0]));
         Assert.AreEqual(7, PitchPlaylist.Id(items[1]));

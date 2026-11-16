@@ -14,29 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 5feb370f4ac7be24c8bb7fbc2059ae20,
     type: 2}
-  udonAssembly: ".data_start\n    allowModeSwitching: %SystemBoolean, null\n    .export
-    allowModeSwitching\n    sharedPitcher: %VRCUdonUdonBehaviour, null\n    .export
-    sharedPitcher\n    sharedHomePlate: %VRCUdonUdonBehaviour, null\n    .export
-    sharedHomePlate\n    settingsPage: %VRCUdonUdonBehaviour, null\n    .export settingsPage\n   
-    localRigPrefab: %UnityEngineGameObject, null\n    .export localRigPrefab\n   
-    localRigAnchor: %UnityEngineTransform, null\n    .export localRigAnchor\n   
-    serializationRetrySeconds: %SystemSingle, 1\n    .export serializationRetrySeconds\n   
-    _localMode: %SystemBoolean, null\n    .sync _localMode, none\n    _started: %SystemBoolean,
-    null\n    _appliedLocal: %SystemBoolean, null\n    _changing: %SystemBoolean,
-    null\n    _localRig: %UnityEngineGameObject, null\n    _localPitcher: %VRCUdonUdonBehaviour,
-    null\n    localRigsCreated: %SystemInt32, 0\n    .export localRigsCreated\n   
-    localRigsDestroyed: %SystemInt32, 0\n    .export localRigsDestroyed\n    __refl_typeid:
-    %SystemInt64, null\n    __refl_typename: %SystemString, \"HomePlateSetBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    __Start___inl0__local: %SystemBoolean,
-    null\n    __Start___inl0____t0: %VRCUdonUdonBehaviour, null\n    __Start___inl0____t1:
-    %VRCUdonUdonBehaviour, null\n    __Start___inl8____t0: %VRCUdonUdonBehaviour,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    __IsLocalMode___t0:
-    %SystemBoolean, null\n    __IsLocalMode_ret: %SystemBoolean, null\n    .export
-    __IsLocalMode_ret\n    __IsLocalMode_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __HasLocalRig_ret: %SystemBoolean, null\n    .export __HasLocalRig_ret\n    __HasLocalRig_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __LocalPitcher_ret: %VRCUdonUdonBehaviour, null\n   
-    .export __LocalPitcher_ret\n    __LocalPitcher_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __ActivePitcher___t0: %VRCUdonUdonBehaviour, null\n    __ActivePitcher_ret: %VRCUdonUdonBehaviour,
+  udonAssembly: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    allowModeSwitching:
+    %SystemBoolean, null\n    .export allowModeSwitching\n    sharedPitcher: %VRCUdonUdonBehaviour,
+    null\n    .export sharedPitcher\n    sharedHomePlate: %VRCUdonUdonBehaviour,
+    null\n    .export sharedHomePlate\n    settingsPage: %VRCUdonUdonBehaviour, null\n   
+    .export settingsPage\n    localRigPrefab: %UnityEngineGameObject, null\n    .export
+    localRigPrefab\n    localRigAnchor: %UnityEngineTransform, null\n    .export
+    localRigAnchor\n    serializationRetrySeconds: %SystemSingle, 1\n    .export
+    serializationRetrySeconds\n    _localMode: %SystemBoolean, null\n    .sync _localMode,
+    none\n    _started: %SystemBoolean, null\n    _appliedLocal: %SystemBoolean,
+    null\n    _changing: %SystemBoolean, null\n    _localRig: %UnityEngineGameObject,
+    null\n    _localPitcher: %VRCUdonUdonBehaviour, null\n    localRigsCreated: %SystemInt32,
+    0\n    .export localRigsCreated\n    localRigsDestroyed: %SystemInt32, 0\n   
+    .export localRigsDestroyed\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"HomePlateSetBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __Start___inl0__local: %SystemBoolean, null\n    __Start___inl0____t0:
+    %VRCUdonUdonBehaviour, null\n    __Start___inl0____t1: %VRCUdonUdonBehaviour,
+    null\n    __Start___inl8____t0: %VRCUdonUdonBehaviour, null\n    __Start_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __IsLocalMode___t0: %SystemBoolean, null\n   
+    __IsLocalMode_ret: %SystemBoolean, null\n    .export __IsLocalMode_ret\n    __IsLocalMode_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __HasLocalRig_ret: %SystemBoolean, null\n    .export
+    __HasLocalRig_ret\n    __HasLocalRig_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __LocalPitcher_ret: %VRCUdonUdonBehaviour, null\n    .export __LocalPitcher_ret\n   
+    __LocalPitcher_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ActivePitcher___t0:
+    %VRCUdonUdonBehaviour, null\n    __ActivePitcher_ret: %VRCUdonUdonBehaviour,
     null\n    .export __ActivePitcher_ret\n    __ActivePitcher_retjump: %SystemUInt32,
     0xFFFFFFFC\n    __RequestLocalMode___t0: %VRCUdonUdonBehaviour, null\n    __RequestLocalMode___inl_t0:
     %SystemBoolean, null\n    __RequestLocalMode___inl1__local: %SystemBoolean, null\n   
@@ -9088,7 +9092,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 8a4ae572fde3d3045b74603ff4fdd770, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: a6b04dac9081ada58155e8a0b8710da6b8a39ffa2ce014dc0583ea0400f6d52c
+  sourceFingerprint: 4743e817ac7896be4c73573e1aac5c34a40c5a5a89e719b90717c464922544c9
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -9148,29 +9152,33 @@ MonoBehaviour:
   - 
   - 
   - 
-  optBeforeUasm: ".data_start\n    allowModeSwitching: %SystemBoolean, null\n   
-    .export allowModeSwitching\n    sharedPitcher: %VRCUdonUdonBehaviour, null\n   
-    .export sharedPitcher\n    sharedHomePlate: %VRCUdonUdonBehaviour, null\n   
-    .export sharedHomePlate\n    settingsPage: %VRCUdonUdonBehaviour, null\n    .export
-    settingsPage\n    localRigPrefab: %UnityEngineGameObject, null\n    .export localRigPrefab\n   
-    localRigAnchor: %UnityEngineTransform, null\n    .export localRigAnchor\n   
-    serializationRetrySeconds: %SystemSingle, 1\n    .export serializationRetrySeconds\n   
-    _localMode: %SystemBoolean, null\n    .sync _localMode, none\n    _started: %SystemBoolean,
-    null\n    _appliedLocal: %SystemBoolean, null\n    _changing: %SystemBoolean,
-    null\n    _localRig: %UnityEngineGameObject, null\n    _localPitcher: %VRCUdonUdonBehaviour,
-    null\n    localRigsCreated: %SystemInt32, 0\n    .export localRigsCreated\n   
-    localRigsDestroyed: %SystemInt32, 0\n    .export localRigsDestroyed\n    __refl_typeid:
-    %SystemInt64, null\n    __refl_typename: %SystemString, \"HomePlateSetBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    __Start___inl0__local: %SystemBoolean,
-    null\n    __Start___inl0____t0: %VRCUdonUdonBehaviour, null\n    __Start___inl0____t1:
-    %VRCUdonUdonBehaviour, null\n    __Start___inl8____t0: %VRCUdonUdonBehaviour,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    __IsLocalMode___t0:
-    %SystemBoolean, null\n    __IsLocalMode_ret: %SystemBoolean, null\n    .export
-    __IsLocalMode_ret\n    __IsLocalMode_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __HasLocalRig_ret: %SystemBoolean, null\n    .export __HasLocalRig_ret\n    __HasLocalRig_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __LocalPitcher_ret: %VRCUdonUdonBehaviour, null\n   
-    .export __LocalPitcher_ret\n    __LocalPitcher_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __ActivePitcher___t0: %VRCUdonUdonBehaviour, null\n    __ActivePitcher_ret: %VRCUdonUdonBehaviour,
+  optBeforeUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    allowModeSwitching:
+    %SystemBoolean, null\n    .export allowModeSwitching\n    sharedPitcher: %VRCUdonUdonBehaviour,
+    null\n    .export sharedPitcher\n    sharedHomePlate: %VRCUdonUdonBehaviour,
+    null\n    .export sharedHomePlate\n    settingsPage: %VRCUdonUdonBehaviour, null\n   
+    .export settingsPage\n    localRigPrefab: %UnityEngineGameObject, null\n    .export
+    localRigPrefab\n    localRigAnchor: %UnityEngineTransform, null\n    .export
+    localRigAnchor\n    serializationRetrySeconds: %SystemSingle, 1\n    .export
+    serializationRetrySeconds\n    _localMode: %SystemBoolean, null\n    .sync _localMode,
+    none\n    _started: %SystemBoolean, null\n    _appliedLocal: %SystemBoolean,
+    null\n    _changing: %SystemBoolean, null\n    _localRig: %UnityEngineGameObject,
+    null\n    _localPitcher: %VRCUdonUdonBehaviour, null\n    localRigsCreated: %SystemInt32,
+    0\n    .export localRigsCreated\n    localRigsDestroyed: %SystemInt32, 0\n   
+    .export localRigsDestroyed\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"HomePlateSetBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __Start___inl0__local: %SystemBoolean, null\n    __Start___inl0____t0:
+    %VRCUdonUdonBehaviour, null\n    __Start___inl0____t1: %VRCUdonUdonBehaviour,
+    null\n    __Start___inl8____t0: %VRCUdonUdonBehaviour, null\n    __Start_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __IsLocalMode___t0: %SystemBoolean, null\n   
+    __IsLocalMode_ret: %SystemBoolean, null\n    .export __IsLocalMode_ret\n    __IsLocalMode_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __HasLocalRig_ret: %SystemBoolean, null\n    .export
+    __HasLocalRig_ret\n    __HasLocalRig_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __LocalPitcher_ret: %VRCUdonUdonBehaviour, null\n    .export __LocalPitcher_ret\n   
+    __LocalPitcher_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ActivePitcher___t0:
+    %VRCUdonUdonBehaviour, null\n    __ActivePitcher_ret: %VRCUdonUdonBehaviour,
     null\n    .export __ActivePitcher_ret\n    __ActivePitcher_retjump: %SystemUInt32,
     0xFFFFFFFC\n    __RequestLocalMode___t0: %VRCUdonUdonBehaviour, null\n    __RequestLocalMode___inl_t0:
     %SystemBoolean, null\n    __RequestLocalMode___inl1__local: %SystemBoolean, null\n   
@@ -18323,29 +18331,33 @@ MonoBehaviour:
     JUMP, ____typeid__all_L4\n    ____typeid__all_L5:\n        PUSH, ____typeid__all_found\n       
     PUSH, ____typeid__all_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__all_retjump\n       
     JUMP_INDIRECT, ____typeid__all_retjump\n.code_end\n"
-  optAfterUasm: ".data_start\n    allowModeSwitching: %SystemBoolean, null\n    .export
-    allowModeSwitching\n    sharedPitcher: %VRCUdonUdonBehaviour, null\n    .export
-    sharedPitcher\n    sharedHomePlate: %VRCUdonUdonBehaviour, null\n    .export
-    sharedHomePlate\n    settingsPage: %VRCUdonUdonBehaviour, null\n    .export settingsPage\n   
-    localRigPrefab: %UnityEngineGameObject, null\n    .export localRigPrefab\n   
-    localRigAnchor: %UnityEngineTransform, null\n    .export localRigAnchor\n   
-    serializationRetrySeconds: %SystemSingle, 1\n    .export serializationRetrySeconds\n   
-    _localMode: %SystemBoolean, null\n    .sync _localMode, none\n    _started: %SystemBoolean,
-    null\n    _appliedLocal: %SystemBoolean, null\n    _changing: %SystemBoolean,
-    null\n    _localRig: %UnityEngineGameObject, null\n    _localPitcher: %VRCUdonUdonBehaviour,
-    null\n    localRigsCreated: %SystemInt32, 0\n    .export localRigsCreated\n   
-    localRigsDestroyed: %SystemInt32, 0\n    .export localRigsDestroyed\n    __refl_typeid:
-    %SystemInt64, null\n    __refl_typename: %SystemString, \"HomePlateSetBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    __Start___inl0__local: %SystemBoolean,
-    null\n    __Start___inl0____t0: %VRCUdonUdonBehaviour, null\n    __Start___inl0____t1:
-    %VRCUdonUdonBehaviour, null\n    __Start___inl8____t0: %VRCUdonUdonBehaviour,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    __IsLocalMode___t0:
-    %SystemBoolean, null\n    __IsLocalMode_ret: %SystemBoolean, null\n    .export
-    __IsLocalMode_ret\n    __IsLocalMode_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __HasLocalRig_ret: %SystemBoolean, null\n    .export __HasLocalRig_ret\n    __HasLocalRig_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __LocalPitcher_ret: %VRCUdonUdonBehaviour, null\n   
-    .export __LocalPitcher_ret\n    __LocalPitcher_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __ActivePitcher___t0: %VRCUdonUdonBehaviour, null\n    __ActivePitcher_ret: %VRCUdonUdonBehaviour,
+  optAfterUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    allowModeSwitching:
+    %SystemBoolean, null\n    .export allowModeSwitching\n    sharedPitcher: %VRCUdonUdonBehaviour,
+    null\n    .export sharedPitcher\n    sharedHomePlate: %VRCUdonUdonBehaviour,
+    null\n    .export sharedHomePlate\n    settingsPage: %VRCUdonUdonBehaviour, null\n   
+    .export settingsPage\n    localRigPrefab: %UnityEngineGameObject, null\n    .export
+    localRigPrefab\n    localRigAnchor: %UnityEngineTransform, null\n    .export
+    localRigAnchor\n    serializationRetrySeconds: %SystemSingle, 1\n    .export
+    serializationRetrySeconds\n    _localMode: %SystemBoolean, null\n    .sync _localMode,
+    none\n    _started: %SystemBoolean, null\n    _appliedLocal: %SystemBoolean,
+    null\n    _changing: %SystemBoolean, null\n    _localRig: %UnityEngineGameObject,
+    null\n    _localPitcher: %VRCUdonUdonBehaviour, null\n    localRigsCreated: %SystemInt32,
+    0\n    .export localRigsCreated\n    localRigsDestroyed: %SystemInt32, 0\n   
+    .export localRigsDestroyed\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"HomePlateSetBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __Start___inl0__local: %SystemBoolean, null\n    __Start___inl0____t0:
+    %VRCUdonUdonBehaviour, null\n    __Start___inl0____t1: %VRCUdonUdonBehaviour,
+    null\n    __Start___inl8____t0: %VRCUdonUdonBehaviour, null\n    __Start_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __IsLocalMode___t0: %SystemBoolean, null\n   
+    __IsLocalMode_ret: %SystemBoolean, null\n    .export __IsLocalMode_ret\n    __IsLocalMode_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __HasLocalRig_ret: %SystemBoolean, null\n    .export
+    __HasLocalRig_ret\n    __HasLocalRig_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __LocalPitcher_ret: %VRCUdonUdonBehaviour, null\n    .export __LocalPitcher_ret\n   
+    __LocalPitcher_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ActivePitcher___t0:
+    %VRCUdonUdonBehaviour, null\n    __ActivePitcher_ret: %VRCUdonUdonBehaviour,
     null\n    .export __ActivePitcher_ret\n    __ActivePitcher_retjump: %SystemUInt32,
     0xFFFFFFFC\n    __RequestLocalMode___t0: %VRCUdonUdonBehaviour, null\n    __RequestLocalMode___inl_t0:
     %SystemBoolean, null\n    __RequestLocalMode___inl1__local: %SystemBoolean, null\n   
@@ -27395,6 +27407,15 @@ MonoBehaviour:
     PUSH, ____typeid__all_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__all_retjump\n       
     JUMP_INDIRECT, ____typeid__all_retjump\n.code_end\n"
   optBeforeInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-8077576179185436093\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-8077576179185436093"
   - "=____typeid__has_p_1\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
@@ -27411,6 +27432,15 @@ MonoBehaviour:
   - "=__const_27\tPrimConst\t=SystemInt64\t0\tInt64:=5450232953428419062\t\t\t\t"
   - "=__const_36\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
   optAfterInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-8077576179185436093\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-8077576179185436093"
   - "=____typeid__has_p_1\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"

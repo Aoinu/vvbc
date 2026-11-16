@@ -172,6 +172,8 @@ namespace VVBC.Editor
                 if (target == null || !target.transform.IsChildOf(page.transform))
                     return "PitchSettingsPage " + symbol + " is not connected to the page's own object.";
             }
+            string builderError = CheckPitchBuilder(page);
+            if (builderError != null) return builderError;
             if (UdonFields.Read(pitcher, "localOnly", false) || UdonFields.Read(zone, "localOnly", false))
                 return "The SharedRig must not be local-only.";
             var ball = ReadReference(zone, "ball");
@@ -188,6 +190,29 @@ namespace VVBC.Editor
             if (occupantObjects != null && occupantObjects.Any(o => o == null || !o.transform.IsChildOf(root)))
                 return "The bat switches must belong to the lane.";
             return CheckPitcher(pitcher) ?? Check(zone) ?? CheckInsideRoot(root);
+        }
+
+        // The Pitch Builder needs one complete row per parameter (A, B, C), all on the page itself.
+        internal static string CheckPitchBuilder(UdonBehaviour page)
+        {
+            var hint = UdonFields.Read<GameObject>(page, "noParameterHint");
+            if (hint == null || !hint.transform.IsChildOf(page.transform))
+                return "PitchSettingsPage noParameterHint is not connected to the page's own object.";
+            foreach (var symbol in new[] { "parameterRows", "parameterSliders", "parameterNameTexts", "parameterLowTexts",
+                "parameterHighTexts", "parameterValueTexts" })
+            {
+                var values = page.publicVariables.TryGetVariableValue(symbol, out object value) ? value as Array : null;
+                if (values == null || values.Length != 3)
+                    return "PitchSettingsPage " + symbol + " needs one entry per pitch parameter (3).";
+                foreach (var item in values)
+                {
+                    Transform target = item is Component component && component != null ? component.transform
+                        : item is GameObject gameObject && gameObject != null ? gameObject.transform : null;
+                    if (target == null || !target.IsChildOf(page.transform))
+                        return "PitchSettingsPage " + symbol + " is not connected to the page's own objects.";
+                }
+            }
+            return null;
         }
 
         internal static string CheckLocalRig(GameObject rig)

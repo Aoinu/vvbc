@@ -14,34 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 6297cbb31b0ac4141ac5bc219d5de42a,
     type: 2}
-  udonAssembly: ".data_start\n    homePlate: %VRCUdonUdonBehaviour, null\n    .export
-    homePlate\n    isLeft: %SystemBoolean, null\n    .export isLeft\n    _inside:
-    %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
-    %SystemString, \"BatterBoxBehaviour\"\n    __refl_typeids: %SystemInt64Array,
-    null\n    __Start___t0: %SystemBoolean, null\n    __Start___t1: %SystemBoolean,
-    null\n    __Start___t2: %VRCUdonUdonBehaviour, null\n    __Start___t3: %SystemBoolean,
-    null\n    __Start_player: %VRCSDKBaseVRCPlayerApi, null\n    __Start_box: %UnityEngineCollider,
-    null\n    __Start___t4: %SystemBoolean, null\n    __Start_position: %UnityEngineVector3,
-    null\n    __Start___t5: %VRCUdonUdonBehaviour, null\n    __Start___t6: %SystemBoolean,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerEnterPlayer:
-    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerTriggerEnter___t0: %SystemBoolean,
-    null\n    __OnPlayerTriggerEnter___t1: %SystemBoolean, null\n    __OnPlayerTriggerEnter___t2:
-    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerEnter___t3: %SystemBoolean,
-    null\n    __OnPlayerTriggerEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerExitPlayer:
-    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerTriggerExit___t0: %SystemBoolean,
-    null\n    __OnPlayerTriggerExit___t1: %SystemBoolean, null\n    __OnPlayerTriggerExit___t2:
-    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerExit___t3: %SystemBoolean,
-    null\n    __OnPlayerTriggerExit_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack:
-    %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __const_0: %SystemBoolean,
-    null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2: %VRCSDKBaseVRCPlayerApi,
-    null\n    __const_3: %UnityEngineCollider, null\n    __const_4: %UnityEngineVector3,
-    null\n    __const_5: %UnityEngineObject, null\n    __Start_intnl_0: %SystemBoolean,
-    null\n    __const_6: %SystemString, \"localOnly\"\n    __Start_intnl_1: %SystemObject,
-    null\n    __Start_intnl_2: %SystemBoolean, null\n    __Start_intnl_3: %SystemBoolean,
-    null\n    __Start_intnl_4: %VRCSDKBaseVRCPlayerApi, null\n    __const_7: %VRCUdonUdonBehaviour,
-    this\n    __const_8: %SystemType, null\n    __Start_intnl_5: %UnityEngineCollider,
-    null\n    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean,
-    null\n    __Start_intnl_8: %SystemBoolean, null\n    __Start_intnl_9: %UnityEngineVector3,
+  udonAssembly: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    homePlate:
+    %VRCUdonUdonBehaviour, null\n    .export homePlate\n    isLeft: %SystemBoolean,
+    null\n    .export isLeft\n    _inside: %SystemBoolean, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BatterBoxBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Start___t0: %SystemBoolean, null\n   
+    __Start___t1: %SystemBoolean, null\n    __Start___t2: %VRCUdonUdonBehaviour,
+    null\n    __Start___t3: %SystemBoolean, null\n    __Start_player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __Start_box: %UnityEngineCollider, null\n    __Start___t4: %SystemBoolean,
+    null\n    __Start_position: %UnityEngineVector3, null\n    __Start___t5: %VRCUdonUdonBehaviour,
+    null\n    __Start___t6: %SystemBoolean, null\n    __Start_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    onPlayerTriggerEnterPlayer: %VRCSDKBaseVRCPlayerApi, null\n   
+    __OnPlayerTriggerEnter___t0: %SystemBoolean, null\n    __OnPlayerTriggerEnter___t1:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter___t2: %VRCUdonUdonBehaviour,
+    null\n    __OnPlayerTriggerEnter___t3: %SystemBoolean, null\n    __OnPlayerTriggerEnter_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerExitPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerTriggerExit___t0: %SystemBoolean, null\n    __OnPlayerTriggerExit___t1:
+    %SystemBoolean, null\n    __OnPlayerTriggerExit___t2: %VRCUdonUdonBehaviour,
+    null\n    __OnPlayerTriggerExit___t3: %SystemBoolean, null\n    __OnPlayerTriggerExit_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
+    %SystemInt32, 0\n    __const_0: %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour,
+    null\n    __const_2: %VRCSDKBaseVRCPlayerApi, null\n    __const_3: %UnityEngineCollider,
+    null\n    __const_4: %UnityEngineVector3, null\n    __const_5: %UnityEngineObject,
+    null\n    __Start_intnl_0: %SystemBoolean, null\n    __const_6: %SystemString,
+    \"localOnly\"\n    __Start_intnl_1: %SystemObject, null\n    __Start_intnl_2:
+    %SystemBoolean, null\n    __Start_intnl_3: %SystemBoolean, null\n    __Start_intnl_4:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_7: %VRCUdonUdonBehaviour, this\n   
+    __const_8: %SystemType, null\n    __Start_intnl_5: %UnityEngineCollider, null\n   
+    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean, null\n   
+    __Start_intnl_8: %SystemBoolean, null\n    __Start_intnl_9: %UnityEngineVector3,
     null\n    __Start_intnl_10: %UnityEngineVector3, null\n    __Start_intnl_11:
     %SystemSingle, 0\n    __const_9: %SystemSingle, 0.001\n    __Start_intnl_12:
     %SystemBoolean, null\n    __const_10: %SystemBoolean, null\n    __Start_intnl_13:
@@ -503,7 +507,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 9db441f4fb75f3340badde5d02c61730, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: e40f487c4f052a09a09461d6f4a05650e49a6993e4b4c1ce9e825bba9f0540af
+  sourceFingerprint: e7f7fe5960353250a90c986362162fa5adfa722ba68b15a783b6a055de253e62
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -516,34 +520,38 @@ MonoBehaviour:
   inspectorPaths:
   - 
   - 
-  optBeforeUasm: ".data_start\n    homePlate: %VRCUdonUdonBehaviour, null\n    .export
-    homePlate\n    isLeft: %SystemBoolean, null\n    .export isLeft\n    _inside:
-    %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
-    %SystemString, \"BatterBoxBehaviour\"\n    __refl_typeids: %SystemInt64Array,
-    null\n    __Start___t0: %SystemBoolean, null\n    __Start___t1: %SystemBoolean,
-    null\n    __Start___t2: %VRCUdonUdonBehaviour, null\n    __Start___t3: %SystemBoolean,
-    null\n    __Start_player: %VRCSDKBaseVRCPlayerApi, null\n    __Start_box: %UnityEngineCollider,
-    null\n    __Start___t4: %SystemBoolean, null\n    __Start_position: %UnityEngineVector3,
-    null\n    __Start___t5: %VRCUdonUdonBehaviour, null\n    __Start___t6: %SystemBoolean,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerEnterPlayer:
-    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerTriggerEnter___t0: %SystemBoolean,
-    null\n    __OnPlayerTriggerEnter___t1: %SystemBoolean, null\n    __OnPlayerTriggerEnter___t2:
-    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerEnter___t3: %SystemBoolean,
-    null\n    __OnPlayerTriggerEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerExitPlayer:
-    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerTriggerExit___t0: %SystemBoolean,
-    null\n    __OnPlayerTriggerExit___t1: %SystemBoolean, null\n    __OnPlayerTriggerExit___t2:
-    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerExit___t3: %SystemBoolean,
-    null\n    __OnPlayerTriggerExit_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack:
-    %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __const_0: %SystemBoolean,
-    null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2: %VRCSDKBaseVRCPlayerApi,
-    null\n    __const_3: %UnityEngineCollider, null\n    __const_4: %UnityEngineVector3,
-    null\n    __const_5: %UnityEngineObject, null\n    __Start_intnl_0: %SystemBoolean,
-    null\n    __const_6: %SystemString, \"localOnly\"\n    __Start_intnl_1: %SystemObject,
-    null\n    __Start_intnl_2: %SystemBoolean, null\n    __Start_intnl_3: %SystemBoolean,
-    null\n    __Start_intnl_4: %VRCSDKBaseVRCPlayerApi, null\n    __const_7: %VRCUdonUdonBehaviour,
-    this\n    __const_8: %SystemType, null\n    __Start_intnl_5: %UnityEngineCollider,
-    null\n    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean,
-    null\n    __Start_intnl_8: %SystemBoolean, null\n    __Start_intnl_9: %UnityEngineVector3,
+  optBeforeUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    homePlate:
+    %VRCUdonUdonBehaviour, null\n    .export homePlate\n    isLeft: %SystemBoolean,
+    null\n    .export isLeft\n    _inside: %SystemBoolean, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BatterBoxBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Start___t0: %SystemBoolean, null\n   
+    __Start___t1: %SystemBoolean, null\n    __Start___t2: %VRCUdonUdonBehaviour,
+    null\n    __Start___t3: %SystemBoolean, null\n    __Start_player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __Start_box: %UnityEngineCollider, null\n    __Start___t4: %SystemBoolean,
+    null\n    __Start_position: %UnityEngineVector3, null\n    __Start___t5: %VRCUdonUdonBehaviour,
+    null\n    __Start___t6: %SystemBoolean, null\n    __Start_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    onPlayerTriggerEnterPlayer: %VRCSDKBaseVRCPlayerApi, null\n   
+    __OnPlayerTriggerEnter___t0: %SystemBoolean, null\n    __OnPlayerTriggerEnter___t1:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter___t2: %VRCUdonUdonBehaviour,
+    null\n    __OnPlayerTriggerEnter___t3: %SystemBoolean, null\n    __OnPlayerTriggerEnter_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerExitPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerTriggerExit___t0: %SystemBoolean, null\n    __OnPlayerTriggerExit___t1:
+    %SystemBoolean, null\n    __OnPlayerTriggerExit___t2: %VRCUdonUdonBehaviour,
+    null\n    __OnPlayerTriggerExit___t3: %SystemBoolean, null\n    __OnPlayerTriggerExit_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
+    %SystemInt32, 0\n    __const_0: %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour,
+    null\n    __const_2: %VRCSDKBaseVRCPlayerApi, null\n    __const_3: %UnityEngineCollider,
+    null\n    __const_4: %UnityEngineVector3, null\n    __const_5: %UnityEngineObject,
+    null\n    __Start_intnl_0: %SystemBoolean, null\n    __const_6: %SystemString,
+    \"localOnly\"\n    __Start_intnl_1: %SystemObject, null\n    __Start_intnl_2:
+    %SystemBoolean, null\n    __Start_intnl_3: %SystemBoolean, null\n    __Start_intnl_4:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_7: %VRCUdonUdonBehaviour, this\n   
+    __const_8: %SystemType, null\n    __Start_intnl_5: %UnityEngineCollider, null\n   
+    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean, null\n   
+    __Start_intnl_8: %SystemBoolean, null\n    __Start_intnl_9: %UnityEngineVector3,
     null\n    __Start_intnl_10: %UnityEngineVector3, null\n    __Start_intnl_11:
     %SystemSingle, 0\n    __const_9: %SystemSingle, 0.001\n    __Start_intnl_12:
     %SystemBoolean, null\n    __const_10: %SystemBoolean, null\n    __Start_intnl_13:
@@ -1020,34 +1028,38 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerExitPlayer\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPlayerTriggerExit_L7:\n       
     JUMP_INDIRECT, __OnPlayerTriggerExit_retjump\n.code_end\n"
-  optAfterUasm: ".data_start\n    homePlate: %VRCUdonUdonBehaviour, null\n    .export
-    homePlate\n    isLeft: %SystemBoolean, null\n    .export isLeft\n    _inside:
-    %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
-    %SystemString, \"BatterBoxBehaviour\"\n    __refl_typeids: %SystemInt64Array,
-    null\n    __Start___t0: %SystemBoolean, null\n    __Start___t1: %SystemBoolean,
-    null\n    __Start___t2: %VRCUdonUdonBehaviour, null\n    __Start___t3: %SystemBoolean,
-    null\n    __Start_player: %VRCSDKBaseVRCPlayerApi, null\n    __Start_box: %UnityEngineCollider,
-    null\n    __Start___t4: %SystemBoolean, null\n    __Start_position: %UnityEngineVector3,
-    null\n    __Start___t5: %VRCUdonUdonBehaviour, null\n    __Start___t6: %SystemBoolean,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerEnterPlayer:
-    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerTriggerEnter___t0: %SystemBoolean,
-    null\n    __OnPlayerTriggerEnter___t1: %SystemBoolean, null\n    __OnPlayerTriggerEnter___t2:
-    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerEnter___t3: %SystemBoolean,
-    null\n    __OnPlayerTriggerEnter_retjump: %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerExitPlayer:
-    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerTriggerExit___t0: %SystemBoolean,
-    null\n    __OnPlayerTriggerExit___t1: %SystemBoolean, null\n    __OnPlayerTriggerExit___t2:
-    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerExit___t3: %SystemBoolean,
-    null\n    __OnPlayerTriggerExit_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack:
-    %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __const_0: %SystemBoolean,
-    null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2: %VRCSDKBaseVRCPlayerApi,
-    null\n    __const_3: %UnityEngineCollider, null\n    __const_4: %UnityEngineVector3,
-    null\n    __const_5: %UnityEngineObject, null\n    __Start_intnl_0: %SystemBoolean,
-    null\n    __const_6: %SystemString, \"localOnly\"\n    __Start_intnl_1: %SystemObject,
-    null\n    __Start_intnl_2: %SystemBoolean, null\n    __Start_intnl_3: %SystemBoolean,
-    null\n    __Start_intnl_4: %VRCSDKBaseVRCPlayerApi, null\n    __const_7: %VRCUdonUdonBehaviour,
-    this\n    __const_8: %SystemType, null\n    __Start_intnl_5: %UnityEngineCollider,
-    null\n    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean,
-    null\n    __Start_intnl_8: %SystemBoolean, null\n    __Start_intnl_9: %UnityEngineVector3,
+  optAfterUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    homePlate:
+    %VRCUdonUdonBehaviour, null\n    .export homePlate\n    isLeft: %SystemBoolean,
+    null\n    .export isLeft\n    _inside: %SystemBoolean, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"BatterBoxBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Start___t0: %SystemBoolean, null\n   
+    __Start___t1: %SystemBoolean, null\n    __Start___t2: %VRCUdonUdonBehaviour,
+    null\n    __Start___t3: %SystemBoolean, null\n    __Start_player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __Start_box: %UnityEngineCollider, null\n    __Start___t4: %SystemBoolean,
+    null\n    __Start_position: %UnityEngineVector3, null\n    __Start___t5: %VRCUdonUdonBehaviour,
+    null\n    __Start___t6: %SystemBoolean, null\n    __Start_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    onPlayerTriggerEnterPlayer: %VRCSDKBaseVRCPlayerApi, null\n   
+    __OnPlayerTriggerEnter___t0: %SystemBoolean, null\n    __OnPlayerTriggerEnter___t1:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter___t2: %VRCUdonUdonBehaviour,
+    null\n    __OnPlayerTriggerEnter___t3: %SystemBoolean, null\n    __OnPlayerTriggerEnter_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    onPlayerTriggerExitPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerTriggerExit___t0: %SystemBoolean, null\n    __OnPlayerTriggerExit___t1:
+    %SystemBoolean, null\n    __OnPlayerTriggerExit___t2: %VRCUdonUdonBehaviour,
+    null\n    __OnPlayerTriggerExit___t3: %SystemBoolean, null\n    __OnPlayerTriggerExit_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
+    %SystemInt32, 0\n    __const_0: %SystemBoolean, null\n    __const_1: %VRCUdonUdonBehaviour,
+    null\n    __const_2: %VRCSDKBaseVRCPlayerApi, null\n    __const_3: %UnityEngineCollider,
+    null\n    __const_4: %UnityEngineVector3, null\n    __const_5: %UnityEngineObject,
+    null\n    __Start_intnl_0: %SystemBoolean, null\n    __const_6: %SystemString,
+    \"localOnly\"\n    __Start_intnl_1: %SystemObject, null\n    __Start_intnl_2:
+    %SystemBoolean, null\n    __Start_intnl_3: %SystemBoolean, null\n    __Start_intnl_4:
+    %VRCSDKBaseVRCPlayerApi, null\n    __const_7: %VRCUdonUdonBehaviour, this\n   
+    __const_8: %SystemType, null\n    __Start_intnl_5: %UnityEngineCollider, null\n   
+    __Start_intnl_6: %SystemBoolean, null\n    __Start_intnl_7: %SystemBoolean, null\n   
+    __Start_intnl_8: %SystemBoolean, null\n    __Start_intnl_9: %UnityEngineVector3,
     null\n    __Start_intnl_10: %UnityEngineVector3, null\n    __Start_intnl_11:
     %SystemSingle, 0\n    __const_9: %SystemSingle, 0.001\n    __Start_intnl_12:
     %SystemBoolean, null\n    __const_10: %SystemBoolean, null\n    __Start_intnl_13:
@@ -1507,6 +1519,15 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnPlayerTriggerExit_L7:\n       
     JUMP_INDIRECT, __OnPlayerTriggerExit_retjump\n.code_end\n"
   optBeforeInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-1759695956162323834\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-1759695956162323834"
   - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
@@ -1514,6 +1535,15 @@ MonoBehaviour:
   - "=__const_8\tTypeConst\t=UnityEngineCollider\t0\t\t\t\t\t"
   - "=__const_10\tBoolTrue\t\t0\t\t\t\t\t"
   optAfterInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=-1759695956162323834\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-1759695956162323834"
   - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"

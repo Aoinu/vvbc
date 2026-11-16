@@ -58,8 +58,11 @@ No client clock or Unity start time is a phase reference, and no client draws a 
 
 ## Data flow
 
-1. The pitcher snapshots the prepared type's pitch-local profile (`TypeWake`) with the
-   other settings and passes it to `BallAimSolverBehaviour.BeginSolveRelativeSpin`.
+1. The pitcher computes the prepared item's `PitchProperties` (see [Pitch types](#pitch-types))
+   and snapshots its speed, pitch-local spin and pitch-local profile with the other settings,
+   then passes them to `BallAimSolverBehaviour.BeginSolveRelativeSpin`. A Rotating profile's
+   initial phase is drawn here, once per pitch, by the preparing Owner from its own phase
+   seed (see [Rotating wake phase](#rotating-wake-phase)).
 2. Every solver trial turns the spin and the wake direction into world space for its
    direction and steps `BallFlightModel.Step` with the prepared wake from flight time 0.
    The result is `launchDirection`, `launchSpin` and `launchWakeDirection`.
@@ -103,12 +106,79 @@ ground-contact reconstruction read. The batting
 feedback trail (`BattingFeedbackBehaviour.PredictTrailExit`) still predicts the incoming
 pitch through the zone without the wake (visual only, a few centimetres at most).
 
-## Configuration
+## Pitch types
 
-The seven existing pitch types and the playlist ids are unchanged. `pitchWakeVectors` on
-the pitcher (empty by default, so no pitch has a wake) is an optional per-type pitch-local
-Fixed wake direction scaled by its coefficient. It is a verification injection, not the
-future pitch builder; Rotating profiles are used from tests and the simulation only.
+Ten pitch types (`PitchType`: 0 4-Seam, 1 2-Seam, 2 Sinker, 3 Cutter, 4 Slider, 5 Sweeper,
+6 Curve, 7 Split, 8 Change, 9 Knuckle) are the only pitch definitions. A `PitchBuild` is a
+type and up to three normalized parameters A, B, C (0-1, default 0.5; unused ones stay at
+0.5). `PitchPropertiesCalculator.Calculate(build, baseSpeed, baseSpin)` is a pure function
+that returns `PitchProperties`: release speed, spin rpm, a unit pitch-local spin axis and a
+pitch-local `WakeProfile`. The base speed and spin are the pitcher's `speedKmh` and
+`spinRpm`, the 4-Seam's. Nothing else defines a pitch: the flight model has no per-type
+branch, and only the inputs below change between types.
+
+Directions are for a right-handed pitcher: pitch-local +x is the arm side, -x the glove side.
+They are written as a clock angle `t` in degrees, seen from behind the pitcher: 0 up, 90 arm
+side, 180 down, -90 glove side, i.e. the unit vector `(sin t, cos t, 0)`. A Magnus break
+toward angle `t` with spin efficiency `e` is the spin axis `(-cos(t) * e, sin(t) * e,
+sqrt(1 - e^2))`; the rest is gyro spin. A Fixed wake toward angle `t` has the direction
+`(sin t, cos t, 0)`.
+
+NaN or infinite parameters read as 0.5, others are clamped to 0-1; an unknown type is the
+4-Seam. The base spin is clamped to 0-3000 rpm; with 0 rpm the axis stays unit and the spin
+vector is zero. Wake coefficients are capped at `MaxWakeCoefficient` (0.055 1/s).
+
+### Speed range
+
+Only the base speed is limited, to `MinBaseSpeedKmh`-`MaxBaseSpeedKmh` (90-160 km/h; a
+non-finite base reads as 120). The release speed is exactly `base * multiplier`, with no
+further clamp, so every speed slider keeps its full effect at every base.
+
+The base minimum is a reachability limit, not a gameplay choice. With the HomePlateSet
+geometry (release 1.451 m high, 18.23 m to the plate front plane) and the shared model
+(drag 0.00622, Magnus 0.00045-0.00063, 0.02 s step), no launch angle carries a pitch to the
+top of the zone below about 53 km/h: the Curve with full topspin is the worst case, and the
+limit hardly moves with the zone top (0.96-1.15 m) because drag limits the range. The slowest
+multiplier is the Knuckle's 0.65, so the 90 km/h minimum gives 58.5 km/h, about 5 km/h above
+that floor. `BallAimSolverBehaviour` tests aim every type at both parameter ends at the
+minimum base at the zone corners and centre, and check that a 45 km/h Curve is reported as
+not converged (`lastAimConverged` false) rather than reached. A faster pitch is never
+substituted for an unreachable one.
+
+### Types
+
+All values are provisional; they live in `PitchPropertiesCalculator.cs` only. "A: x <-> y"
+names the slider ends (0 <-> 1).
+
+| Type | A | B | C | Speed x base | Spin | Magnus angle t, efficiency e | Wake |
+|---|---|---|---|---|---|---|---|
+| 4-Seam | - | - | - | 1 | base, at most 2800 rpm | t = 0, e = 1 | None |
+| 2-Seam | run: small <-> large | - | - | 0.99 - 0.04A | 0.92 x base | t = 30 + 20A, e = 0.95 | Fixed 0.008 + 0.025A, t = 90 |
+| Sinker | break: small <-> large | run <-> sink | - | 0.95 | 0.82 x base | t = 65, e = 0.9 | Fixed 0.010 + 0.040A, t = 90 + 90B |
+| Cutter | cut: small <-> large | - | - | 0.98 - 0.07A | 0.90 x base | t = -(10 + 25A), e = 0.7 | Fixed 0.005 + 0.020A, t = -90 |
+| Slider | velocity: slow <-> fast | break: small <-> large | horizontal <-> vertical | 0.79 + 0.13A | 0.90 x base | t = -(90 + 90C), e = 0.15 + 0.65B | None |
+| Sweeper | sweep <-> lift | - | - | 0.84 | 0.90 x base | t = -90, e = 0.85 | Fixed 0.045, t = -90 + 90A |
+| Curve | drop <-> slurve | tempo: normal <-> slow | - | 0.81 - 0.15B | 0.95 x base | t = -(170 - 55A), e = 0.9 | None |
+| Split | arm-side run: small <-> large | - | - | 0.89 | 0.18 x base | t = 20 + 50A, e = 0.6 | None |
+| Change | tempo: firm <-> slow | arm side <-> down | - | 0.88 - 0.15A | 0.75 x base | t = 50, e = 0.85 | Fixed 0.012, t = 90 + 90B |
+| Knuckle | flutter rate: slow <-> fast | glove side <-> arm side | flutter size: small <-> large | 0.65 | 12.5 + 87.5A rpm (not scaled by base) | spin about the wake axis | Rotating 0.040 |
+
+Knuckle: the wake axis is `normalize(forward * cos(30 deg) + d * sin(30 deg))`, where `d` is
+the direction at clock angle `t = -90 - 180B` (glove side through down to arm side). The cone
+angle is `15 + 65C` degrees. The spin axis is that same axis, so the force turns at the full
+spin rate (A). The calculator returns initial phase 0; the pitcher draws the phase (below).
+The Sinker, Sweeper and Change wakes are one unit vector turned by their parameter, so their
+two components trade off and cannot both be at their maximum.
+
+### Rotating wake phase
+
+The phase is per pitch, not part of the type. When the Owner prepares a pitch whose wake is
+Rotating, it advances its own phase seed (`_phaseSeed`, an LCG drawn once at Start, never
+synced) and sets `initialPhase = PhaseFromSeed(seed)` (a pure function, 0 to 2 pi). Other
+types do not touch that seed, and preparing a pitch never touches the playlist's shuffle
+seed, so Knuckles in a playlist do not change its Random order. The phase travels in the
+schedule (`_releaseWakePhase`) and the Ball snapshot; receivers, late joiners and a new Owner
+replaying a schedule use it as sent. A new Owner draws later phases from its own seed.
 
 The Inspector defaults stay at the previous values (`magnusCoefficient` 0.00063,
 `battedSpinHalfLife` 1 s) until the candidate set is confirmed in clients.

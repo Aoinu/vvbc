@@ -14,44 +14,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: cf53b3c5b8fa3624ca542154a5039fd0,
     type: 2}
-  udonAssembly: ".data_start\n    body: %UnityEngineRigidbody, null\n    .export
-    body\n    ballCollider: %UnityEngineSphereCollider, null\n    .export ballCollider\n   
-    ballRenderer: %UnityEngineRenderer, null\n    .export ballRenderer\n    speedTrail:
-    %UnityEngineTrailRenderer, null\n    .export speedTrail\n    flightPath: %UnityEngineLineRenderer,
-    null\n    .export flightPath\n    impactAudio: %UnityEngineAudioSource, null\n   
-    .export impactAudio\n    windAudio: %UnityEngineAudioSource, null\n    .export
-    windAudio\n    motionObserver: %VRCUdonUdonBehaviour, null\n    .export motionObserver\n   
-    feedbackListener: %VRCUdonUdonBehaviour, null\n    .export feedbackListener\n   
-    localOnly: %SystemBoolean, null\n    .export localOnly\n    dragCoefficient:
-    %SystemSingle, 0.00622\n    .export dragCoefficient\n    magnusCoefficient: %SystemSingle,
-    0.00063\n    .export magnusCoefficient\n    battedSpinHalfLife: %SystemSingle,
-    1\n    .export battedSpinHalfLife\n    bounceSpinRetention: %SystemSingle, 0.4\n   
-    .export bounceSpinRetention\n    rollingAngularDrag: %SystemSingle, 0.8\n   
-    .export rollingAngularDrag\n    groundLayers: %UnityEngineLayerMask, null\n   
-    .export groundLayers\n    flying: %SystemBoolean, null\n    .export flying\n   
-    flightSequence: %SystemInt32, 0\n    .export flightSequence\n    contactConsumed:
-    %SystemBoolean, null\n    .export contactConsumed\n    _contactPending: %SystemBoolean,
-    null\n    _pendingSequence: %SystemInt32, 0\n    _pendingTime: %SystemSingle,
-    0\n    _pendingPosition: %UnityEngineVector3, null\n    _pendingVelocity: %UnityEngineVector3,
-    null\n    _pendingSpin: %UnityEngineVector3, null\n    _wake__mode: %SystemInt32,
-    0\n    _wake__coefficient: %SystemSingle, 0\n    _wake__direction: %UnityEngineVector3,
-    null\n    _wake__basisX: %UnityEngineVector3, null\n    _wake__basisY: %UnityEngineVector3,
-    null\n    _wake__phase: %SystemSingle, 0\n    _wake__rate: %SystemSingle, 0\n   
-    _wakeTime: %SystemSingle, 0\n    _wakeSampleTime: %SystemSingle, 0\n    impactClip:
-    %UnityEngineAudioClip, null\n    .export impactClip\n    impactLayers: %UnityEngineLayerMask,
-    null\n    .export impactLayers\n    requireLocalOwner: %SystemBoolean, null\n   
-    .export requireLocalOwner\n    minimumSpeed: %SystemSingle, 0.8\n    .export
-    minimumSpeed\n    maximumSpeed: %SystemSingle, 10\n    .export maximumSpeed\n   
-    minimumVolume: %SystemSingle, 0.35\n    .export minimumVolume\n    maximumVolume:
-    %SystemSingle, 1\n    .export maximumVolume\n    pitch: %SystemSingle, 1\n   
-    .export pitch\n    cooldown: %SystemSingle, 0.1\n    .export cooldown\n    _nextImpactTime:
-    %SystemSingle, 0\n    windClip: %UnityEngineAudioClip, null\n    .export windClip\n   
-    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n    windMaxSpeed:
-    %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume: %SystemSingle,
-    0.35\n    .export windMaxVolume\n    maximumCatchAudioAge: %SystemSingle, 0.75\n   
-    .export maximumCatchAudioAge\n    CatchClockTolerance: %SystemSingle, 0.25\n   
-    FlightOriginUnknown: %SystemInt32, 0\n    _flightOrigin: %SystemInt32, 0\n   
-    _catchEffectFlight: %SystemInt32, -1\n    catchEffectsRequested: %SystemInt32,
+  udonAssembly: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    body:
+    %UnityEngineRigidbody, null\n    .export body\n    ballCollider: %UnityEngineSphereCollider,
+    null\n    .export ballCollider\n    ballRenderer: %UnityEngineRenderer, null\n   
+    .export ballRenderer\n    speedTrail: %UnityEngineTrailRenderer, null\n    .export
+    speedTrail\n    flightPath: %UnityEngineLineRenderer, null\n    .export flightPath\n   
+    impactAudio: %UnityEngineAudioSource, null\n    .export impactAudio\n    windAudio:
+    %UnityEngineAudioSource, null\n    .export windAudio\n    motionObserver: %VRCUdonUdonBehaviour,
+    null\n    .export motionObserver\n    feedbackListener: %VRCUdonUdonBehaviour,
+    null\n    .export feedbackListener\n    localOnly: %SystemBoolean, null\n   
+    .export localOnly\n    dragCoefficient: %SystemSingle, 0.00622\n    .export dragCoefficient\n   
+    magnusCoefficient: %SystemSingle, 0.00063\n    .export magnusCoefficient\n   
+    battedSpinHalfLife: %SystemSingle, 1\n    .export battedSpinHalfLife\n    bounceSpinRetention:
+    %SystemSingle, 0.4\n    .export bounceSpinRetention\n    rollingAngularDrag:
+    %SystemSingle, 0.8\n    .export rollingAngularDrag\n    groundLayers: %UnityEngineLayerMask,
+    null\n    .export groundLayers\n    flying: %SystemBoolean, null\n    .export
+    flying\n    flightSequence: %SystemInt32, 0\n    .export flightSequence\n   
+    contactConsumed: %SystemBoolean, null\n    .export contactConsumed\n    _contactPending:
+    %SystemBoolean, null\n    _pendingSequence: %SystemInt32, 0\n    _pendingTime:
+    %SystemSingle, 0\n    _pendingPosition: %UnityEngineVector3, null\n    _pendingVelocity:
+    %UnityEngineVector3, null\n    _pendingSpin: %UnityEngineVector3, null\n    _wake__mode:
+    %SystemInt32, 0\n    _wake__coefficient: %SystemSingle, 0\n    _wake__direction:
+    %UnityEngineVector3, null\n    _wake__basisX: %UnityEngineVector3, null\n   
+    _wake__basisY: %UnityEngineVector3, null\n    _wake__phase: %SystemSingle, 0\n   
+    _wake__rate: %SystemSingle, 0\n    _wakeTime: %SystemSingle, 0\n    _wakeSampleTime:
+    %SystemSingle, 0\n    impactClip: %UnityEngineAudioClip, null\n    .export impactClip\n   
+    impactLayers: %UnityEngineLayerMask, null\n    .export impactLayers\n    requireLocalOwner:
+    %SystemBoolean, null\n    .export requireLocalOwner\n    minimumSpeed: %SystemSingle,
+    0.8\n    .export minimumSpeed\n    maximumSpeed: %SystemSingle, 10\n    .export
+    maximumSpeed\n    minimumVolume: %SystemSingle, 0.35\n    .export minimumVolume\n   
+    maximumVolume: %SystemSingle, 1\n    .export maximumVolume\n    pitch: %SystemSingle,
+    1\n    .export pitch\n    cooldown: %SystemSingle, 0.1\n    .export cooldown\n   
+    _nextImpactTime: %SystemSingle, 0\n    windClip: %UnityEngineAudioClip, null\n   
+    .export windClip\n    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n   
+    windMaxSpeed: %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume:
+    %SystemSingle, 0.35\n    .export windMaxVolume\n    maximumCatchAudioAge: %SystemSingle,
+    0.75\n    .export maximumCatchAudioAge\n    CatchClockTolerance: %SystemSingle,
+    0.25\n    FlightOriginUnknown: %SystemInt32, 0\n    _flightOrigin: %SystemInt32,
+    0\n    _catchEffectFlight: %SystemInt32, -1\n    catchEffectsRequested: %SystemInt32,
     0\n    .export catchEffectsRequested\n    _lastCatchEffectLocal: %SystemBoolean,
     null\n    _lastCatchEffectOrigin: %SystemInt32, 0\n    _lastCatchEffectSpeed:
     %SystemSingle, 0\n    pickup: %VRCSDK3ComponentsVRCPickup, null\n    .export
@@ -55851,7 +55854,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 1f96da6856035b14cac5e1daf704aba0, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 38bfc2845fb64783876bea271b4181e63cfa6db1d8890e72f5f4afaed60cc600
+  sourceFingerprint: fd4dd695131de06ff5e6609e6f1e7a0e8865525b7d15dd1f6ea27977fc02530f
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -56444,44 +56447,47 @@ MonoBehaviour:
   - 
   - 
   - 
-  optBeforeUasm: ".data_start\n    body: %UnityEngineRigidbody, null\n    .export
-    body\n    ballCollider: %UnityEngineSphereCollider, null\n    .export ballCollider\n   
-    ballRenderer: %UnityEngineRenderer, null\n    .export ballRenderer\n    speedTrail:
-    %UnityEngineTrailRenderer, null\n    .export speedTrail\n    flightPath: %UnityEngineLineRenderer,
-    null\n    .export flightPath\n    impactAudio: %UnityEngineAudioSource, null\n   
-    .export impactAudio\n    windAudio: %UnityEngineAudioSource, null\n    .export
-    windAudio\n    motionObserver: %VRCUdonUdonBehaviour, null\n    .export motionObserver\n   
-    feedbackListener: %VRCUdonUdonBehaviour, null\n    .export feedbackListener\n   
-    localOnly: %SystemBoolean, null\n    .export localOnly\n    dragCoefficient:
-    %SystemSingle, 0.00622\n    .export dragCoefficient\n    magnusCoefficient: %SystemSingle,
-    0.00063\n    .export magnusCoefficient\n    battedSpinHalfLife: %SystemSingle,
-    1\n    .export battedSpinHalfLife\n    bounceSpinRetention: %SystemSingle, 0.4\n   
-    .export bounceSpinRetention\n    rollingAngularDrag: %SystemSingle, 0.8\n   
-    .export rollingAngularDrag\n    groundLayers: %UnityEngineLayerMask, null\n   
-    .export groundLayers\n    flying: %SystemBoolean, null\n    .export flying\n   
-    flightSequence: %SystemInt32, 0\n    .export flightSequence\n    contactConsumed:
-    %SystemBoolean, null\n    .export contactConsumed\n    _contactPending: %SystemBoolean,
-    null\n    _pendingSequence: %SystemInt32, 0\n    _pendingTime: %SystemSingle,
-    0\n    _pendingPosition: %UnityEngineVector3, null\n    _pendingVelocity: %UnityEngineVector3,
-    null\n    _pendingSpin: %UnityEngineVector3, null\n    _wake__mode: %SystemInt32,
-    0\n    _wake__coefficient: %SystemSingle, 0\n    _wake__direction: %UnityEngineVector3,
-    null\n    _wake__basisX: %UnityEngineVector3, null\n    _wake__basisY: %UnityEngineVector3,
-    null\n    _wake__phase: %SystemSingle, 0\n    _wake__rate: %SystemSingle, 0\n   
-    _wakeTime: %SystemSingle, 0\n    _wakeSampleTime: %SystemSingle, 0\n    impactClip:
-    %UnityEngineAudioClip, null\n    .export impactClip\n    impactLayers: %UnityEngineLayerMask,
-    null\n    .export impactLayers\n    requireLocalOwner: %SystemBoolean, null\n   
-    .export requireLocalOwner\n    minimumSpeed: %SystemSingle, 0.8\n    .export
-    minimumSpeed\n    maximumSpeed: %SystemSingle, 10\n    .export maximumSpeed\n   
-    minimumVolume: %SystemSingle, 0.35\n    .export minimumVolume\n    maximumVolume:
-    %SystemSingle, 1\n    .export maximumVolume\n    pitch: %SystemSingle, 1\n   
-    .export pitch\n    cooldown: %SystemSingle, 0.1\n    .export cooldown\n    _nextImpactTime:
-    %SystemSingle, 0\n    windClip: %UnityEngineAudioClip, null\n    .export windClip\n   
-    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n    windMaxSpeed:
-    %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume: %SystemSingle,
-    0.35\n    .export windMaxVolume\n    maximumCatchAudioAge: %SystemSingle, 0.75\n   
-    .export maximumCatchAudioAge\n    CatchClockTolerance: %SystemSingle, 0.25\n   
-    FlightOriginUnknown: %SystemInt32, 0\n    _flightOrigin: %SystemInt32, 0\n   
-    _catchEffectFlight: %SystemInt32, -1\n    catchEffectsRequested: %SystemInt32,
+  optBeforeUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    body:
+    %UnityEngineRigidbody, null\n    .export body\n    ballCollider: %UnityEngineSphereCollider,
+    null\n    .export ballCollider\n    ballRenderer: %UnityEngineRenderer, null\n   
+    .export ballRenderer\n    speedTrail: %UnityEngineTrailRenderer, null\n    .export
+    speedTrail\n    flightPath: %UnityEngineLineRenderer, null\n    .export flightPath\n   
+    impactAudio: %UnityEngineAudioSource, null\n    .export impactAudio\n    windAudio:
+    %UnityEngineAudioSource, null\n    .export windAudio\n    motionObserver: %VRCUdonUdonBehaviour,
+    null\n    .export motionObserver\n    feedbackListener: %VRCUdonUdonBehaviour,
+    null\n    .export feedbackListener\n    localOnly: %SystemBoolean, null\n   
+    .export localOnly\n    dragCoefficient: %SystemSingle, 0.00622\n    .export dragCoefficient\n   
+    magnusCoefficient: %SystemSingle, 0.00063\n    .export magnusCoefficient\n   
+    battedSpinHalfLife: %SystemSingle, 1\n    .export battedSpinHalfLife\n    bounceSpinRetention:
+    %SystemSingle, 0.4\n    .export bounceSpinRetention\n    rollingAngularDrag:
+    %SystemSingle, 0.8\n    .export rollingAngularDrag\n    groundLayers: %UnityEngineLayerMask,
+    null\n    .export groundLayers\n    flying: %SystemBoolean, null\n    .export
+    flying\n    flightSequence: %SystemInt32, 0\n    .export flightSequence\n   
+    contactConsumed: %SystemBoolean, null\n    .export contactConsumed\n    _contactPending:
+    %SystemBoolean, null\n    _pendingSequence: %SystemInt32, 0\n    _pendingTime:
+    %SystemSingle, 0\n    _pendingPosition: %UnityEngineVector3, null\n    _pendingVelocity:
+    %UnityEngineVector3, null\n    _pendingSpin: %UnityEngineVector3, null\n    _wake__mode:
+    %SystemInt32, 0\n    _wake__coefficient: %SystemSingle, 0\n    _wake__direction:
+    %UnityEngineVector3, null\n    _wake__basisX: %UnityEngineVector3, null\n   
+    _wake__basisY: %UnityEngineVector3, null\n    _wake__phase: %SystemSingle, 0\n   
+    _wake__rate: %SystemSingle, 0\n    _wakeTime: %SystemSingle, 0\n    _wakeSampleTime:
+    %SystemSingle, 0\n    impactClip: %UnityEngineAudioClip, null\n    .export impactClip\n   
+    impactLayers: %UnityEngineLayerMask, null\n    .export impactLayers\n    requireLocalOwner:
+    %SystemBoolean, null\n    .export requireLocalOwner\n    minimumSpeed: %SystemSingle,
+    0.8\n    .export minimumSpeed\n    maximumSpeed: %SystemSingle, 10\n    .export
+    maximumSpeed\n    minimumVolume: %SystemSingle, 0.35\n    .export minimumVolume\n   
+    maximumVolume: %SystemSingle, 1\n    .export maximumVolume\n    pitch: %SystemSingle,
+    1\n    .export pitch\n    cooldown: %SystemSingle, 0.1\n    .export cooldown\n   
+    _nextImpactTime: %SystemSingle, 0\n    windClip: %UnityEngineAudioClip, null\n   
+    .export windClip\n    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n   
+    windMaxSpeed: %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume:
+    %SystemSingle, 0.35\n    .export windMaxVolume\n    maximumCatchAudioAge: %SystemSingle,
+    0.75\n    .export maximumCatchAudioAge\n    CatchClockTolerance: %SystemSingle,
+    0.25\n    FlightOriginUnknown: %SystemInt32, 0\n    _flightOrigin: %SystemInt32,
+    0\n    _catchEffectFlight: %SystemInt32, -1\n    catchEffectsRequested: %SystemInt32,
     0\n    .export catchEffectsRequested\n    _lastCatchEffectLocal: %SystemBoolean,
     null\n    _lastCatchEffectOrigin: %SystemInt32, 0\n    _lastCatchEffectSpeed:
     %SystemSingle, 0\n    pickup: %VRCSDK3ComponentsVRCPickup, null\n    .export
@@ -112278,44 +112284,47 @@ MonoBehaviour:
     JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_9\n       
     PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
     JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
-  optAfterUasm: ".data_start\n    body: %UnityEngineRigidbody, null\n    .export
-    body\n    ballCollider: %UnityEngineSphereCollider, null\n    .export ballCollider\n   
-    ballRenderer: %UnityEngineRenderer, null\n    .export ballRenderer\n    speedTrail:
-    %UnityEngineTrailRenderer, null\n    .export speedTrail\n    flightPath: %UnityEngineLineRenderer,
-    null\n    .export flightPath\n    impactAudio: %UnityEngineAudioSource, null\n   
-    .export impactAudio\n    windAudio: %UnityEngineAudioSource, null\n    .export
-    windAudio\n    motionObserver: %VRCUdonUdonBehaviour, null\n    .export motionObserver\n   
-    feedbackListener: %VRCUdonUdonBehaviour, null\n    .export feedbackListener\n   
-    localOnly: %SystemBoolean, null\n    .export localOnly\n    dragCoefficient:
-    %SystemSingle, 0.00622\n    .export dragCoefficient\n    magnusCoefficient: %SystemSingle,
-    0.00063\n    .export magnusCoefficient\n    battedSpinHalfLife: %SystemSingle,
-    1\n    .export battedSpinHalfLife\n    bounceSpinRetention: %SystemSingle, 0.4\n   
-    .export bounceSpinRetention\n    rollingAngularDrag: %SystemSingle, 0.8\n   
-    .export rollingAngularDrag\n    groundLayers: %UnityEngineLayerMask, null\n   
-    .export groundLayers\n    flying: %SystemBoolean, null\n    .export flying\n   
-    flightSequence: %SystemInt32, 0\n    .export flightSequence\n    contactConsumed:
-    %SystemBoolean, null\n    .export contactConsumed\n    _contactPending: %SystemBoolean,
-    null\n    _pendingSequence: %SystemInt32, 0\n    _pendingTime: %SystemSingle,
-    0\n    _pendingPosition: %UnityEngineVector3, null\n    _pendingVelocity: %UnityEngineVector3,
-    null\n    _pendingSpin: %UnityEngineVector3, null\n    _wake__mode: %SystemInt32,
-    0\n    _wake__coefficient: %SystemSingle, 0\n    _wake__direction: %UnityEngineVector3,
-    null\n    _wake__basisX: %UnityEngineVector3, null\n    _wake__basisY: %UnityEngineVector3,
-    null\n    _wake__phase: %SystemSingle, 0\n    _wake__rate: %SystemSingle, 0\n   
-    _wakeTime: %SystemSingle, 0\n    _wakeSampleTime: %SystemSingle, 0\n    impactClip:
-    %UnityEngineAudioClip, null\n    .export impactClip\n    impactLayers: %UnityEngineLayerMask,
-    null\n    .export impactLayers\n    requireLocalOwner: %SystemBoolean, null\n   
-    .export requireLocalOwner\n    minimumSpeed: %SystemSingle, 0.8\n    .export
-    minimumSpeed\n    maximumSpeed: %SystemSingle, 10\n    .export maximumSpeed\n   
-    minimumVolume: %SystemSingle, 0.35\n    .export minimumVolume\n    maximumVolume:
-    %SystemSingle, 1\n    .export maximumVolume\n    pitch: %SystemSingle, 1\n   
-    .export pitch\n    cooldown: %SystemSingle, 0.1\n    .export cooldown\n    _nextImpactTime:
-    %SystemSingle, 0\n    windClip: %UnityEngineAudioClip, null\n    .export windClip\n   
-    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n    windMaxSpeed:
-    %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume: %SystemSingle,
-    0.35\n    .export windMaxVolume\n    maximumCatchAudioAge: %SystemSingle, 0.75\n   
-    .export maximumCatchAudioAge\n    CatchClockTolerance: %SystemSingle, 0.25\n   
-    FlightOriginUnknown: %SystemInt32, 0\n    _flightOrigin: %SystemInt32, 0\n   
-    _catchEffectFlight: %SystemInt32, -1\n    catchEffectsRequested: %SystemInt32,
+  optAfterUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    body:
+    %UnityEngineRigidbody, null\n    .export body\n    ballCollider: %UnityEngineSphereCollider,
+    null\n    .export ballCollider\n    ballRenderer: %UnityEngineRenderer, null\n   
+    .export ballRenderer\n    speedTrail: %UnityEngineTrailRenderer, null\n    .export
+    speedTrail\n    flightPath: %UnityEngineLineRenderer, null\n    .export flightPath\n   
+    impactAudio: %UnityEngineAudioSource, null\n    .export impactAudio\n    windAudio:
+    %UnityEngineAudioSource, null\n    .export windAudio\n    motionObserver: %VRCUdonUdonBehaviour,
+    null\n    .export motionObserver\n    feedbackListener: %VRCUdonUdonBehaviour,
+    null\n    .export feedbackListener\n    localOnly: %SystemBoolean, null\n   
+    .export localOnly\n    dragCoefficient: %SystemSingle, 0.00622\n    .export dragCoefficient\n   
+    magnusCoefficient: %SystemSingle, 0.00063\n    .export magnusCoefficient\n   
+    battedSpinHalfLife: %SystemSingle, 1\n    .export battedSpinHalfLife\n    bounceSpinRetention:
+    %SystemSingle, 0.4\n    .export bounceSpinRetention\n    rollingAngularDrag:
+    %SystemSingle, 0.8\n    .export rollingAngularDrag\n    groundLayers: %UnityEngineLayerMask,
+    null\n    .export groundLayers\n    flying: %SystemBoolean, null\n    .export
+    flying\n    flightSequence: %SystemInt32, 0\n    .export flightSequence\n   
+    contactConsumed: %SystemBoolean, null\n    .export contactConsumed\n    _contactPending:
+    %SystemBoolean, null\n    _pendingSequence: %SystemInt32, 0\n    _pendingTime:
+    %SystemSingle, 0\n    _pendingPosition: %UnityEngineVector3, null\n    _pendingVelocity:
+    %UnityEngineVector3, null\n    _pendingSpin: %UnityEngineVector3, null\n    _wake__mode:
+    %SystemInt32, 0\n    _wake__coefficient: %SystemSingle, 0\n    _wake__direction:
+    %UnityEngineVector3, null\n    _wake__basisX: %UnityEngineVector3, null\n   
+    _wake__basisY: %UnityEngineVector3, null\n    _wake__phase: %SystemSingle, 0\n   
+    _wake__rate: %SystemSingle, 0\n    _wakeTime: %SystemSingle, 0\n    _wakeSampleTime:
+    %SystemSingle, 0\n    impactClip: %UnityEngineAudioClip, null\n    .export impactClip\n   
+    impactLayers: %UnityEngineLayerMask, null\n    .export impactLayers\n    requireLocalOwner:
+    %SystemBoolean, null\n    .export requireLocalOwner\n    minimumSpeed: %SystemSingle,
+    0.8\n    .export minimumSpeed\n    maximumSpeed: %SystemSingle, 10\n    .export
+    maximumSpeed\n    minimumVolume: %SystemSingle, 0.35\n    .export minimumVolume\n   
+    maximumVolume: %SystemSingle, 1\n    .export maximumVolume\n    pitch: %SystemSingle,
+    1\n    .export pitch\n    cooldown: %SystemSingle, 0.1\n    .export cooldown\n   
+    _nextImpactTime: %SystemSingle, 0\n    windClip: %UnityEngineAudioClip, null\n   
+    .export windClip\n    windStartSpeed: %SystemSingle, 20\n    .export windStartSpeed\n   
+    windMaxSpeed: %SystemSingle, 40\n    .export windMaxSpeed\n    windMaxVolume:
+    %SystemSingle, 0.35\n    .export windMaxVolume\n    maximumCatchAudioAge: %SystemSingle,
+    0.75\n    .export maximumCatchAudioAge\n    CatchClockTolerance: %SystemSingle,
+    0.25\n    FlightOriginUnknown: %SystemInt32, 0\n    _flightOrigin: %SystemInt32,
+    0\n    _catchEffectFlight: %SystemInt32, -1\n    catchEffectsRequested: %SystemInt32,
     0\n    .export catchEffectsRequested\n    _lastCatchEffectLocal: %SystemBoolean,
     null\n    _lastCatchEffectOrigin: %SystemInt32, 0\n    _lastCatchEffectSpeed:
     %SystemSingle, 0\n    pickup: %VRCSDK3ComponentsVRCPickup, null\n    .export
@@ -168113,6 +168122,15 @@ MonoBehaviour:
     PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
     JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
   optBeforeInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=_times\tArrayAlloc\t=SystemSingleArray\t64\t\t\t\t\t"
   - "=_positions\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
   - "=_velocities\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
@@ -168165,6 +168183,15 @@ MonoBehaviour:
   - "=__const_173\tPrimConst\t=SystemSingle\t0\tSingle:=Infinity\t\t\t\t"
   - "=__const_178\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
   optAfterInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=_times\tArrayAlloc\t=SystemSingleArray\t64\t\t\t\t\t"
   - "=_positions\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"
   - "=_velocities\tArrayAlloc\t=UnityEngineVector3Array\t64\t\t\t\t\t"

@@ -14,36 +14,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serializedUdonProgramAsset: {fileID: 11400000, guid: 4d8362b20cb50884c9cfae8a7c2bd809,
     type: 2}
-  udonAssembly: ".data_start\n    stepsPerFrame: %SystemInt32, 64\n    .export stepsPerFrame\n   
-    maxIterations: %SystemInt32, 8\n    .export maxIterations\n    maxStepsPerTrajectory:
-    %SystemInt32, 500\n    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle,
-    0.03\n    .export tolerance\n    angleDelta: %SystemSingle, 0.002\n    .export
-    angleDelta\n    solving: %SystemBoolean, null\n    .export solving\n    converged:
-    %SystemBoolean, null\n    .export converged\n    launchDirection: %UnityEngineVector3,
-    null\n    .export launchDirection\n    launchSpin: %UnityEngineVector3, null\n   
-    .export launchSpin\n    launchWakeDirection: %UnityEngineVector3, null\n    .export
-    launchWakeDirection\n    predictedCrossing: %UnityEngineVector3, null\n    .export
-    predictedCrossing\n    errorMeters: %SystemSingle, 0\n    .export errorMeters\n   
-    iterations: %SystemInt32, 0\n    .export iterations\n    _release: %UnityEngineVector3,
-    null\n    _target: %UnityEngineVector3, null\n    _normal: %UnityEngineVector3,
-    null\n    _right: %UnityEngineVector3, null\n    _spin: %UnityEngineVector3,
-    null\n    _gravity: %UnityEngineVector3, null\n    _localSpin: %UnityEngineVector3,
-    null\n    _trialSpin: %UnityEngineVector3, null\n    _relativeSpin: %SystemBoolean,
-    null\n    _localWake__mode: %SystemInt32, 0\n    _localWake__coefficient: %SystemSingle,
-    0\n    _localWake__direction: %UnityEngineVector3, null\n    _localWake__coneAngle:
-    %SystemSingle, 0\n    _localWake__initialPhase: %SystemSingle, 0\n    _trialWake__mode:
-    %SystemInt32, 0\n    _trialWake__coefficient: %SystemSingle, 0\n    _trialWake__direction:
-    %UnityEngineVector3, null\n    _trialWake__basisX: %UnityEngineVector3, null\n   
-    _trialWake__basisY: %UnityEngineVector3, null\n    _trialWake__phase: %SystemSingle,
-    0\n    _trialWake__rate: %SystemSingle, 0\n    _time: %SystemSingle, 0\n    _speed:
-    %SystemSingle, 0\n    _drag: %SystemSingle, 0\n    _magnus: %SystemSingle, 0\n   
-    _dt: %SystemSingle, 0\n    _yaw: %SystemSingle, 0\n    _pitch: %SystemSingle,
-    0\n    _bestError: %SystemSingle, 0\n    _bestYaw: %SystemSingle, 0\n    _bestPitch:
-    %SystemSingle, 0\n    _bestCrossing: %UnityEngineVector3, null\n    _position:
-    %UnityEngineVector3, null\n    _velocity: %UnityEngineVector3, null\n    _initialSide:
-    %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step: %SystemInt32, 0\n   
-    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3, null\n   
-    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__position:
+  udonAssembly: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    stepsPerFrame:
+    %SystemInt32, 64\n    .export stepsPerFrame\n    maxIterations: %SystemInt32,
+    8\n    .export maxIterations\n    maxStepsPerTrajectory: %SystemInt32, 500\n   
+    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle, 0.03\n    .export
+    tolerance\n    angleDelta: %SystemSingle, 0.002\n    .export angleDelta\n   
+    solving: %SystemBoolean, null\n    .export solving\n    converged: %SystemBoolean,
+    null\n    .export converged\n    launchDirection: %UnityEngineVector3, null\n   
+    .export launchDirection\n    launchSpin: %UnityEngineVector3, null\n    .export
+    launchSpin\n    launchWakeDirection: %UnityEngineVector3, null\n    .export launchWakeDirection\n   
+    predictedCrossing: %UnityEngineVector3, null\n    .export predictedCrossing\n   
+    errorMeters: %SystemSingle, 0\n    .export errorMeters\n    iterations: %SystemInt32,
+    0\n    .export iterations\n    _release: %UnityEngineVector3, null\n    _target:
+    %UnityEngineVector3, null\n    _normal: %UnityEngineVector3, null\n    _right:
+    %UnityEngineVector3, null\n    _spin: %UnityEngineVector3, null\n    _gravity:
+    %UnityEngineVector3, null\n    _localSpin: %UnityEngineVector3, null\n    _trialSpin:
+    %UnityEngineVector3, null\n    _relativeSpin: %SystemBoolean, null\n    _localWake__mode:
+    %SystemInt32, 0\n    _localWake__coefficient: %SystemSingle, 0\n    _localWake__direction:
+    %UnityEngineVector3, null\n    _localWake__coneAngle: %SystemSingle, 0\n    _localWake__initialPhase:
+    %SystemSingle, 0\n    _trialWake__mode: %SystemInt32, 0\n    _trialWake__coefficient:
+    %SystemSingle, 0\n    _trialWake__direction: %UnityEngineVector3, null\n    _trialWake__basisX:
+    %UnityEngineVector3, null\n    _trialWake__basisY: %UnityEngineVector3, null\n   
+    _trialWake__phase: %SystemSingle, 0\n    _trialWake__rate: %SystemSingle, 0\n   
+    _time: %SystemSingle, 0\n    _speed: %SystemSingle, 0\n    _drag: %SystemSingle,
+    0\n    _magnus: %SystemSingle, 0\n    _dt: %SystemSingle, 0\n    _yaw: %SystemSingle,
+    0\n    _pitch: %SystemSingle, 0\n    _bestError: %SystemSingle, 0\n    _bestYaw:
+    %SystemSingle, 0\n    _bestPitch: %SystemSingle, 0\n    _bestCrossing: %UnityEngineVector3,
+    null\n    _position: %UnityEngineVector3, null\n    _velocity: %UnityEngineVector3,
+    null\n    _initialSide: %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step:
+    %SystemInt32, 0\n    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3,
+    null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
+    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__position:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__velocity:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__spin:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__time:
@@ -1790,7 +1794,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 802ef6a721c0ab24f8fbb7691c39a0a5, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 833a2332d8102e05dab260f9598eb1d7c31a9e6522529dedefd0693d0441d51a
+  sourceFingerprint: e8a096a183697c6497ff749c31e8fec0ffb97852e026cf6b62ed9785cb323e05
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -1825,36 +1829,40 @@ MonoBehaviour:
   - 
   - 
   - 
-  optBeforeUasm: ".data_start\n    stepsPerFrame: %SystemInt32, 64\n    .export stepsPerFrame\n   
-    maxIterations: %SystemInt32, 8\n    .export maxIterations\n    maxStepsPerTrajectory:
-    %SystemInt32, 500\n    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle,
-    0.03\n    .export tolerance\n    angleDelta: %SystemSingle, 0.002\n    .export
-    angleDelta\n    solving: %SystemBoolean, null\n    .export solving\n    converged:
-    %SystemBoolean, null\n    .export converged\n    launchDirection: %UnityEngineVector3,
-    null\n    .export launchDirection\n    launchSpin: %UnityEngineVector3, null\n   
-    .export launchSpin\n    launchWakeDirection: %UnityEngineVector3, null\n    .export
-    launchWakeDirection\n    predictedCrossing: %UnityEngineVector3, null\n    .export
-    predictedCrossing\n    errorMeters: %SystemSingle, 0\n    .export errorMeters\n   
-    iterations: %SystemInt32, 0\n    .export iterations\n    _release: %UnityEngineVector3,
-    null\n    _target: %UnityEngineVector3, null\n    _normal: %UnityEngineVector3,
-    null\n    _right: %UnityEngineVector3, null\n    _spin: %UnityEngineVector3,
-    null\n    _gravity: %UnityEngineVector3, null\n    _localSpin: %UnityEngineVector3,
-    null\n    _trialSpin: %UnityEngineVector3, null\n    _relativeSpin: %SystemBoolean,
-    null\n    _localWake__mode: %SystemInt32, 0\n    _localWake__coefficient: %SystemSingle,
-    0\n    _localWake__direction: %UnityEngineVector3, null\n    _localWake__coneAngle:
-    %SystemSingle, 0\n    _localWake__initialPhase: %SystemSingle, 0\n    _trialWake__mode:
-    %SystemInt32, 0\n    _trialWake__coefficient: %SystemSingle, 0\n    _trialWake__direction:
-    %UnityEngineVector3, null\n    _trialWake__basisX: %UnityEngineVector3, null\n   
-    _trialWake__basisY: %UnityEngineVector3, null\n    _trialWake__phase: %SystemSingle,
-    0\n    _trialWake__rate: %SystemSingle, 0\n    _time: %SystemSingle, 0\n    _speed:
-    %SystemSingle, 0\n    _drag: %SystemSingle, 0\n    _magnus: %SystemSingle, 0\n   
-    _dt: %SystemSingle, 0\n    _yaw: %SystemSingle, 0\n    _pitch: %SystemSingle,
-    0\n    _bestError: %SystemSingle, 0\n    _bestYaw: %SystemSingle, 0\n    _bestPitch:
-    %SystemSingle, 0\n    _bestCrossing: %UnityEngineVector3, null\n    _position:
-    %UnityEngineVector3, null\n    _velocity: %UnityEngineVector3, null\n    _initialSide:
-    %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step: %SystemInt32, 0\n   
-    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3, null\n   
-    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__position:
+  optBeforeUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    stepsPerFrame:
+    %SystemInt32, 64\n    .export stepsPerFrame\n    maxIterations: %SystemInt32,
+    8\n    .export maxIterations\n    maxStepsPerTrajectory: %SystemInt32, 500\n   
+    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle, 0.03\n    .export
+    tolerance\n    angleDelta: %SystemSingle, 0.002\n    .export angleDelta\n   
+    solving: %SystemBoolean, null\n    .export solving\n    converged: %SystemBoolean,
+    null\n    .export converged\n    launchDirection: %UnityEngineVector3, null\n   
+    .export launchDirection\n    launchSpin: %UnityEngineVector3, null\n    .export
+    launchSpin\n    launchWakeDirection: %UnityEngineVector3, null\n    .export launchWakeDirection\n   
+    predictedCrossing: %UnityEngineVector3, null\n    .export predictedCrossing\n   
+    errorMeters: %SystemSingle, 0\n    .export errorMeters\n    iterations: %SystemInt32,
+    0\n    .export iterations\n    _release: %UnityEngineVector3, null\n    _target:
+    %UnityEngineVector3, null\n    _normal: %UnityEngineVector3, null\n    _right:
+    %UnityEngineVector3, null\n    _spin: %UnityEngineVector3, null\n    _gravity:
+    %UnityEngineVector3, null\n    _localSpin: %UnityEngineVector3, null\n    _trialSpin:
+    %UnityEngineVector3, null\n    _relativeSpin: %SystemBoolean, null\n    _localWake__mode:
+    %SystemInt32, 0\n    _localWake__coefficient: %SystemSingle, 0\n    _localWake__direction:
+    %UnityEngineVector3, null\n    _localWake__coneAngle: %SystemSingle, 0\n    _localWake__initialPhase:
+    %SystemSingle, 0\n    _trialWake__mode: %SystemInt32, 0\n    _trialWake__coefficient:
+    %SystemSingle, 0\n    _trialWake__direction: %UnityEngineVector3, null\n    _trialWake__basisX:
+    %UnityEngineVector3, null\n    _trialWake__basisY: %UnityEngineVector3, null\n   
+    _trialWake__phase: %SystemSingle, 0\n    _trialWake__rate: %SystemSingle, 0\n   
+    _time: %SystemSingle, 0\n    _speed: %SystemSingle, 0\n    _drag: %SystemSingle,
+    0\n    _magnus: %SystemSingle, 0\n    _dt: %SystemSingle, 0\n    _yaw: %SystemSingle,
+    0\n    _pitch: %SystemSingle, 0\n    _bestError: %SystemSingle, 0\n    _bestYaw:
+    %SystemSingle, 0\n    _bestPitch: %SystemSingle, 0\n    _bestCrossing: %UnityEngineVector3,
+    null\n    _position: %UnityEngineVector3, null\n    _velocity: %UnityEngineVector3,
+    null\n    _initialSide: %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step:
+    %SystemInt32, 0\n    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3,
+    null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
+    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__position:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__velocity:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__spin:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__time:
@@ -4184,36 +4192,40 @@ MonoBehaviour:
     __FinishTrial__SystemBoolean_UnityEngineVector3_L33:\n        PUSH, __const_0\n       
     PUSH, _trial\n        COPY\n        PUSH, __retaddr_7\n        PUSH, __StartTrial_retjump\n       
     COPY\n        JUMP, StartTrial\n        JUMP_INDIRECT, __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n.code_end\n"
-  optAfterUasm: ".data_start\n    stepsPerFrame: %SystemInt32, 64\n    .export stepsPerFrame\n   
-    maxIterations: %SystemInt32, 8\n    .export maxIterations\n    maxStepsPerTrajectory:
-    %SystemInt32, 500\n    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle,
-    0.03\n    .export tolerance\n    angleDelta: %SystemSingle, 0.002\n    .export
-    angleDelta\n    solving: %SystemBoolean, null\n    .export solving\n    converged:
-    %SystemBoolean, null\n    .export converged\n    launchDirection: %UnityEngineVector3,
-    null\n    .export launchDirection\n    launchSpin: %UnityEngineVector3, null\n   
-    .export launchSpin\n    launchWakeDirection: %UnityEngineVector3, null\n    .export
-    launchWakeDirection\n    predictedCrossing: %UnityEngineVector3, null\n    .export
-    predictedCrossing\n    errorMeters: %SystemSingle, 0\n    .export errorMeters\n   
-    iterations: %SystemInt32, 0\n    .export iterations\n    _release: %UnityEngineVector3,
-    null\n    _target: %UnityEngineVector3, null\n    _normal: %UnityEngineVector3,
-    null\n    _right: %UnityEngineVector3, null\n    _spin: %UnityEngineVector3,
-    null\n    _gravity: %UnityEngineVector3, null\n    _localSpin: %UnityEngineVector3,
-    null\n    _trialSpin: %UnityEngineVector3, null\n    _relativeSpin: %SystemBoolean,
-    null\n    _localWake__mode: %SystemInt32, 0\n    _localWake__coefficient: %SystemSingle,
-    0\n    _localWake__direction: %UnityEngineVector3, null\n    _localWake__coneAngle:
-    %SystemSingle, 0\n    _localWake__initialPhase: %SystemSingle, 0\n    _trialWake__mode:
-    %SystemInt32, 0\n    _trialWake__coefficient: %SystemSingle, 0\n    _trialWake__direction:
-    %UnityEngineVector3, null\n    _trialWake__basisX: %UnityEngineVector3, null\n   
-    _trialWake__basisY: %UnityEngineVector3, null\n    _trialWake__phase: %SystemSingle,
-    0\n    _trialWake__rate: %SystemSingle, 0\n    _time: %SystemSingle, 0\n    _speed:
-    %SystemSingle, 0\n    _drag: %SystemSingle, 0\n    _magnus: %SystemSingle, 0\n   
-    _dt: %SystemSingle, 0\n    _yaw: %SystemSingle, 0\n    _pitch: %SystemSingle,
-    0\n    _bestError: %SystemSingle, 0\n    _bestYaw: %SystemSingle, 0\n    _bestPitch:
-    %SystemSingle, 0\n    _bestCrossing: %UnityEngineVector3, null\n    _position:
-    %UnityEngineVector3, null\n    _velocity: %UnityEngineVector3, null\n    _initialSide:
-    %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step: %SystemInt32, 0\n   
-    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3, null\n   
-    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__position:
+  optAfterUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
+    null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
+    %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    stepsPerFrame:
+    %SystemInt32, 64\n    .export stepsPerFrame\n    maxIterations: %SystemInt32,
+    8\n    .export maxIterations\n    maxStepsPerTrajectory: %SystemInt32, 500\n   
+    .export maxStepsPerTrajectory\n    tolerance: %SystemSingle, 0.03\n    .export
+    tolerance\n    angleDelta: %SystemSingle, 0.002\n    .export angleDelta\n   
+    solving: %SystemBoolean, null\n    .export solving\n    converged: %SystemBoolean,
+    null\n    .export converged\n    launchDirection: %UnityEngineVector3, null\n   
+    .export launchDirection\n    launchSpin: %UnityEngineVector3, null\n    .export
+    launchSpin\n    launchWakeDirection: %UnityEngineVector3, null\n    .export launchWakeDirection\n   
+    predictedCrossing: %UnityEngineVector3, null\n    .export predictedCrossing\n   
+    errorMeters: %SystemSingle, 0\n    .export errorMeters\n    iterations: %SystemInt32,
+    0\n    .export iterations\n    _release: %UnityEngineVector3, null\n    _target:
+    %UnityEngineVector3, null\n    _normal: %UnityEngineVector3, null\n    _right:
+    %UnityEngineVector3, null\n    _spin: %UnityEngineVector3, null\n    _gravity:
+    %UnityEngineVector3, null\n    _localSpin: %UnityEngineVector3, null\n    _trialSpin:
+    %UnityEngineVector3, null\n    _relativeSpin: %SystemBoolean, null\n    _localWake__mode:
+    %SystemInt32, 0\n    _localWake__coefficient: %SystemSingle, 0\n    _localWake__direction:
+    %UnityEngineVector3, null\n    _localWake__coneAngle: %SystemSingle, 0\n    _localWake__initialPhase:
+    %SystemSingle, 0\n    _trialWake__mode: %SystemInt32, 0\n    _trialWake__coefficient:
+    %SystemSingle, 0\n    _trialWake__direction: %UnityEngineVector3, null\n    _trialWake__basisX:
+    %UnityEngineVector3, null\n    _trialWake__basisY: %UnityEngineVector3, null\n   
+    _trialWake__phase: %SystemSingle, 0\n    _trialWake__rate: %SystemSingle, 0\n   
+    _time: %SystemSingle, 0\n    _speed: %SystemSingle, 0\n    _drag: %SystemSingle,
+    0\n    _magnus: %SystemSingle, 0\n    _dt: %SystemSingle, 0\n    _yaw: %SystemSingle,
+    0\n    _pitch: %SystemSingle, 0\n    _bestError: %SystemSingle, 0\n    _bestYaw:
+    %SystemSingle, 0\n    _bestPitch: %SystemSingle, 0\n    _bestCrossing: %UnityEngineVector3,
+    null\n    _position: %UnityEngineVector3, null\n    _velocity: %UnityEngineVector3,
+    null\n    _initialSide: %SystemSingle, 0\n    _trial: %SystemInt32, 0\n    _step:
+    %SystemInt32, 0\n    _baseError: %UnityEngineVector3, null\n    _yawError: %UnityEngineVector3,
+    null\n    _baseValid: %SystemBoolean, null\n    _yawValid: %SystemBoolean, null\n   
+    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__position:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__velocity:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__spin:
     %UnityEngineVector3, null\n    __ret__X15zBallFlightModel__m__Step__BallFlightState_UnityEngineVector3_UnityEngineVector3_SystemSingle_SystemSingle_BallWake_SystemSingle__time:
@@ -5958,6 +5970,15 @@ MonoBehaviour:
     PUSH, __StartTrial_retjump\n        COPY\n        JUMP, StartTrial\n        JUMP_INDIRECT,
     __FinishTrial__SystemBoolean_UnityEngineVector3_retjump\n.code_end\n"
   optBeforeInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=5202174863686470559\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=5202174863686470559"
   - "=__const_2\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"
@@ -5966,6 +5987,15 @@ MonoBehaviour:
   - "=__const_12\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
   - "=__const_13\tPrimConst\t=SystemSingle\t0\tSingle:=-3.4028235E+38\t\t\t\t"
   optAfterInject:
+  - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
+  - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
+  - "=__sf__X9zPitchType__ParameterNames\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Run\x01String:=\x01String:=\x01String:=Break\x01String:=Direction\x01String:=\x01String:=Cut\x01String:=\x01String:=\x01String:=Velocity\x01String:=Break\x01String:=Shape\x01String:=Shape\x01String:=\x01String:=\x01String:=Axis\x01String:=Tempo\x01String:=\x01String:=Arm-Side
+    Run\x01String:=\x01String:=\x01String:=Tempo\x01String:=Direction\x01String:=\x01String:=Flutter
+    Rate\x01String:=Direction\x01String:=Flutter Size"
+  - "=__sf__X9zPitchType__LowLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Small\x01String:=Run\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Slow\x01String:=Small\x01String:=Horizontal\x01String:=Sweep\x01String:=\x01String:=\x01String:=Drop\x01String:=Normal\x01String:=\x01String:=Small\x01String:=\x01String:=\x01String:=Firm\x01String:=Arm
+    Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
+  - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
+    Side\x01String:=Large"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=5202174863686470559\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=5202174863686470559"
   - "=__const_2\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=0\x01Single:=0\x01Single:=0\t"

@@ -9,8 +9,8 @@ public partial class BattingPitcherBehaviour
         VRCPlayerApi me = Mimic.Join();
         VRCPlayerApi other = Mimic.Join();
         _stateKnown = true;
-        RequestSaveItem(0, 2, 1 | 256);
-        RequestSaveItem(0, 5, 16);
+        RequestSaveItem(0, 2, 1 | 256, PitchPlaylist.DefaultBuild);
+        RequestSaveItem(0, 5, 16, PitchPlaylist.DefaultBuild);
         RequestSequence(true);
         RequestRunning(true);
         SubmitSettings(140f, 1800f, 5f, true);
@@ -36,12 +36,12 @@ public partial class BattingPitcherBehaviour
         VRCPlayerApi me = Mimic.Join();
         VRCPlayerApi other = Mimic.Join();
         _stateKnown = true;
-        RequestSaveItem(0, 0, 16);
+        RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
         RequestRunning(true);
         int first = SavedItemId();
         Mimic.Deliver();
         Mimic.Become(other);
-        int token = RequestSaveItem(0, 3, 2);
+        int token = RequestSaveItem(0, 3, 2, PitchPlaylist.DefaultBuild);
         Assert.IsTrue(Networking.IsOwner(other, gameObject), "editing takes Ownership");
         Assert.AreEqual(SaveDone, SaveResult(token));
         RequestMoveItem(SavedItemId(), -1);
@@ -56,20 +56,43 @@ public partial class BattingPitcherBehaviour
     }
 
     [TsukimiTest]
+    public void SavedBuildsTravelWithTheirItemsAcrossOwners()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        _stateKnown = true;
+        int sweep = PitchPlaylist.PackBuild(PitchType.Sweeper, 0f, 0.5f, 0.5f);
+        int lift = PitchPlaylist.PackBuild(PitchType.Sweeper, 1f, 0.5f, 0.5f);
+        RequestSaveItem(0, PitchType.Sweeper, 16, sweep);
+        Mimic.Deliver();
+        Mimic.Become(other);
+        Assert.AreEqual(sweep, PlaylistBuild(0), "the build reaches the other client with the item");
+        int token = RequestSaveItem(0, PitchType.Sweeper, 16, lift);
+        Assert.IsTrue(Networking.IsOwner(other, gameObject));
+        Assert.AreEqual(SaveDone, SaveResult(token));
+        RequestMoveItem(SavedItemId(), -1);
+        Mimic.Deliver();
+        Mimic.Become(me);
+        Assert.AreEqual(2, PlaylistCount());
+        Assert.AreEqual(lift, PlaylistBuild(0), "the new Owner's build, moved with its item");
+        Assert.AreEqual(sweep, PlaylistBuild(1));
+    }
+
+    [TsukimiTest]
     public void ConcurrentEditsConvergeToTheLastSentState()
     {
         VRCPlayerApi me = Mimic.Join();
         VRCPlayerApi other = Mimic.Join();
         _stateKnown = true;
-        RequestSaveItem(0, 0, 16);
+        RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
         Mimic.Deliver();
         // the other client edits and sends
         Mimic.Become(other);
-        RequestSaveItem(0, 1, 1);
+        RequestSaveItem(0, 1, 1, PitchPlaylist.DefaultBuild);
         Mimic.Deliver(me);
         // this client edits next, from the state it holds
         Mimic.Become(me);
-        RequestSaveItem(0, 2, 4);
+        RequestSaveItem(0, 2, 4, PitchPlaylist.DefaultBuild);
         Mimic.Deliver(other);
         int count = PlaylistCount();
         int a = PlaylistItem(0), b = PlaylistItem(1), c = PlaylistItem(2);
@@ -90,8 +113,8 @@ public partial class BattingPitcherBehaviour
         VRCPlayerApi me = Mimic.Join();
         _stateKnown = true;
         RequestSequence(true);
-        RequestSaveItem(0, 0, 16);
-        RequestSaveItem(0, 6, 32);
+        RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
+        RequestSaveItem(0, 6, 32, PitchPlaylist.DefaultBuild);
         RequestRunning(true);
         _reservedItemId = PitchPlaylist.Id(ChooseNextItem());
         MarkReservedItem();
@@ -119,7 +142,7 @@ public partial class BattingPitcherBehaviour
         Mimic.Become(third);
         Assert.IsFalse(IsRunning(), "the third client missed the Start");
         Mimic.Become(me);
-        RequestSaveItem(0, 4, 8);
+        RequestSaveItem(0, 4, 8, PitchPlaylist.DefaultBuild);
         Mimic.Deliver();
         Mimic.Become(third);
         Assert.IsTrue(IsRunning(), "the whole state is sent, so the next send repairs it");

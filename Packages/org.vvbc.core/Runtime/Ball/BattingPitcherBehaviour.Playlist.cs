@@ -7,8 +7,9 @@ using VRC.SDKBase;
 // them whole. Concurrent edits converge to the last accepted state.
 public partial class BattingPitcherBehaviour
 {
-    public const float MinSpeedKmh = 60f;
-    public const float MaxSpeedKmh = 160f;
+    // The 4-Seam's base speed; PitchPropertiesCalculator explains the minimum.
+    public const float MinSpeedKmh = PitchPropertiesCalculator.MinBaseSpeedKmh;
+    public const float MaxSpeedKmh = PitchPropertiesCalculator.MaxBaseSpeedKmh;
     public const float MinSpinRpm = 0f;
     public const float MaxSpinRpm = 3000f;
     public const float MinResetSeconds = 3f;
@@ -30,6 +31,8 @@ public partial class BattingPitcherBehaviour
     public const int SaveInterrupted = -2;
 
     [UdonSynced] private int[] _playlist = new int[10];
+    // Packed PitchBuild parameters of each item, at the same index (PitchPlaylist).
+    [UdonSynced] private int[] _playlistBuilds = new int[10];
     [UdonSynced] private int _playlistState;
     [UdonSynced] private int _nextItemId = 1;
 
@@ -47,6 +50,7 @@ public partial class BattingPitcherBehaviour
     private readonly int[] _opKind = new int[OpCapacity];
     private readonly int[] _opId = new int[OpCapacity];
     private readonly int[] _opValue = new int[OpCapacity];
+    private readonly int[] _opBuild = new int[OpCapacity];
     private readonly int[] _opToken = new int[OpCapacity];
     private int _opCount;
     private int _saveToken;
@@ -61,6 +65,7 @@ public partial class BattingPitcherBehaviour
     public bool IsResetOnTimer() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.TimerFlag); }
     public int PlaylistCount() { return PitchPlaylist.Count(_playlistState); }
     public int PlaylistItem(int index) { return index >= 0 && index < PlaylistCount() ? _playlist[index] : 0; }
+    public int PlaylistBuild(int index) { return index >= 0 && index < PlaylistCount() ? _playlistBuilds[index] : PitchPlaylist.DefaultBuild; }
     public bool PlaylistDone(int index) { return PitchPlaylist.Done(_playlistState, index); }
     public int NextIndex() { return PitchPlaylist.FirstPending(_playlistState); }
     public int IndexOfItem(int itemId) { return PitchPlaylist.IndexOf(_playlist, _playlistState, itemId); }
@@ -139,17 +144,19 @@ public partial class BattingPitcherBehaviour
         RequestEdit();
     }
 
-    // Saves an item: the item with this id is updated, otherwise (new, or deleted meanwhile)
-    // a new id is appended. Returns a token for SaveResult.
-    public int RequestSaveItem(int itemId, int type, int mask)
+    // Saves an item with its packed build (PitchPlaylist.PackBuild) in one edit: the item with
+    // this id is updated, otherwise (new, or deleted meanwhile) a new id is appended. Returns a
+    // token for SaveResult.
+    public int RequestSaveItem(int itemId, int type, int mask, int build)
     {
         _saveToken++;
-        QueueOp(OpSave, itemId, PitchPlaylist.Pack(0, type, mask), _saveToken);
+        int safeType = PitchType.Safe(type);
+        QueueOp(OpSave, itemId, PitchPlaylist.Pack(0, safeType, mask), PitchPlaylist.NormalizeBuild(safeType, build), _saveToken);
         return _saveToken;
     }
 
-    public void RequestMoveItem(int itemId, int direction) { QueueOp(OpMove, itemId, direction, 0); }
-    public void RequestDeleteItem(int itemId) { QueueOp(OpDelete, itemId, 0, 0); }
+    public void RequestMoveItem(int itemId, int direction) { QueueOp(OpMove, itemId, direction, 0, 0); }
+    public void RequestDeleteItem(int itemId) { QueueOp(OpDelete, itemId, 0, 0, 0); }
 
     // SavePending until the Owner applied the save with this token.
     public int SaveResult(int token)
@@ -160,7 +167,7 @@ public partial class BattingPitcherBehaviour
 
     public int SavedItemId() { return _savedItemId; }
 
-    private void QueueOp(int kind, int id, int value, int token)
+    private void QueueOp(int kind, int id, int value, int build, int token)
     {
         if (_opCount >= OpCapacity)
         {
@@ -171,6 +178,7 @@ public partial class BattingPitcherBehaviour
                 _opKind[i - 1] = _opKind[i];
                 _opId[i - 1] = _opId[i];
                 _opValue[i - 1] = _opValue[i];
+                _opBuild[i - 1] = _opBuild[i];
                 _opToken[i - 1] = _opToken[i];
             }
             _opCount--;
@@ -178,6 +186,7 @@ public partial class BattingPitcherBehaviour
         _opKind[_opCount] = kind;
         _opId[_opCount] = id;
         _opValue[_opCount] = value;
+        _opBuild[_opCount] = build;
         _opToken[_opCount] = token;
         _opCount++;
         RequestEdit();
@@ -226,7 +235,7 @@ public partial class BattingPitcherBehaviour
             resetSeconds = Mathf.Clamp(_pendingReset, MinResetSeconds, MaxResetSeconds);
             _playlistState = PitchPlaylist.WithFlag(_playlistState, PitchPlaylist.TimerFlag, _pendingTimer);
         }
-        for (int i = 0; i < _opCount; i++) ApplyOp(_opKind[i], _opId[i], _opValue[i], _opToken[i]);
+        for (int i = 0; i < _opCount; i++) ApplyOp(_opKind[i], _opId[i], _opValue[i], _opBuild[i], _opToken[i]);
         _opCount = 0;
         if (_modePending)
         {
@@ -239,7 +248,7 @@ public partial class BattingPitcherBehaviour
             _playlistState = PitchPlaylist.WithFlag(_playlistState, PitchPlaylist.RunningFlag, _pendingRunning);
             // A fresh Random lap that has not pitched anything starts in a random order.
             if (_pendingRunning && !wasRunning && !IsSequence() && PitchPlaylist.History(_playlistState) == 0)
-                _playlistState = PitchPlaylist.Shuffle(_playlist, _playlistState, NextShuffleSeed());
+                _playlistState = PitchPlaylist.Shuffle(_playlist, _playlistBuilds, _playlistState, NextShuffleSeed());
         }
         Sync();
         if (IsRunning()) TryAdvanceCycle();
@@ -247,7 +256,7 @@ public partial class BattingPitcherBehaviour
         NotifyListeners();
     }
 
-    private void ApplyOp(int kind, int id, int value, int token)
+    private void ApplyOp(int kind, int id, int value, int build, int token)
     {
         int index = PitchPlaylist.IndexOf(_playlist, _playlistState, id);
         if (kind == OpSave)
@@ -256,13 +265,14 @@ public partial class BattingPitcherBehaviour
             int mask = PitchPlaylist.Mask(value);
             if (index >= 0)
             {
-                // Editing keeps the id, the position and the done bit.
+                // Editing keeps the id, the position and the done bit, and replaces the build.
                 _playlist[index] = PitchPlaylist.Pack(id, type, mask);
+                _playlistBuilds[index] = build;
                 FinishSave(token, SaveDone, id);
                 return;
             }
             int newId = PitchPlaylist.FreeId(_playlist, _playlistState, _nextItemId);
-            int state = PitchPlaylist.Append(_playlist, _playlistState, PitchPlaylist.Pack(newId, type, mask));
+            int state = PitchPlaylist.Append(_playlist, _playlistBuilds, _playlistState, PitchPlaylist.Pack(newId, type, mask), build);
             if (state < 0)
             {
                 FinishSave(token, SaveFull, 0);
@@ -274,8 +284,8 @@ public partial class BattingPitcherBehaviour
             return;
         }
         if (index < 0) return;
-        if (kind == OpMove) _playlistState = PitchPlaylist.Swap(_playlist, _playlistState, index, index + (value < 0 ? -1 : 1));
-        else if (kind == OpDelete) _playlistState = PitchPlaylist.RemoveAt(_playlist, _playlistState, index);
+        if (kind == OpMove) _playlistState = PitchPlaylist.Swap(_playlist, _playlistBuilds, _playlistState, index, index + (value < 0 ? -1 : 1));
+        else if (kind == OpDelete) _playlistState = PitchPlaylist.RemoveAt(_playlist, _playlistBuilds, _playlistState, index);
     }
 
     // A mode change starts a new lap from the next unconfirmed pitch. Sequence keeps the
@@ -285,7 +295,7 @@ public partial class BattingPitcherBehaviour
         if (sequence == IsSequence()) return;
         _playlistState = PitchPlaylist.WithFlag(_playlistState, PitchPlaylist.SequenceFlag, sequence);
         _playlistState = sequence ? PitchPlaylist.WithHistory(_playlistState, 0)
-            : PitchPlaylist.Shuffle(_playlist, _playlistState, NextShuffleSeed());
+            : PitchPlaylist.Shuffle(_playlist, _playlistBuilds, _playlistState, NextShuffleSeed());
     }
 
     // Stop cancels only work that has not been sent; a reservation in flight completes, and a

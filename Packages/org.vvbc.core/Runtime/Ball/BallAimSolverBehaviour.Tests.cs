@@ -32,29 +32,110 @@ public partial class BallAimSolverBehaviour
         Assert.IsFalse(converged);
     }
 
-    [TsukimiTest(maxSteps: 30000000)]
-    public void SevenSpinAxesReachNineTargetsWithDirectionRelativeSpin()
+    // Seed = type * 2 + end: every pitch type with all its parameters at 0, then at 1, from
+    // PitchPropertiesCalculator exactly as the pitcher passes it, at the nine zone centres. The
+    // flight the schedule publishes (launch direction, spin and wake) then crosses at the aim.
+    [TsukimiTest(seeds: 20, maxSteps: 12000000)]
+    public void EveryPitchTypeAtItsParameterEndsReachesNineTargets(int seed)
     {
-        Vector3[] axes = new Vector3[] {
-            new Vector3(-1f, 0f, 0f), new Vector3(1f, 0f, 0f),
-            new Vector3(0f, -0.55f, 0.83f), new Vector3(0f, -1f, 0f),
-            new Vector3(-0.12f, 0f, 0.99f), new Vector3(0.65f, 0.76f, 0f),
-            new Vector3(-0.65f, 0.55f, 0.52f)
-        };
-        for (int kind = 0; kind < axes.Length; kind++)
+        PitchBuild build = new PitchBuild();
+        build.pitchTypeId = seed / 2;
+        float end = seed % 2;
+        build.parameterA = end;
+        build.parameterB = end;
+        build.parameterC = end;
+        PitchProperties pitch = PitchPropertiesCalculator.Calculate(build, 120f / 3.6f, 2500f);
+        pitch.wakeLocal.initialPhase = 0.8f;
+        Vector3 localSpin = PitchPropertiesCalculator.LocalSpin(pitch);
+        WakeProfile local = pitch.wakeLocal;
+        Vector3 release = new Vector3(0f, 1.8f, 0f);
+        Vector3 gravity = new Vector3(0f, -9.81f, 0f);
+        for (int row = 0; row < 3; row++) for (int col = 0; col < 3; col++)
         {
-            Vector3 localSpin = axes[kind].normalized * (2500f * 2f * Mathf.PI / 60f);
-            for (int row = 0; row < 3; row++) for (int col = 0; col < 3; col++)
-            {
-                Vector3 target = new Vector3((col - 1) * 0.43f / 3f, 1f + (1 - row) * 0.6f / 3f, 18f);
-                BeginSolveRelativeSpin(new Vector3(0f, 1.8f, 0f), target, Vector3.forward,
-                    120f / 3.6f, localSpin, new Vector3(0f, -9.81f, 0f), 0.00622f, 0.00063f, 0.02f);
-                while (solving) Advance();
-                Assert.IsTrue(converged);
-                Assert.IsTrue(errorMeters <= 0.03f);
-                Assert.IsTrue(Vector3.Distance(launchSpin, PitchSpin.ToWorld(localSpin, launchDirection)) < 0.001f);
-            }
+            Vector3 target = new Vector3((col - 1) * 0.43f / 3f, 0.72f + (1 - row) * 0.48f / 3f, 18f);
+            BeginSolveRelativeSpin(release, target, Vector3.forward, pitch.speedMps, localSpin,
+                local.mode, local.coefficient, local.direction, local.coneAngle, local.initialPhase,
+                gravity, 0.00622f, 0.00063f, 0.02f);
+            while (solving) Advance();
+            Assert.IsTrue(converged, PitchType.Name(build.pitchTypeId) + " converges");
+            Assert.IsTrue(errorMeters <= 0.03f);
+            Assert.IsTrue(Vector3.Distance(launchSpin, PitchSpin.ToWorld(localSpin, launchDirection)) < 0.001f);
+            WakeProfile world = local;
+            world.direction = launchWakeDirection;
+            Assert.IsTrue(Vector3.Distance(FlownCrossing(release, launchDirection * pitch.speedMps, launchSpin, world,
+                gravity, 0.00063f, target.z), target) <= tolerance + 0.001f, "the published flight reaches the aim");
         }
+    }
+
+    // PracticeSpace geometry (HomePlateSet): release 1.451 m high, 18.234 m before the plate front
+    // plane; default zone 0.486-0.963 m. Magnus 0.00063 is the prefab default (PracticeSpace uses
+    // 0.00045, which lifts less). Seed = type * 2 + end: every type with all parameters at 0, then
+    // at 1, at the minimum base speed, aimed at the zone corners and centre.
+    [TsukimiTest(seeds: 20, maxSteps: 12000000)]
+    public void EveryPitchTypeAtTheMinimumBaseSpeedReachesTheZone(int seed)
+    {
+        PitchBuild build = new PitchBuild();
+        build.pitchTypeId = seed / 2;
+        float end = seed % 2;
+        build.parameterA = end;
+        build.parameterB = end;
+        build.parameterC = end;
+        PitchProperties pitch = PitchPropertiesCalculator.Calculate(build, PitchPropertiesCalculator.MinBaseSpeedMps, 3000f);
+        pitch.wakeLocal.initialPhase = 0.8f;
+        WakeProfile local = pitch.wakeLocal;
+        Vector3 release = new Vector3(0f, 1.451f, 0f);
+        Vector3 gravity = new Vector3(0f, -9.81f, 0f);
+        Vector3[] targets = {
+            new Vector3(-0.1439f, 0.963f, 18.234f), new Vector3(0.1439f, 0.963f, 18.234f), new Vector3(0f, 0.7245f, 18.234f),
+            new Vector3(-0.1439f, 0.486f, 18.234f), new Vector3(0.1439f, 0.486f, 18.234f) };
+        for (int i = 0; i < targets.Length; i++)
+        {
+            BeginSolveRelativeSpin(release, targets[i], Vector3.forward, pitch.speedMps, PitchPropertiesCalculator.LocalSpin(pitch),
+                local.mode, local.coefficient, local.direction, local.coneAngle, local.initialPhase,
+                gravity, 0.00622f, 0.00063f, 0.02f);
+            while (solving) Advance();
+            Assert.IsTrue(converged, PitchType.Name(build.pitchTypeId) + " target " + i);
+            WakeProfile world = local;
+            world.direction = launchWakeDirection;
+            Assert.IsTrue(Vector3.Distance(FlownCrossing(release, launchDirection * pitch.speedMps, launchSpin, world,
+                gravity, 0.00063f, targets[i].z), targets[i]) <= tolerance + 0.001f, "the published flight reaches the aim");
+        }
+    }
+
+    // Below the reach floor no launch angle carries the pitch to the zone top: the solver ends
+    // without claiming convergence, which is what the pitcher reports (lastAimConverged).
+    [TsukimiTest(maxSteps: 10000000)]
+    public void AnUnreachablySlowPitchIsReportedAsNotConverged()
+    {
+        PitchBuild build = new PitchBuild();
+        build.pitchTypeId = PitchType.Curve;
+        PitchProperties pitch = PitchPropertiesCalculator.Calculate(build, PitchPropertiesCalculator.MinBaseSpeedMps, 2500f);
+        BeginSolveRelativeSpin(new Vector3(0f, 1.451f, 0f), new Vector3(0f, 0.963f, 18.234f), Vector3.forward, 45f / 3.6f,
+            PitchPropertiesCalculator.LocalSpin(pitch), new Vector3(0f, -9.81f, 0f), 0.00622f, 0.00063f, 0.02f);
+        while (solving) Advance();
+        Assert.IsFalse(converged);
+        Assert.IsTrue(errorMeters > tolerance);
+    }
+
+    // Where the Ball's model, flown from the published launch values, crosses the plane z = planeZ.
+    private Vector3 FlownCrossing(Vector3 release, Vector3 velocity, Vector3 spin, WakeProfile world,
+        Vector3 gravity, float magnus, float planeZ)
+    {
+        BallWake wake = BallAerodynamics.PrepareWake(world, spin);
+        BallFlightState state = new BallFlightState();
+        state.position = release;
+        state.velocity = velocity;
+        for (int i = 0; i < 400; i++)
+        {
+            BallFlightState next = BallFlightModel.Step(state, spin, gravity, 0.00622f, magnus, wake, 0.02f);
+            if (state.position.z < planeZ && next.position.z >= planeZ)
+            {
+                float u = (planeZ - state.position.z) / (next.position.z - state.position.z);
+                return state.position + (next.position - state.position) * u;
+            }
+            state = next;
+        }
+        return state.position;
     }
 
     [TsukimiTest]

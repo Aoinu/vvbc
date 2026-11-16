@@ -6,7 +6,7 @@ Every prefab below depends only on `org.vvbc.core`, `org.vvbc.assets` and the VR
 (plus the SDK's generated `Assets/SerializedUdonPrograms` caches).
 
 - `Runtime/Prefabs/BattingPitcher.prefab` is the gimmick only: the root carries the Manual
-  sync `BattingPitcherBehaviour` (seven preset spin axes baked), `Visual` is the empty model
+  sync `BattingPitcherBehaviour`, `Visual` is the empty model
   slot, `ReleasePoint` and `AimSolver` (`BallAimSolverBehaviour`, no sync) are siblings. Place
   the root on the mound with +Z toward home plate and assign `strikeZone`. It has no model, so
   `animator` is assigned by the variant that adds one.
@@ -40,9 +40,10 @@ On `HumanoidVisual`, configure the `BattingPitcherBehaviour` Udon component. Pla
 change the shared settings through the pitch UI (see [Pitch UI](#pitch-ui)); the Inspector
 values are only the initial state:
 
-- `speedKmh` (60-160, default 120), `spinRpm` (0-3000, default 2500) and `resetSeconds`
-  (Reset Delay, 3-15 s, default 3) apply from the next pitch. Speed and spin are shared by
-  every pitch type; each type keeps its baked spin axis. The pitcher starts **Stopped** and
+- `speedKmh` (90-160, default 120), `spinRpm` (0-3000, default 2500) and `resetSeconds`
+  (Reset Delay, 3-15 s, default 3) apply from the next pitch. Speed and spin are the 4-Seam's
+  base values; every pitch type derives its own speed, spin, axis and wake from them and its
+  build (see [Pitch types](ball-flight-model.md#pitch-types)). The pitcher starts **Stopped** and
   never pitches on its own at startup.
 - `contactFallbackSeconds` (default 15) is the On Event fallback described below.
 - The 3-by-3 courses are arranged from the batter's view: columns run from batter-left to
@@ -104,16 +105,27 @@ that receives a schedule late can jump to the middle of the clip.
 
 The playlist holds at most `PitchPlaylist.MaxItems` (10) items. Each item is one packed
 `int` (see `Runtime/Ball/PitchPlaylist.cs`): bits 0-8 course mask, 9-12 pitch type (the
-preset index), 13-28 a 16-bit item id, 29-31 reserved. The order of the synced array is
+`PitchType` id), 13-28 a 16-bit item id, 29-31 reserved. Its build is a second packed `int`
+at the same index of the synced `_playlistBuilds`: parameters A, B and C in 10 bits each
+(0-1022, so 0.5 is exact), unused parameters stored at 0.5. Every playlist operation (append,
+edit, move, delete, shuffle, sanitize) moves or clears both arrays together; a freed slot
+holds 0, so a new item never inherits an old build. Both arrays travel in the same
+serialization. The order of the synced array is
 the playlist order. A second packed `int` holds the count, a done bit per array index, the
 mode (Random/Sequence), Start/Stop and the reset mode (On Event/On Timer). The next item is
 always the first not-done item from the top, so no separate cursor is stored.
 
-Pitch types are the seven preset indices (0 Four-Seam, 1 Curve, 2 Slider, 3 Sweeper,
-4 Split, 5 Screw, 6 Sinker); the UI lists them as Four-Seam, Slider, Curveball, Sinker,
-Splitter, Screwball, Sweeper. An unknown type pitches as Four-Seam. A course mask of 0 is
-kept and pitches to zone 5. An empty list pitches the fallback Four-Seam to zone 5; it is not
-a list item and marks nothing.
+Pitch types are the ten `PitchType` ids, listed in id order by the UI. An unknown type
+pitches as the 4-Seam. A course mask of 0 is kept and pitches to zone 5. An empty list
+pitches the fallback 4-Seam (default build) to zone 5; it is not a list item and marks
+nothing.
+
+At each preparation the Owner reads the chosen item and its build, runs
+`PitchPropertiesCalculator` with the current base speed and spin, and for a Rotating wake
+(Knuckle) draws the initial phase once from its own phase seed, separate from the shuffle
+seed (see [Ball flight model](ball-flight-model.md#rotating-wake-phase)). The resulting
+speed, spin and wake go into the snapshot that the solver and the schedule use, so a later
+playlist edit never changes a prepared pitch, and receivers never run the calculator.
 
 - **Random**: the Owner shuffles the array itself (local seeded LCG; the result is synced),
   so the UI shows the real order. Every item is pitched once per lap. A new lap reshuffles
@@ -121,7 +133,8 @@ a list item and marks nothing.
   been pitched. A multi-course item picks one of its courses at random for each pitch.
 - **Sequence**: top to bottom, wrapping to the top. Switching modes starts a new lap from the
   next unconfirmed pitch; Random to Sequence keeps the current order.
-- Add appends a not-done item with a new id. Edit keeps the id, position and done bit.
+- Add appends a not-done item with a new id and its build. Edit keeps the id, position and
+  done bit and replaces type, courses and build in one save.
   Move Up/Down swap neighbours, and their done bits move with them. Delete removes the item
   and shifts the done bits. Ids never change and are not reused while present
   (`_nextItemId` is synced). Saving an item that another player deleted meanwhile appends it
@@ -234,10 +247,15 @@ buttons) and the right side with `CONTROLS` / `PITCH EDITOR` tabs and the `RANDO
   read only). Slider edits are drafted locally and committed once after
   `commitDelaySeconds` of quiet (Udon has no pointer-up event).
 - Pitch Editor: `TARGET ZONES` (3 x 3 in batter's view, multi-select, count, `CLEAR ALL`) and
-  `PITCH CONFIGURATION` (Pitch Type dropdown and the empty `PitchBuilderSlot`, the extension
-  point for the Phase 2 Pitch Builder), with `CANCEL` and `SAVE PITCH`. A row opens the item;
-  `ADD PITCH` or the tab opens a new Four-Seam to zone 5. The draft stays open until the
-  Owner confirms the save.
+  `PITCH CONFIGURATION` (Pitch Type dropdown with the ten types and the Pitch Builder in
+  `PitchBuilderSlot`), with `CANCEL` and `SAVE PITCH`. The builder shows one row per parameter
+  the type uses (name, slider, the meaning of both ends and the value in percent); the
+  4-Seam shows a note instead. Slider moves change only the local draft; SAVE PITCH sends
+  type, courses and build in one request, CANCEL discards them. A row opens the item with its
+  saved build; choosing another type loads that type's standard build (all 0.5). Rows show
+  the type with its parameters in percent. `ADD PITCH` or the tab opens a new 4-Seam to zone
+  5. The draft stays open until the Owner confirms the save; switching the page to another
+  pitcher (Shared/Local) drops the draft.
 - Next Pitch: `STOPPED`, `AWAITING CONTACT` (seconds to the fallback), `RESET IN PROGRESS`
   (seconds until the next pitch can be *prepared*, not the pitch itself), `BALL HELD`,
   `PREPARING` (elapsed time and a sweeping gauge), `PITCH SCHEDULED` (seconds to the

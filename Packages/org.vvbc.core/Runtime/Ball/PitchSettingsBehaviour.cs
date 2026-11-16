@@ -79,10 +79,17 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     public TextMeshProUGUI zoneCountText;
     public TMP_Dropdown pitchTypeDropdown;
     public TextMeshProUGUI editorMessageText;
-    [Tooltip("Pitch type (preset index) of each dropdown option, top to bottom.")]
-    public int[] pitchTypeOrder = { 0, 2, 1, 6, 4, 5, 3 };
-    [Tooltip("Display name of each pitch type, by preset index.")]
-    public string[] pitchTypeNames = { "Four-Seam", "Curveball", "Slider", "Sweeper", "Splitter", "Screwball", "Sinker" };
+
+    [Header("Pitch builder")]
+    [Tooltip("One row per parameter A, B, C, inside PitchBuilderSlot. Rows a pitch type does not use are hidden.")]
+    public GameObject[] parameterRows = new GameObject[0];
+    public Slider[] parameterSliders = new Slider[0];
+    public TextMeshProUGUI[] parameterNameTexts = new TextMeshProUGUI[0];
+    public TextMeshProUGUI[] parameterLowTexts = new TextMeshProUGUI[0];
+    public TextMeshProUGUI[] parameterHighTexts = new TextMeshProUGUI[0];
+    public TextMeshProUGUI[] parameterValueTexts = new TextMeshProUGUI[0];
+    [Tooltip("Shown instead of the rows for a pitch type without parameters (4-Seam).")]
+    public GameObject noParameterHint;
 
     [Header("Look")]
     [Tooltip("Seconds between countdown refreshes while the page is shown.")]
@@ -105,6 +112,8 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     private int editItemId;
     private int draftType;
     private int draftMask = 16;
+    // Local draft of parameters A, B and C; sent only with SAVE PITCH.
+    private readonly float[] draftParameters = { 0.5f, 0.5f, 0.5f };
     private int saveToken;
     private float nextDisplay;
     private float nextOwnerRefresh;
@@ -124,6 +133,8 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
         if (speedSlider != null) { speedSlider.minValue = BattingPitcherBehaviour.MinSpeedKmh; speedSlider.maxValue = BattingPitcherBehaviour.MaxSpeedKmh; }
         if (spinSlider != null) { spinSlider.minValue = BattingPitcherBehaviour.MinSpinRpm; spinSlider.maxValue = BattingPitcherBehaviour.MaxSpinRpm; }
         if (resetSlider != null) { resetSlider.minValue = BattingPitcherBehaviour.MinResetSeconds; resetSlider.maxValue = BattingPitcherBehaviour.MaxResetSeconds; }
+        for (int i = 0; i < parameterSliders.Length; i++)
+            if (parameterSliders[i] != null) { parameterSliders[i].minValue = 0f; parameterSliders[i].maxValue = 1f; }
         applying = false;
         if (pitcher != null) pitcher.RegisterSettingsListener(GetComponent<UdonBehaviour>());
         ShowEditor(false);
@@ -356,7 +367,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
 
     public void _ShowEditor()
     {
-        if (!editing) BeginEdit(0, PitchPlaylist.DefaultType, PitchPlaylist.CenterMask);
+        if (!editing) BeginEdit(0, PitchType.FourSeam, PitchPlaylist.CenterMask, PitchPlaylist.DefaultBuild);
     }
 
     public void _SetRandom() { if (pitcher != null) pitcher.RequestSequence(false); }
@@ -426,7 +437,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
 
     // ---- Playlist ----
 
-    public void _AddPitch() { BeginEdit(0, PitchPlaylist.DefaultType, PitchPlaylist.CenterMask); }
+    public void _AddPitch() { BeginEdit(0, PitchType.FourSeam, PitchPlaylist.CenterMask, PitchPlaylist.DefaultBuild); }
 
     // Scrolls to the next pitch on request only; a shuffle never moves the list by itself.
     public void _LocateNext()
@@ -442,7 +453,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
     {
         if (pitcher == null || index >= pitcher.PlaylistCount()) return;
         int item = pitcher.PlaylistItem(index);
-        BeginEdit(PitchPlaylist.Id(item), PitchPlaylist.Type(item), PitchPlaylist.Mask(item));
+        BeginEdit(PitchPlaylist.Id(item), PitchPlaylist.Type(item), PitchPlaylist.Mask(item), pitcher.PlaylistBuild(index));
     }
 
     private void MoveRow(int index, int direction)
@@ -490,7 +501,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
             bool done = pitcher.PlaylistDone(i);
             bool isNext = i == next;
             if (i < rowNumberTexts.Length && rowNumberTexts[i] != null) rowNumberTexts[i].text = (i + 1).ToString();
-            if (i < rowTypeTexts.Length && rowTypeTexts[i] != null) rowTypeTexts[i].text = TypeName(PitchPlaylist.Type(item));
+            if (i < rowTypeTexts.Length && rowTypeTexts[i] != null) rowTypeTexts[i].text = BuildLabel(PitchPlaylist.Type(item), pitcher.PlaylistBuild(i));
             if (i < rowCourseTexts.Length && rowCourseTexts[i] != null) rowCourseTexts[i].text = CourseLabel(PitchPlaylist.Mask(item));
             if (i < rowStatusTexts.Length && rowStatusTexts[i] != null) rowStatusTexts[i].text = isNext ? "NEXT" : done ? "DONE" : "";
             if (i < rowStatusImages.Length && rowStatusImages[i] != null)
@@ -505,9 +516,19 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
         }
     }
 
-    public string TypeName(int type)
+    // "Slider 20 / 80 / 50": the type and its parameters in percent, so builds of one type differ.
+    public string BuildLabel(int type, int build)
     {
-        return type >= 0 && type < pitchTypeNames.Length ? pitchTypeNames[type] : "Four-Seam";
+        string label = PitchType.Name(type);
+        int count = PitchType.ParameterCount(type);
+        for (int i = 0; i < count; i++)
+            label += (i == 0 ? "  " : " / ") + Percent(PitchPlaylist.Parameter(build, i));
+        return label;
+    }
+
+    private int Percent(float value)
+    {
+        return Mathf.RoundToInt(value * 100f);
     }
 
     // "Zone 5" for one zone, "Zones 1 3 7" for several, "All zones" for all nine.
@@ -523,12 +544,13 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
 
     // ---- Pitch editor ----
 
-    private void BeginEdit(int itemId, int type, int mask)
+    private void BeginEdit(int itemId, int type, int mask, int build)
     {
         editing = true;
         editItemId = itemId;
-        draftType = type;
+        draftType = PitchType.Safe(type);
         draftMask = mask & PitchPlaylist.CourseBits;
+        for (int i = 0; i < PitchType.MaxParameters; i++) draftParameters[i] = PitchPlaylist.Parameter(build, i);
         saveToken = 0;
         if (editorMessageText != null) editorMessageText.text = "";
         ShowEditor(true);
@@ -553,11 +575,34 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
         RefreshEditor();
     }
 
+    // The dropdown lists the types in id order. Another type starts from its standard build.
     public void _PitchTypeChanged()
     {
         if (applying || pitchTypeDropdown == null) return;
-        int option = pitchTypeDropdown.value;
-        if (option >= 0 && option < pitchTypeOrder.Length) draftType = pitchTypeOrder[option];
+        SelectType(pitchTypeDropdown.value);
+    }
+
+    private void SelectType(int type)
+    {
+        if (!editing || !PitchType.IsValid(type) || type == draftType) return;
+        draftType = type;
+        for (int i = 0; i < PitchType.MaxParameters; i++) draftParameters[i] = PitchBuild.DefaultParameter;
+        RefreshEditor();
+    }
+
+    // A slider moved: only the local draft changes; nothing is sent until SAVE PITCH.
+    public void _ParameterChanged()
+    {
+        if (applying || !editing) return;
+        for (int i = 0; i < PitchType.MaxParameters && i < parameterSliders.Length; i++)
+            if (parameterSliders[i] != null && PitchType.UsesParameter(draftType, i))
+                draftParameters[i] = Mathf.Clamp01(parameterSliders[i].value);
+        RefreshParameterValues();
+    }
+
+    private int DraftBuild()
+    {
+        return PitchPlaylist.PackBuild(draftType, draftParameters[0], draftParameters[1], draftParameters[2]);
     }
 
     public void _CancelEdit()
@@ -580,7 +625,7 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
             return;
         }
         ShowEditorMessage("Saving...");
-        saveToken = pitcher.RequestSaveItem(editItemId, draftType, draftMask);
+        saveToken = pitcher.RequestSaveItem(editItemId, draftType, draftMask, DraftBuild());
         CheckSave();
     }
 
@@ -619,13 +664,27 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
             if (zoneImages[i] != null) zoneImages[i].color = (draftMask & (1 << i)) != 0 ? accentColor : idleColor;
         int zones = PitchPlaylist.CountCourses(draftMask);
         if (zoneCountText != null) zoneCountText.text = zones == 0 ? "0 selected (pitches to Zone 5)" : zones + " selected";
-        if (pitchTypeDropdown != null)
+        applying = true;
+        if (pitchTypeDropdown != null && pitchTypeDropdown.value != draftType) pitchTypeDropdown.value = draftType;
+        int count = PitchType.ParameterCount(draftType);
+        if (noParameterHint != null) noParameterHint.SetActive(count == 0);
+        for (int i = 0; i < parameterRows.Length; i++)
         {
-            int option = 0;
-            for (int i = 0; i < pitchTypeOrder.Length; i++) if (pitchTypeOrder[i] == draftType) option = i;
-            applying = true;
-            if (pitchTypeDropdown.value != option) pitchTypeDropdown.value = option;
-            applying = false;
+            bool shown = i < count;
+            if (parameterRows[i] != null && parameterRows[i].activeSelf != shown) parameterRows[i].SetActive(shown);
+            if (!shown) continue;
+            if (i < parameterNameTexts.Length && parameterNameTexts[i] != null) parameterNameTexts[i].text = PitchType.ParameterName(draftType, i);
+            if (i < parameterLowTexts.Length && parameterLowTexts[i] != null) parameterLowTexts[i].text = PitchType.ParameterLow(draftType, i);
+            if (i < parameterHighTexts.Length && parameterHighTexts[i] != null) parameterHighTexts[i].text = PitchType.ParameterHigh(draftType, i);
+            if (i < parameterSliders.Length && parameterSliders[i] != null) parameterSliders[i].value = draftParameters[i];
         }
+        applying = false;
+        RefreshParameterValues();
+    }
+
+    private void RefreshParameterValues()
+    {
+        for (int i = 0; i < parameterValueTexts.Length && i < PitchType.MaxParameters; i++)
+            if (parameterValueTexts[i] != null) parameterValueTexts[i].text = Percent(draftParameters[i]) + "%";
     }
 }

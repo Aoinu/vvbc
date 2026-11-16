@@ -11,7 +11,7 @@ public partial class BattingPitcherBehaviour
         Mimic.Become(second);
         localOnly = true;
         _stateKnown = true;
-        int token = RequestSaveItem(0, 2, 16);
+        int token = RequestSaveItem(0, 2, 16, PitchPlaylist.DefaultBuild);
         RequestRunning(true);
         SubmitSettings(140f, 1800f, 5f, true);
         Assert.IsFalse(Networking.IsOwner(second, gameObject), "a LocalRig never takes Ownership");

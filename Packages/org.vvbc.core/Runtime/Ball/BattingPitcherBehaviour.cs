@@ -20,17 +20,13 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     [Tooltip("Local practice copy (LocalRig): no Ownership, no serialization; reservations commit at once.")]
     public bool localOnly;
 
-    // Settings: applied from the next pitch preparation.
+    // Settings: applied from the next pitch preparation. Speed and spin are the 4-Seam's; every
+    // pitch type derives its own from them (PitchPropertiesCalculator).
     [UdonSynced] public float speedKmh = 120f;
     [UdonSynced] public float spinRpm = 2500f;
     [UdonSynced] public float resetSeconds = 3f;
     public int courseColumn = 1;
     public int courseRow = 1;
-    // Baked from the editor preset asset; no ScriptableObject is read at runtime.
-    public Vector3[] pitchSpinAxes = new Vector3[0];
-    [Tooltip("Optional seam-shifted wake per pitch type: the pitch-local (right, up, forward) Fixed wake direction scaled by its coefficient in 1/s (at most 0.055). A missing or zero entry means no wake.")]
-    public Vector3[] pitchWakeVectors = new Vector3[0];
-    [HideInInspector] public string presetAssetGuid = "";
 
     [Header("Pitch schedule")]
     [Tooltip("Seconds between a confirmed send and the shared motion start.")]
@@ -98,8 +94,9 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private bool _preparing, _solving, _reserving, _retryScheduled, _ownerReady, _initialized, _stateKnown;
     private int _solvingSequence, _ownerEpoch, _reserveEpoch, _serializedPitchId, _serializationRetries;
     private double _serializedStart;
+    // Release speed (m/s) and pitch-local wake of the prepared pitch, from PitchPropertiesCalculator;
+    // the solver turns the wake direction into world space.
     private float _speedSnapshot, _resetSnapshot;
-    // Pitch-local wake of the prepared pitch type; the solver turns its direction into world space.
     private WakeProfile _wakeSnapshot;
     private bool _timerSnapshot;
     private int _preparedItemId, _reservedItemId;
@@ -112,8 +109,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     private double _checkAt;
 
     private UdonBehaviour[] _listeners = new UdonBehaviour[0];
-    // Owner-local shuffle seed, drawn once at Start.
+    // Owner-local shuffle seed, drawn once at Start; only the playlist order uses it.
     private int _shuffleSeed = 12345;
+    // Owner-local seed of Rotating wake phases, drawn once at Start; advanced only when a pitch
+    // with a Rotating wake (Knuckle) is prepared. Never synced: the phase itself is.
+    private int _phaseSeed = 54321;
     // Lane in Local Mode (or LocalRig ending): nothing is prepared, played or sent.
     private bool _suspended;
 
@@ -126,18 +126,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
             Debug.LogError("BattingPitcher: required reference is missing");
             return;
         }
-        if (pitchSpinAxes == null || pitchSpinAxes.Length != 7)
-        {
-            Debug.LogError("BattingPitcher: bind a valid seven-pitch preset asset in the Editor");
-            return;
-        }
-        for (int i = 0; i < 7; i++)
-        {
-            if (pitchSpinAxes[i].sqrMagnitude >= 0.000001f) continue;
-            Debug.LogError("BattingPitcher: a baked pitch axis is zero");
-            return;
-        }
         _shuffleSeed = Random.Range(1, int.MaxValue);
+        _phaseSeed = Random.Range(1, int.MaxValue);
         _visualStartPosition = animator.transform.localPosition;
         _visualStartRotation = animator.transform.localRotation;
         ball.RegisterPresentationListener(GetComponent<UdonBehaviour>());
@@ -322,6 +312,12 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         return _shuffleSeed;
     }
 
+    private int NextPhaseSeed()
+    {
+        _phaseSeed = PitchPlaylist.NextSeed(_phaseSeed);
+        return _phaseSeed;
+    }
+
     // Offset from the motion start: the later of release + reset and the end of the motion.
     private float ReadyOffset(float releaseOffset, float reset, float motion)
     {
@@ -451,7 +447,8 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         TryAdvanceCycle();
     }
 
-    // Owner: snapshot the settings, pick the next playlist item, stage the ball and solve the aim.
+    // Owner: snapshot the settings, pick the next playlist item, fix its physical properties,
+    // stage the ball and solve the aim. Later edits never change this snapshot.
     private void BeginPreparation()
     {
         if (!CanPrepare() || _preparing || _reserving || !IsRunning()) return;
@@ -460,12 +457,12 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         pitchSequence++;
         _solvingSequence = pitchSequence;
         _stagePosition = releasePoint.position;
-        _speedSnapshot = Mathf.Clamp(speedKmh, MinSpeedKmh, MaxSpeedKmh) / 3.6f;
         _resetSnapshot = Mathf.Clamp(resetSeconds, MinResetSeconds, MaxResetSeconds);
         _timerSnapshot = PitchPlaylist.Has(_playlistState, PitchPlaylist.TimerFlag);
-        int item = ChooseNextItem();
+        int index = ChooseNextIndex();
+        int item = index < 0 ? FallbackItem : _playlist[index];
+        PitchProperties properties = PreparedProperties(item, index < 0 ? PitchPlaylist.DefaultBuild : _playlistBuilds[index]);
         _preparedItemId = PitchPlaylist.Id(item);
-        int type = PitchPlaylist.SafeType(PitchPlaylist.Type(item), pitchSpinAxes.Length);
         int mask = PitchPlaylist.Mask(item);
         selectedItemId = _preparedItemId;
         int count = PitchPlaylist.CountCourses(mask);
@@ -473,47 +470,44 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         courseColumn = selectedCourse % 3;
         courseRow = selectedCourse / 3;
         Vector3 target = strikeZone.AimPoint(courseColumn, courseRow);
-        selectedPitchType = type;
-        Vector3 axis = pitchSpinAxes[selectedPitchType];
-        float rpm = Mathf.Clamp(spinRpm, MinSpinRpm, MaxSpinRpm);
-        Vector3 localSpin = axis.normalized * (rpm * (2f * Mathf.PI / 60f));
-        _wakeSnapshot = TypeWake(selectedPitchType);
         ball.QueueState(1, _stagePosition, Vector3.zero, Vector3.zero, ServerNow());
         solver.BeginSolveRelativeSpin(_stagePosition, target, -StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward), _speedSnapshot,
-            localSpin, _wakeSnapshot.mode, _wakeSnapshot.coefficient, _wakeSnapshot.direction, _wakeSnapshot.coneAngle,
-            _wakeSnapshot.initialPhase, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
+            PitchPropertiesCalculator.LocalSpin(properties), _wakeSnapshot.mode, _wakeSnapshot.coefficient, _wakeSnapshot.direction,
+            _wakeSnapshot.coneAngle, _wakeSnapshot.initialPhase, Physics.gravity, ball.dragCoefficient, ball.magnusCoefficient, Time.fixedDeltaTime);
         _solving = true;
         NotifyListeners();
     }
 
-    // The pitch-local wake of a pitch type from pitchWakeVectors; None when it has no entry.
-    private WakeProfile TypeWake(int type)
+    // The item's properties from the current base speed and spin, captured into the snapshot.
+    // A Rotating wake gets its initial phase here, drawn once per pitch by the preparing Owner
+    // from its own phase seed; receivers take it from the schedule and never draw one.
+    private PitchProperties PreparedProperties(int item, int build)
     {
-        WakeProfile wake = new WakeProfile();
-        if (pitchWakeVectors == null || type < 0 || type >= pitchWakeVectors.Length) return wake;
-        Vector3 vector = pitchWakeVectors[type];
-        float coefficient = vector.magnitude;
-        if (!(coefficient > 0f && coefficient < float.PositiveInfinity)) return wake;
-        wake.mode = BallAerodynamics.WakeFixed;
-        wake.coefficient = Mathf.Min(coefficient, BallAerodynamics.MaxWakeCoefficient);
-        wake.direction = vector / coefficient;
-        return wake;
+        selectedPitchType = PitchType.Safe(PitchPlaylist.Type(item));
+        PitchProperties properties = PitchPropertiesCalculator.Calculate(PitchPlaylist.Build(item, build),
+            speedKmh / 3.6f, spinRpm);
+        if (properties.wakeLocal.mode == BallAerodynamics.WakeRotating)
+            properties.wakeLocal.initialPhase = PitchPropertiesCalculator.PhaseFromSeed(NextPhaseSeed());
+        _speedSnapshot = properties.speedMps;
+        _wakeSnapshot = properties.wakeLocal;
+        return properties;
     }
 
-    // The next playlist item, or the fallback (id 0: Four-Seam to Zone 5) for an empty list.
-    // A completed lap restarts first (Random reshuffles). Nothing is marked pitched here.
-    private int ChooseNextItem()
+    // An empty list pitches this 4-Seam to Zone 5 with the default build; it is not a list item.
+    private const int FallbackItem = PitchType.FourSeam << PitchPlaylist.TypeShift | PitchPlaylist.CenterMask;
+
+    // Index of the next playlist item, or -1 for an empty list (the fallback). A completed lap
+    // restarts first (Random reshuffles). Nothing is marked pitched here.
+    private int ChooseNextIndex()
     {
-        int lap = PitchPlaylist.BeginLapIfComplete(_playlist, _playlistState, NextShuffleSeed());
+        int lap = PitchPlaylist.BeginLapIfComplete(_playlist, _playlistBuilds, _playlistState, NextShuffleSeed());
         if (lap != _playlistState)
         {
             _playlistState = lap;
             Sync();
             NotifyListeners();
         }
-        int index = PitchPlaylist.FirstPending(_playlistState);
-        if (index < 0) return PitchPlaylist.Pack(0, PitchPlaylist.DefaultType, PitchPlaylist.CenterMask);
-        return _playlist[index];
+        return PitchPlaylist.FirstPending(_playlistState);
     }
 
     // A reservation that could not be sent gives its item back to the lap.
@@ -668,7 +662,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         // Incoming data overwrote this Owner's unsent reservation fields.
         bool lostWork = owner && (_reserving || _preparing);
         _reserving = false;
-        _playlistState = PitchPlaylist.Sanitize(_playlist, _playlistState);
+        _playlistState = PitchPlaylist.Sanitize(_playlist, _playlistBuilds, _playlistState);
         if (ApplyPitch() && owner) { _preparing = false; _solving = false; }
         else if (lostWork)
         {

@@ -33,24 +33,35 @@ public partial class PitchSettingsBehaviour
     }
 
     [TsukimiTest]
-    public void TheDropdownListsEverySupportedPitchOnceInTheSpecifiedOrder()
+    public void RowsNameTheTypeAndItsParameters()
     {
-        Assert.AreEqual(7, pitchTypeOrder.Length);
-        int seen = 0;
-        for (int i = 0; i < pitchTypeOrder.Length; i++)
-        {
-            Assert.AreEqual(0, seen & (1 << pitchTypeOrder[i]), "no type twice");
-            seen |= 1 << pitchTypeOrder[i];
-        }
-        Assert.AreEqual(127, seen);
-        Assert.AreEqual("Four-Seam", TypeName(pitchTypeOrder[0]));
-        Assert.AreEqual("Slider", TypeName(pitchTypeOrder[1]));
-        Assert.AreEqual("Curveball", TypeName(pitchTypeOrder[2]));
-        Assert.AreEqual("Sinker", TypeName(pitchTypeOrder[3]));
-        Assert.AreEqual("Splitter", TypeName(pitchTypeOrder[4]));
-        Assert.AreEqual("Screwball", TypeName(pitchTypeOrder[5]));
-        Assert.AreEqual("Sweeper", TypeName(pitchTypeOrder[6]));
-        Assert.AreEqual("Four-Seam", TypeName(12), "an unknown type reads as the default");
+        Assert.AreEqual("4-Seam", BuildLabel(PitchType.FourSeam, PitchPlaylist.DefaultBuild));
+        Assert.AreEqual("Slider  0 / 50 / 100", BuildLabel(PitchType.Slider, PitchPlaylist.PackBuild(PitchType.Slider, 0f, 0.5f, 1f)));
+        Assert.AreEqual("Split  25", BuildLabel(PitchType.Split, PitchPlaylist.PackBuild(PitchType.Split, 0.25f, 0f, 0f)));
+        Assert.AreEqual("4-Seam", BuildLabel(12, PitchPlaylist.DefaultBuild), "an unknown type reads as the 4-Seam");
+    }
+
+    [TsukimiTest]
+    public void EditingAnItemRestoresItsBuildAndANewTypeStartsFromTheStandard()
+    {
+        int saved = PitchPlaylist.PackBuild(PitchType.Knuckle, 0.1f, 0.9f, 0.3f);
+        BeginEdit(7, PitchType.Knuckle, 16, saved);
+        Assert.AreEqual(PitchType.Knuckle, draftType);
+        Assert.AreEqual(saved, DraftBuild(), "the saved parameters come back");
+        draftParameters[0] = 1f;
+        Assert.AreEqual(PitchPlaylist.PackBuild(PitchType.Knuckle, 1f, 0.9f, 0.3f), DraftBuild(), "slider edits stay in the draft");
+        SelectType(PitchType.Knuckle);
+        Assert.AreEqual(1f, draftParameters[0], "choosing the same type keeps the draft");
+        SelectType(PitchType.Sweeper);
+        Assert.AreEqual(PitchPlaylist.DefaultBuild, DraftBuild(), "another type starts from its standard build");
+        SelectType(10);
+        Assert.AreEqual(PitchType.Sweeper, draftType, "an unknown option is ignored");
+        _CancelEdit();
+        Assert.IsFalse(editing);
+        SelectType(PitchType.Curve);
+        Assert.AreEqual(PitchType.Sweeper, draftType, "nothing changes without an open draft");
+        BeginEdit(7, PitchType.Knuckle, 16, saved);
+        Assert.AreEqual(saved, DraftBuild(), "cancel discarded the edits");
     }
 
     [TsukimiTest]
