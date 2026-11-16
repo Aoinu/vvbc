@@ -76,14 +76,22 @@ and plate, so the ideal release moves with the body. Avatar differences between 
 hand are accepted as they are; there is no automatic correction.
 
 Flow (panel `ManualPitchPanel` beside the mound): **Start Calibration** (only in pitcher
-mode; course locking is off meanwhile) → hold the ball, take the release pose → pull the
-**glove-hand trigger** to record → the panel shows a preview (release offset, arm-slot
-angle and form, spin axis, break direction) → **Save** or **Cancel**. **Position only** /
-**Rotation only** re-record one part and keep the other.
+mode; course locking is off meanwhile) → put the ball down and take the 4-Seam release pose
+with the **empty throwing hand** → pull and release the **throwing-hand trigger**. That one
+press records position and rotation together (taken when the trigger goes down), saves them
+to PlayerData and ends calibration; the panel then shows what was saved (release offset,
+arm-slot angle and form, spin axis, break direction). To change a calibration, calibrate
+again from the start; there is no partial re-recording and no Save button. **Cancel** leaves
+without recording. While the throwing hand holds the ball, its trigger is the ball's release
+and records nothing (the panel asks to put the ball down). The glove-hand trigger does
+nothing while calibrating.
+
+The calibration lives on the mound and in PlayerData only. Staging, recalling, releasing or
+resetting the ball never touches it (`BallResetsKeepTheCalibration`).
 
 Validation: a zero or non-finite chest, a hand closer than 5 cm or further than 1.5 m from
-the chest, or an invalid rotation records nothing. Save needs both parts and is refused
-until `OnPlayerRestored` has run for the local player. Restore accepts only version 1, a
+the chest, or an invalid rotation records nothing. Saving is refused until
+`OnPlayerRestored` has run for the local player. Restore accepts only version 1, a
 valid hand, a valid position and a finite unit quaternion (norm within 1 %). A calibration
 is used only for the hand it was taken with; changing the glove's throwing hand makes it
 unusable instead of mirroring it.
@@ -135,6 +143,17 @@ The cursor is a separate instance of the ThrowAim reticle (`Runtime/Prefabs/Manu
 `Cursor/Reticle`: Unity Quad, `MT_ThrowAimReticle`), local only, `cursorOffset` (0.02 m)
 in front of the plane, `cursorSize` (0.12 m), coloured with a MaterialPropertyBlock
 (`cursorColor`, `lockedCursorColor`). ThrowAim's own markers are unchanged.
+
+## Triggers and panel clicks
+
+Either trigger also clicks the panel. A trigger press (glove hand: lock; empty throwing hand
+while calibrating: record and save) therefore acts only on its release, two frames later,
+after the UI click of that release, and every panel button first calls `CancelTriggerPress`,
+so a press that clicked a button does nothing else. The calibration pose is captured when the
+trigger goes down. Found in the first real-client test: clicking Save with the glove-hand
+trigger recorded the resting throwing hand as the release pose (every pitch was then
+rejected for release position, about 1 m low and 1 m back, with about 110° of pose error),
+and clicking Ball → Glove toggled the lock. `showDebug` also logs the saved calibration.
 
 ## Lock and solver
 
@@ -190,6 +209,29 @@ flight without the wake misses by more than 2 cm (`TheSolvedPitchWithItsWakeArri
 A chest step of 0.3 m sideways, 0.4 m forward and 0.05 m down between lock and release
 leaves a residual of 13.4 mm after body correction, against more than 25 cm without it
 (`TheBodyCorrectionResidualAfterAChestStepIsSmall`).
+
+## Release feedback
+
+With `showReleaseFeedback` (on by default), local to the pitcher:
+
+- **Ideal release** (`Feedback/IdealMarker`, cyan sphere, 9 cm): the calibrated release point
+  in the current pitching frame, moved every frame in pitcher mode with the chest. Around it,
+  `Feedback/RangeMarker` shows the recognition ellipsoid (`recognitionRadii`, frame-aligned,
+  `MT_ManualPitchRange`: faint green, both faces drawn so it is visible from inside).
+- **Last release** (`ReleaseIdealMarker` cyan, `ReleaseActualMarker` magenta, 7 cm, joined by
+  `ReleaseErrorLine`): the ideal point at the moment of release (the live marker moves on
+  with the body) and where the throwing controller actually was. Shown for every release
+  whose tracking was valid, pitch or throw (also before a lock), until the ball is next held
+  in the throwing hand or the mode ends.
+- **Release result** on the panel (`Result`): pitch or throw with the reason; release error
+  right / up / forward in cm and as a percentage of the recognition range; arm speed and
+  direction error; pose error; for a pitch, quality, spin and SSW, and the **arrival error**:
+  where the pitch crossed the front-edge plane relative to the locked target (right / up in
+  the pitcher's view, cm). The mound follows a pitched ball in its `Update` only until that
+  crossing, a catch, a hit, another flight or `arrivalTimeoutSeconds` (3 s); without a
+  crossing the panel says it was not measured.
+
+The markers reuse the ThrowAim debug materials; none has a collider. Nothing is synced.
 
 ## Recalling the ball
 
@@ -247,10 +289,13 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 ├── AimSolver (BallAimSolverBehaviour)
 ├── Cursor (inactive until used)
 │   └── Reticle (Quad, MT_ThrowAimReticle)
+├── Feedback (no colliders; children inactive until used)
+│   ├── IdealMarker, RangeMarker
+│   └── ReleaseIdealMarker, ReleaseActualMarker, ReleaseErrorLine (LineRenderer)
 └── Panel (world-space Canvas, VRC_UiShape, ManualPitchPanelBehaviour)
-    ├── Status (Text)
+    ├── Status (Text), Result (Text)
     ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
-    └── Buttons: Start, Position+Rotation, Position only, Rotation only, Save, Cancel, Ball → Glove
+    └── Buttons: Start Calibration, Cancel, Ball → Glove
 ```
 
 Place the root on the pitcher's plate area with the trigger covering where the pitcher
@@ -261,7 +306,11 @@ must be set). Move `Panel` beside the mound. Several mounds may target different
 (not inside the `HomePlateSet` prefab instance) at (0, 0, 18.4) turned 180°, targeting
 `HomePlateSet/SharedRig/HomePlate`, with `showDebug` on for integrated testing. Its panel
 stands at x = −2.2 m facing the mound. Stop that lane's batting pitcher before pitching by
-hand (see [Batting pitcher](#batting-pitcher)).
+hand (see [Batting pitcher](#batting-pitcher)). The instance overrides the mound's Udon
+variables (`strikeZone`, `showDebug`), and a prefab instance stores them as one table, so
+references added to the prefab later do not reach it by themselves: the five feedback
+references were set on the instance when they were added. Check them after changing the
+prefab's mound variables.
 
 ## Debug
 

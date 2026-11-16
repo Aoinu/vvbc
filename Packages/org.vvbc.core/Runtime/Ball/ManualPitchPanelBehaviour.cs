@@ -9,6 +9,8 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
 {
     public ManualPitchBehaviour pitcher;
     public Text statusLabel;
+    [Tooltip("Text showing the last release's errors and result.")]
+    public Text resultLabel;
 
     private void Start()
     {
@@ -20,18 +22,24 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
         Refresh();
     }
 
-    public void StartCalibration() { if (pitcher != null) pitcher.BeginCalibration(); }
-    public void RecordBoth() { if (pitcher != null) pitcher.SetRecordMode(ManualPitchBehaviour.RecordBoth); }
-    public void RecordPositionOnly() { if (pitcher != null) pitcher.SetRecordMode(ManualPitchBehaviour.RecordPosition); }
-    public void RecordRotationOnly() { if (pitcher != null) pitcher.SetRecordMode(ManualPitchBehaviour.RecordRotation); }
-    public void SaveCalibration() { if (pitcher != null) pitcher.SaveCalibration(); }
-    public void CancelCalibration() { if (pitcher != null) pitcher.CancelCalibration(); }
-    public void RecallBall() { if (pitcher != null) pitcher.RecallBall(); }
+    // Every click first cancels the trigger press that made it, so clicking a button never
+    // records a calibration or toggles the course lock.
+    public void StartCalibration() { if (Clicked()) pitcher.BeginCalibration(); }
+    public void CancelCalibration() { if (Clicked()) pitcher.CancelCalibration(); }
+    public void RecallBall() { if (Clicked()) pitcher.RecallBall(); }
+
+    private bool Clicked()
+    {
+        if (pitcher == null) return false;
+        pitcher.CancelTriggerPress();
+        return true;
+    }
 
     public void Refresh()
     {
-        if (statusLabel == null || pitcher == null) return;
-        statusLabel.text = StatusText();
+        if (pitcher == null) return;
+        if (statusLabel != null) statusLabel.text = StatusText();
+        if (resultLabel != null) resultLabel.text = pitcher.releaseResultText;
     }
 
     public string StatusText()
@@ -40,15 +48,8 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
             ? (pitcher.CalibratedHand() == GloveBehaviour.HandLeft ? "saved (left hand)" : "saved (right hand)")
             : "none";
         string text = "4-Seam  |  " + ManualPitchMath.StateName(pitcher.state) + "  |  Calibration: " + calibration;
-        if (pitcher.Calibrating()) text += "\nCALIBRATING  record: " + RecordModeName(pitcher.recordMode);
+        if (pitcher.Calibrating()) text += "\nCALIBRATING";
         if (pitcher.statusText.Length > 0) text += "\n" + pitcher.statusText;
         return text;
-    }
-
-    public static string RecordModeName(int mode)
-    {
-        if (mode == ManualPitchBehaviour.RecordPosition) return "position only";
-        if (mode == ManualPitchBehaviour.RecordRotation) return "rotation only";
-        return "position + rotation";
     }
 }

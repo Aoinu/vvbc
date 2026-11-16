@@ -91,6 +91,24 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [Tooltip("Best solver error still accepted when it did not converge, in metres. Default 0.10.")]
     public float solverAcceptMeters = 0.10f;
 
+    [Header("Release feedback (local)")]
+    [Tooltip("Show the calibrated release marker, the release markers and the release result. Default on.")]
+    public bool showReleaseFeedback = true;
+    [Tooltip("Live ideal release point (moves with the chest).")]
+    public Transform idealMarker;
+    [Tooltip("Recognition ellipsoid around the ideal release (a unit sphere scaled to the radii).")]
+    public Transform rangeMarker;
+    [Tooltip("Ideal release point at the last release.")]
+    public Transform releaseIdealMarker;
+    [Tooltip("Actual release point (throwing controller) at the last release.")]
+    public Transform releaseActualMarker;
+    [Tooltip("Line from the ideal to the actual release point.")]
+    public LineRenderer releaseErrorLine;
+    [Tooltip("Longest time the pitch is followed to measure where it crosses the plate plane, in seconds. Default 3.")]
+    public float arrivalTimeoutSeconds = 3f;
+    // Release result shown by the panel.
+    [HideInInspector] public string releaseResultText = "";
+
     [Header("Debug (local)")]
     public bool showDebug;
     public Text debugLabel;
@@ -121,6 +139,11 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [HideInInspector] public Vector3 debugPredictedTarget;
 
     private BallBehaviour _ball;
+    // Trigger press of either hand: applied on release unless a panel click cancelled it.
+    private bool _triggerHeld, _triggerCancelled, _triggerCaptured;
+    private int _triggerHand;
+    private Vector3 _triggerChest, _triggerPlate;
+    private Quaternion _triggerHandRotation = Quaternion.identity;
     private bool _inMound;
     private bool _vr;
     private GloveBehaviour _glove;
@@ -139,10 +162,28 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private float _lockSpeed;
     private int _debugToken;
 
+    // Release feedback: the release markers stay until the next hand hold; the arrival is
+    // followed only for a recognized pitch until it crosses the plate plane.
+    private bool _releaseMarkersShown;
+    private float _releaseShownTime;
+    private bool _releaseHasPoints;
+    private Vector3 _releaseIdealPoint, _releaseActualPoint;
+    private float _releaseRangeRatio;
+    private bool _trackingArrival;
+    private bool _arrivalHasPrevious;
+    private Vector3 _arrivalPrevious;
+    private float _arrivalDeadline;
+    private int _arrivalFlight;
+    [HideInInspector] public bool arrivalMeasured;
+    [HideInInspector] public Vector2 arrivalError;
+
     private void Start()
     {
         if (strikeZone != null) _ball = strikeZone.ball;
         if (cursor != null) cursor.gameObject.SetActive(false);
+        SetActive(idealMarker, false);
+        SetActive(rangeMarker, false);
+        HideReleaseMarkers();
         ShowDebugText("");
     }
 
@@ -165,12 +206,20 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public void Update()
     {
         if (!_inMound) return;
+        UpdateInMound();
+    }
+
+    private void UpdateInMound()
+    {
         GloveBehaviour glove = LocalGlove();
         bool want = CanPitch(glove);
         if (want != (state != StateInactive) || (want && glove.throwHand != _activeHand)) Evaluate();
         if (state == StateInactive) return;
         if (state == StateTargeting) UpdateCursorFromHead();
         else if (state == StateSolving) AdvanceSolve();
+        if (showReleaseFeedback) UpdateIdealMarker();
+        if (_trackingArrival) FollowArrival();
+        if (_releaseMarkersShown && Time.time - _releaseShownTime > 0.3f && ThrowingHandHoldsBall()) HideReleaseMarkers();
     }
 
     private bool CanPitch(GloveBehaviour glove)
@@ -203,6 +252,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             state = StateInactive;
             _rayValid = false;
             if (cursor != null) cursor.gameObject.SetActive(false);
+            SetActive(idealMarker, false);
+            SetActive(rangeMarker, false);
+            HideReleaseMarkers();
+            _trackingArrival = false;
             _ball.ClearManualPitcher(this);
         }
         Notify();
@@ -226,17 +279,64 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return _glove;
     }
 
-    // ---- Glove-hand trigger ----
+    // ---- Triggers ----
 
-    // The glove hand's trigger locks or releases the course, or records a calibration. The
-    // throwing hand's trigger is the Ball's pickup Use and never reaches here as a lock.
+    // Glove hand: locks or releases the course (not while calibrating). Throwing hand, empty,
+    // while calibrating: records the release pose and saves it. With the ball in the throwing
+    // hand its trigger is the Ball's pickup Use (a release) and records nothing here.
+    //
+    // Either trigger also clicks the panel's buttons, so a press only takes effect after it
+    // is released, and not at all when a panel button was clicked during it. The calibration
+    // pose is captured when the trigger goes down.
     public override void InputUse(bool value, UdonInputEventArgs args)
     {
-        if (!value || state == StateInactive) return;
+        if (state == StateInactive) { _triggerHeld = false; return; }
         int hand = args.handType == HandType.LEFT ? GloveBehaviour.HandLeft : GloveBehaviour.HandRight;
-        if (hand == _activeHand) return;
-        if (_calibrating) RecordCalibration();
-        else ToggleLock();
+        if (value)
+        {
+            _triggerHeld = true;
+            _triggerHand = hand;
+            _triggerCancelled = false;
+            _triggerCaptured = hand == _activeHand && _calibrating && !ThrowingHandHoldsBall() && CaptureCalibrationPose();
+            return;
+        }
+        if (!_triggerHeld || hand != _triggerHand) return;
+        _triggerHeld = false;
+        // A button's click is sent on the trigger's release; wait for it before acting.
+        SendCustomEventDelayedFrames(nameof(ApplyTrigger), 2);
+    }
+
+    // Called by the panel for every button click: the press that clicked it does nothing else.
+    public void CancelTriggerPress()
+    {
+        _triggerCancelled = true;
+    }
+
+    public void ApplyTrigger()
+    {
+        bool captured = _triggerCaptured;
+        _triggerCaptured = false;
+        if (_triggerCancelled || state == StateInactive)
+        {
+            _triggerCancelled = false;
+            return;
+        }
+        if (_triggerHand == _activeHand)
+        {
+            if (!_calibrating) return;
+            if (captured) FinishCalibrationAt(_triggerChest, _triggerHandPosition, _triggerHandRotation, _triggerPlate);
+            else statusText = "Put the ball down: calibrate with an empty throwing hand.";
+            Notify();
+            return;
+        }
+        if (!_calibrating) ToggleLock();
+    }
+
+    private bool ThrowingHandHoldsBall()
+    {
+        VRCPlayerApi player = Networking.LocalPlayer;
+        return _ball != null && Utilities.IsValid(player) && _ball.LocalHoldState() == BallBehaviour.HoldHand &&
+            _ball.LocalHolderId() == player.playerId;
     }
 
     public void ToggleLock()
@@ -422,10 +522,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // the lock (back to targeting while the mode holds).
     public bool ResolveRelease(Vector3 ballPosition, ThrowAimBehaviour aim, int input)
     {
-        bool ready = state == StateLockedReady;
         VRCPlayerApi player = Networking.LocalPlayer;
         bool result = false;
-        if (ready && Utilities.IsValid(player) && aim != null)
+        _releaseHasPoints = false;
+        if (Utilities.IsValid(player) && aim != null)
         {
             VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
             Transform plate = strikeZone.PlateTransform();
@@ -433,8 +533,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             result = ResolveReleaseAt(player.GetBonePosition(HumanBodyBones.Chest), hand.position, hand.rotation,
                 ballPosition, aim.ArmVelocityOver(velocityWindowSeconds), PlanePoint(plate, forward), forward, input);
         }
-        else RecordRejection(input, !ready ? "not locked" : aim == null ? "no arm tracking" : "no player");
+        else RecordRejection(input, aim == null ? "no arm tracking" : "no player");
         if (state != StateInactive) Unlock();
+        ShowReleaseFeedback(result, ballPosition);
         ShowReleaseDebug();
         Notify();
         return result;
@@ -444,7 +545,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public bool ResolveReleaseAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
         Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input)
     {
-        if (state != StateLockedReady) { RecordRejection(input, "not locked"); return false; }
+        _releaseHasPoints = false;
         if (!CalibrationUsable()) { RecordRejection(input, "no calibration"); return false; }
         if (!ManualPitchMath.ValidPoint(chest) || !ManualPitchMath.FiniteVector(handPosition) ||
             !ManualPitchMath.ValidRotation(handRotation) || !ManualPitchMath.FiniteVector(ballPosition))
@@ -463,7 +564,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         debugArmSpeed = armVelocity.magnitude;
         debugDirectionError = ManualPitchMath.DirectionError(armVelocity, _lockTarget - ballPosition);
         debugPoseAngle = ManualPitchMath.AngleBetween(handRotation, idealRotation);
-        if (ManualPitchMath.RecognitionValue(delta, recognitionRadii) > 1f) return Reject("release position");
+        float recognition = ManualPitchMath.RecognitionValue(delta, recognitionRadii);
+        _releaseHasPoints = true;
+        _releaseIdealPoint = idealHand;
+        _releaseActualPoint = handPosition;
+        _releaseRangeRatio = ManualPitchMath.Finite(recognition) ? Mathf.Sqrt(recognition) : -1f;
+        if (state != StateLockedReady) return Reject("not locked");
+        if (recognition > 1f) return Reject("release position");
         if (!(debugArmSpeed >= minArmSpeed)) return Reject("arm speed");
         if (debugDirectionError > maxDirectionErrorDegrees) return Reject("arm direction");
 
@@ -500,7 +607,172 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     {
         debugRecognized = false;
         debugReason = reason;
+        debugPoseQuality = 0f;
+        debugSpinRpm = 0f;
+        debugWake = 0f;
         return false;
+    }
+
+    // ---- Release feedback ----
+
+    private void UpdateIdealMarker()
+    {
+        bool shown = false;
+        if (CalibrationUsable() && idealMarker != null)
+        {
+            VRCPlayerApi player = Networking.LocalPlayer;
+            Vector3 chest = Utilities.IsValid(player) ? player.GetBonePosition(HumanBodyBones.Chest) : Vector3.zero;
+            Transform plate = strikeZone.PlateTransform();
+            Vector3 forward = ManualPitchMath.HorizontalDirection(chest, PlanePoint(plate, StrikeZoneGeometry.Forward(plate.forward)));
+            if (ManualPitchMath.ValidPoint(chest) && forward != Vector3.zero)
+            {
+                Quaternion frame = ManualPitchMath.Frame(forward);
+                Vector3 ideal = ManualPitchMath.FromFrame(frame, chest, _calPosition);
+                idealMarker.position = ideal;
+                if (rangeMarker != null)
+                {
+                    rangeMarker.SetPositionAndRotation(ideal, frame);
+                    rangeMarker.localScale = recognitionRadii * 2f;
+                }
+                shown = true;
+            }
+        }
+        SetActive(idealMarker, shown);
+        SetActive(rangeMarker, shown);
+    }
+
+    private void ShowReleaseFeedback(bool pitched, Vector3 ballPosition)
+    {
+        if (!showReleaseFeedback) return;
+        _trackingArrival = false;
+        arrivalMeasured = false;
+        if (pitched) BeginArrival(ballPosition, Time.time);
+        if (_releaseHasPoints)
+        {
+            Place(releaseIdealMarker, _releaseIdealPoint);
+            Place(releaseActualMarker, _releaseActualPoint);
+            if (releaseErrorLine != null)
+            {
+                releaseErrorLine.positionCount = 2;
+                releaseErrorLine.SetPosition(0, _releaseIdealPoint);
+                releaseErrorLine.SetPosition(1, _releaseActualPoint);
+                SetActive(releaseErrorLine.transform, true);
+            }
+            _releaseMarkersShown = true;
+            _releaseShownTime = Time.time;
+        }
+        else HideReleaseMarkers();
+        releaseResultText = ReleaseResultText(pitched);
+    }
+
+    private void HideReleaseMarkers()
+    {
+        _releaseMarkersShown = false;
+        SetActive(releaseIdealMarker, false);
+        SetActive(releaseActualMarker, false);
+        if (releaseErrorLine != null) SetActive(releaseErrorLine.transform, false);
+    }
+
+    private void Place(Transform marker, Vector3 position)
+    {
+        if (marker == null) return;
+        marker.position = position;
+        SetActive(marker, true);
+    }
+
+    private static void SetActive(Transform target, bool active)
+    {
+        if (target != null && target.gameObject.activeSelf != active) target.gameObject.SetActive(active);
+    }
+
+    private void BeginArrival(Vector3 ballPosition, float now)
+    {
+        _trackingArrival = true;
+        _arrivalHasPrevious = true;
+        _arrivalPrevious = ballPosition;
+        _arrivalDeadline = now + Mathf.Max(0.1f, arrivalTimeoutSeconds);
+        _arrivalFlight = -1;
+    }
+
+    // Follows the pitched ball once per frame until it crosses the plate plane, is held or
+    // hit, starts another flight, or times out.
+    private void FollowArrival()
+    {
+        if (_ball == null || Time.time > _arrivalDeadline || _ball.LocalHoldState() != BallBehaviour.HoldFree ||
+            !_ball.flying || _ball.contactConsumed || (_arrivalFlight >= 0 && _ball.flightSequence != _arrivalFlight))
+        {
+            EndArrival();
+            return;
+        }
+        if (_arrivalFlight < 0) _arrivalFlight = _ball.flightSequence;
+        Transform plate = strikeZone.PlateTransform();
+        Vector3 normal = StrikeZoneGeometry.Forward(plate.forward);
+        if (ArrivalStep(_ball.transform.position, PlanePoint(plate, normal), normal)) Notify();
+    }
+
+    private void EndArrival()
+    {
+        _trackingArrival = false;
+        if (arrivalMeasured) return;
+        releaseResultText = ReleaseResultText(debugRecognized);
+        Notify();
+    }
+
+    // One sample of the followed pitch. When the segment from the previous sample crosses the
+    // plane toward the plate, records the crossing relative to the locked target in the
+    // pitcher's view (x right, y up) and ends the follow.
+    public bool ArrivalStep(Vector3 position, Vector3 planePoint, Vector3 planeNormal)
+    {
+        if (!_arrivalHasPrevious)
+        {
+            _arrivalPrevious = position;
+            _arrivalHasPrevious = true;
+            return false;
+        }
+        float before = Vector3.Dot(_arrivalPrevious - planePoint, planeNormal);
+        float after = Vector3.Dot(position - planePoint, planeNormal);
+        if (!(before > 0f && after <= 0f))
+        {
+            _arrivalPrevious = position;
+            return false;
+        }
+        Vector3 crossing = _arrivalPrevious + (position - _arrivalPrevious) * (before / (before - after));
+        Vector3 offset = crossing - _lockTarget;
+        Vector3 pitcherRight = Vector3.Cross(Vector3.up, -planeNormal);
+        arrivalError = new Vector2(Vector3.Dot(offset, pitcherRight), offset.y);
+        arrivalMeasured = true;
+        _trackingArrival = false;
+        releaseResultText = ReleaseResultText(true);
+        return true;
+    }
+
+    private static string Cm(float metres)
+    {
+        float cm = metres * 100f;
+        return (cm >= 0f ? "+" : "") + cm.ToString("F0") + " cm";
+    }
+
+    public string ReleaseResultText(bool pitched)
+    {
+        string text = pitched ? "PITCH (4-Seam)" : "THROW - not a pitch: " + debugReason;
+        if (_releaseHasPoints)
+        {
+            text += "\nRelease error  right " + Cm(debugPositionError.x) + "  up " + Cm(debugPositionError.y) +
+                "  forward " + Cm(debugPositionError.z) +
+                (_releaseRangeRatio >= 0f ? "  (" + (_releaseRangeRatio * 100f).ToString("F0") + "% of range)" : "");
+            text += "\nArm " + debugArmSpeed.ToString("F1") + " m/s, direction error " + debugDirectionError.ToString("F0") +
+                " deg   Pose error " + debugPoseAngle.ToString("F0") + " deg";
+        }
+        if (pitched)
+        {
+            text += "\nQuality " + (debugPoseQuality * 100f).ToString("F0") + "%   Spin " + debugSpinRpm.ToString("F0") +
+                " rpm   SSW " + debugWake.ToString("F4");
+            if (arrivalMeasured)
+                text += "\nArrival vs target  right " + Cm(arrivalError.x) + "  up " + Cm(arrivalError.y) +
+                    "  (" + Cm(arrivalError.magnitude).Replace("+", "") + ")";
+            else text += _trackingArrival ? "\nArrival: measuring..." : "\nArrival: not measured (caught, hit or no crossing)";
+        }
+        return text;
     }
 
     private void RecordRejection(int input, string reason)

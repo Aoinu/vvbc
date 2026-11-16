@@ -8,16 +8,12 @@ using VRC.SDKBase;
 // player; derived values (arm slot, spin axis) are recomputed, never stored.
 public partial class ManualPitchBehaviour
 {
-    public const int RecordBoth = 0;
-    public const int RecordPosition = 1;
-    public const int RecordRotation = 2;
     public const int CalibrationVersion = 1;
     private const string KeyVersion = "vvbc.pitching.calib.version";
     private const string KeyHand = "vvbc.pitching.calib.hand";
     private const string KeyPosition = "vvbc.pitching.calib.position";
     private const string KeyRotation = "vvbc.pitching.calib.rotation";
 
-    [HideInInspector] public int recordMode = RecordBoth;
     [HideInInspector] public string statusText = "";
 
     private bool _hasCalibration;
@@ -30,6 +26,7 @@ public partial class ManualPitchBehaviour
     private bool _draftHasPosition, _draftHasRotation;
     private Vector3 _draftPosition;
     private Quaternion _draftRotation = Quaternion.identity;
+    private Vector3 _triggerHandPosition;
 
     public bool Calibrating() { return _calibrating; }
     public bool HasCalibration() { return _hasCalibration; }
@@ -43,7 +40,7 @@ public partial class ManualPitchBehaviour
         return _hasCalibration && _calHand == _activeHand;
     }
 
-    // Opens calibration. Course locking is off until Save or Cancel.
+    // Opens calibration. Course locking is off until the pose is recorded or Cancel.
     public void BeginCalibration()
     {
         if (state == StateInactive)
@@ -54,35 +51,35 @@ public partial class ManualPitchBehaviour
         }
         Unlock();
         _calibrating = true;
-        bool usable = CalibrationUsable();
-        _draftHasPosition = usable;
-        _draftHasRotation = usable;
-        _draftPosition = usable ? _calPosition : Vector3.zero;
-        _draftRotation = usable ? _calRotation : Quaternion.identity;
-        statusText = "Hold the ball, take your 4-Seam release pose and pull the glove-hand trigger.";
+        _draftHasPosition = false;
+        _draftHasRotation = false;
+        statusText = "Put the ball down. Take your 4-Seam release pose with the empty throwing hand, then pull and release its trigger to record and save.";
         Notify();
     }
 
-    public void SetRecordMode(int mode)
+    // The throwing hand, chest and plate at the moment the glove-hand trigger goes down.
+    private bool CaptureCalibrationPose()
     {
-        recordMode = mode == RecordPosition || mode == RecordRotation ? mode : RecordBoth;
-        Notify();
-    }
-
-    public void RecordCalibration()
-    {
-        if (!_calibrating) return;
         VRCPlayerApi player = Networking.LocalPlayer;
-        if (!Utilities.IsValid(player) || strikeZone == null) return;
+        if (!Utilities.IsValid(player) || strikeZone == null) return false;
         VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
         Transform plate = strikeZone.PlateTransform();
-        Vector3 forward = StrikeZoneGeometry.Forward(plate.forward);
-        RecordCalibrationAt(player.GetBonePosition(HumanBodyBones.Chest), hand.position, hand.rotation, PlanePoint(plate, forward));
-        Notify();
+        _triggerChest = player.GetBonePosition(HumanBodyBones.Chest);
+        _triggerHandPosition = hand.position;
+        _triggerHandRotation = hand.rotation;
+        _triggerPlate = PlanePoint(plate, StrikeZoneGeometry.Forward(plate.forward));
+        return true;
     }
 
-    // Records the draft from explicit tracking data; position and rotation separately
-    // according to recordMode. An invalid chest, hand or plate records nothing.
+    // Records position and rotation from the throwing hand pose, commits it and writes PlayerData.
+    public bool FinishCalibrationAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 platePoint)
+    {
+        if (!RecordCalibrationAt(chest, handPosition, handRotation, platePoint)) return false;
+        return SaveCalibration();
+    }
+
+    // Records the draft (position and rotation) from explicit tracking data. An invalid chest,
+    // hand or plate records nothing.
     public bool RecordCalibrationAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 platePoint)
     {
         if (!_calibrating) return false;
@@ -95,21 +92,15 @@ public partial class ManualPitchBehaviour
         }
         Quaternion frame = ManualPitchMath.Frame(forward);
         Vector3 relative = ManualPitchMath.ToFrame(frame, chest, handPosition);
-        if (recordMode != RecordRotation)
+        if (!ManualPitchMath.ValidRelativePosition(relative))
         {
-            if (!ManualPitchMath.ValidRelativePosition(relative))
-            {
-                statusText = "The hand is too close to or too far from the chest; nothing recorded.";
-                return false;
-            }
-            _draftPosition = relative;
-            _draftHasPosition = true;
+            statusText = "The hand is too close to or too far from the chest; nothing recorded.";
+            return false;
         }
-        if (recordMode != RecordPosition)
-        {
-            _draftRotation = Normalized(ManualPitchMath.Multiply(ManualPitchMath.Inverse(frame), handRotation));
-            _draftHasRotation = true;
-        }
+        _draftPosition = relative;
+        _draftHasPosition = true;
+        _draftRotation = Normalized(ManualPitchMath.Multiply(ManualPitchMath.Inverse(frame), handRotation));
+        _draftHasRotation = true;
         statusText = PreviewText();
         return true;
     }
@@ -144,7 +135,7 @@ public partial class ManualPitchBehaviour
         if (!_calibrating) return false;
         if (!_draftHasPosition || !_draftHasRotation)
         {
-            statusText = "Record both position and rotation before saving.";
+            statusText = "Nothing recorded yet.";
             Notify();
             return false;
         }
@@ -159,7 +150,9 @@ public partial class ManualPitchBehaviour
         _calPosition = _draftPosition;
         _calRotation = _draftRotation;
         _calibrating = false;
-        statusText = "Calibration saved.";
+        statusText = "Calibration saved.\n" + PreviewText();
+        if (showDebug) Debug.Log("ManualPitch: calibration saved, hand " + _calHand + ", release " + _calPosition.ToString("F2") +
+            " (right, up, forward from the chest), rotation " + _calRotation.ToString("F3"));
         Notify();
         return true;
     }

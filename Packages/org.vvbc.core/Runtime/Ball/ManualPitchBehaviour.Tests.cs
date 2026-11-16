@@ -110,27 +110,6 @@ public partial class ManualPitchBehaviour
         Assert.IsFalse(HasCalibration());
     }
 
-    [TsukimiTest]
-    public void PositionAndRotationCanBeRecordedSeparately()
-    {
-        Mimic.Join();
-        ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(CalibrateForTest(Overhand));
-        BeginCalibration();
-        SetRecordMode(RecordRotation);
-        Quaternion turned = ManualPitchMath.Multiply(TestFrame(TestChest), ManualPitchMath.AxisAngle(Vector3.up, 40f));
-        Assert.IsTrue(RecordCalibrationAt(TestChest, HandAt(TestChest, new Vector3(0.6f, 0f, 0.2f)), turned, TestPlate));
-        Assert.IsTrue(CommitCalibration());
-        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f, "position kept");
-        Assert.IsTrue(ManualPitchMath.AngleBetween(CalibratedRotation(), ManualPitchMath.AxisAngle(Vector3.up, 40f)) < 0.01f, "rotation replaced");
-        BeginCalibration();
-        SetRecordMode(RecordPosition);
-        Assert.IsTrue(RecordCalibrationAt(TestChest, HandAt(TestChest, new Vector3(0.6f, 0f, 0.2f)), IdealHand(TestChest), TestPlate));
-        Assert.IsTrue(CommitCalibration());
-        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), new Vector3(0.6f, 0f, 0.2f)) < 0.0001f, "position replaced");
-        Assert.IsTrue(ManualPitchMath.AngleBetween(CalibratedRotation(), ManualPitchMath.AxisAngle(Vector3.up, 40f)) < 0.01f, "rotation kept");
-    }
-
     // The frame is built from the chest position and the plate only: there is no chest or head
     // rotation input, and a chest higher or lower does not tilt the frame.
     [TsukimiTest]
@@ -580,5 +559,130 @@ public partial class ManualPitchBehaviour
         Assert.IsFalse(RecallBallAt(5.0));
         Assert.AreEqual(BallBehaviour.HoldFree, _ball.LocalHoldState(), "outside pitcher mode nothing moves");
         Assert.AreEqual("Stand on the mound in VR with the glove on.", statusText);
+    }
+
+    // ---- Triggers and panel clicks ----
+
+    // A press of `hand` captured with the throwing hand at `relative` (as taken at trigger down).
+    private void PressWith(int hand, Vector3 relative)
+    {
+        _triggerHand = hand;
+        _triggerCaptured = hand == _activeHand && _calibrating;
+        _triggerChest = TestChest;
+        _triggerHandPosition = HandAt(TestChest, relative);
+        _triggerHandRotation = TestFrame(TestChest);
+        _triggerPlate = TestPlate;
+    }
+
+    // Real-client failure: clicking a panel button with the glove-hand trigger recorded the
+    // resting throwing hand as the release pose, and Ball -> Glove toggled the lock.
+    [TsukimiTest]
+    public void APanelClickNeitherRecordsACalibrationNorTogglesTheLock()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        BeginCalibration();
+        PressWith(GloveBehaviour.HandRight, new Vector3(0.15f, -0.55f, 0.10f));
+        CancelTriggerPress();
+        ApplyTrigger();
+        Assert.IsTrue(Calibrating(), "the click's press neither records nor ends calibration");
+        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f);
+        CancelCalibration();
+        state = StateLockedReady;
+        PressWith(GloveBehaviour.HandLeft, Vector3.zero);
+        CancelTriggerPress();
+        ApplyTrigger();
+        Assert.AreEqual(StateLockedReady, state, "a click keeps the lock");
+        PressWith(GloveBehaviour.HandLeft, Vector3.zero);
+        ApplyTrigger();
+        Assert.AreEqual(StateTargeting, state, "a plain glove-hand press releases it");
+    }
+
+    // The glove hand never records; while calibrating it does not lock either.
+    [TsukimiTest]
+    public void OnlyTheEmptyThrowingHandRecordsTheCalibration()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        BeginCalibration();
+        PressWith(GloveBehaviour.HandLeft, new Vector3(0.6f, 0f, 0.2f));
+        ApplyTrigger();
+        Assert.IsTrue(Calibrating(), "glove hand: no record");
+        Assert.AreEqual(StateTargeting, state, "and no lock while calibrating");
+        // The throwing hand pressed while it held the ball: nothing was captured.
+        PressWith(GloveBehaviour.HandRight, new Vector3(0.6f, 0f, 0.2f));
+        _triggerCaptured = false;
+        ApplyTrigger();
+        Assert.IsTrue(Calibrating());
+        Assert.AreEqual("Put the ball down: calibrate with an empty throwing hand.", statusText);
+        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f);
+        // Recording itself (PlayerData is written by SaveCalibration and is not modelled here).
+        Assert.IsTrue(RecordCalibrationAt(TestChest, HandAt(TestChest, new Vector3(0.6f, 0f, 0.2f)), TestFrame(TestChest), TestPlate));
+        Assert.IsTrue(CommitCalibration());
+        Assert.IsFalse(Calibrating(), "one press records and ends calibration");
+        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), new Vector3(0.6f, 0f, 0.2f)) < 0.0001f, "position and rotation replaced together");
+        Assert.IsTrue(ManualPitchMath.AngleBetween(CalibratedRotation(), Quaternion.identity) < 0.01f);
+    }
+
+    [TsukimiTest]
+    public void BallResetsKeepTheCalibration()
+    {
+        Mimic.Join();
+        _ball = strikeZone != null ? strikeZone.ball : null;
+        Assert.IsNotNull(_ball);
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        _ball.Stage(Vector3.zero);
+        _ball.Stage(new Vector3(0f, 1f, 18f));
+        Assert.IsTrue(CalibrationUsable(), "staging the ball does not touch the mound's calibration");
+        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f);
+        LockForTest(new Vector3(0f, 0.7f, 0f));
+        Assert.IsFalse(ResolveRelease(Vector3.zero, null, InputGrip));
+        Assert.IsTrue(CalibrationUsable(), "nor does a release");
+    }
+
+    // ---- Release feedback ----
+
+    [TsukimiTest]
+    public void TheReleaseMarkersRecordIdealAndActualPointsEvenForAThrow()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsFalse(ReleaseForTest(TestChest, new Vector3(0.7f, 0.1f, 0f), IdealHand(TestChest), TowardPlate()));
+        Assert.IsTrue(_releaseHasPoints, "a rejected release still shows where it was");
+        Assert.IsTrue(Vector3.Distance(_releaseIdealPoint, HandAt(TestChest, Overhand)) < 0.0001f);
+        Assert.IsTrue(Vector3.Distance(_releaseActualPoint - _releaseIdealPoint,
+            ManualPitchMath.Rotate(TestFrame(TestChest), new Vector3(0.7f, 0.1f, 0f))) < 0.0001f);
+        Assert.IsTrue(_releaseRangeRatio > 1f, "outside the recognition range");
+        string text = ReleaseResultText(false);
+        Assert.IsTrue(text.StartsWith("THROW - not a pitch: release position"), text);
+        Assert.IsTrue(text.Contains("right +70 cm") && text.Contains("up +10 cm") && text.Contains("forward +0 cm"), text);
+        state = StateSolving;
+        Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
+        Assert.AreEqual("not locked", debugReason);
+        Assert.IsTrue(_releaseHasPoints, "an unlocked release is shown too");
+    }
+
+    [TsukimiTest]
+    public void TheArrivalIsMeasuredWhereThePitchCrossesThePlatePlane()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
+        BeginArrival(new Vector3(0f, 1.8f, 17f), 0f);
+        Assert.IsFalse(ArrivalStep(new Vector3(-0.05f, 1.0f, 1.0f), TestPlate, TestNormal));
+        Assert.IsTrue(ArrivalStep(new Vector3(-0.15f, 0.6f, -1.0f), TestPlate, TestNormal));
+        // Crossing at z = 0: x = -0.10, y = 0.80. The pitcher faces -Z, so world -X is their right.
+        Assert.IsTrue(Mathf.Abs(arrivalError.x - 0.10f) < 0.0001f && Mathf.Abs(arrivalError.y - 0.05f) < 0.0001f);
+        Assert.IsTrue(arrivalMeasured);
+        string text = ReleaseResultText(true);
+        Assert.IsTrue(text.StartsWith("PITCH (4-Seam)") && text.Contains("Arrival vs target  right +10 cm  up +5 cm"), text);
+        Assert.IsTrue(text.Contains("Quality 100%"), text);
     }
 }
