@@ -21,6 +21,7 @@ public partial class BallBehaviour
         StopBallAudio();
         SetPresentation(false);
         ClearWake();
+        _flightGrounded = false;
         flightSequence++;
         contactConsumed = false;
         _contactPending = false;
@@ -80,6 +81,7 @@ public partial class BallBehaviour
     private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
     {
         ClearWake();
+        _flightGrounded = false;
         if (body == null) return;
         ExitHold();
         flightSequence++;
@@ -153,6 +155,7 @@ public partial class BallBehaviour
         {
             // The first ground bounce ends the pitch's wake; walls and fences do not.
             ClearWake();
+            _flightGrounded = true;
             // Every ground bounce kills most of the spin; angularDrag then also acts as rolling resistance.
             body.angularVelocity *= bounceSpinRetention;
             body.angularDrag = rollingAngularDrag;

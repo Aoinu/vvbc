@@ -1,0 +1,229 @@
+using Tsukimi;
+using UnityEngine;
+using VRC.SDKBase;
+
+// The single release gate (Pickup Use and Drop) and the HandPitch snapshot kind. A test run
+// has no Rigidbody, so these check the gate and the network state, not the launched flight.
+public partial class BallBehaviour
+{
+    private void HoldInHandForTest(VRCPlayerApi me)
+    {
+        throwAim = null;
+        _throwAimSearches = MaxThrowAimSearches;
+        _handSession++;
+        EnterHold(HoldHand, me.playerId, Vector3.zero);
+    }
+
+    [TsukimiTest]
+    public void UseUpThenTheDropItCausesReleasesOnce()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        HoldInHandForTest(me);
+        releaseCount = 0;
+        OnPickupUseDown();
+        OnPickupUseUp();
+        Assert.AreEqual(1, releaseCount, "trigger release");
+        OnDrop();
+        OnPickupUseDown();
+        OnPickupUseUp();
+        Assert.AreEqual(1, releaseCount, "the Drop and a second Use in the same hold launch nothing");
+    }
+
+    [TsukimiTest]
+    public void GripReleaseThenALateUseUpReleasesOnce()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        HoldInHandForTest(me);
+        releaseCount = 0;
+        OnPickupUseDown();
+        OnDrop();
+        Assert.AreEqual(1, releaseCount, "grip release");
+        OnPickupUseUp();
+        Assert.AreEqual(1, releaseCount);
+    }
+
+    [TsukimiTest]
+    public void EachNewHoldIsANewReleaseSession()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        releaseCount = 0;
+        HoldInHandForTest(me);
+        OnDrop();
+        HoldInHandForTest(me);
+        OnDrop();
+        Assert.AreEqual(2, releaseCount);
+    }
+
+    [TsukimiTest]
+    public void UseUpWithoutUseDownOrWithoutAHandHoldDoesNothing()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        releaseCount = 0;
+        OnPickupUseDown();
+        OnPickupUseUp();
+        Assert.AreEqual(0, releaseCount, "not held");
+        HoldInHandForTest(me);
+        OnPickupUseUp();
+        Assert.AreEqual(0, releaseCount, "Use up without Use down in this hold");
+        EnterHold(HoldGlove, me.playerId, Vector3.zero);
+        OnPickupUseDown();
+        OnPickupUseUp();
+        OnDrop();
+        Assert.AreEqual(0, releaseCount, "a ball in the glove is never launched");
+    }
+
+    [TsukimiTest]
+    public void AHandPitchCarriesItsWakeAndAThrowOrHitDoesNot()
+    {
+        Mimic.Join();
+        WakeProfile wake = TestWake(BallAerodynamics.WakeFixed, 0.006f, Vector3.right, 0f, 0f);
+        Assert.AreEqual(BallAerodynamics.WakeFixed, MakeWake(HandPitchState, wake.mode, wake.coefficient, wake.direction, 0f, 0f).mode);
+        Assert.AreEqual(BallAerodynamics.WakeNone, MakeWake(ThrowState, wake.mode, wake.coefficient, wake.direction, 0f, 0f).mode);
+        QueueSnapshot(HandPitchState, Vector3.up, Vector3.forward * 38f, Vector3.left * 260f, 4.0, -1, 0f, HoldFree, 0, wake);
+        Assert.AreEqual(HandPitchState, _kind);
+        Assert.AreEqual(BallAerodynamics.WakeFixed, _wakeMode);
+        Assert.AreEqual(0.006f, _wakeCoefficient);
+        QueueHit(Vector3.one, Vector3.right, Vector3.up, 5.0, 17, 0.5f);
+        Assert.AreEqual(BallAerodynamics.WakeNone, _wakeMode, "the hit does not carry the pitch wake");
+        QueueSnapshot(ThrowState, Vector3.up, Vector3.forward * 30f, Vector3.zero, 6.0, -1, 0f, HoldFree, 0, wake);
+        Assert.AreEqual(BallAerodynamics.WakeNone, _wakeMode, "a throw never carries a wake");
+    }
+
+    [TsukimiTest]
+    public void AHandPitchWakeEndsWithEveryLaterFlightHoldOrStage()
+    {
+        WakeProfile profile = TestWake(BallAerodynamics.WakeFixed, 0.006f, Vector3.right, 0f, 0f);
+        _wake = BallAerodynamics.PrepareWake(profile, Vector3.zero);
+        ApplyRemoteHit(Vector3.zero, Vector3.forward, Vector3.zero);
+        Assert.AreEqual(BallAerodynamics.WakeNone, _wake.mode, "remote hit");
+        _wake = BallAerodynamics.PrepareWake(profile, Vector3.zero);
+        StartFlight(Vector3.zero, Vector3.forward, Vector3.zero, false);
+        Assert.AreEqual(BallAerodynamics.WakeNone, _wake.mode, "throw");
+        _wake = BallAerodynamics.PrepareWake(profile, Vector3.zero);
+        StopFlightForHold();
+        Assert.AreEqual(BallAerodynamics.WakeNone, _wake.mode, "catch or pickup");
+        _wake = BallAerodynamics.PrepareWake(profile, Vector3.zero);
+        Stage(Vector3.zero);
+        Assert.AreEqual(BallAerodynamics.WakeNone, _wake.mode, "stage");
+    }
+
+    [TsukimiTest]
+    public void AHandPitchReachesAnotherClientWithItsWake()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        Mimic.Become(other);
+        Mimic.Become(pitcher);
+        WakeProfile wake = TestWake(BallAerodynamics.WakeFixed, 0.006f, Vector3.left, 0f, 0f);
+        QueueSnapshot(HandPitchState, Vector3.up, Vector3.forward * 38f, Vector3.left * 260f, 4.0, -1, 0f, HoldFree, 0, wake);
+        Mimic.Deliver(other);
+        Mimic.Become(other);
+        Assert.AreEqual(HandPitchState, _acceptedKind);
+        Assert.AreEqual(BallAerodynamics.WakeFixed, _acceptedWake.mode);
+        Assert.AreEqual(Vector3.left, _acceptedWake.direction);
+        Assert.IsFalse(IsHeld());
+    }
+
+    // The manual pitch is a fielding action: it waits for ownership like a throw, blocks the
+    // batting pitcher's Stage meanwhile, and is published even though a Stage arrived.
+    [TsukimiTest]
+    public void AnUnpublishedHandPitchIsAFieldingActionThatSurvivesAStage()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi owner = Mimic.Join();
+        Networking.SetOwner(owner, gameObject);
+        Mimic.Become(me);
+        WakeProfile wake = TestWake(BallAerodynamics.WakeFixed, 0.006f, Vector3.right, 0f, 0f);
+        // The ownership request is outstanding (Mimic grants SetOwner at once, so the pending
+        // state is recorded directly).
+        RecordPending(HandPitchState, Vector3.up, Vector3.forward * 38f, Vector3.left, 4.0, -1, 0f, HoldFree, 0, wake);
+        _ownershipRequested = true;
+        Assert.IsTrue(FieldingPending());
+        QueueState(StageState, Vector3.zero, Vector3.zero, Vector3.zero, 4.5);
+        Assert.AreEqual(HandPitchState, _pendingKind, "the pitcher cannot stage over it");
+        ArriveWake(3, StageState, owner.playerId, 5.0, new WakeProfile());
+        Assert.AreEqual(StageState, _acceptedKind);
+        Assert.IsTrue(_pending && _pendingKind == HandPitchState, "the arriving Stage does not drop the pitch");
+        Networking.SetOwner(me, gameObject);
+        Assert.AreEqual(HandPitchState, _acceptedKind, "published once owner");
+        Assert.AreEqual(4, _acceptedSequence);
+        Assert.AreEqual(BallAerodynamics.WakeFixed, _acceptedWake.mode);
+    }
+
+    [TsukimiTest]
+    public void OldOrRepeatedSnapshotsNeverReplaceAnAcceptedHandPitch()
+    {
+        Mimic.Join();
+        VRCPlayerApi owner = Mimic.Join();
+        Networking.SetOwner(owner, gameObject);
+        WakeProfile wake = TestWake(BallAerodynamics.WakeFixed, 0.006f, Vector3.right, 0f, 0f);
+        ArriveWake(5, HandPitchState, owner.playerId, 8.0, wake);
+        Assert.AreEqual(HandPitchState, _acceptedKind);
+        ArriveWake(4, PossessionState, owner.playerId, 7.0, new WakeProfile());
+        Assert.AreEqual(HandPitchState, _acceptedKind, "an older possession is ignored");
+        ArriveWake(5, PitchState, owner.playerId, 8.0, wake);
+        Assert.AreEqual(HandPitchState, _acceptedKind, "the same sequence as a scheduled pitch loses");
+        Assert.IsTrue(Newer(5, HandPitchState, 5, PitchState));
+        Assert.IsTrue(Newer(5, StageState, 5, HandPitchState), "a reset still wins its own sequence");
+        Assert.IsTrue(IsFieldingKind(HandPitchState) && IsPitchKind(HandPitchState));
+    }
+
+    // ---- Recall to the glove ----
+
+    [TsukimiTest]
+    public void AFreeRestingBallIsRecalledIntoTheLocalGloveAndPublished()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        Mimic.Become(other);
+        Mimic.Become(me);
+        Assert.IsTrue(CanRecall());
+        Assert.IsTrue(RecallToLocalGlove(12.0));
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(me.playerId, LocalHolderId());
+        Assert.AreEqual(PossessionState, _acceptedKind, "published as an ordinary possession");
+        Assert.AreEqual(me.playerId, _acceptedHolderId);
+        Assert.IsFalse(RecallToLocalGlove(13.0), "already held");
+        Mimic.Deliver(other);
+        Mimic.Become(other);
+        Assert.AreEqual(HoldGlove, LocalHoldState(), "the other client sees the ball in my glove");
+        Assert.AreEqual(me.playerId, LocalHolderId());
+        Assert.IsFalse(CanRecall(), "nobody else can take it");
+    }
+
+    [TsukimiTest]
+    public void ABallInTheAirOrHeldIsNotRecalled()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        flying = true;
+        _flightGrounded = false;
+        Assert.IsFalse(CanRecall(), "still in the air");
+        _flightGrounded = true;
+        Assert.IsTrue(CanRecall(), "touched the ground");
+        flying = false;
+        _acceptedKind = PossessionState;
+        _acceptedHold = HoldHand;
+        _acceptedHolderId = other.playerId;
+        Assert.IsFalse(CanRecall(), "held by another player");
+        _acceptedHold = HoldFree;
+        RecordPending(ThrowState, Vector3.one, Vector3.forward, Vector3.zero, 1.0, -1, 0f, HoldFree, 0);
+        Assert.IsFalse(CanRecall(), "a local throw still waits for ownership");
+        Assert.IsFalse(RecallToLocalGlove(14.0));
+        Assert.AreEqual(HoldFree, LocalHoldState());
+    }
+
+    [TsukimiTest]
+    public void EveryNewFlightHoldOrStageForgetsTheGroundContact()
+    {
+        _flightGrounded = true;
+        StartFlight(Vector3.zero, Vector3.forward, Vector3.zero, false);
+        Assert.IsFalse(_flightGrounded, "new flight");
+        _flightGrounded = true;
+        StopFlightForHold();
+        Assert.IsFalse(_flightGrounded, "hold");
+        _flightGrounded = true;
+        Stage(Vector3.zero);
+        Assert.IsFalse(_flightGrounded, "stage");
+    }
+}

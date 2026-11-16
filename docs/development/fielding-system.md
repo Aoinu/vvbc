@@ -168,23 +168,30 @@ they use the synced fitting.
 player id. They are exclusive. Possession is a separate synced field and is not
 encoded in the snapshot kind.
 
-Snapshot kinds: Stage 1, Pitch 2, Hit 3, **Throw 4**, **Possession 5**.
+Snapshot kinds: Stage 1, Pitch 2, Hit 3, **Throw 4**, **Possession 5**, **HandPitch 6**.
 Possession snapshots carry the hold state and holder; Throw is a Free flight
 released by a fielder. Pitch and Hit logic never runs for Throw or Possession.
+HandPitch is a manual pitch released from the hand: a pitch flight published as a
+fielding action (see [Manual pitching](manual-pitching.md)).
 
 | Transition | Trigger | Local effect |
 |---|---|---|
 | Free → GloveHeld | Local swept catch or trigger enter on the local glove | Flight stopped, kinematic, ball follows `BallSocket`, glove closes, contact consumed. |
 | GloveHeld → HandHeld | VRCPickup by the throwing hand | Glove opens, VRCPickup drives the ball, aim markers shown. |
 | Free → HandHeld | VRCPickup by the throwing hand | Same as above. |
-| HandHeld → Free | `OnDrop`, or Use down then Use up on the throwing hand | Release computed once, Throw flight starts. |
+| HandHeld → Free | `OnDrop`, or `OnPickupUseDown` then `OnPickupUseUp` | Release computed once per hold, Throw (or HandPitch) flight starts. |
 | any held → Free | Holder leaves | Ball dropped in place; the Ball owner publishes. |
 
 A pickup by the other hand in VR is dropped: a ball from the local glove
 returns there, and a free ball is published as dropped in place (VRCPickup has
-already moved Ball ownership to that player). Use is read from `InputUse` only;
-the second release source (Drop after Use up) is suppressed, so one release is
-produced. A thrower cannot catch its own throw for `selfCatchDelay` (0.3 s).
+already moved Ball ownership to that player). Both release paths go through one
+gate, `TryReleaseBall`: Pickup Use (`OnPickupUseDown`, then `OnPickupUseUp`, which
+VRCPickup sends only for the holding hand) and `OnDrop` (grip let go; the Ball's
+pickup keeps `AutoHold = No`). A hold session starts when the ball is taken into
+the hand; the first release of a session is accepted and every later one,
+including the `OnDrop` that the release's own `pickup.Drop()` causes, is ignored.
+The Ball no longer implements `InputUse`. A thrower cannot catch its own throw for
+`selfCatchDelay` (0.3 s).
 
 ### Presentation
 

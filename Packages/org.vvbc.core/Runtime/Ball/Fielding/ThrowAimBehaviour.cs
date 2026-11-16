@@ -396,13 +396,19 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     // Average velocity over the newest window; zero when the window holds one sample.
     public Vector3 ArmVelocity()
     {
+        return ArmVelocityOver(velocityWindowSeconds);
+    }
+
+    // The same samples over another window (the manual pitch has its own).
+    public Vector3 ArmVelocityOver(float window)
+    {
         if (_count < 2) return Vector3.zero;
         int last = (_next - 1 + Capacity) % Capacity;
         int oldest = last;
         for (int i = 1; i < _count; i++)
         {
             int index = (last - i + Capacity) % Capacity;
-            if (_times[last] - _times[index] > velocityWindowSeconds) break;
+            if (_times[last] - _times[index] > window) break;
             oldest = index;
         }
         if (oldest == last)

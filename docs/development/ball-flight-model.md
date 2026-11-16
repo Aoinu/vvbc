@@ -16,7 +16,8 @@ step, as PhysX integrates the force added in `FixedUpdate`.
 
 ## Seam-shifted wake (SSW)
 
-`aWake` exists only for a pitch. Batted balls, throws and drops have none.
+`aWake` exists only for a pitch (the scheduled Pitch and the manual HandPitch of
+[Manual pitching](manual-pitching.md)). Batted balls, throws and drops have none.
 
 `WakeProfile` describes one pitch and never changes in flight:
 

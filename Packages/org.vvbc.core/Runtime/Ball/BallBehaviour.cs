@@ -42,5 +42,7 @@ public partial class BallBehaviour : TsukimiBehaviour
     // newest motion sample. Only LaunchPitch sets it; ClearWake ends it.
     private BallWake _wake;
     private float _wakeTime, _wakeSampleTime;
+    // The flight shown here has touched a groundLayers collider; a new flight, hold or Stage clears it.
+    private bool _flightGrounded;
 
 }

@@ -14,7 +14,8 @@ snapshot only from the publisher they see as owner and keep each other
 publisher's newest snapshot as a candidate until ownership settles. Ownership
 notifications are settled against the current owner, not their arrival order,
 and a snapshot equal to the accepted one is applied again only when the local
-ball no longer shows it; see [fielding system](fielding-system.md).
+ball no longer shows it; see [fielding system](fielding-system.md). A manual pitch
+from a fielder's hand is the HandPitch kind; see [manual pitching](manual-pitching.md).
 
 ## Scene setup
 

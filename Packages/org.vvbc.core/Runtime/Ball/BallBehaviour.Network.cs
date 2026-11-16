@@ -38,6 +38,9 @@ public partial class BallBehaviour
     private const int ThrowState = 4;
     // A change of possession; _hold and _holderId describe it.
     private const int PossessionState = 5;
+    // A manual pitch released from a fielder's hand: a pitch flight (wake, strike zone, bat
+    // contact) published as a fielding action (speculative ownership, never superseded).
+    private const int HandPitchState = 6;
     public const int HoldFree = 0;
     public const int HoldGlove = 1;
     public const int HoldHand = 2;
@@ -168,7 +171,7 @@ public partial class BallBehaviour
         int wakeMode, float wakeCoefficient, Vector3 wakeDirection, float wakeConeAngle, float wakePhase)
     {
         if (body == null || IsHeld()) return false;
-        if ((_acceptedKind == ThrowState || _acceptedKind == PossessionState) &&
+        if (IsFieldingKind(_acceptedKind) &&
             Networking.CalculateServerDeltaTime(_acceptedServerTime, releaseTime) > 0.0) return false;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), releaseTime);
         if (elapsed < 0.0) elapsed = 0.0;
@@ -186,7 +189,7 @@ public partial class BallBehaviour
     private WakeProfile MakeWake(int kind, int mode, float coefficient, Vector3 direction, float coneAngle, float phase)
     {
         WakeProfile wake = new WakeProfile();
-        if (kind != PitchState) return wake;
+        if (!IsPitchKind(kind)) return wake;
         wake.mode = mode;
         wake.coefficient = coefficient;
         wake.direction = direction;
@@ -264,7 +267,13 @@ public partial class BallBehaviour
 
     private bool IsFieldingKind(int kind)
     {
-        return kind == PossessionState || kind == ThrowState;
+        return kind == PossessionState || kind == ThrowState || kind == HandPitchState;
+    }
+
+    // Flights with pitch aerodynamics (a wake) and pitch handling (strike zone, bat contact).
+    private bool IsPitchKind(int kind)
+    {
+        return kind == PitchState || kind == HandPitchState;
     }
 
     private bool FieldingPending()
@@ -308,7 +317,7 @@ public partial class BallBehaviour
         _pendingHitStrength = strength;
         _pendingHold = hold;
         _pendingHolderId = holderId;
-        _pendingWake = kind == PitchState ? wake : new WakeProfile();
+        _pendingWake = IsPitchKind(kind) ? wake : new WakeProfile();
     }
 
     // Delayed check of an ownership request. Recovers a missed callback; a fielding action
@@ -346,7 +355,7 @@ public partial class BallBehaviour
     // never published is stopped as well; it is not the network state.
     private void AbandonSpeculation()
     {
-        bool releasedLocally = _pending && _pendingKind == ThrowState;
+        bool releasedLocally = _pending && (_pendingKind == ThrowState || _pendingKind == HandPitchState);
         _pending = false;
         _lossSuspected = false;
         _ownershipRequested = false;
@@ -809,7 +818,7 @@ public partial class BallBehaviour
             if (!StageBeforeLocalPitch(_acceptedServerTime)) Stage(_acceptedPosition);
             return;
         }
-        if (_acceptedKind != PitchState && _acceptedKind != HitState && _acceptedKind != ThrowState) return;
+        if (!IsPitchKind(_acceptedKind) && _acceptedKind != HitState && _acceptedKind != ThrowState) return;
         if (_acceptedKind == PitchState && IsLocalPitch(_acceptedServerTime)) return;
         if (body == null && (_acceptedKind != HitState || _acceptedBatterId <= 0)) return;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _acceptedServerTime);
@@ -822,7 +831,7 @@ public partial class BallBehaviour
             }
             else
             {
-                bool batted = _acceptedKind != PitchState;
+                bool batted = !IsPitchKind(_acceptedKind);
                 BallWake wake = batted ? new BallWake() : BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin);
                 BallFlightState state = AdvanceSnapshot(_acceptedPosition, _acceptedVelocity, _acceptedSpin, Physics.gravity,
                     dragCoefficient, magnusCoefficient, wake, (float)elapsed, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
@@ -931,7 +940,7 @@ public partial class BallBehaviour
     private int StatePriority(int kind)
     {
         if (kind == StageState) return 3;
-        if (kind == HitState || kind == ThrowState || kind == PossessionState) return 2;
+        if (kind == HitState || kind == ThrowState || kind == PossessionState || kind == HandPitchState) return 2;
         if (kind == PitchState) return 1;
         return 0;
     }
