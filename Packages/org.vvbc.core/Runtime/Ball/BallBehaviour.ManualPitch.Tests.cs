@@ -177,40 +177,80 @@ public partial class BallBehaviour
         VRCPlayerApi other = Mimic.Join();
         Mimic.Become(other);
         Mimic.Become(me);
-        Assert.IsTrue(CanRecall());
         Assert.IsTrue(RecallToLocalGlove(12.0));
         Assert.AreEqual(HoldGlove, LocalHoldState());
         Assert.AreEqual(me.playerId, LocalHolderId());
         Assert.AreEqual(PossessionState, _acceptedKind, "published as an ordinary possession");
         Assert.AreEqual(me.playerId, _acceptedHolderId);
-        Assert.IsFalse(RecallToLocalGlove(13.0), "already held");
+        Assert.IsTrue(RecallToLocalGlove(13.0), "recalling again keeps it in my glove");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
         Mimic.Deliver(other);
         Mimic.Become(other);
         Assert.AreEqual(HoldGlove, LocalHoldState(), "the other client sees the ball in my glove");
         Assert.AreEqual(me.playerId, LocalHolderId());
-        Assert.IsFalse(CanRecall(), "nobody else can take it");
+    }
+
+    // Recall is a forced reset: no ball state refuses it.
+    [TsukimiTest]
+    public void ABallInTheAirIsRecalledWithoutTouchingTheGround()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        flying = true;
+        _flightGrounded = false;
+        Assert.IsTrue(RecallToLocalGlove(14.0), "out of play, never grounded");
+        Assert.IsFalse(flying, "the flight is stopped");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(me.playerId, LocalHolderId());
+        Assert.AreEqual(PossessionState, _acceptedKind);
     }
 
     [TsukimiTest]
-    public void ABallInTheAirOrHeldIsNotRecalled()
+    public void ARecallReplacesALocalThrowThatWaitsForOwnership()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        RecordPending(ThrowState, Vector3.one, Vector3.forward, Vector3.zero, 1.0, -1, 0f, HoldFree, 0);
+        Assert.IsTrue(RecallToLocalGlove(14.0));
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(PossessionState, _acceptedKind, "the recall is published, not the throw");
+        Assert.AreEqual(HoldGlove, _acceptedHold);
+        Assert.AreEqual(me.playerId, _acceptedHolderId);
+    }
+
+    // The runner has no VRCPickup, so the forced drop of the held pickup is not observed here.
+    [TsukimiTest]
+    public void ABallInTheOwnHandGoesToTheGloveWithoutARelease()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        HoldInHandForTest(me);
+        releaseCount = 0;
+        Assert.IsTrue(RecallToLocalGlove(14.0));
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(0, releaseCount, "nothing is thrown");
+        OnDrop();
+        Assert.AreEqual(0, releaseCount, "a late Drop of the old hold throws nothing");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+    }
+
+    [TsukimiTest]
+    public void ABallHeldByAnotherPlayerIsTakenIntoTheLocalGlove()
     {
         VRCPlayerApi me = Mimic.Join();
         VRCPlayerApi other = Mimic.Join();
-        flying = true;
-        _flightGrounded = false;
-        Assert.IsFalse(CanRecall(), "still in the air");
-        _flightGrounded = true;
-        Assert.IsTrue(CanRecall(), "touched the ground");
-        flying = false;
-        _acceptedKind = PossessionState;
-        _acceptedHold = HoldHand;
-        _acceptedHolderId = other.playerId;
-        Assert.IsFalse(CanRecall(), "held by another player");
-        _acceptedHold = HoldFree;
-        RecordPending(ThrowState, Vector3.one, Vector3.forward, Vector3.zero, 1.0, -1, 0f, HoldFree, 0);
-        Assert.IsFalse(CanRecall(), "a local throw still waits for ownership");
-        Assert.IsFalse(RecallToLocalGlove(14.0));
-        Assert.AreEqual(HoldFree, LocalHoldState());
+        Mimic.Become(other);
+        Assert.IsTrue(RecallToLocalGlove(12.0), "the other player holds it");
+        Mimic.Deliver(me);
+        Mimic.Become(me);
+        Assert.AreEqual(other.playerId, LocalHolderId());
+        Assert.IsTrue(RecallToLocalGlove(13.0));
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(me.playerId, LocalHolderId());
+        Mimic.Deliver(other);
+        Mimic.Become(other);
+        Assert.AreEqual(other.playerId, LocalHolderId(), "the notification alone does not release a local hold");
+        // The delayed ownership check (ownershipCheckSeconds) settles the lost hold.
+        CheckPendingOwnership();
+        Assert.AreEqual(me.playerId, LocalHolderId(), "the former holder sees it in my glove");
+        Assert.AreEqual(HoldGlove, LocalHoldState());
     }
 
     [TsukimiTest]

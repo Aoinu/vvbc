@@ -209,8 +209,33 @@ ball is held), the solver speed (`maxPitchSpeedKmh` x `solverSpeedRatio`, 140 x 
 `BallAimSolverBehaviour.BeginSolveRelativeSpin` once with the Ball's drag and Magnus,
 `Physics.gravity` and the fixed step. The mound advances it in `Update` (64 steps per frame).
 A converged solve, or the best one within `solverAcceptMeters` (0.10 m), gives `LockedReady`
-with direction `D0`; anything else returns to `Targeting`. A release while `Solving` is a
-normal throw. Pressing the trigger again unlocks. The solver is never run at the release.
+with direction `D0`; anything else returns to `Targeting`. Pressing the trigger again unlocks.
+The solver is never run at the release.
+
+### Default course (no course locked)
+
+A release with no course ready, in `Targeting` or while a lock is still `Solving`, is aimed at
+the **centre of the strike zone** (`StrikeZoneBehaviour.AimPoint(1, 1)`, the middle of the
+batting pitcher's 3 x 3 courses, which follows the batter's zone). A ready lock always wins.
+
+- The default course is solved **in the background**, before it is needed, with the same
+  solver and the same snapshot a lock takes (ideal release `P0` with the grip held then, solver
+  speed, ideal spin and wake), so nothing is solved at the release. It is accepted as a lock is
+  (converged, or within `solverAcceptMeters`). At the release, body correction moves it from
+  that `P0` to the current ideal release, as for a lock, which also absorbs a different grip.
+- The mound runs it only while no lock is being solved: in `Targeting` or `LockedReady` it
+  checks every 0.25 s whether a solve is needed, and advances an open solve each frame. A solve
+  starts when there is none yet, when the zone centre moved more than 1 cm (another batter),
+  after a calibration is saved or restored, when pitcher mode starts or the throwing hand
+  changes, and after a lock interrupted an unfinished default solve (the lock takes the
+  solver). Settings changed in the Inspector during play are read at the next such solve.
+- Until the first default solve has ended, an unlocked release is still a throw
+  (`not locked`). A refused default solve leaves none until the centre or the inputs change.
+- The debug label marks such a release `target … (centre: no course locked)` and its solver
+  line `centre solve`.
+- Difference from the first specification (changed on purpose, after real-client tests): a
+  release with no ready lock (including one while `Solving`) was always a throw, so a
+  forgotten lock threw the ball to first or third base.
 
 ## Release
 
@@ -224,7 +249,8 @@ reads the hand tracking and the ThrowAim arm samples in the same call.
 
 Recognition (all needed; otherwise the existing throw, including pickoffs):
 
-1. `LockedReady` and a usable calibration;
+1. a usable calibration and a course: the `LockedReady` lock, or else the solved
+   [default course](#default-course-no-course-locked);
 2. valid chest, hand position and rotation;
 3. `E2 = (dx/0.60)^2 + (dy/0.55)^2 + (dz/0.80)^2 <= 1` for the hand offset from the ideal
    release in the current frame (`recognitionRadii`);
@@ -386,15 +412,20 @@ The panel's **Ball → Glove** button (`ManualPitchPanelBehaviour.RecallBall` �
 the pitcher's glove, from where the throwing hand takes it as after any catch.
 
 - Only in pitcher mode (on the mound, in VR, glove worn); otherwise the panel says so.
-- Only while nobody holds the ball (including an unconfirmed possession), no local fielding
-  action waits for ownership, and the ball is not in the air: at rest, staged by the batting
-  pitcher (hidden), or in a flight that has touched a `groundLayers` collider
-  (`_flightGrounded`, cleared by every new flight, hold and Stage). A ball still flying
-  toward a fielder or a batter cannot be taken away.
+- In pitcher mode it is a forced reset: no ball state refuses it. A ball in the air (also one
+  out of play that never touches a `groundLayers` collider, such as one that left the ground
+  or rests on a fence), a ball held by anyone, and a local fielding action still waiting for
+  ownership (the recall replaces it) are all taken into the glove. A ball in the pitcher's own
+  hand leaves the VRCPickup first without being released.
+- Difference from the first specification (changed on purpose, after real-client tests): the
+  recall was refused while anyone held the ball, a local fielding action waited for ownership,
+  or the ball was in a flight that had not touched the ground. A ball that left the field
+  never touched the ground, so it stayed unrecallable until the next Stage.
 - It is applied and published exactly like a glove catch (a Possession snapshot, GloveHeld by
   the recalling player), without catch sound or haptics, so ownership requests, contests,
-  late joiners and candidates follow the [fielding system](fielding-system.md). No synced
-  field or network event was added.
+  late joiners and candidates follow the [fielding system](fielding-system.md). A player who
+  held the ball keeps it until the delayed ownership check settles the lost hold, then shows
+  it in the recalling player's glove. No synced field or network event was added.
 - Recalling a staged ball makes the batting pitcher wait (`IsHeld`), as any hold does; stop
   the batting pitcher while pitching by hand.
 

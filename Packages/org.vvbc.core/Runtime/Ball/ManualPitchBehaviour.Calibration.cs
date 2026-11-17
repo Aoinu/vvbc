@@ -150,6 +150,7 @@ public partial class ManualPitchBehaviour
         _calPosition = _draftPosition;
         _calRotation = _draftRotation;
         _calibrating = false;
+        InvalidateDefaultCourse();
         statusText = "Calibration saved.\n" + PreviewText();
         if (showDebug) Debug.Log("ManualPitch: calibration saved, hand " + _calHand + ", release " + _calPosition.ToString("F2") +
             " (right, up, forward from the chest), rotation " + _calRotation.ToString("F3"));
@@ -195,6 +196,7 @@ public partial class ManualPitchBehaviour
         _calHand = hand;
         _calPosition = position;
         _calRotation = Normalized(rotation);
+        InvalidateDefaultCourse();
         return true;
     }
 

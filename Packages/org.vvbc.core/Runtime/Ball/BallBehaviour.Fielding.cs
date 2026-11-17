@@ -165,27 +165,23 @@ public partial class BallBehaviour
 
     // ---- Recall ----
 
-    // Whether the ball may be called into the local glove: nobody holds it (including an
-    // unconfirmed possession), no local fielding action is waiting, and it is not in the air
-    // (at rest, staged, or its flight has touched the ground).
-    public bool CanRecall()
-    {
-        return LocalId() > 0 && !IsHeld() && !FieldingPending() && (!flying || _flightGrounded);
-    }
-
     // Whether the current flight has touched a groundLayers collider (cleared by every new flight).
     public bool FlightGrounded()
     {
         return _flightGrounded;
     }
 
-    // Puts the ball into the local player's glove as a catch would, without catch effects.
-    // Published as an ordinary Possession, so ownership and conflicts follow the catch path.
+    // Forces the ball into the local player's glove as a catch would, without catch effects,
+    // whatever its state: in the air, out of play, held by anyone, or behind a local action
+    // that still waits for ownership (the recall replaces it). Published as an ordinary
+    // Possession, so ownership and conflicts follow the catch path.
     public bool RecallToLocalGlove(double serverTime)
     {
-        if (!CanRecall()) return false;
         int local = LocalId();
+        if (local <= 0) return false;
         Vector3 position = body != null ? body.position : transform.position;
+        // A ball in this player's own hand leaves the VRCPickup first; nothing is released.
+        if (HeldLocally() && _localHold == HoldHand) ExitHold();
         EnterHold(HoldGlove, local, Vector3.zero);
         QueueSnapshot(PossessionState, position, Vector3.zero, Vector3.zero, serverTime, -1, 0f, HoldGlove, local);
         return true;

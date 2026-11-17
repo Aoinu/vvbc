@@ -60,6 +60,24 @@ public partial class ManualPitchBehaviour
         state = StateLockedReady;
     }
 
+    // A default course without the solver: aims straight at the centre from the ideal release.
+    private void DefaultCourseForTest(Vector3 target)
+    {
+        Quaternion frame = TestFrame(TestChest);
+        _defaultTarget = target;
+        _defaultRelease = ManualPitchMath.FromFrame(frame, TestChest, _calPosition);
+        _defaultDirection = (target - _defaultRelease).normalized;
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
+        _defaultConverged = true;
+        _defaultSolverError = 0f;
+        _defaultPredicted = target;
+        _defaultWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
+        _defaultWakeClock = wakeClockDegrees;
+        _defaultReady = true;
+        _defaultSolving = false;
+        _defaultDirty = false;
+    }
+
     private bool ReleaseForTest(Vector3 chest, Vector3 handOffset, Quaternion rotation, Vector3 armVelocity)
     {
         Vector3 hand = HandAt(chest, _calPosition) + ManualPitchMath.Rotate(TestFrame(chest), handOffset);
@@ -367,6 +385,92 @@ public partial class ManualPitchBehaviour
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsFalse(ResolveRelease(Vector3.zero, null, InputGrip), "without arm tracking it is a throw");
         Assert.AreEqual(StateTargeting, state, "a pitch or a throw returns to targeting");
+    }
+
+    // ---- Default course (strike-zone centre) ----
+
+    [TsukimiTest]
+    public void AReleaseWithNoCourseLockedPitchesToTheCentre()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Vector3 centre = new Vector3(0f, 0.75f, 0f);
+        DefaultCourseForTest(centre);
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()), "targeting");
+        Assert.IsTrue(_resultDefaultCourse);
+        Assert.IsTrue(_resultHasTarget);
+        Assert.IsTrue(Vector3.Distance(_resultTarget, centre) < 0.0001f);
+        Assert.IsTrue(Vector3.Angle(releaseVelocity, _defaultDirection) < 0.01f, "launched along the default course");
+        Assert.AreEqual(StateTargeting, state);
+        Assert.IsTrue(ReleaseDetailText().Contains("centre: no course locked"), ReleaseDetailText());
+        state = StateSolving;
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()), "a lock still solving");
+        Assert.IsTrue(_resultDefaultCourse);
+        Assert.IsTrue(Vector3.Distance(_resultTarget, centre) < 0.0001f, "not the target still being solved");
+        Assert.IsTrue(_defaultReady, "the default course stays for the next release");
+    }
+
+    [TsukimiTest]
+    public void ALockedCourseWinsOverTheDefaultCourse()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        DefaultCourseForTest(new Vector3(0f, 0.75f, 0f));
+        Vector3 locked = new Vector3(0.4f, 0.5f, 0f);
+        LockForTest(locked);
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
+        Assert.IsFalse(_resultDefaultCourse);
+        Assert.IsTrue(Vector3.Distance(_resultTarget, locked) < 0.0001f);
+        Assert.IsTrue(Vector3.Angle(releaseVelocity, _lockDirection) < 0.01f);
+    }
+
+    [TsukimiTest]
+    public void WithoutASolvedDefaultCourseAnUnlockedReleaseIsAThrow()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Assert.IsFalse(_defaultReady, "a new calibration leaves no default course");
+        Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
+        Assert.AreEqual("not locked", debugReason);
+        Assert.IsFalse(_resultDefaultCourse);
+        DefaultCourseForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Assert.IsFalse(_defaultReady, "a changed calibration solves the default course again");
+        Assert.IsTrue(_defaultDirty);
+    }
+
+    [TsukimiTest(maxSteps: 60000000)]
+    public void TheDefaultCourseIsSolvedTowardTheCentreAndALockInterruptsIt()
+    {
+        Mimic.Join();
+        _ball = strikeZone != null ? strikeZone.ball : null;
+        Assert.IsNotNull(aimSolver, "the runner wires the solver of this folder");
+        Assert.IsNotNull(_ball, "the runner wires the ball of this folder");
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Vector3 centre = new Vector3(0f, 0.75f, 0f);
+        Assert.IsTrue(BeginDefaultCourseAt(TestChest, TestPlate, TestNormal, Vector3.zero, centre, TestGravity, 0.02f));
+        Assert.AreEqual(StateTargeting, state, "the background solve does not lock");
+        for (int i = 0; i < 200 && _defaultSolving; i++)
+        {
+            aimSolver.Advance();
+            if (!aimSolver.solving) CompleteDefaultCourse(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
+        }
+        Assert.IsTrue(_defaultReady, "the centre is solved");
+        Assert.IsTrue(Vector3.Distance(_defaultPredicted, centre) <= solverAcceptMeters, "the solver reaches the centre");
+        // A lock started during a default solve takes the solver and leaves the default to redo.
+        Assert.IsTrue(BeginDefaultCourseAt(TestChest, TestPlate, TestNormal, Vector3.zero, centre, TestGravity, 0.02f));
+        Assert.IsTrue(_defaultSolving);
+        Vector3 eye = new Vector3(0f, 1.6f, 18f);
+        Assert.IsTrue(UpdateCursor(eye, (new Vector3(0.3f, 0.6f, 0f) - eye).normalized, TestPlate, TestNormal, 0.016f));
+        Assert.IsTrue(BeginLockAt(TestChest, TestPlate, TestNormal, Vector3.zero, TestGravity, 0.02f));
+        Assert.IsFalse(_defaultSolving);
+        Assert.IsTrue(_defaultDirty, "solved again once the solver is free");
+        Assert.IsFalse(BeginDefaultCourseAt(TestChest, TestPlate, TestNormal, Vector3.zero, centre, TestGravity, 0.02f),
+            "not while a lock is solved");
     }
 
     // ---- Recognition and control ----

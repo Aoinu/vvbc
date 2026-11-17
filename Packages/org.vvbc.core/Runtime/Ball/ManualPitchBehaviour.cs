@@ -211,6 +211,18 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private float _lockSolverSpeedKmh;
     private bool _lockConverged;
     private float _lockWakeClock;
+    // Default course (the strike zone's centre), used by a release with no locked course
+    // (Targeting or Solving). Solved in the background with the same solver while no lock is
+    // being solved, and solved again when the centre moves, the calibration or throwing hand
+    // changes, or pitcher mode starts. Body correction covers the chest and grip at the release.
+    private const float DefaultCourseCheckSeconds = 0.25f;
+    private const float DefaultCourseMoveMeters = 0.01f;
+    private Vector3 _defaultTarget, _defaultRelease, _defaultDirection, _defaultWakeLocal, _defaultPredicted;
+    private float _defaultSolverSpeedKmh, _defaultSolverError = -1f, _defaultWakeClock;
+    private bool _defaultReady, _defaultSolving, _defaultConverged;
+    private bool _defaultDirty = true;
+    private float _nextDefaultCheck;
+    private bool _resultDefaultCourse;
     private int _debugToken;
 
     // Release result: a snapshot taken at each release and kept until the next one. Nothing
@@ -312,6 +324,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (state == StateInactive) return;
         if (state == StateTargeting) UpdateCursorFromHead();
         else if (state == StateSolving) AdvanceSolve();
+        if (state != StateSolving && state != StateInactive) UpdateDefaultCourse();
         if (showReleaseFeedback) UpdateIdealMarker();
         if (_trackingArrival) FollowArrival();
     }
@@ -332,6 +345,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (want)
         {
             _activeHand = glove.throwHand;
+            InvalidateDefaultCourse();
             if (state != StateInactive) Unlock();
             else
             {
@@ -530,16 +544,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (state != StateTargeting || _calibrating || _ball == null || strikeZone == null) return;
         VRCPlayerApi player = Networking.LocalPlayer;
         if (!Utilities.IsValid(player)) return;
-        Vector3 grip = Vector3.zero;
-        if (_ball.LocalHoldState() == BallBehaviour.HoldHand && _ball.LocalHolderId() == player.playerId)
-        {
-            VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
-            if (ManualPitchMath.ValidRotation(hand.rotation))
-                grip = ManualPitchMath.Rotate(ManualPitchMath.Inverse(hand.rotation), _ball.transform.position - hand.position);
-        }
         Transform plate = strikeZone.PlateTransform();
         Vector3 forward = StrikeZoneGeometry.Forward(plate.forward);
-        BeginLockAt(player.GetBonePosition(HumanBodyBones.Chest), PlanePoint(plate, forward), forward, grip,
+        BeginLockAt(player.GetBonePosition(HumanBodyBones.Chest), PlanePoint(plate, forward), forward, HeldGrip(player),
             Physics.gravity, Time.fixedDeltaTime);
         Notify();
     }
@@ -553,25 +560,126 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (!ManualPitchMath.ValidPoint(chest) || aimSolver == null) return false;
         Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
         if (forward == Vector3.zero) return false;
-        Quaternion frame = ManualPitchMath.Frame(forward);
-        Quaternion idealHand = ManualPitchMath.Multiply(frame, _calRotation);
         _lockTarget = CursorWorld(planePoint, planeNormal);
-        _lockRelease = ManualPitchMath.FromFrame(frame, chest, _calPosition) + ManualPitchMath.Rotate(idealHand, grip);
+        _lockRelease = IdealReleaseAt(chest, forward, grip);
         // One solver speed for the whole solve, independent of the arm-speed curve; the release
         // never solves again for its own speed.
         _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
         _lockConverged = false;
-        _lockSpinLocal = ManualPitchMath.FourSeamSpin(ManualPitchMath.FourSeamAxis(_calPosition),
-            fourSeamSpinRpm, maxFourSeamSpinRpm, 0f, spinLossAtBadPose, gyroAtBadPose);
+        _lockSpinLocal = IdealSpinLocal();
         _lockWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
         _lockWakeClock = wakeClockDegrees;
         state = StateSolving;
         _lockEpoch++;
+        // The lock takes the shared solver; an unfinished default-course solve starts again later.
+        if (_defaultSolving)
+        {
+            _defaultSolving = false;
+            _defaultDirty = true;
+        }
         aimSolver.BeginSolveRelativeSpin(_lockRelease, _lockTarget, -planeNormal, _lockSolverSpeedKmh / 3.6f, _lockSpinLocal,
             WakeMode(wakeCoefficient), wakeCoefficient, _lockWakeLocal, 0f, 0f, gravity,
             _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
         if (!aimSolver.solving) CompleteSolve(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
         return true;
+    }
+
+    // The ideal release P0 = C + Qframe r + Qideal grip for a pitching frame facing forward.
+    private Vector3 IdealReleaseAt(Vector3 chest, Vector3 forward, Vector3 grip)
+    {
+        Quaternion frame = ManualPitchMath.Frame(forward);
+        Quaternion idealHand = ManualPitchMath.Multiply(frame, _calRotation);
+        return ManualPitchMath.FromFrame(frame, chest, _calPosition) + ManualPitchMath.Rotate(idealHand, grip);
+    }
+
+    // The calibrated 4-Seam spin with no pose failure, as the solver aims it.
+    private Vector3 IdealSpinLocal()
+    {
+        return ManualPitchMath.FourSeamSpin(ManualPitchMath.FourSeamAxis(_calPosition),
+            fourSeamSpinRpm, maxFourSeamSpinRpm, 0f, spinLossAtBadPose, gyroAtBadPose);
+    }
+
+    // The held ball's offset in the throwing hand; zero when the local player does not hold it.
+    private Vector3 HeldGrip(VRCPlayerApi player)
+    {
+        if (_ball == null || _ball.LocalHoldState() != BallBehaviour.HoldHand || _ball.LocalHolderId() != player.playerId)
+            return Vector3.zero;
+        VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
+        if (!ManualPitchMath.ValidRotation(hand.rotation)) return Vector3.zero;
+        return ManualPitchMath.Rotate(ManualPitchMath.Inverse(hand.rotation), _ball.transform.position - hand.position);
+    }
+
+    // ---- Default course (strike-zone centre) ----
+
+    // The default course is solved again before it is used next.
+    private void InvalidateDefaultCourse()
+    {
+        _defaultReady = false;
+        _defaultSolving = false;
+        _defaultDirty = true;
+        _nextDefaultCheck = 0f;
+    }
+
+    // Runs while no lock is being solved: advances an open default solve, otherwise checks a few
+    // times a second whether the centre moved or the course is stale, and starts a solve then.
+    private void UpdateDefaultCourse()
+    {
+        if (aimSolver == null || strikeZone == null || _ball == null) return;
+        if (_defaultSolving)
+        {
+            aimSolver.Advance();
+            if (!aimSolver.solving) CompleteDefaultCourse(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
+            return;
+        }
+        if (Time.time < _nextDefaultCheck) return;
+        _nextDefaultCheck = Time.time + DefaultCourseCheckSeconds;
+        Vector3 target = strikeZone.AimPoint(1, 1);
+        if (!_defaultDirty && (target - _defaultTarget).sqrMagnitude < DefaultCourseMoveMeters * DefaultCourseMoveMeters) return;
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (!Utilities.IsValid(player)) return;
+        Transform plate = strikeZone.PlateTransform();
+        Vector3 forward = StrikeZoneGeometry.Forward(plate.forward);
+        BeginDefaultCourseAt(player.GetBonePosition(HumanBodyBones.Chest), PlanePoint(plate, forward), forward,
+            HeldGrip(player), target, Physics.gravity, Time.fixedDeltaTime);
+    }
+
+    // Starts the default-course solve toward target with the same inputs a lock snapshots. The
+    // previous default course is not used until this one ends. Refused while a lock is solved,
+    // while calibrating or without a usable calibration and chest.
+    public bool BeginDefaultCourseAt(Vector3 chest, Vector3 planePoint, Vector3 planeNormal, Vector3 grip,
+        Vector3 target, Vector3 gravity, float fixedStep)
+    {
+        if (state == StateInactive || state == StateSolving || _calibrating || !CalibrationUsable()) return false;
+        if (!ManualPitchMath.ValidPoint(chest) || aimSolver == null || _ball == null) return false;
+        Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
+        if (forward == Vector3.zero) return false;
+        _defaultReady = false;
+        _defaultDirty = false;
+        _defaultTarget = target;
+        _defaultRelease = IdealReleaseAt(chest, forward, grip);
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
+        _defaultWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
+        _defaultWakeClock = wakeClockDegrees;
+        _defaultSolving = true;
+        aimSolver.BeginSolveRelativeSpin(_defaultRelease, _defaultTarget, -planeNormal, _defaultSolverSpeedKmh / 3.6f,
+            IdealSpinLocal(), WakeMode(wakeCoefficient), wakeCoefficient, _defaultWakeLocal, 0f, 0f, gravity,
+            _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
+        if (!aimSolver.solving) CompleteDefaultCourse(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
+        return true;
+    }
+
+    // Accepted as a lock is: converged, or the best solve within solverAcceptMeters. A refused
+    // solve leaves no default course until the centre moves or the inputs change.
+    public void CompleteDefaultCourse(bool converged, float error, Vector3 direction, Vector3 crossing)
+    {
+        if (!_defaultSolving) return;
+        _defaultSolving = false;
+        _defaultConverged = converged;
+        _defaultSolverError = error;
+        _defaultPredicted = crossing;
+        _defaultReady = (converged || (ManualPitchMath.Finite(error) && error <= solverAcceptMeters)) &&
+            ManualPitchMath.FiniteVector(direction) && direction.sqrMagnitude > 0.5f;
+        if (_defaultReady) _defaultDirection = direction.normalized;
     }
 
     private void AdvanceSolve()
@@ -609,7 +717,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     }
 
     // Panel button: calls the lane's ball into the pitcher's glove. Only in pitcher mode (on
-    // the mound, in VR, glove worn); the Ball decides whether the ball is free to take.
+    // the mound, in VR, glove worn); there the ball is always taken, whatever its state.
     public bool RecallBall()
     {
         return RecallBallAt(Networking.GetServerTimeInSeconds());
@@ -620,7 +728,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         bool done = state != StateInactive && _ball != null && _ball.RecallToLocalGlove(serverTime);
         statusText = done ? "Ball returned to your glove."
             : state == StateInactive ? "Stand on the mound in VR with the glove on."
-            : "The ball is held or still in the air.";
+            : "The ball could not be recalled.";
         Notify();
         return done;
     }
@@ -753,18 +861,27 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input, bool curveGiven, float givenCurveOutput)
     {
         ClearResult();
+        // The course: the locked one, or with no lock ready (Targeting or Solving) the default
+        // course at the strike zone's centre once it has been solved.
+        bool locked = state == StateLockedReady;
+        bool centre = !locked && _defaultReady && (state == StateTargeting || state == StateSolving);
+        Vector3 courseTarget = centre ? _defaultTarget : _lockTarget;
+        Vector3 courseRelease = centre ? _defaultRelease : _lockRelease;
+        Vector3 courseDirection = centre ? _defaultDirection : _lockDirection;
+        Vector3 courseWakeLocal = centre ? _defaultWakeLocal : _lockWakeLocal;
         // The target, the solver's prediction and the settings as they are at this release.
-        _resultHasTarget = state == StateLockedReady;
-        _resultTarget = _lockTarget;
-        _resultPredicted = debugPredictedTarget;
-        _resultSolverError = debugSolverError;
-        _resultSolverSpeedKmh = _resultHasTarget ? _lockSolverSpeedKmh : -1f;
-        _resultConverged = _lockConverged;
+        _resultHasTarget = locked || centre;
+        _resultDefaultCourse = centre;
+        _resultTarget = courseTarget;
+        _resultPredicted = centre ? _defaultPredicted : debugPredictedTarget;
+        _resultSolverError = centre ? _defaultSolverError : debugSolverError;
+        _resultSolverSpeedKmh = locked ? _lockSolverSpeedKmh : centre ? _defaultSolverSpeedKmh : -1f;
+        _resultConverged = centre ? _defaultConverged : _lockConverged;
         _resultPlanePoint = planePoint;
         _resultPitcherRight = Vector3.Cross(Vector3.up, -planeNormal);
         _resultGainX = controlGainX;
         _resultGainY = controlGainY;
-        _resultWakeClock = _lockWakeClock;
+        _resultWakeClock = centre ? _defaultWakeClock : _lockWakeClock;
         _resultIdealSpin = diagnosticIdealSpin;
         if (!CalibrationUsable()) { RecordRejection(input, "no calibration"); return false; }
         if (!ManualPitchMath.ValidPoint(chest) || !ManualPitchMath.FiniteVector(handPosition) ||
@@ -782,7 +899,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         debugInput = input;
         debugPositionError = delta;
         debugArmSpeed = armVelocity.magnitude;
-        debugDirectionError = ManualPitchMath.DirectionError(armVelocity, _lockTarget - ballPosition);
+        debugDirectionError = ManualPitchMath.DirectionError(armVelocity, courseTarget - ballPosition);
         debugPoseAngle = ManualPitchMath.AngleBetween(handRotation, idealRotation);
         float recognition = ManualPitchMath.RecognitionValue(delta, recognitionRadii);
         _releaseHasPoints = true;
@@ -794,13 +911,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Vector3 grip = ManualPitchMath.Rotate(ManualPitchMath.Inverse(handRotation), ballPosition - handPosition);
         Vector3 idealRelease = idealHand + ManualPitchMath.Rotate(idealRotation, grip);
         _releaseBallOffset = ManualPitchMath.ToFrame(frame, idealRelease, ballPosition);
-        if (state != StateLockedReady) return Reject("not locked");
+        if (!_resultHasTarget) return Reject("not locked");
         if (recognition > 1f) return Reject("release position");
         if (!(debugArmSpeed >= minArmSpeed)) return Reject("arm speed");
         if (debugDirectionError > maxDirectionErrorDegrees) return Reject("arm direction");
 
-        // Chest movement since the lock: re-aim from the ideal release now (no new solve).
-        Vector3 direction = ManualPitchMath.BodyCorrection(_lockDirection, _lockRelease, idealRelease, _lockTarget);
+        // Chest movement since the lock (or the default solve): re-aim from the ideal release
+        // now (no new solve).
+        Vector3 direction = ManualPitchMath.BodyCorrection(courseDirection, courseRelease, idealRelease, courseTarget);
         float distance = Vector3.Dot(ballPosition - planePoint, planeNormal);
         direction = ManualPitchMath.ControlDirection(direction, delta.x, delta.y, controlGainX, controlGainY, distance);
 
@@ -825,7 +943,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         releaseSpin = PitchSpin.ToWorld(spinLocal, direction);
         releaseWakeMode = WakeMode(wake);
         releaseWakeCoefficient = releaseWakeMode == BallAerodynamics.WakeNone ? 0f : wake;
-        releaseWakeDirection = releaseWakeMode == BallAerodynamics.WakeNone ? Vector3.zero : PitchSpin.ToWorld(_lockWakeLocal, direction);
+        releaseWakeDirection = releaseWakeMode == BallAerodynamics.WakeNone ? Vector3.zero : PitchSpin.ToWorld(courseWakeLocal, direction);
         debugRecognized = true;
         debugReason = "pitch";
         debugPoseQuality = 1f - failure;
@@ -875,6 +993,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _releaseRangeRatio = -1f;
         _resultPitched = false;
         _resultHasTarget = false;
+        _resultDefaultCourse = false;
         _resultSpeedKmh = -1f;
         _resultCurveOutput = -1f;
         _resultCurveSet = false;
@@ -1140,12 +1259,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         else text += "\nControl gain  x " + _resultGainX.ToString("F2") + "  y " + _resultGainY.ToString("F2");
         text += "\nAIM  (pitcher view, from the plate's front-edge centre)";
         if (!_resultHasTarget) return text + "\n  no locked target";
-        text += "\n  target   " + PlaneText(_resultTarget);
+        text += "\n  target   " + PlaneText(_resultTarget) + (_resultDefaultCourse ? "   (centre: no course locked)" : "");
         if (_resultSolverError >= 0f)
         {
             Vector2 solver = PlaneError(_resultPredicted);
+            string when = _resultDefaultCourse ? "centre solve" : "at lock";
             text += "\n  solver   " + PlaneText(_resultPredicted) + "   miss " + AbsCm(solver.magnitude) +
-                (_resultConverged ? " (at lock, converged)" : " (at lock, NOT converged: accepted)");
+                (_resultConverged ? " (" + when + ", converged)" : " (" + when + ", NOT converged: accepted)");
         }
         else text += "\n  solver   -";
         if (arrivalStatus == ArrivalMeasured)
