@@ -717,7 +717,12 @@ A client plays a remote catch when it applies (`ApplyPossession`) an accepted
 ball flying freely in a flight it has not played a catch for. The server time
 is read only then, and the catch must be at most `maximumCatchAudioAge` (0.75 s;
 0.25 s of clock difference tolerated) old. The sound is placed at the
-snapshot's catch position. The speed is this client's own flight at the catch
+`BallSocket` of the catcher's glove as this client shows it, where the ball is
+put: the snapshot's catch position is where the catcher's client judged the
+catch (up to one fixed step past the glove, on the catcher's flight and avatar
+pose), and can be far from the glove seen here. Before this client shows the
+glove (worn state not received) or for a non-finite socket position, the
+snapshot's catch position is used. The speed is this client's own flight at the catch
 time, from the fixed-step history (current velocity when the catch is newer
 than the last sample, otherwise unknown); the clip uses this client's flight
 origin. No haptics are played for a remote catch.
@@ -741,7 +746,8 @@ source, sets its world position once, then plays; a playing source is never
 moved (if every source is busy, that catch is silent). No per-frame position
 update, Instantiate or Destroy. Spatial Blend (1), Min/Max Distance and Rolloff
 are set on each AudioSource. The remote client uses the catcher's glove found
-through their PlayerObjects (once per catch).
+through their PlayerObjects (once per catch) and reads its socket position once
+when the sound starts.
 
 ### Haptics
 

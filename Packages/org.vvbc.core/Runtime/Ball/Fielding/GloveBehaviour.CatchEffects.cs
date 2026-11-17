@@ -44,11 +44,25 @@ public partial class GloveBehaviour
     [HideInInspector] public int catchHapticsPlayed;
 
     // speedMetersPerSecond below zero means unknown: the slow settings and the normal clip.
+    // position is the catch position the Ball judged; a remote catch sounds at this glove instead.
     public void PlayCatch(Vector3 position, float speedMetersPerSecond, bool pitch, bool local)
     {
         float speedKmh = CatchSpeedKmh(speedMetersPerSecond);
-        PlayCatchSound(CatchClip(pitch, speedKmh), position, CatchVolume(speedKmh), CatchPitch(speedKmh));
+        bool gloveShown = !local && equipped && socket != null;
+        Vector3 soundPosition = CatchSoundPosition(local, gloveShown, gloveShown ? socket.position : position, position);
+        PlayCatchSound(CatchClip(pitch, speedKmh), soundPosition, CatchVolume(speedKmh), CatchPitch(speedKmh));
         if (local) PlayCatchHaptics();
+    }
+
+    // A local catch sounds at the judged catch position. A remote catch sounds at the socket of
+    // the glove this client shows, where the ball is put, since the catcher's judged position can
+    // be far from that glove (avatar pose latency, a different flight). Before the glove is shown,
+    // or for a non-finite socket position, the judged position is used.
+    public static Vector3 CatchSoundPosition(bool local, bool gloveShown, Vector3 socketPosition, Vector3 catchPosition)
+    {
+        if (local || !gloveShown) return catchPosition;
+        return FieldingMath.Finite(socketPosition.x) && FieldingMath.Finite(socketPosition.y) &&
+            FieldingMath.Finite(socketPosition.z) ? socketPosition : catchPosition;
     }
 
     // A speed that is negative, NaN or infinite is treated as 0 km/h.

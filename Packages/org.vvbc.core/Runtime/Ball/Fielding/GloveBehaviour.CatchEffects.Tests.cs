@@ -87,6 +87,17 @@ public partial class GloveBehaviour
         Assert.AreEqual(VRC_Pickup.PickupHand.Right, GloveHapticHand(HandLeft));
     }
 
+    [TsukimiTest]
+    public void ARemoteCatchSoundsAtTheShownGloveSocket()
+    {
+        Vector3 socketPosition = new Vector3(1f, 1.2f, 0.4f);
+        Vector3 catchPosition = new Vector3(1.3f, 1.1f, -0.3f);
+        Assert.AreEqual(catchPosition, CatchSoundPosition(true, true, socketPosition, catchPosition), "local: the judged position");
+        Assert.AreEqual(socketPosition, CatchSoundPosition(false, true, socketPosition, catchPosition), "remote: the glove socket");
+        Assert.AreEqual(catchPosition, CatchSoundPosition(false, false, socketPosition, catchPosition), "glove not shown yet");
+        Assert.AreEqual(catchPosition, CatchSoundPosition(false, true, new Vector3(float.NaN, 0f, 0f), catchPosition), "invalid socket");
+    }
+
     // IsUserInVR is not modelled by the runner, so the desktop skip is checked in ClientSim/VR.
     [TsukimiTest]
     public void ARemoteOrDisabledCatchDoesNotVibrate()
