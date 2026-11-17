@@ -648,6 +648,8 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
         }
         ShowEditorMessage(result == BattingPitcherBehaviour.SaveFull
             ? "Playlist is full (10 / 10). Delete a pitch, then save again."
+            : result == BattingPitcherBehaviour.SaveUnavailable
+            ? "The shared pitcher state has not arrived yet. Save again in a moment."
             : "Another player changed the playlist first. Save again.");
     }
 

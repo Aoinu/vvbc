@@ -1,6 +1,7 @@
 using Tsukimi;
 using UnityEngine;
 using VRC.SDKBase;
+using VRC.Udon.Common.Interfaces;
 
 // Shared playlist, Start/Stop and settings. Every player may edit: a request is queued
 // locally, Ownership is taken, and the Owner applies the queue to the synced arrays and sends
@@ -29,6 +30,8 @@ public partial class BattingPitcherBehaviour
     public const int SaveDone = 1;
     public const int SaveFull = -1;
     public const int SaveInterrupted = -2;
+    // The synced state never reached this client, so the edit could not be applied.
+    public const int SaveUnavailable = -3;
 
     [UdonSynced] private int[] _playlist = new int[10];
     // Packed PitchBuild parameters of each item, at the same index (PitchPlaylist).
@@ -55,8 +58,16 @@ public partial class BattingPitcherBehaviour
     private int _opCount;
     private int _saveToken;
     private int _resultToken;
-    private int _saveResult;
+    // Result of each recent token. Saves finish in queue order, so every token up to
+    // _resultToken has finished; the window is larger than the queue.
+    private const int ResultWindow = 16;
+    private readonly int[] _saveResults = new int[ResultWindow];
     private int _savedItemId;
+    // A client without the synced state asks the Owner to send it before taking Ownership.
+    private const int StateRequestAttempts = 3;
+    private const float StateRequestSeconds = 2f;
+    private bool _awaitingState, _stateRetryScheduled;
+    private int _stateRequests;
 
     // ---- Queries (local; no network) ----
 
@@ -163,7 +174,9 @@ public partial class BattingPitcherBehaviour
     public int SaveResult(int token)
     {
         if (token <= 0 || token > _resultToken) return SavePending;
-        return token == _resultToken ? _saveResult : SaveDone;
+        // A failed save keeps its own result after later saves finish.
+        if (_resultToken - token >= ResultWindow) return SaveDone;
+        return _saveResults[token % ResultWindow];
     }
 
     public int SavedItemId() { return _savedItemId; }
@@ -193,6 +206,9 @@ public partial class BattingPitcherBehaviour
         RequestEdit();
     }
 
+    // Ownership is taken only with the synced state in hand: an Owner never receives the state,
+    // so a client taking Ownership without it could never apply its queue. Until the state
+    // arrives the queue waits and the Owner is asked to send it again.
     private void RequestEdit()
     {
         if (IsPitchController())
@@ -200,25 +216,78 @@ public partial class BattingPitcherBehaviour
             ApplyPendingEdits();
             return;
         }
-        if (Networking.LocalPlayer != null) Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        if (Networking.LocalPlayer == null) return;
+        if (!_stateKnown)
+        {
+            if (_awaitingState) return;
+            _awaitingState = true;
+            _stateRequests = 0;
+            RequestState();
+            return;
+        }
+        Networking.SetOwner(Networking.LocalPlayer, gameObject);
     }
 
-    // Ownership went to someone else first: this client's edits are superseded.
-    private void DropPendingEdits()
+    // A limited number of requests; when none is answered the queue is dropped as unavailable.
+    private void RequestState()
     {
+        _stateRequests++;
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(ResendState));
+        if (_stateRetryScheduled) return;
+        _stateRetryScheduled = true;
+        SendCustomEventDelayedSeconds(nameof(_RetryStateRequest), StateRequestSeconds);
+    }
+
+    public void _RetryStateRequest()
+    {
+        _stateRetryScheduled = false;
+        if (!_awaitingState) return;
+        if (_stateRequests < StateRequestAttempts)
+        {
+            RequestState();
+            return;
+        }
+        DropPendingEdits(SaveUnavailable);
+        NotifyListeners();
+    }
+
+    // Owner: a client without the synced state asked for it; the whole state is sent again.
+    public void ResendState()
+    {
+        if (!localOnly && _stateKnown && IsPitchController()) RequestSerialization();
+    }
+
+    // The state arrived: a waiting queue now takes Ownership (or applies, if already Owner).
+    private void ResumeAwaitedEdits()
+    {
+        if (!_awaitingState) return;
+        _awaitingState = false;
+        RequestEdit();
+    }
+
+    // The queue cannot be applied: Ownership went to someone else first (interrupted), or the
+    // synced state is missing (unavailable).
+    private void DropPendingEdits(int saveResult)
+    {
+        _awaitingState = false;
         _settingsPending = false;
         _runningPending = false;
         _modePending = false;
         for (int i = 0; i < _opCount; i++)
-            if (_opKind[i] == OpSave) FinishSave(_opToken[i], SaveInterrupted, 0);
+            if (_opKind[i] == OpSave) FinishSave(_opToken[i], saveResult, 0);
         _opCount = 0;
+    }
+
+    private bool HasPendingEdits()
+    {
+        return _settingsPending || _runningPending || _modePending || _opCount > 0;
     }
 
     private void FinishSave(int token, int result, int itemId)
     {
         if (token < _resultToken) return;
         _resultToken = token;
-        _saveResult = result;
+        _saveResults[token % ResultWindow] = result;
         _savedItemId = itemId;
     }
 
@@ -226,7 +295,7 @@ public partial class BattingPitcherBehaviour
     private void ApplyPendingEdits()
     {
         if (!IsPitchController() || !_stateKnown) return;
-        if (!_settingsPending && !_runningPending && !_modePending && _opCount == 0) return;
+        if (!HasPendingEdits()) return;
         bool wasRunning = IsRunning();
         if (_settingsPending)
         {

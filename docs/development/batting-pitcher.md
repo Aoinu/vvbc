@@ -182,6 +182,17 @@ separately: there is no settings object.
   dropped and a pending save reports *interrupted*; concurrent edits converge to the last
   state sent. A failed send is retried `maximumSerializationRetries` times, then retried
   every 5 x `serializationRetrySeconds` until it succeeds, so Start/Stop always converges.
+- Ownership is taken only by a client that has received the synced state. An Owner never
+  receives the state, so taking Ownership without it would leave the queue unapplied for
+  good (and the pitcher never ready). A late joiner may not get the state callback at all,
+  so a client without it keeps its queue, asks the Owner with a network event
+  (`ResendState`, which re-sends a known state) and takes Ownership when the state arrives.
+  The request is repeated every 2 s, at most three times; Ownership moving between other
+  players sends it to the new Owner. Unanswered, the queue is dropped and a pending save
+  reports *unavailable*. Ownership that reaches a client without the state unasked (its
+  Owner left) also drops the queue as *unavailable*. A dropped edit is never applied later,
+  and each save token keeps its own result, so a failed save never reads as done after a
+  later one succeeds.
 - The Owner stages the ball, solves the aim, writes a snapshot starting
   `leadSeconds` ahead and calls `RequestSerialization`. The Owner starts that pitch
   only after `OnPostSerialization` succeeds for that snapshot's id and start time. A schedule
@@ -254,8 +265,9 @@ buttons) and the right side with `CONTROLS` / `PITCH EDITOR` tabs and the `RANDO
   type, courses and build in one request, CANCEL discards them. A row opens the item with its
   saved build; choosing another type loads that type's standard build (all 0.5). Rows show
   the type with its parameters in percent. `ADD PITCH` or the tab opens a new 4-Seam to zone
-  5. The draft stays open until the Owner confirms the save; switching the page to another
-  pitcher (Shared/Local) drops the draft.
+  5. The draft stays open until the Owner confirms the save; a full list, an interrupted save
+  or an unavailable state shows its reason and keeps the draft for another SAVE; switching the
+  page to another pitcher (Shared/Local) drops the draft.
 - Next Pitch: `STOPPED`, `AWAITING CONTACT` (seconds to the fallback), `RESET IN PROGRESS`
   (seconds until the next pitch can be *prepared*, not the pitch itself), `BALL HELD`,
   `PREPARING` (elapsed time and a sweeping gauge), `PITCH SCHEDULED` (seconds to the

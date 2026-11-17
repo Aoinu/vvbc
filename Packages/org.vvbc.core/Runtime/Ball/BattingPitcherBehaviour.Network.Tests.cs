@@ -107,6 +107,108 @@ public partial class BattingPitcherBehaviour
         Assert.IsTrue(Networking.IsOwner(me, gameObject));
     }
 
+    // A late joiner may never get the state callback (the owner never sent, or the restore fired
+    // nothing); Mimic always delivers on join, so the test clears _stateKnown to stand for that.
+    // Before the fix such a client took Ownership, could then never receive the state, and its
+    // save stayed pending forever ("Saving..." never ended).
+    [TsukimiTest]
+    public void ASaveWithoutTheSyncedStateWaitsForItInsteadOfTakingOwnership()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        _stateKnown = true;
+        RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
+        int first = SavedItemId();
+        Mimic.Deliver();
+        Mimic.Become(other);
+        _stateKnown = false;
+        int token = RequestSaveItem(0, 3, 2, PitchPlaylist.DefaultBuild);
+        Assert.IsFalse(Networking.IsOwner(other, gameObject), "no Ownership without the state");
+        Assert.AreEqual(SavePending, SaveResult(token));
+        // the Owner answers the request (network events to others are not delivered here)
+        Mimic.Become(me);
+        ResendState();
+        Mimic.Deliver();
+        Mimic.Become(other);
+        Assert.IsTrue(Networking.IsOwner(other, gameObject), "the state arrived, so Ownership is taken");
+        Assert.AreEqual(SaveDone, SaveResult(token));
+        Assert.AreEqual(2, PlaylistCount(), "applied on top of the received list, not the stale local one");
+        Assert.AreEqual(first, PitchPlaylist.Id(PlaylistItem(0)));
+        Mimic.Deliver();
+        Mimic.Become(me);
+        Assert.AreEqual(2, PlaylistCount());
+        Assert.AreEqual(3, PitchPlaylist.Type(PlaylistItem(1)));
+    }
+
+    [TsukimiTest]
+    public void AnUnansweredStateRequestEndsAsUnavailableAndNeverAppliesLater()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        _stateKnown = true;
+        RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
+        Mimic.Deliver();
+        Mimic.Become(other);
+        _stateKnown = false;
+        int token = RequestSaveItem(0, 3, 2, PitchPlaylist.DefaultBuild);
+        _RetryStateRequest();
+        _RetryStateRequest();
+        Assert.AreEqual(SavePending, SaveResult(token), "still asking within the limit");
+        _RetryStateRequest();
+        Assert.AreEqual(SaveUnavailable, SaveResult(token), "the wait ends with a result");
+        Assert.IsFalse(Networking.IsOwner(other, gameObject));
+        // the state arriving afterwards does not apply the dropped save
+        Mimic.Become(me);
+        ResendState();
+        Mimic.Deliver();
+        Mimic.Become(other);
+        Assert.IsTrue(StateKnown());
+        Assert.IsFalse(Networking.IsOwner(other, gameObject), "nothing left to edit, so Ownership stays");
+        Assert.AreEqual(1, PlaylistCount(), "an expired save is never added");
+        int retry = RequestSaveItem(0, 3, 2, PitchPlaylist.DefaultBuild);
+        Assert.AreEqual(SaveDone, SaveResult(retry), "saving again works");
+        Assert.AreEqual(SaveUnavailable, SaveResult(token), "the old token keeps its own result");
+        Assert.AreEqual(2, PlaylistCount());
+    }
+
+    [TsukimiTest]
+    public void OwnershipReachingAClientWithoutTheStateEndsItsSave()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        _stateKnown = true;
+        Mimic.Become(other);
+        _stateKnown = false;
+        int token = RequestSaveItem(0, 3, 2, PitchPlaylist.DefaultBuild);
+        // Ownership arrives unasked (the platform hands it over, e.g. when the Owner leaves)
+        Networking.SetOwner(other, gameObject);
+        Assert.AreEqual(SaveUnavailable, SaveResult(token), "no one sends the state to an Owner");
+        Assert.AreEqual(0, PlaylistCount(), "the stale local list is not written");
+    }
+
+    [TsukimiTest]
+    public void AWaitingSaveSurvivesOwnershipMovingBetweenOthers()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        VRCPlayerApi third = Mimic.Join();
+        _stateKnown = true;
+        RequestSaveItem(0, 0, 16, PitchPlaylist.DefaultBuild);
+        Mimic.Deliver();
+        Mimic.Become(other);
+        _stateKnown = false;
+        int token = RequestSaveItem(0, 3, 2, PitchPlaylist.DefaultBuild);
+        Mimic.Become(third);
+        RequestRunning(true);
+        Mimic.Become(other);
+        Assert.AreEqual(SavePending, SaveResult(token), "the wait did not compete for Ownership");
+        Mimic.Deliver();
+        Assert.IsTrue(Networking.IsOwner(other, gameObject));
+        Assert.AreEqual(SaveDone, SaveResult(token));
+        Assert.IsTrue(IsRunning(), "the third client's Start is kept");
+        Assert.AreEqual(2, PlaylistCount());
+    }
+
     [TsukimiTest]
     public void ALateJoinerRestoresThePlaylistAndHistory()
     {

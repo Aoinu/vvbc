@@ -360,10 +360,15 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         if (player != null && player.isLocal && IsPitchController())
         {
             SendCustomEventDelayedSeconds(nameof(_OwnerSettled), Mathf.Max(0f, ownerSettleSeconds));
-            ApplyPendingEdits();
+            // Edits never take Ownership without the state, so this one came unasked (the Owner
+            // left). No one sends the state to an Owner: what is queued cannot be applied.
+            if (!_stateKnown) DropPendingEdits(SaveUnavailable);
+            else ApplyPendingEdits();
             TryRelease();
         }
-        else DropPendingEdits();
+        // A queue still waiting for the state never competed for Ownership: ask the new Owner.
+        else if (_awaitingState) RequestState();
+        else DropPendingEdits(SaveInterrupted);
         NotifyListeners();
     }
 
@@ -698,6 +703,7 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
         AdoptSyncedEvent();
         if (!IsRunning()) StopPreparation();
         if (_stateKnown && _ownerReady) ApplyPendingEdits();
+        ResumeAwaitedEdits();
         NotifyListeners();
     }
 

@@ -433,7 +433,7 @@ public partial class BattingPitcherBehaviour
         RequestRunning(true);
         Assert.AreEqual(SavePending, SaveResult(token));
         Assert.AreEqual(0, PlaylistCount());
-        DropPendingEdits();
+        DropPendingEdits(SaveInterrupted);
         Assert.AreEqual(SaveInterrupted, SaveResult(token), "the UI keeps the draft and can save again");
         _stateKnown = true;
         ApplyPendingEdits();
