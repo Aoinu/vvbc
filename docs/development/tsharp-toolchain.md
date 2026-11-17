@@ -52,25 +52,53 @@ assemblies compile; an empty `VVBC.Editor` warning is acceptable.
 
 ## Required local gates
 
+The gates run in two tiers. A full pass of the Program compilation takes over ten
+minutes (the Bat Behaviours alone take several) and holds the Editor main thread, and
+the clean consumers start fresh Unity projects, so they are not run after every task.
+
+**Every runtime task:**
+
 1. Finish edits and confirm Unity C# compilation succeeded. An idle Editor or
    an empty Console alone is not evidence of successful compilation.
 2. Run Tsukimi MCP `inspect` on package source/Program Asset paths. Require
    `compiles: true`, clean diagnostics, and a resolved extern database.
 3. Run relevant MCP `test` cases in the default Udon path. Require actual cases,
    `allPassed: true`, and no failed/notRunnable cases. Keep tests beside source.
-4. Compile each Program Asset and verify its actual serialized UdonProgram.
-5. Run static/tooling checks and both clean consumer scopes below.
-6. Review the full diff, clean fixture deployments, and run `git diff --check`.
+4. Run the Performance Budget when the change touches the Behaviours it covers (see
+   below), and `python Tools/VVBC.Toolchain/toolchain.py check`.
+5. Review the full diff, clean fixture deployments, and run `git diff --check`.
+
+**Milestones only** (before merging to main, and before real-device testing), and only
+after the user approves running them; until then report them as pending:
+
+6. Compile each Program Asset and verify its actual serialized UdonProgram by running the
+   development validator once with scope `package` (snippet below). It compiles every
+   Program Asset through the public API itself, so do not run **TsukimiCode > Compile All
+   Tsukimi Programs** before it: that only compiles every program a second time. Do not
+   run other heavy jobs (Performance Budget, clean consumers) at the same time.
+7. Run the Python tooling tests and both clean consumer scopes below.
 
 ```powershell
-python -m unittest discover -s Tools/VVBC.Toolchain/tests -v
-python Tools/VVBC.Toolchain/toolchain.py check
+python Tools/VVBC.Toolchain/toolchain.py check                     # every task
+python -m unittest discover -s Tools/VVBC.Toolchain/tests -v        # milestone
 isuzu-unity-cli call compile_request
 isuzu-unity-cli call compile_status
 ```
 
 Wait for `isCompiling: false`, `succeeded: true`. Check error/warning Console
 logs on failure before adding diagnostics. Use the existing Editor connection.
+
+Step 6 runs this snippet with `isuzu-unity-cli call execute_code --file <file>` (create
+`Tools/VVBC.Toolchain/.state/` first if needed). It requires `success: true` and as many
+`udonPrograms` as `programEntries`:
+
+```csharp
+System.IO.File.WriteAllText("Tools/VVBC.Toolchain/.state/request.json",
+    "{\"requireClean\":false,\"scope\":\"package\"}");
+return VVBC.Toolchain.ToolchainValidation.Validate(
+    "Tools/VVBC.Toolchain/.state/request.json",
+    "Tools/VVBC.Toolchain/.state/development-result.json");
+```
 
 Create Program Assets with Tsukimi's supported UI or public Editor API:
 `ScriptableObject.CreateInstance<TsukimiProgramAsset>()`, assign `sourceCsScript`,
