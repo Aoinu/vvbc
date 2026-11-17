@@ -2,7 +2,7 @@ using UnityEngine;
 
 // Pure math of the manual 4-Seam pitch: the pitching frame built from the chest position and
 // the home plate (never the chest rotation), the calibrated release, the 4-Seam axis from the
-// arm slot, pose quality, recognition, control and the HMD course cursor.
+// arm slot, pose quality, the arm direction check, control and the HMD course cursor.
 //
 // Frame coordinates are (x right, y up, z toward the plate), the same convention as PitchSpin,
 // so a vector written in them is used directly as a pitch-local spin or wake direction.
@@ -234,45 +234,30 @@ public static class ManualPitchMath
         return SpeedSetting(maxKmh) * SpeedRatio(ratio);
     }
 
-    // E2 = (dx/Rx)^2 + (dy/Ry)^2 + (dz/Rz)^2; inside the recognition volume when <= 1.
-    public static float RecognitionValue(Vector3 delta, Vector3 radii)
-    {
-        if (!FiniteVector(delta) || radii.x <= 0f || radii.y <= 0f || radii.z <= 0f) return float.PositiveInfinity;
-        float x = delta.x / radii.x, y = delta.y / radii.y, z = delta.z / radii.z;
-        return x * x + y * y + z * z;
-    }
-
-    // Angle between the arm motion and the direction to the plate, in degrees; 180 when unknown.
+    // Angle between the controller motion and the direction from the launch point to the
+    // target, in degrees; 180 when unknown.
     public static float DirectionError(Vector3 armVelocity, Vector3 toPlate)
     {
         if (!FiniteVector(armVelocity) || armVelocity.sqrMagnitude < 0.000001f || toPlate.sqrMagnitude < 0.000001f) return 180f;
         return VectorAngle(armVelocity, toPlate);
     }
 
-    // Moves the solved direction D0 (for release P0) to a release at P1 aiming at the same
-    // target: D1 = FromToRotation(T - P0, T - P1) * D0, the shortest rotation from B0 to B1.
-    // Not an exact solution; the residual is measured in the tests.
-    public static Vector3 BodyCorrection(Vector3 d0, Vector3 p0, Vector3 p1, Vector3 target)
-    {
-        Vector3 b0 = target - p0;
-        Vector3 b1 = target - p1;
-        if (b0.sqrMagnitude < 0.000001f || b1.sqrMagnitude < 0.000001f) return d0;
-        Vector3 axis = Vector3.Cross(b0, b1);
-        if (axis.sqrMagnitude < 0.0000000001f) return d0;
-        return RotateAbout(d0, axis.normalized, VectorAngle(b0, b1) * Mathf.Deg2Rad).normalized;
-    }
-
-    // Additional control error: the release offset (dx right, dy up) already moves the flight
-    // by itself, so only (G - 1) x offset / L is added, in the plane perpendicular to d.
+    // Control error of a pitch launched from the solver's own release point along the solved
+    // direction d: the direction is turned by gain x the controller's release offset (dx right,
+    // dy up, metres) over the distance L to the target plane, in the plane perpendicular to d,
+    // so the crossing moves by about gain x offset. The launch point never moves with the
+    // offset, so nothing else carries it. A zero gain (or offset) on both axes returns d itself.
     public static Vector3 ControlDirection(Vector3 d, float dx, float dy, float gainX, float gainY, float distance)
     {
-        if (!(distance > 0.01f) || !Finite(dx) || !Finite(dy)) return d;
+        if (!(distance > 0.01f) || !Finite(distance)) return d;
+        float sx = Finite(dx) && Finite(gainX) ? gainX * dx / distance : 0f;
+        float sy = Finite(dy) && Finite(gainY) ? gainY * dy / distance : 0f;
+        if (sx == 0f && sy == 0f) return d;
         Vector3 right = Vector3.Cross(Vector3.up, d);
         if (right.sqrMagnitude < 0.000001f) right = Vector3.right;
         right = right.normalized;
         Vector3 up = Vector3.Cross(d, right).normalized;
-        Vector3 result = d + right * ((gainX - 1f) * dx / distance) + up * ((gainY - 1f) * dy / distance);
-        return result.normalized;
+        return (d + right * sx + up * sy).normalized;
     }
 
     // Ray parameter where the ray meets the plane through 'point' with 'normal'; negative when

@@ -550,7 +550,8 @@ public partial class BallBehaviour
     // ---- Release ----
 
     // Everything is read before ExitHold drops the pickup. A recognized pitch launches as a
-    // HandPitch with its wake; anything else is the existing throw.
+    // HandPitch with its wake from the mound's release point (the solver's, never the ball
+    // centre); anything else is the existing throw from the ball centre.
     private void ReleaseThrow(int input)
     {
         if (body == null) return;
@@ -564,9 +565,10 @@ public partial class BallBehaviour
         WakeProfile wake = new WakeProfile();
         bool aiming = throwAim != null && _aimActive;
         if (aiming) throwAim.Sample(Time.time, position);
-        bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, aiming ? throwAim : null, input);
+        bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input);
         if (pitched)
         {
+            position = manualPitcher.releasePosition;
             velocity = manualPitcher.releaseVelocity;
             spin = manualPitcher.releaseSpin;
             wake.mode = manualPitcher.releaseWakeMode;
@@ -590,15 +592,17 @@ public partial class BallBehaviour
             velocity = direction * (fallbackThrowSpeedKmh / 3.6f);
             spin = Vector3.zero;
         }
-        // The mound shows the speed this release is launched with, pitch or throw.
-        if (manualPitcher != null) manualPitcher.RecordLaunch(velocity);
-        LaunchRelease(position, velocity, spin, pitched, wake, Networking.GetServerTimeInSeconds());
+        // The mound shows the point and speed this release is launched with, pitch or throw.
+        if (manualPitcher != null) manualPitcher.RecordLaunch(position, velocity);
+        LaunchRelease(position, velocity, spin, pitched, wake, Networking.GetServerTimeInSeconds(), Time.time);
     }
 
-    private void LaunchRelease(Vector3 position, Vector3 velocity, Vector3 spin, bool pitched, WakeProfile wake, double serverTime)
+    // position is where the flight starts, here and in the snapshot: the ball centre for a
+    // throw, the mound's release point for a pitch. now is Time.time.
+    private void LaunchRelease(Vector3 position, Vector3 velocity, Vector3 spin, bool pitched, WakeProfile wake, double serverTime, float now)
     {
         ExitHold();
-        _catchBlockedUntil = Time.time + Mathf.Max(0f, selfCatchDelay);
+        _catchBlockedUntil = now + Mathf.Max(0f, selfCatchDelay);
         if (pitched) LaunchPitch(position, velocity, spin, wake, 0f);
         else
         {
@@ -607,7 +611,7 @@ public partial class BallBehaviour
         }
         _releaseReassert = true;
         _releaseFlight = flightSequence;
-        _releaseTime = Time.time;
+        _releaseTime = now;
         _releasePosition = position;
         _releaseVelocity = velocity;
         _releaseSpin = spin;
@@ -616,14 +620,18 @@ public partial class BallBehaviour
         QueueSnapshot(pitched ? HandPitchState : ThrowState, position, velocity, spin, serverTime, -1, 0f, HoldFree, 0, _releaseWake);
     }
 
-    // The SDK may apply its own throw velocity or restore kinematic state after OnDrop;
-    // the first fixed step after a release restores the decided flight.
+    // The SDK may apply its own throw velocity, restore kinematic state or move the body back
+    // to the hand after OnDrop; the first fixed step after a release restores the decided
+    // flight. Runs once per release, never during the flight.
     private void ReassertRelease()
     {
         _releaseReassert = false;
         if (body == null || !flying || _releaseFlight != flightSequence) return;
-        if (!body.isKinematic && (body.velocity - _releaseVelocity).sqrMagnitude <= 1f) return;
         float elapsed = Mathf.Max(0f, Time.fixedTime - _releaseTime);
+        // A hand pitch leaves from the solver's release point, away from the hand, so its
+        // position is checked too; a throw keeps the existing velocity-only check.
+        if (ReleaseStateKept(body.isKinematic, body.position, body.velocity, _releasePosition, _releaseVelocity,
+            elapsed + Time.fixedDeltaTime, _releasePitch)) return;
         // A hand pitch keeps its spin (a pitch has no spin damping) and its wake, as receivers' catch-up does.
         BallFlightState state = AdvanceSnapshot(_releasePosition, _releaseVelocity, _releaseSpin, Physics.gravity,
             dragCoefficient, magnusCoefficient, _releasePitch ? BallAerodynamics.PrepareWake(_releaseWake, _releaseSpin) : new BallWake(),
@@ -637,6 +645,25 @@ public partial class BallBehaviour
         body.position = state.position;
         body.velocity = state.velocity;
         body.angularVelocity = state.spin;
+    }
+
+    // Largest distance of the body from the released path still taken as the release's own.
+    private const float ReleasePositionTolerance = 0.05f;
+
+    // Whether the body still holds the decided release: not kinematic, the velocity within
+    // 1 m/s and, when checkPosition, the position within ReleasePositionTolerance of the
+    // straight path from the release point over at most `span` seconds (no physics step has
+    // to have run yet, so the release point itself is kept).
+    public static bool ReleaseStateKept(bool kinematic, Vector3 position, Vector3 velocity, Vector3 releasePosition,
+        Vector3 releaseVelocity, float span, bool checkPosition)
+    {
+        if (kinematic || (velocity - releaseVelocity).sqrMagnitude > 1f) return false;
+        if (!checkPosition) return true;
+        Vector3 path = releaseVelocity * Mathf.Max(0f, span);
+        Vector3 offset = position - releasePosition;
+        float lengthSquared = path.sqrMagnitude;
+        float t = lengthSquared > 0.000001f ? Mathf.Clamp01(Vector3.Dot(offset, path) / lengthSquared) : 0f;
+        return (offset - path * t).sqrMagnitude <= ReleasePositionTolerance * ReleasePositionTolerance;
     }
 
     private void BeginAim()

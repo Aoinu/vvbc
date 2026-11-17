@@ -171,8 +171,9 @@ encoded in the snapshot kind.
 Snapshot kinds: Stage 1, Pitch 2, Hit 3, **Throw 4**, **Possession 5**, **HandPitch 6**.
 Possession snapshots carry the hold state and holder; Throw is a Free flight
 released by a fielder. Pitch and Hit logic never runs for Throw or Possession.
-HandPitch is a manual pitch released from the hand: a pitch flight published as a
-fielding action (see [Manual pitching](manual-pitching.md)).
+HandPitch is a manual pitch released by the hand: a pitch flight, launched from the mound's
+release point rather than the ball centre, published as a fielding action (see
+[Manual pitching](manual-pitching.md)).
 
 | Transition | Trigger | Local effect |
 |---|---|---|

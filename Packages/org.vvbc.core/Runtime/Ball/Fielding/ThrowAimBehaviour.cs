@@ -111,9 +111,8 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     private readonly float[] _times = new float[Capacity];
     private readonly Vector3[] _positions = new Vector3[Capacity];
-    private int _next;
-    private int _count;
-    private int _rejected;
+    // { next, count, rejected } of the ring above (FieldingMath.Motion*).
+    private readonly int[] _sampleState = new int[3];
     private Transform _ball;
     private float _eyeHeight = 1.5f;
     private Vector3 _origin;
@@ -367,64 +366,20 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     public void ResetSamples()
     {
-        _next = 0;
-        _count = 0;
-        _rejected = 0;
+        FieldingMath.ResetMotion(_sampleState);
     }
 
-    // A single implausible jump is discarded; two in a row mean the hand really moved
-    // (for example a respawn), so the buffer restarts there.
+    // The held ball's position (FieldingMath.SampleMotion): a single implausible jump is
+    // discarded; two in a row mean the hand really moved, so the buffer restarts there.
     public void Sample(float time, Vector3 position)
     {
-        if (_count > 0)
-        {
-            int last = (_next - 1 + Capacity) % Capacity;
-            float dt = time - _times[last];
-            if (dt <= 0f)
-            {
-                if (dt == 0f) _positions[last] = position;
-                return;
-            }
-            if ((position - _positions[last]).magnitude > maxTrackingSpeed * dt)
-            {
-                _rejected++;
-                if (_rejected < 2) return;
-                ResetSamples();
-            }
-        }
-        _rejected = 0;
-        _times[_next] = time;
-        _positions[_next] = position;
-        _next = (_next + 1) % Capacity;
-        if (_count < Capacity) _count++;
+        FieldingMath.SampleMotion(_times, _positions, _sampleState, time, position, maxTrackingSpeed);
     }
 
     // Average velocity over the newest window; zero when the window holds one sample.
     public Vector3 ArmVelocity()
     {
-        return ArmVelocityOver(velocityWindowSeconds);
-    }
-
-    // The same samples over another window (the manual pitch has its own).
-    public Vector3 ArmVelocityOver(float window)
-    {
-        if (_count < 2) return Vector3.zero;
-        int last = (_next - 1 + Capacity) % Capacity;
-        int oldest = last;
-        for (int i = 1; i < _count; i++)
-        {
-            int index = (last - i + Capacity) % Capacity;
-            if (_times[last] - _times[index] > window) break;
-            oldest = index;
-        }
-        if (oldest == last)
-        {
-            // Window shorter than one frame: use the newest pair.
-            oldest = (last - 1 + Capacity) % Capacity;
-        }
-        float span = _times[last] - _times[oldest];
-        if (!(span > 0.0001f)) return Vector3.zero;
-        return (_positions[last] - _positions[oldest]) / span;
+        return FieldingMath.MotionVelocity(_times, _positions, _sampleState, velocityWindowSeconds);
     }
 
     // Decides the release once from the markers placed last (call RefreshMarkers first).

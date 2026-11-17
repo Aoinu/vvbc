@@ -308,6 +308,72 @@ public static class FieldingMath
         return flat * Mathf.Cos(radians) + Vector3.up * Mathf.Sin(radians);
     }
 
+    // ---- Arm motion samples ----
+    // A ring of timed positions owned by the caller: times and positions of one length (the
+    // capacity) and state = { next, count, rejected jumps in a row }. ThrowAim samples the held
+    // ball with it, the manual pitch the throwing controller; both share these two rules.
+    public const int MotionNext = 0;
+    public const int MotionCount = 1;
+    public const int MotionRejected = 2;
+
+    public static void ResetMotion(int[] state)
+    {
+        state[MotionNext] = 0;
+        state[MotionCount] = 0;
+        state[MotionRejected] = 0;
+    }
+
+    // A single implausible jump (faster than maxSpeed) is discarded; two in a row mean the
+    // tracked point really moved (for example a respawn), so the ring restarts there. A sample
+    // at the same time as the newest replaces it; an older one is ignored.
+    public static void SampleMotion(float[] times, Vector3[] positions, int[] state, float time, Vector3 position, float maxSpeed)
+    {
+        int capacity = times.Length;
+        if (state[MotionCount] > 0)
+        {
+            int last = (state[MotionNext] - 1 + capacity) % capacity;
+            float dt = time - times[last];
+            if (dt <= 0f)
+            {
+                if (dt == 0f) positions[last] = position;
+                return;
+            }
+            if ((position - positions[last]).magnitude > maxSpeed * dt)
+            {
+                state[MotionRejected]++;
+                if (state[MotionRejected] < 2) return;
+                ResetMotion(state);
+            }
+        }
+        state[MotionRejected] = 0;
+        int next = state[MotionNext];
+        times[next] = time;
+        positions[next] = position;
+        state[MotionNext] = (next + 1) % capacity;
+        if (state[MotionCount] < capacity) state[MotionCount]++;
+    }
+
+    // Average velocity over the newest window; the newest pair when the window is shorter than
+    // one sample interval, zero with fewer than two samples.
+    public static Vector3 MotionVelocity(float[] times, Vector3[] positions, int[] state, float window)
+    {
+        int count = state[MotionCount];
+        if (count < 2) return Vector3.zero;
+        int capacity = times.Length;
+        int last = (state[MotionNext] - 1 + capacity) % capacity;
+        int oldest = last;
+        for (int i = 1; i < count; i++)
+        {
+            int index = (last - i + capacity) % capacity;
+            if (times[last] - times[index] > window) break;
+            oldest = index;
+        }
+        if (oldest == last) oldest = (last - 1 + capacity) % capacity;
+        float span = times[last] - times[oldest];
+        if (!(span > 0.0001f)) return Vector3.zero;
+        return (positions[last] - positions[oldest]) / span;
+    }
+
     // Backspin for a ball moving along direction: the top surface moves backward.
     public static Vector3 Backspin(Vector3 direction, float rpm)
     {

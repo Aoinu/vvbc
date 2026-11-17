@@ -77,20 +77,20 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [Range(0f, 1f), Tooltip("Part of the pose error carried into the spin axis. Default 0 (no pose penalty); 0.5 was the earlier tuning.")]
     public float axisTransferGain = 0f;
 
-    [Header("Recognition")]
-    [Tooltip("Radii of the recognition ellipsoid around the calibrated release (right, up, forward), in metres.")]
-    public Vector3 recognitionRadii = new Vector3(0.60f, 0.55f, 0.80f);
-    [Tooltip("Minimum arm speed, in m/s. Default 1.")]
+    [Header("Recognition (throwing controller)")]
+    [Tooltip("Minimum throwing-controller speed, in m/s. Default 1.")]
     public float minArmSpeed = 1f;
-    [Tooltip("Largest angle between the arm motion and the plate direction, in degrees. Default 60.")]
+    [Tooltip("Largest angle between the throwing controller's motion and the direction from the launch point to the target, in degrees. Default 60.")]
     public float maxDirectionErrorDegrees = 60f;
-    [Tooltip("Window of the arm velocity, in seconds. Default 0.08.")]
+    [Tooltip("Window of the throwing-controller velocity, in seconds. Default 0.08.")]
     public float velocityWindowSeconds = 0.08f;
+    [Tooltip("Controller sample-to-sample speed treated as a tracking jump and discarded, in m/s. Default 40 (as ThrowAim).")]
+    public float maxTrackingSpeed = 40f;
 
     [Header("Control")]
-    [Range(0f, 2f), Tooltip("Total lateral miss per lateral controller release error, approximately: 0 cancels the miss the offset makes by itself, 0.5 halves it, 1 adds nothing, 1.5 amplifies it. Spin and wake changes are not compensated. Default 0 (the controller offset's miss cancelled, for real-client verification); 0.5 was the earlier tuning.")]
+    [Range(0f, 2f), Tooltip("Lateral miss per lateral controller release error, approximately: the pitch always leaves from the solver's release point, and its direction is turned so the crossing moves by gain x the offset. 0 adds nothing, 1 the offset itself. Spin and wake changes are separate. Default 0 (no position penalty, for real-client verification); 0.5 was the earlier tuning.")]
     public float controlGainX = 0f;
-    [Range(0f, 2f), Tooltip("Total vertical miss per vertical controller release error, approximately (see controlGainX). Default 0; 0.5 was the earlier tuning.")]
+    [Range(0f, 2f), Tooltip("Vertical miss per vertical controller release error, approximately (see controlGainX). Default 0; 0.5 was the earlier tuning.")]
     public float controlGainY = 0f;
     [Tooltip("Best solver error still accepted when it did not converge, in metres. Default 0.10.")]
     public float solverAcceptMeters = 0.10f;
@@ -98,8 +98,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [Header("Release feedback (local)")]
     [Tooltip("Show the calibrated release marker, the release markers and the release result. Default on.")]
     public bool showReleaseFeedback = true;
-    [Tooltip("Also show the recognition ellipsoid (recognitionRadii) around the ideal release. Display only: recognition is the same either way. Default off.")]
-    public bool showRecognitionRange;
     [Tooltip("Colour of the ideal release markers (live and at the last release).")]
     public Color idealMarkerColor = new Color(0.1f, 0.9f, 1f, 0.9f);
     [Tooltip("Colour of the actual release marker (throwing controller).")]
@@ -114,8 +112,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float errorLineWidth = 0.012f;
     [Tooltip("Live ideal release point (moves with the chest).")]
     public Transform idealMarker;
-    [Tooltip("Recognition ellipsoid around the ideal release (a unit sphere scaled to the radii).")]
-    public Transform rangeMarker;
     [Tooltip("Ideal release point at the last release.")]
     public Transform releaseIdealMarker;
     [Tooltip("Actual release point (throwing controller) at the last release.")]
@@ -139,7 +135,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float debugSeconds = 6f;
 
     [HideInInspector] public int state;
-    // Outputs of the last accepted release, read by the Ball.
+    // Outputs of the last accepted release, read by the Ball. releasePosition is the solver's
+    // release point of the course (the lock's or the default course's), never the ball centre.
+    [HideInInspector] public Vector3 releasePosition;
     [HideInInspector] public Vector3 releaseVelocity;
     [HideInInspector] public Vector3 releaseSpin;
     [HideInInspector] public int releaseWakeMode;
@@ -197,6 +195,12 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private GloveBehaviour _glove;
     private float _nextGloveSearch;
     private int _activeHand = GloveBehaviour.HandRight;
+    // Throwing-controller positions, sampled every frame in pitcher mode and once more at the
+    // release (FieldingMath.SampleMotion); the release's arm velocity comes only from these.
+    private const int ControllerSamples = 16;
+    private readonly float[] _controllerTimes = new float[ControllerSamples];
+    private readonly Vector3[] _controllerPositions = new Vector3[ControllerSamples];
+    private readonly int[] _controllerState = new int[3];
 
     // Cursor in plane coordinates (h right, v up from the plate origin height).
     private bool _hasCursor;
@@ -231,8 +235,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // recognized pitch until it crosses the plate plane.
     private bool _releaseHasPoints;
     private Vector3 _releaseIdealPoint, _releaseActualPoint;
-    private Vector3 _releaseBallOffset;
-    private float _releaseRangeRatio;
+    // The throwing controller's velocity at the release, in pitching-frame coordinates.
+    private Vector3 _releaseArmVelocity;
+    // The held ball's centre at the release, and its offset from the solver's release point
+    // (pitching frame); shown only, never used to recognize or launch.
+    private Vector3 _releaseBallPoint, _releaseBallOffset;
+    // The solver's release point of the course, and where the Ball really launched (RecordLaunch).
+    private Vector3 _resultSolverRelease, _resultLaunchPoint;
+    private bool _resultLaunched;
     private bool _resultPitched;
     private bool _resultHasTarget;
     private Vector3 _resultTarget, _resultPredicted, _resultPlanePoint, _resultPitcherRight;
@@ -265,7 +275,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (cursor != null) cursor.gameObject.SetActive(false);
         ApplyMarkerStyle();
         SetActive(idealMarker, false);
-        SetActive(rangeMarker, false);
         HideReleaseMarkers();
         ShowDebugText("");
     }
@@ -322,6 +331,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         bool want = CanPitch(glove);
         if (want != (state != StateInactive) || (want && glove.throwHand != _activeHand)) Evaluate();
         if (state == StateInactive) return;
+        SampleThrowingController();
         if (state == StateTargeting) UpdateCursorFromHead();
         else if (state == StateSolving) AdvanceSolve();
         if (state != StateSolving && state != StateInactive) UpdateDefaultCourse();
@@ -345,6 +355,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (want)
         {
             _activeHand = glove.throwHand;
+            // The other hand's (or an earlier mode's) controller samples are not this arm's motion.
+            FieldingMath.ResetMotion(_controllerState);
             InvalidateDefaultCourse();
             if (state != StateInactive) Unlock();
             else
@@ -361,7 +373,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             _rayValid = false;
             if (cursor != null) cursor.gameObject.SetActive(false);
             SetActive(idealMarker, false);
-            SetActive(rangeMarker, false);
             HideReleaseMarkers();
             if (_trackingArrival) EndArrival(ArrivalLeftMound);
             _ball.ClearManualPitcher(this);
@@ -815,32 +826,78 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // ---- Release ----
 
-    // Called by the Ball once per hold, before it launches anything. Returns true when the
-    // release is a recognized 4-Seam pitch; the flight is then in release*. Any release ends
-    // the lock (back to targeting while the mode holds).
-    public bool ResolveRelease(Vector3 ballPosition, ThrowAimBehaviour aim, int input)
+    // ---- Throwing-controller motion ----
+
+    // One sample of the throwing controller per frame in pitcher mode (and one at the release),
+    // so the release's arm velocity is the controller's own, never the held ball's.
+    private void SampleThrowingController()
     {
         VRCPlayerApi player = Networking.LocalPlayer;
-        bool result = false;
-        ClearResult();
-        if (Utilities.IsValid(player) && aim != null)
+        if (!Utilities.IsValid(player)) return;
+        SampleControllerAt(Time.time, player.GetTrackingData(HandTracking()).position);
+    }
+
+    // Non-finite tracking is not sampled; jumps are discarded as ThrowAim does.
+    public void SampleControllerAt(float time, Vector3 controllerPosition)
+    {
+        if (!ManualPitchMath.FiniteVector(controllerPosition)) return;
+        FieldingMath.SampleMotion(_controllerTimes, _controllerPositions, _controllerState, time, controllerPosition, maxTrackingSpeed);
+    }
+
+    // Average controller velocity over velocityWindowSeconds; zero with fewer than two samples.
+    public Vector3 ControllerVelocity()
+    {
+        return FieldingMath.MotionVelocity(_controllerTimes, _controllerPositions, _controllerState, velocityWindowSeconds);
+    }
+
+    public void ResetControllerSamples()
+    {
+        FieldingMath.ResetMotion(_controllerState);
+    }
+
+    // Called by the Ball once per hold, before it launches anything. Returns true when the
+    // release is a recognized 4-Seam pitch; the flight is then in release* and leaves from
+    // releasePosition. Any release ends the lock (back to targeting while the mode holds).
+    // ballPosition is shown only: recognition, speed and launch never read it.
+    public bool ResolveRelease(Vector3 ballPosition, int input)
+    {
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (!Utilities.IsValid(player) || strikeZone == null)
         {
-            VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
-            Transform plate = strikeZone.PlateTransform();
-            Vector3 forward = StrikeZoneGeometry.Forward(plate.forward);
-            result = ResolveReleaseAt(player.GetBonePosition(HumanBodyBones.Chest), hand.position, hand.rotation,
-                ballPosition, aim.ArmVelocityOver(velocityWindowSeconds), PlanePoint(plate, forward), forward, input);
+            ClearResult();
+            RecordRejection(input, "no player");
+            return EndRelease(false, ballPosition, Time.time);
         }
-        else RecordRejection(input, aim == null ? "no arm tracking" : "no player");
+        VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
+        Transform plate = strikeZone.PlateTransform();
+        Vector3 forward = StrikeZoneGeometry.Forward(plate.forward);
+        return ResolveTrackedReleaseAt(Time.time, player.GetBonePosition(HumanBodyBones.Chest), hand.position, hand.rotation,
+            ballPosition, PlanePoint(plate, forward), forward, input);
+    }
+
+    // The release from the tracking read at `time`: the controller is sampled once more, the
+    // release is resolved with the controller's own velocity, and the release ends the lock.
+    public bool ResolveTrackedReleaseAt(float time, Vector3 chest, Vector3 handPosition, Quaternion handRotation,
+        Vector3 ballPosition, Vector3 planePoint, Vector3 planeNormal, int input)
+    {
+        SampleControllerAt(time, handPosition);
+        bool result = ResolveReleaseAt(chest, handPosition, handRotation, ballPosition, ControllerVelocity(),
+            planePoint, planeNormal, input);
+        return EndRelease(result, ballPosition, time);
+    }
+
+    private bool EndRelease(bool pitched, Vector3 ballPosition, float now)
+    {
         if (state != StateInactive) Unlock();
-        ShowReleaseFeedback(result, ballPosition);
+        ShowReleaseFeedback(pitched, pitched ? releasePosition : ballPosition, now);
         ShowReleaseDebug();
         Notify();
-        return result;
+        return pitched;
     }
 
     // Recognition, control, speed and 4-Seam quality from explicit tracking data (tested
-    // directly). The release speed comes from armSpeedCurve at the recognition's arm speed.
+    // directly). armVelocity is the throwing controller's velocity. The release speed comes
+    // from armSpeedCurve at that speed.
     public bool ResolveReleaseAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
         Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input)
     {
@@ -883,15 +940,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultGainY = controlGainY;
         _resultWakeClock = centre ? _defaultWakeClock : _lockWakeClock;
         _resultIdealSpin = diagnosticIdealSpin;
+        _resultSolverRelease = courseRelease;
         if (!CalibrationUsable()) { RecordRejection(input, "no calibration"); return false; }
         if (!ManualPitchMath.ValidPoint(chest) || !ManualPitchMath.FiniteVector(handPosition) ||
-            !ManualPitchMath.ValidRotation(handRotation) || !ManualPitchMath.FiniteVector(ballPosition))
+            !ManualPitchMath.ValidRotation(handRotation) || !ManualPitchMath.FiniteVector(armVelocity))
         {
             RecordRejection(input, "invalid tracking");
             return false;
         }
         Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
         if (forward == Vector3.zero) { RecordRejection(input, "invalid tracking"); return false; }
+        // Everything below is the throwing controller's: its position against the calibrated
+        // release in the current pitching frame, its rotation against the calibrated pose, and
+        // its motion against the direction from the solver's release point to the target.
         Quaternion frame = ManualPitchMath.Frame(forward);
         Vector3 idealHand = ManualPitchMath.FromFrame(frame, chest, _calPosition);
         Quaternion idealRotation = ManualPitchMath.Multiply(frame, _calRotation);
@@ -899,28 +960,26 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         debugInput = input;
         debugPositionError = delta;
         debugArmSpeed = armVelocity.magnitude;
-        debugDirectionError = ManualPitchMath.DirectionError(armVelocity, courseTarget - ballPosition);
+        debugDirectionError = ManualPitchMath.DirectionError(armVelocity, courseTarget - courseRelease);
         debugPoseAngle = ManualPitchMath.AngleBetween(handRotation, idealRotation);
-        float recognition = ManualPitchMath.RecognitionValue(delta, recognitionRadii);
         _releaseHasPoints = true;
         _releaseIdealPoint = idealHand;
         _releaseActualPoint = handPosition;
-        _releaseRangeRatio = ManualPitchMath.Finite(recognition) ? Mathf.Sqrt(recognition) : -1f;
-        // The ball centre against the ideal ball centre (same grip, ideal rotation): differs from
-        // the controller error by the grip turned with the pose. Kept for diagnosis only.
-        Vector3 grip = ManualPitchMath.Rotate(ManualPitchMath.Inverse(handRotation), ballPosition - handPosition);
-        Vector3 idealRelease = idealHand + ManualPitchMath.Rotate(idealRotation, grip);
-        _releaseBallOffset = ManualPitchMath.ToFrame(frame, idealRelease, ballPosition);
+        _releaseArmVelocity = ManualPitchMath.Rotate(ManualPitchMath.Inverse(frame), armVelocity);
+        // The held ball's centre, for diagnosis only: it moves with the wrist and the grip.
+        _releaseBallPoint = ballPosition;
+        _releaseBallOffset = ManualPitchMath.FiniteVector(ballPosition) ? ManualPitchMath.ToFrame(frame, courseRelease, ballPosition) : Vector3.zero;
         if (!_resultHasTarget) return Reject("not locked");
-        if (recognition > 1f) return Reject("release position");
+        // The release position never refuses a pitch: its offset only feeds control below.
         if (!(debugArmSpeed >= minArmSpeed)) return Reject("arm speed");
         if (debugDirectionError > maxDirectionErrorDegrees) return Reject("arm direction");
 
-        // Chest movement since the lock (or the default solve): re-aim from the ideal release
-        // now (no new solve).
-        Vector3 direction = ManualPitchMath.BodyCorrection(courseDirection, courseRelease, idealRelease, courseTarget);
-        float distance = Vector3.Dot(ballPosition - planePoint, planeNormal);
-        direction = ManualPitchMath.ControlDirection(direction, delta.x, delta.y, controlGainX, controlGainY, distance);
+        // The pitch leaves from the course's own release point along the solved direction; only
+        // the control gains turn that direction by the controller offset. No body correction:
+        // the launch point does not follow the chest, the head or the ball after the solve.
+        float distance = Vector3.Dot(courseRelease - planePoint, planeNormal);
+        Vector3 direction = ManualPitchMath.ControlDirection(courseDirection, delta.x, delta.y, controlGainX, controlGainY, distance);
+        releasePosition = courseRelease;
 
         // Pose: the whole 3D rotation error lowers quality; part of it turns the axis. The
         // diagnostic setting keeps the calibrated spin and wake the solver aimed with.
@@ -983,14 +1042,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // value of an earlier release (its velocity above all) can be shown or launched again.
     private void ClearResult()
     {
+        releasePosition = Vector3.zero;
         releaseVelocity = Vector3.zero;
         releaseSpin = Vector3.zero;
         releaseWakeMode = BallAerodynamics.WakeNone;
         releaseWakeCoefficient = 0f;
         releaseWakeDirection = Vector3.zero;
         _releaseHasPoints = false;
+        _releaseArmVelocity = Vector3.zero;
+        _releaseBallPoint = Vector3.zero;
         _releaseBallOffset = Vector3.zero;
-        _releaseRangeRatio = -1f;
+        _resultSolverRelease = Vector3.zero;
+        _resultLaunchPoint = Vector3.zero;
+        _resultLaunched = false;
         _resultPitched = false;
         _resultHasTarget = false;
         _resultDefaultCourse = false;
@@ -1008,11 +1072,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         debugPoseAngle = 0f;
     }
 
-    // Called by the Ball with the velocity it launches, pitch or throw: the speed shown is the
-    // release's own, never an arm speed or an earlier release's.
-    public void RecordLaunch(Vector3 velocity)
+    // Called by the Ball with the point and velocity it launches, pitch or throw: the speed and
+    // launch point shown are the release's own, never an arm speed or an earlier release's.
+    public void RecordLaunch(Vector3 position, Vector3 velocity)
     {
         _resultSpeedKmh = ManualPitchMath.FiniteVector(velocity) ? velocity.magnitude * 3.6f : -1f;
+        _resultLaunched = ManualPitchMath.FiniteVector(position);
+        _resultLaunchPoint = _resultLaunched ? position : Vector3.zero;
         if (!showReleaseFeedback) return;
         BuildResultText();
         Notify();
@@ -1020,8 +1086,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // ---- Release feedback ----
 
-    // The live ideal release follows the chest in pitcher mode. The recognition ellipsoid is
-    // shown only with showRecognitionRange; recognition itself never reads either marker.
+    // The live ideal (calibrated controller) release follows the chest in pitcher mode.
     private void UpdateIdealMarker()
     {
         bool shown = false;
@@ -1034,32 +1099,23 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             if (ManualPitchMath.ValidPoint(chest) && forward != Vector3.zero)
             {
                 Quaternion frame = ManualPitchMath.Frame(forward);
-                Vector3 ideal = ManualPitchMath.FromFrame(frame, chest, _calPosition);
-                idealMarker.position = ideal;
-                if (showRecognitionRange && rangeMarker != null) PlaceRange(ideal, frame);
+                idealMarker.position = ManualPitchMath.FromFrame(frame, chest, _calPosition);
                 shown = true;
             }
         }
         SetActive(idealMarker, shown);
-        SetActive(rangeMarker, shown && showRecognitionRange);
-    }
-
-    // A unit-diameter sphere scaled to the recognition diameters, aligned with the pitching frame.
-    public void PlaceRange(Vector3 centre, Quaternion frame)
-    {
-        rangeMarker.SetPositionAndRotation(centre, frame);
-        rangeMarker.localScale = recognitionRadii * 2f;
     }
 
     // The last release's points are world positions frozen at the release; they stay until the
     // next release is decided (picking the ball up again does not hide them) or the mode ends.
-    private void ShowReleaseFeedback(bool pitched, Vector3 ballPosition)
+    // A pitch is followed from its launch point (the solver's release point).
+    private void ShowReleaseFeedback(bool pitched, Vector3 launchPosition, float now)
     {
         if (!showReleaseFeedback) return;
         _trackingArrival = false;
         arrivalMeasured = false;
         arrivalStatus = pitched ? ArrivalMeasuring : ArrivalNotPitch;
-        if (pitched) BeginArrival(ballPosition, Time.time);
+        if (pitched) BeginArrival(launchPosition, now);
         if (_releaseHasPoints)
         {
             Place(releaseIdealMarker, _releaseIdealPoint);
@@ -1231,22 +1287,26 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return text;
     }
 
-    // Analysis: release position, release motion, spin and SSW, and the aim.
+    private static string Mps(float value)
+    {
+        return (value >= 0f ? "+" : "") + value.ToString("F1");
+    }
+
+    // Analysis: release position, controller motion, launch point, speed, spin and SSW, and the aim.
     public string ReleaseDetailText()
     {
         string text = "RELEASE POSITION  (throwing controller vs calibrated)";
         if (_releaseHasPoints)
         {
             text += "\n  " + AbsCm(debugPositionError.magnitude) + "   right " + Cm(debugPositionError.x) + "  up " + Cm(debugPositionError.y) +
-                "  forward " + Cm(debugPositionError.z) + " cm" +
-                (_releaseRangeRatio >= 0f ? "   " + (_releaseRangeRatio * 100f).ToString("F0") + "% of range" : "");
-            text += "\n  ball centre vs ideal   right " + Cm(_releaseBallOffset.x) + "  up " + Cm(_releaseBallOffset.y) +
-                "  forward " + Cm(_releaseBallOffset.z) + " cm";
-            text += "\nRELEASE MOTION  (" + ManualPitchMath.InputName(debugInput) + ")" +
+                "  forward " + Cm(debugPositionError.z) + " cm";
+            text += "\nRELEASE MOTION  (" + ManualPitchMath.InputName(debugInput) + ", throwing controller)" +
                 "\n  arm " + debugArmSpeed.ToString("F1") + " m/s   direction error " + debugDirectionError.ToString("F0") + " deg" +
+                "   (right " + Mps(_releaseArmVelocity.x) + "  up " + Mps(_releaseArmVelocity.y) + "  forward " + Mps(_releaseArmVelocity.z) + " m/s)" +
                 "\n  pose error " + debugPoseAngle.ToString("F0") + " deg";
         }
         else text += "\n  no tracking";
+        text += LaunchText();
         text += SpeedText();
         if (_resultPitched)
         {
@@ -1271,6 +1331,29 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (arrivalStatus == ArrivalMeasured)
             text += "\n  actual   " + PlaneText(arrivalCrossing) + "   miss " + AbsCm(arrivalError.magnitude);
         else text += "\n  actual   " + ArrivalStatusText(arrivalStatus);
+        return text;
+    }
+
+    // Where the release left from: a pitch from the solver's release point of its course, a
+    // throw from the ball centre. The applied point is the one the Ball reported launching.
+    public string LaunchText()
+    {
+        string text = "\nLAUNCH";
+        if (_resultPitched)
+        {
+            text += "  (pitch: from the solver's release point)\n  solver  " + _resultSolverRelease.ToString("F2");
+            if (_resultLaunched)
+                text += "   applied " + _resultLaunchPoint.ToString("F2") + "   diff " + AbsCm((_resultLaunchPoint - _resultSolverRelease).magnitude);
+            else text += "   applied -";
+        }
+        else
+        {
+            text += "  (throw: from the ball centre)";
+            if (_resultLaunched) text += "\n  applied " + _resultLaunchPoint.ToString("F2");
+        }
+        if (_releaseHasPoints && _resultHasTarget)
+            text += "\n  ball centre vs solver release   right " + Cm(_releaseBallOffset.x) + "  up " + Cm(_releaseBallOffset.y) +
+                "  forward " + Cm(_releaseBallOffset.z) + " cm";
         return text;
     }
 
@@ -1324,7 +1407,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return "PitcherMode: " + (state != StateInactive) + "  PitchState: " + ManualPitchMath.StateName(state) +
             "\nReleaseInput: " + ManualPitchMath.InputName(debugInput) + "  Recognized: " + debugRecognized + " (" + debugReason + ")" +
             "\nReleaseError xyz: " + debugPositionError.ToString("F2") +
-            "\nArmSpeed: " + debugArmSpeed.ToString("F2") + " m/s  ArmDirError: " + debugDirectionError.ToString("F1") + " deg" +
+            "\nControllerSpeed: " + debugArmSpeed.ToString("F2") + " m/s  DirError: " + debugDirectionError.ToString("F1") + " deg" +
+            "\nLaunch: " + (debugRecognized ? releasePosition.ToString("F2") + " (solver release)" : "ball centre") +
             "\nCurve: " + (_resultCurveOutput * 100f).ToString("F1") + "%  Max: " + Kmh(_resultMaxSpeedKmh) +
             "  Solver: " + Kmh(_resultSolverSpeedKmh) + "  Release: " + Kmh(_resultSpeedKmh) +
             "\nPoseError: " + debugPoseAngle.ToString("F1") + " deg  Quality: " + (debugPoseQuality * 100f).ToString("F0") + "%" +

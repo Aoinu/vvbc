@@ -124,6 +124,49 @@ public partial class BallBehaviour
         Assert.IsFalse(IsHeld());
     }
 
+    // A hand pitch leaves from the mound's release point (the solver's), away from the hand
+    // that held the ball: the launch, the snapshot other clients receive and the release
+    // re-assertion all use that one point.
+    [TsukimiTest]
+    public void AHandPitchKeepsItsReleasePointInTheSnapshot()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        Mimic.Become(other);
+        Mimic.Become(pitcher);
+        HoldInHandForTest(pitcher);
+        Vector3 solverRelease = new Vector3(-0.25f, 1.85f, 17.9f);
+        WakeProfile wake = TestWake(BallAerodynamics.WakeFixed, 0.006f, Vector3.left, 0f, 0f);
+        LaunchRelease(solverRelease, Vector3.back * 38f, Vector3.left * 260f, true, wake, 4.0, 3.5f);
+        Assert.AreEqual(solverRelease, _releasePosition, "the re-assertion starts from it");
+        Assert.IsTrue(_releasePitch);
+        Assert.AreEqual(HandPitchState, _acceptedKind);
+        Assert.AreEqual(solverRelease, _acceptedPosition, "published from it");
+        Mimic.Deliver(other);
+        Mimic.Become(other);
+        Assert.AreEqual(HandPitchState, _acceptedKind);
+        Assert.AreEqual(solverRelease, _acceptedPosition, "received from it");
+    }
+
+    // The first fixed step after a release restores a hand pitch the SDK moved back toward the
+    // hand, not only one whose velocity it changed; a throw keeps the velocity-only check.
+    [TsukimiTest]
+    public void TheReleaseReassertionChecksAHandPitchsPosition()
+    {
+        Vector3 release = new Vector3(-0.25f, 1.85f, 17.9f);
+        Vector3 velocity = Vector3.back * 38f;
+        Assert.IsTrue(ReleaseStateKept(false, release, velocity, release, velocity, 0.02f, true), "untouched");
+        Assert.IsTrue(ReleaseStateKept(false, release + velocity * 0.015f, velocity, release, velocity, 0.02f, true),
+            "already moved along its own path");
+        Vector3 hand = release + new Vector3(0.12f, -0.30f, 0.20f);
+        Assert.IsFalse(ReleaseStateKept(false, hand, velocity, release, velocity, 0.02f, true), "put back at the hand");
+        Assert.IsFalse(ReleaseStateKept(false, release + velocity * 0.05f, velocity, release, velocity, 0.02f, true),
+            "further along than the time allows");
+        Assert.IsTrue(ReleaseStateKept(false, hand, velocity, release, velocity, 0.02f, false), "a throw: velocity only, as before");
+        Assert.IsFalse(ReleaseStateKept(true, release, velocity, release, velocity, 0.02f, true), "kinematic");
+        Assert.IsFalse(ReleaseStateKept(false, release, velocity + Vector3.up * 2f, release, velocity, 0.02f, false), "SDK throw velocity");
+    }
+
     // The manual pitch is a fielding action: it waits for ownership like a throw, blocks the
     // batting pitcher's Stage meanwhile, and is published even though a Stage arrived.
     [TsukimiTest]
