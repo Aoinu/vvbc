@@ -234,7 +234,9 @@ ownership arrives publish only the final Throw. The winner publishes
 A pending fielding action is never discarded because a snapshot arrived: the
 snapshot becomes Accepted but the local presentation is left alone until the
 contest is settled. The base-sequence check that discards a superseded request
-applies only to pitcher and hit requests (Stage, Pitch, Hit), as before.
+applies only to pitcher and hit requests (Stage, Pitch, Hit), as before, except
+that a Hit is not superseded by the Pitch it was struck on, or a Stage before that
+pitch, arriving after the contact (see [ball network](ball-network-prototype.md#limits)).
 
 ### Receivers: owner-qualified acceptance
 
@@ -256,7 +258,10 @@ An ownership notification is settled against the owner as it is now
 arrive late or out of order. When the current owner is another player O, the
 newest candidate of O becomes Accepted, so a snapshot that arrived before its
 ownership notification is not lost and a lower sequence of the confirmed owner
-wins over a higher one of another player. A late notification for a player who
+wins over a higher one of another player. That applies to fielding actions only:
+a Stage, Pitch or Hit candidate with a lower sequence than the Accepted state is
+that state's history and is dropped, so an old Hit never undoes a later catch or
+throw. A late notification for a player who
 no longer owns the ball takes nothing from that player's candidates and drops
 no local speculation; when the owner is this client, the notification runs the
 local-owner path (publish the pending action, or adopt). With the owner

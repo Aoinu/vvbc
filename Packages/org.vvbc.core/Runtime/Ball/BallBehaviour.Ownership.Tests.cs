@@ -28,7 +28,7 @@ public partial class BallBehaviour
         _hold = hold;
         _holderId = holder;
         _publisherId = publisher;
-        OnDeserialization();
+        ReceiveSnapshot();
     }
 
     [TsukimiTest]

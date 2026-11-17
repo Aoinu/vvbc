@@ -25,7 +25,7 @@ public partial class BallBehaviour
         _wakeDirection = wake.direction;
         _wakeConeAngle = wake.coneAngle;
         _wakePhase = wake.initialPhase;
-        OnDeserialization();
+        ReceiveSnapshot();
     }
 
     [TsukimiTest(maxSteps: 2000000)]

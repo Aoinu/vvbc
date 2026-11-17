@@ -75,13 +75,81 @@ locked grips, and confirm only the batter vibrates. In desktop mode confirm no
 haptic error. Join after a hit has aged past the audio window and confirm the
 old hit is silent while the Ball state still follows the catch-up rules.
 
+## Batted-ball check (batter, infielder, outfielder)
+
+Use at least four VRChat clients in one instance: A owns the pitcher (On Event,
+default delay), B bats, C stands at an infield position, D in the outfield. Turn
+`networkDiagnostics` on for the Ball in this build only, and collect each client's
+`output_log`. ClientSim delivers instantly, so its timing says nothing about this.
+
+1. B hits ground balls, line drives and fly balls (at least ten of each). On every
+   client note whether the ball is seen leaving the bat, where it first bounces and
+   where it stops. Every client must see every hit; first bounce points must match
+   within a few metres, later bounces may differ.
+2. For each hit, compare the logs: on B `pending kind=3 … onLocalPitch=True`, then
+   `publish kind=3`, `send` (with `requestedAgo`) and `sent success=True`; on A, C and
+   D `receive kind=3` with its `age`, the `decision`, and `apply kind=3 …
+   simulated=… groundStop=…`. A `pending kind=3 superseded` line on B, or a
+   `decision ignore`/`stash` with no later `apply kind=3` on another client, is a
+   lost hit.
+3. Record the `age` distribution per client (outfielders included) and any
+   `groundStop=True` with a large age; that is where the bounce now happens later
+   than on B.
+4. Watch whether a fly ball is staged (an `apply Stage` line) while it is still in
+   the air on D. That is the pitcher's reset, not the Ball (see below).
+5. Have C catch a grounder and throw to D; then let B take the ball. No client may
+   show the old hit again (no `apply kind=3` after the catch).
+6. Repeat with B on a high-latency connection (another region, or mobile) and with a
+   late joiner arriving during a long fly ball.
+
+On the pitcher's reset: On Event counts the first ground contact of the pitcher
+Owner's local ball. If B's Hit reaches A after A's own copy of the pitch has already
+bounced behind the plate, that bounce is taken as the contact and the next Stage
+follows `resetSeconds` after it, which can end a long fly ball in mid-air for
+everyone. Step 4 checks for this.
+
 ## Limits
 
 Catch-up defaults to a maximum of three seconds and a fixed time step of at least
-5 ms; both limits are configurable on BallBehaviour. A snapshot outside that
-range stops the current flight and logs a warning;
-it is not silently placed at a shortened elapsed time. Catch-up models free
-flight, not collisions that happened before reception. Ownership transfer and
+5 ms; both limits are configurable on BallBehaviour. Catch-up models free
+flight and stops where the path first meets a `groundLayers` surface: the ball is
+placed touching it with the velocity it arrives with, and the physics engine
+bounces it from there. The flight time after that contact is not reproduced, so
+a ball received after its first bounce bounces later than on the publisher (the
+first bounce point matches; later bounces and walls are not reproduced). Without
+this a ball advanced past its first bounce was placed under the field and fell out
+of sight. A negative age (server clock estimates of two clients differ, or the
+contact was stamped slightly ahead of the frame) starts at the snapshot. A Hit or
+Throw older than the window is shown from the window and logs a warning: it is
+never hidden, so it can still be seen and fielded, and the next state corrects
+it. A Pitch or HandPitch older than the window stops the current flight and logs
+a warning, so a stale pitch never crosses the zone again.
+
+A Hit that was struck on the pitch this client launched from the shared schedule
+is not superseded when that pitch's own Pitch snapshot (same release time), or a
+Stage before its release, is accepted after the contact: the hit answers that
+pitch. Any newer Pitch or Stage, and any fielding state, still supersedes it. A
+Stage, Pitch or Hit candidate whose sequence is lower than the accepted state is
+not taken when its publisher becomes owner: such a request is history of the
+accepted state (an old Hit never undoes the catch that followed it), unlike a
+contested fielding action. A received motion state equal to the accepted one is
+applied again when the local ball is not in flight (a Pitch, Hit, Throw or
+HandPitch that was stopped).
+
+### Diagnostics
+
+`networkDiagnostics` on BallBehaviour (off by default) logs one line per event
+with the prefix `BallNetwork[diag]`: the local player, the current owner, the
+server time and the ball as this client shows it (`flying`, hold, `isKinematic`,
+position, renderer). Events: a local action becoming pending (with the base state
+and, for a Hit, the local pitch it was struck on), the pending action superseded,
+publication, `OnPreSerialization` (seconds since `RequestSerialization`),
+`OnPostSerialization` (success and byte count), reception (kind, sequence,
+publisher, snapshot time, age, `DeserializationResult.sendTime` and `receiveTime`,
+`isFromStorage`), the Accept/Stash/Ignore decision with its rule, and every
+application (Stage, launch with the simulated time and whether it stopped at the
+ground, or a stopped stale pitch). With it off the only cost is one boolean test
+per event; nothing runs per frame and nothing more is sent. Ownership transfer and
 network delivery can fail or be delayed. A transfer still pending after one
 second and serialization that fails repeatedly are logged. The sequence and
 state priority reject duplicates and common reset/hit races; concurrent writers

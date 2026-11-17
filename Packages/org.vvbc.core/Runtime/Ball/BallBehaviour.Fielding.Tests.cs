@@ -91,7 +91,7 @@ public partial class BallBehaviour
         _hold = HoldGlove;
         _holderId = y.playerId;
         _publisherId = y.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(3, _acceptedSequence, "y is not the owner");
         Assert.IsFalse(IsHeld());
         Networking.SetOwner(y, gameObject);
@@ -116,12 +116,12 @@ public partial class BallBehaviour
         _hold = HoldGlove;
         _holderId = x.playerId;
         _publisherId = x.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.IsFalse(HasCandidates(), "an old snapshot of the owner is dropped, not kept");
         _sequence = 9;
         _publisherId = y.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence, "a higher sequence from a non-owner does not win");
     }
 
@@ -144,7 +144,7 @@ public partial class BallBehaviour
         _hold = HoldFree;
         _holderId = 0;
         _publisherId = winner.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.AreEqual(ThrowState, _acceptedKind);
         Assert.IsFalse(IsHeld());
@@ -162,7 +162,7 @@ public partial class BallBehaviour
         _hold = HoldGlove;
         _holderId = x.playerId;
         _publisherId = x.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(12, _acceptedSequence);
         Assert.AreEqual(x.playerId, LocalHolderId());
     }
@@ -188,7 +188,7 @@ public partial class BallBehaviour
         _hold = HoldGlove;
         _holderId = winner.playerId;
         _publisherId = winner.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(me.playerId, LocalHolderId());
         CheckPendingOwnership();
         Assert.AreEqual(winner.playerId, LocalHolderId(), "the owner's catch is shown");
@@ -213,7 +213,7 @@ public partial class BallBehaviour
         _hold = HoldGlove;
         _holderId = winner.playerId;
         _publisherId = winner.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(winner.playerId, LocalHolderId());
         Assert.AreEqual(HoldGlove, LocalHoldState());
     }
@@ -263,7 +263,7 @@ public partial class BallBehaviour
         _hold = HoldGlove;
         _holderId = rival.playerId;
         _publisherId = rival.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.IsTrue(HasCandidates(), "the rival's catch is held back");
         Assert.AreEqual(1, _acceptedSequence);
         ResolveOwnershipConflict();

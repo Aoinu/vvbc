@@ -216,7 +216,7 @@ public partial class BallBehaviour
         _hold = HoldFree;
         _holderId = 0;
         _publisherId = c.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.IsTrue(HasCandidates());
         Assert.AreEqual(BallAerodynamics.WakeNone, _acceptedWake.mode, "nothing is accepted from a non-owner");
         _wakeMode = BallAerodynamics.WakeNone;

@@ -37,15 +37,15 @@ public partial class BallBehaviour
         _sequence = 5;
         _kind = 3;
         _pending = true;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.IsTrue(_pending);
         _sequence = 4;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.IsTrue(_pending);
         _sequence = 6;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(6, _acceptedSequence);
         Assert.IsFalse(_pending);
     }
@@ -63,10 +63,10 @@ public partial class BallBehaviour
         _acceptedKind = 3;
         _sequence = 7;
         _kind = 1;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(1, _acceptedKind);
         _kind = 3;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(1, _acceptedKind);
     }
 

@@ -49,7 +49,7 @@ public partial class BallBehaviour
     private const int SnapshotStash = 2;
 
     [Header("Network")]
-    [Tooltip("Maximum age of a received flight snapshot to simulate, in seconds. Default 3.")]
+    [Tooltip("Maximum flight time simulated for a received flight snapshot, in seconds. An older pitch is stopped; an older hit or throw is shown from this time. Default 3.")]
     public float maximumCatchupSeconds = 3f;
     [Tooltip("Smallest fixed timestep allowed for network catch-up, in seconds. Default 0.005.")]
     public float minimumCatchupStep = 0.005f;
@@ -61,6 +61,10 @@ public partial class BallBehaviour
     public float ownershipCheckSeconds = 1f;
     [Tooltip("Maximum age of a remote hit sound, in seconds. Default 0.75.")]
     public float maximumHitAudioAge = 0.75f;
+    [Tooltip("Logs every publication, send, reception and application of a snapshot with the prefix BallNetwork[diag]. For tracing sync problems in real clients only; leave off in normal play.")]
+    public bool networkDiagnostics;
+    // Diagnostics only: when RequestSerialization was last called.
+    private float _sendRequestedAt;
 
     // Accepted snapshot: the local truth, and what the owner serializes.
     private int _acceptedSequence;
@@ -123,9 +127,15 @@ public partial class BallBehaviour
     private WakeProfile _pendingWake;
     private int _publishedSequence, _publishedKind;
     private int _serializationRetries;
-    // Release time of a pitch this client already launched from the shared schedule.
+    // Release time of a pitch this client already launched from the shared schedule, and the
+    // local flight it started.
     private double _localPitchTime;
     private bool _hasLocalPitch;
+    private int _localPitchFlight;
+    // The pending hit was struck on that local pitch: its formal Pitch snapshot (same release)
+    // arriving after the contact is the hit's own history, not a newer state.
+    private bool _pendingHitOnLocalPitch;
+    private double _pendingHitRelease;
 
     public bool IsLocalOwner()
     {
@@ -182,6 +192,7 @@ public partial class BallBehaviour
         _localPitchTime = releaseTime;
         _hasLocalPitch = true;
         LaunchPitch(state.position, state.velocity, spin, wake, state.time);
+        _localPitchFlight = flightSequence;
         return true;
     }
 
@@ -198,9 +209,11 @@ public partial class BallBehaviour
         return wake;
     }
 
+    // The Pitch snapshot carries the schedule's release time unchanged, so it is normally equal.
     private bool IsLocalPitch(double releaseTime)
     {
-        return _hasLocalPitch && Mathf.Abs((float)Networking.CalculateServerDeltaTime(releaseTime, _localPitchTime)) < 0.001f;
+        return _hasLocalPitch && (releaseTime == _localPitchTime ||
+            Mathf.Abs((float)Networking.CalculateServerDeltaTime(releaseTime, _localPitchTime)) < 0.001f);
     }
 
     // A Stage older than the pitch already launched here must not reset that flight.
@@ -233,6 +246,8 @@ public partial class BallBehaviour
 
     public void QueueHit(Vector3 position, Vector3 velocity, Vector3 spin, double serverTime, int batterId, float strength)
     {
+        _pendingHitOnLocalPitch = _hasLocalPitch && _localPitchFlight == flightSequence;
+        _pendingHitRelease = _localPitchTime;
         QueueSnapshot(HitState, position, velocity, spin, serverTime, batterId, Mathf.Clamp01(strength), HoldFree, 0);
     }
 
@@ -248,6 +263,9 @@ public partial class BallBehaviour
     {
         if (Networking.LocalPlayer == null) return;
         RecordPending(kind, position, velocity, spin, serverTime, batterId, strength, hold, holderId, wake);
+        if (networkDiagnostics)
+            Diag("pending kind=" + kind + " time=" + serverTime + " base=" + _pendingBaseSequence + "/" + _pendingBasePublisher +
+                (kind == HitState ? " onLocalPitch=" + _pendingHitOnLocalPitch + " release=" + _pendingHitRelease : ""));
         if (IsLocalOwner())
         {
             PublishPending();
@@ -485,10 +503,7 @@ public partial class BallBehaviour
     private void PublishPending()
     {
         if (!_pending || !IsLocalOwner()) return;
-        // A pitcher or hit request is superseded by any newer accepted state. A fielding
-        // action is what this player physically did; the winner publishes it regardless.
-        if (!IsFieldingKind(_pendingKind) &&
-            (_pendingBaseSequence != _acceptedSequence || _pendingBasePublisher != _acceptedPublisherId))
+        if (PendingSuperseded())
         {
             _pending = false;
             Debug.LogWarning("BallNetwork: discarded a pending snapshot superseded during ownership transfer");
@@ -524,8 +539,34 @@ public partial class BallBehaviour
         {
             if (!IsLocalPitch(_acceptedServerTime)) LaunchPitch(_acceptedPosition, _acceptedVelocity, _acceptedSpin, _acceptedWake, 0f);
         }
+        if (networkDiagnostics) Diag("publish kind=" + _acceptedKind + " seq=" + _acceptedSequence + " time=" + _acceptedServerTime);
         Send();
         NotifyPresentationListeners();
+    }
+
+    // A pitcher or hit request is superseded by any newer accepted state. A fielding action
+    // is what this player physically did; the winner publishes it regardless. A hit answers
+    // the local pitch it was struck on, so that pitch's own Pitch snapshot, or a Stage before
+    // its release, reaching this client after the contact does not supersede the hit.
+    private bool PendingSuperseded()
+    {
+        if (!_pending || IsFieldingKind(_pendingKind)) return false;
+        if (_pendingBaseSequence == _acceptedSequence && _pendingBasePublisher == _acceptedPublisherId) return false;
+        if (_pendingKind == HitState && _pendingHitOnLocalPitch)
+        {
+            if (_acceptedKind == PitchState && _acceptedServerTime == _pendingHitRelease) return false;
+            if (_acceptedKind == StageState &&
+                Networking.CalculateServerDeltaTime(_acceptedServerTime, _pendingHitRelease) < 0.0) return false;
+        }
+        return true;
+    }
+
+    // Drops a pitcher or hit request that an accepted state superseded.
+    private void DropSupersededPending()
+    {
+        if (!PendingSuperseded()) return;
+        _pending = false;
+        if (networkDiagnostics) Diag("pending kind=" + _pendingKind + " superseded by kind=" + _acceptedKind + " seq=" + _acceptedSequence + "/" + _acceptedPublisherId);
     }
 
     public void OnLocalHitApplied()
@@ -561,7 +602,9 @@ public partial class BallBehaviour
     // A LocalRig ball accepts its own actions at once (QueueSnapshot -> PublishPending) and never sends.
     private void Send()
     {
-        if (!localOnly) RequestSerialization();
+        if (localOnly) return;
+        if (networkDiagnostics) _sendRequestedAt = Time.realtimeSinceStartup;
+        RequestSerialization();
     }
 
     private void AcceptSynced()
@@ -657,6 +700,11 @@ public partial class BallBehaviour
         if (slot < 0) return false;
         _candidateUsed[slot] = false;
         if (!NewerThanAccepted(_candidateSequence[slot], _candidateKind[slot], publisher)) return false;
+        // A Stage, Pitch or Hit request never wins by a lower sequence the way a contested
+        // fielding action can: one published before the accepted state was is that state's
+        // history (an old Hit must not undo the catch that followed it).
+        if (!IsFieldingKind(_candidateKind[slot]) && _acceptedSequence > 0 &&
+            _candidateSequence[slot] < _acceptedSequence) return false;
         _acceptedSequence = _candidateSequence[slot];
         _acceptedKind = _candidateKind[slot];
         _acceptedPosition = _candidatePosition[slot];
@@ -703,10 +751,13 @@ public partial class BallBehaviour
     public override void OnPreSerialization()
     {
         if (IsLocalOwner()) CopyAccepted();
+        if (networkDiagnostics)
+            Diag("send kind=" + _kind + " seq=" + _sequence + " time=" + _serverTime + " requestedAgo=" + (Time.realtimeSinceStartup - _sendRequestedAt));
     }
 
     public override void OnPostSerialization(SerializationResult result)
     {
+        if (networkDiagnostics) Diag("sent success=" + result.success + " bytes=" + result.byteCount + " seq=" + _sequence);
         if (result.success) { _serializationRetries = 0; return; }
         if (!IsLocalOwner() || _publishedSequence != _acceptedSequence || _publishedKind != _acceptedKind) return;
         if (_serializationRetries >= maximumSerializationRetries)
@@ -723,12 +774,23 @@ public partial class BallBehaviour
         if (IsLocalOwner() && _publishedSequence == _acceptedSequence && _publishedKind == _acceptedKind) Send();
     }
 
-    public override void OnDeserialization()
+    // sendTime and receiveTime are only read for diagnostics.
+    public override void OnDeserialization(DeserializationResult result)
+    {
+        if (networkDiagnostics)
+            Diag("receive kind=" + _kind + " seq=" + _sequence + " publisher=" + _publisherId + " time=" + _serverTime +
+                " age=" + Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _serverTime) +
+                " sendTime=" + result.sendTime + " receiveTime=" + result.receiveTime + " storage=" + result.isFromStorage);
+        ReceiveSnapshot();
+    }
+
+    private void ReceiveSnapshot()
     {
         if (_sequence > _maxSeenSequence) _maxSeenSequence = _sequence;
         int owner = OwnerId();
         NoteOwner(owner);
         int decision = SnapshotDecision(_sequence, _kind, _publisherId, owner);
+        if (networkDiagnostics) Diag("decision " + DecisionText(decision, owner));
         if (decision == SnapshotAccept)
         {
             // The same state sent again (a new owner adopting it, or a conflict republish) is
@@ -737,7 +799,7 @@ public partial class BallBehaviour
             bool repeated = SameAsAccepted();
             AcceptSynced();
             if (!repeated || !ShowsAccepted()) ApplyAccepted();
-            else if (_pending && !IsFieldingKind(_pendingKind)) _pending = false;
+            else DropSupersededPending();
         }
         else if (decision == SnapshotStash)
         {
@@ -770,11 +832,13 @@ public partial class BallBehaviour
     }
 
     // Whether the local ball presents the accepted state: the same holder and hold for a
-    // possession, a ball held by nobody for a motion state. A free ball's flight is left to
-    // physics once applied, so it is not compared.
+    // possession, a ball held by nobody for a Stage, and a free ball in flight for a Pitch,
+    // Hit, Throw or HandPitch. The flight path itself is left to physics once applied, so
+    // it is not compared; a flight that was stopped (staged) is applied again.
     private bool ShowsAccepted()
     {
-        if (_acceptedKind != PossessionState) return _localHold == HoldFree;
+        if (_acceptedKind == StageState) return _localHold == HoldFree;
+        if (_acceptedKind != PossessionState) return _localHold == HoldFree && flying;
         if (_localHold != _acceptedHold || _localHolderId != _acceptedHolderId) return false;
         return _acceptedHold != HoldHand || _localHolderId == LocalId() || _holdOffset == _acceptedVelocity;
     }
@@ -789,12 +853,33 @@ public partial class BallBehaviour
         return owner > 0 && publisher == owner ? SnapshotAccept : SnapshotStash;
     }
 
+    // Diagnostics: the decision and the rule of SnapshotDecision that made it.
+    private string DecisionText(int decision, int owner)
+    {
+        string reason;
+        if (decision == SnapshotAccept) reason = "accept: publisher is owner";
+        else if (decision == SnapshotStash) reason = owner <= 0 ? "stash: owner unknown" : "stash: publisher is not owner";
+        else reason = _sequence <= 0 ? "ignore: no sequence" : "ignore: not newer than accepted";
+        return reason + " local=" + LocalId() + " owner=" + owner + " publisher=" + _publisherId +
+            " accepted=" + _acceptedSequence + "/" + _acceptedPublisherId + " kind=" + _acceptedKind + " pending=" + _pending;
+    }
+
+    // Diagnostics: one log line with the local player and the ball as this client shows it.
+    private void Diag(string message)
+    {
+        string ball = " flying=" + flying + " hold=" + _localHold;
+        if (body != null) ball += " kinematic=" + body.isKinematic + " position=" + body.position;
+        if (ballRenderer != null) ball += " rendered=" + ballRenderer.enabled;
+        Debug.Log("BallNetwork[diag] local=" + LocalId() + " owner=" + OwnerId() + " now=" + Networking.GetServerTimeInSeconds() +
+            " " + message + ball);
+    }
+
     // Applies a newly accepted snapshot to the local ball. A pitcher or hit request is
     // superseded by it. An unresolved local fielding action keeps its presentation: the
     // accepted state is shown when the contest is lost or abandoned.
     private void ApplyAccepted()
     {
-        if (_pending && !IsFieldingKind(_pendingKind)) _pending = false;
+        DropSupersededPending();
         if (SpeculationUnresolved())
         {
             NotifyPresentationListeners();
@@ -815,37 +900,103 @@ public partial class BallBehaviour
     {
         if (_acceptedKind == StageState)
         {
-            if (!StageBeforeLocalPitch(_acceptedServerTime)) Stage(_acceptedPosition);
+            if (!StageBeforeLocalPitch(_acceptedServerTime))
+            {
+                Stage(_acceptedPosition);
+                if (networkDiagnostics) Diag("apply Stage seq=" + _acceptedSequence + "/" + _acceptedPublisherId);
+            }
             return;
         }
         if (!IsPitchKind(_acceptedKind) && _acceptedKind != HitState && _acceptedKind != ThrowState) return;
         if (_acceptedKind == PitchState && IsLocalPitch(_acceptedServerTime)) return;
         if (body == null && (_acceptedKind != HitState || _acceptedBatterId <= 0)) return;
         double elapsed = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _acceptedServerTime);
-        if (body != null)
+        if (body != null) LaunchAccepted(elapsed);
+        VRCPlayerApi localPlayer = Networking.LocalPlayer;
+        if (_acceptedKind == HitState && localPlayer != null &&
+            ShouldPlayHitAudio(_acceptedBatterId, localPlayer.playerId, elapsed < 0.0 ? 0.0 : elapsed))
+            PlayRemoteHitAudio(_acceptedBatterId, _acceptedHitStrength, _acceptedPosition);
+    }
+
+    // Starts the accepted flight where it is after elapsed seconds, or stops a stale pitch.
+    private void LaunchAccepted(double elapsed)
+    {
+        float duration = CatchUpSeconds(_acceptedKind, elapsed, Time.fixedDeltaTime);
+        if (duration < 0f)
         {
-            if (!CanCatchUp(elapsed, Time.fixedDeltaTime))
+            Debug.LogWarning("BallNetwork: snapshot age outside catch-up range: " + elapsed);
+            Stage(body.position);
+            if (networkDiagnostics) Diag("apply kind=" + _acceptedKind + " stopped age=" + elapsed);
+            return;
+        }
+        if (elapsed > duration && duration > 0f)
+            Debug.LogWarning("BallNetwork: flight snapshot older than the catch-up window, shown from " + duration + " s: " + elapsed);
+        bool batted = !IsPitchKind(_acceptedKind);
+        BallWake wake = batted ? new BallWake() : BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin);
+        BallFlightState state = AdvanceToGround(_acceptedPosition, _acceptedVelocity, _acceptedSpin,
+            wake, duration, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
+        if (batted)
+        {
+            ApplyRemoteHit(state.position, state.velocity, state.spin);
+            _flightOrigin = _acceptedKind;
+        }
+        else LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
+        if (networkDiagnostics)
+            Diag("apply kind=" + _acceptedKind + " seq=" + _acceptedSequence + "/" + _acceptedPublisherId + " age=" + elapsed +
+                " simulated=" + state.time + " groundStop=" + (state.time < duration - 0.0001f));
+    }
+
+    // Flight time to simulate for a received snapshot of this age, or -1 to stop the flight.
+    // A negative age (server clock estimates differ, or the contact was stamped slightly
+    // ahead of the frame) starts at the snapshot. A free flight (Hit, Throw) older than the
+    // window is shown from the window, never hidden: a fielder can still see and field it,
+    // and the next state corrects it. A stale pitch must not cross the zone or meet a bat again.
+    private float CatchUpSeconds(int kind, double elapsed, float step)
+    {
+        if (step < minimumCatchupStep) return -1f;
+        if (elapsed <= 0.0) return 0f;
+        if (elapsed <= maximumCatchupSeconds) return (float)elapsed;
+        return IsPitchKind(kind) ? -1f : Mathf.Max(0f, maximumCatchupSeconds);
+    }
+
+    // Network catch-up that ends where the path first meets a groundLayers surface. The
+    // free-flight model has no collisions, so a ball advanced past its first bounce was placed
+    // under the field and fell out of sight. From that contact the physics engine bounces it;
+    // the flight time after the contact is not reproduced. state.time is the time reached.
+    private BallFlightState AdvanceToGround(Vector3 position, Vector3 velocity, Vector3 spin, BallWake wake,
+        float duration, float step, float spinHalfLife)
+    {
+        BallFlightState state = new BallFlightState();
+        state.position = position;
+        state.velocity = velocity;
+        state.spin = spin;
+        if (duration <= 0f || step <= 0f) return state;
+        int mask = groundLayers.value;
+        float radius = BallRadius();
+        Vector3 gravity = Physics.gravity;
+        float remaining = duration;
+        while (remaining > 0.000001f)
+        {
+            float dt = Mathf.Min(remaining, step);
+            Vector3 from = state.position;
+            Vector3 stepSpin = state.spin;
+            state = BallFlightModel.Step(state, stepSpin, gravity, dragCoefficient, magnusCoefficient, wake, dt);
+            state.spin = BallFlightModel.DecaySpin(stepSpin, spinHalfLife, dt);
+            remaining -= dt;
+            if (mask == 0) continue;
+            Vector3 path = state.position - from;
+            float distance = path.magnitude;
+            if (distance <= 0f) continue;
+            Vector3 direction = path / distance;
+            RaycastHit hit;
+            if (Physics.SphereCast(from, radius, direction, out hit, distance, mask, QueryTriggerInteraction.Ignore))
             {
-                Debug.LogWarning("BallNetwork: snapshot age outside catch-up range: " + elapsed);
-                Stage(body.position);
-            }
-            else
-            {
-                bool batted = !IsPitchKind(_acceptedKind);
-                BallWake wake = batted ? new BallWake() : BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin);
-                BallFlightState state = AdvanceSnapshot(_acceptedPosition, _acceptedVelocity, _acceptedSpin, Physics.gravity,
-                    dragCoefficient, magnusCoefficient, wake, (float)elapsed, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
-                if (batted)
-                {
-                    ApplyRemoteHit(state.position, state.velocity, state.spin);
-                    _flightOrigin = _acceptedKind;
-                }
-                else LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
+                state.position = from + direction * hit.distance;
+                state.time -= dt * (1f - hit.distance / distance);
+                break;
             }
         }
-        VRCPlayerApi localPlayer = Networking.LocalPlayer;
-        if (_acceptedKind == HitState && localPlayer != null && ShouldPlayHitAudio(_acceptedBatterId, localPlayer.playerId, elapsed))
-            PlayRemoteHitAudio(_acceptedBatterId, _acceptedHitStrength, _acceptedPosition);
+        return state;
     }
 
     // An owner that receives another publisher's data checks once later. If it still owns
