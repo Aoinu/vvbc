@@ -40,6 +40,13 @@ OnDrop --------------------------+--> TryReleaseBall (once per hand hold)
                           LaunchRelease -> QueueSnapshot (existing network)
 ```
 
+A release that is not recognized as a pitch stays the ordinary throw (`ThrowState`). In pitcher
+mode that throw offers only the targets whose `TargetBehaviour.allowDuringPitcherMode` is on:
+first, second and third base (pickoff throws), never HomePlate, so a failed pitch is never thrown
+home as a throw. With no allowed target in range it is the usual no-target throw. The Ball passes
+the local mode to ThrowAim (see [Fielding: throw targets](fielding-system.md#throw-targets));
+nothing about it is synced, and the recognition itself is unchanged.
+
 ## Pitcher mode
 
 `ManualPitchBehaviour` sits on the mound's trigger collider (Default layer, no new layer).
@@ -122,12 +129,23 @@ Pose quality uses the whole 3D rotation error `angle = Angle(Q, Qframe * Q4Scal)
 ```text
 t = clamp01((angle - goodPoseAngle) / (badPoseAngle - goodPoseAngle))   12 / 50 deg
 h = t^2 (3 - 2t)                                                          failure
-axis   = axis4S turned by axisTransferGain (0.5) x the pose error (frame coordinates)
-rpm    = min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800) x (1 - spinLossAtBadPose 0.5 x h)
-spin   = normalize(axis x (1 - g) + F x g) x rpm,   g = gyroAtBadPose 0.5 x h
-wake   = Fixed, wakeCoefficient 0.006 x (1 - wakeLossAtBadPose 1 x h),
+axis   = axis4S turned by axisTransferGain x the pose error (frame coordinates)
+rpm    = min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800) x (1 - spinLossAtBadPose x h)
+spin   = normalize(axis x (1 - g) + F x g) x rpm,   g = gyroAtBadPose x h
+wake   = Fixed, wakeCoefficient 0.006 x (1 - wakeLossAtBadPose x h),
          direction at wakeClockDegrees 90 (arm side, mirrored for a left-hander)
 ```
+
+**Current defaults: no pose penalty.** For real-client verification `axisTransferGain`,
+`spinLossAtBadPose`, `gyroAtBadPose` and `wakeLossAtBadPose` default to **0** (source,
+`ManualPitchMound.prefab` and the PracticeSpace mound), so every recognized pitch keeps the
+calibrated 2500 rpm, axis and SSW whatever the pose. This is a provisional balance setting,
+not the removal of the penalty: the pose error and quality are still computed and shown, the
+formulas above are unchanged, and setting the earlier tuning (0.5, 0.5, 0.5, 1) on the mound
+brings the pose-made changes back (`ABadPoseIsMeasuredButChangesNothingUntilPenaltiesAreSet`,
+`EachPoseCoefficientActsAlone`). A low quality with no change in the ball is therefore expected
+at these settings. `diagnosticIdealSpin` stays off; it differs from the zero coefficients in also
+reporting quality 1. The text below describes the mechanics with the earlier tuning.
 
 A bad pose moves spin into gyro and lowers rpm and wake continuously; it never flips the
 axis to another form and never divides by the spin (0 rpm is the zero vector). Pose never
@@ -266,14 +284,24 @@ solver's prediction within 1 mm. For a real-client check of the solver against t
 the curve so the usual arm speeds give `solverSpeedRatio`; the panel shows both speeds and the
 difference.
 
-`L` is the distance from the ball to the target plane; `Gx`, `Gy` = `controlGainX/Y` (0.5,
-Inspector range 0..2; 1.5 before). The ball is launched from its actual position, so the release
+`L` is the distance from the ball to the target plane; `Gx`, `Gy` = `controlGainX/Y` (default
+**0** for real-client verification, 0.5 the earlier tuning; Inspector range 0..2; 1.5 before
+that). The ball is launched from its actual position, so the release
 offset already moves the pitch by itself; only `G - 1` is added (gain 1 adds nothing, tested).
 The total miss is therefore about `G x` the controller offset: 0 cancels it, 0.5 halves it, 1 is
 the natural offset alone, 1.5 the former amplification. `dx`, `dy` are the **controller** offset
 (the recognition basis). The ball centre differs from it by the grip turned with the pose; that
 part is not compensated and is shown separately on the panel. Pose never changes the direction
 (tested); it changes spin and wake, which move the arrival through physics.
+
+With the gain at 0 the direction cancels, as far as this approximation reaches, the miss the
+controller offset makes by itself. It does not remove every residual error: the ball-centre
+difference, the speed difference from the solver and anything the approximation leaves remain.
+The release position, the ball-centre offset, the share of the recognition range, the arm speed
+and direction error, the pose error and quality, the spin and SSW, the solver and actual
+crossings and both speeds are still measured and shown; only what is applied changes.
+Recognition (calibration, lock, ellipsoid, minimum arm speed, direction limit, tracking) is a
+separate rule and is unchanged by these settings.
 
 `diagnosticIdealSpin` (off; diagnostics only) keeps the calibrated spin, axis and SSW the solver
 aimed with, whatever the pose, so that (1) the solver's own error, (2) the release-position miss
@@ -428,8 +456,10 @@ variables (`strikeZone`, `showDebug`), and a prefab instance stores them as one 
 references added to the prefab later do not reach it by themselves: the five feedback
 references were set on the instance when they were added. Check them after changing the
 prefab's mound variables. Value fields (gains, colours, `showRecognitionRange`,
-`diagnosticIdealSpin`, `maxPitchSpeedKmh`, `solverSpeedRatio`) are in neither table and take the
-program's defaults. `armSpeedCurve` has no program default (an `AnimationCurve` initializer is
+`diagnosticIdealSpin`, `maxPitchSpeedKmh`, `solverSpeedRatio`) are not in the prefab's table and
+take the program's defaults there and in Bullpen's mounds. PracticeSpace's instance table does
+store them, so a changed default must also be written there: the gains and pose coefficients
+were set to 0 on it with the defaults above. `armSpeedCurve` has no program default (an `AnimationCurve` initializer is
 not a compile-time value), so it is set in the prefab's table **and** in every instance's table
 (PracticeSpace's mound and Bullpen's three); a mound without it pitches at the maximum. The instance does
 not override the Panel, so `detailLabel` and the layout come from the prefab.

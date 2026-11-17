@@ -27,6 +27,13 @@ public static class FieldingMath
         return !float.IsNaN(value) && value <= float.MaxValue && value >= -float.MaxValue;
     }
 
+    // Enable rule of a throw target (TargetBehaviour settings) in the local mode: an enabled
+    // target is offered outside pitcher mode, and in pitcher mode only when it allows it.
+    public static bool TargetUsable(bool enabled, bool allowDuringPitcherMode, bool pitcherMode)
+    {
+        return enabled && (!pitcherMode || allowDuringPitcherMode);
+    }
+
     // Fitting limits: offset distance from the hand bone and uniform scale.
     public static bool FittingValid(Vector3 offset, float scale, float maxDistance, float minScale, float maxScale)
     {

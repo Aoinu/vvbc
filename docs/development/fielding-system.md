@@ -52,8 +52,8 @@ VVBCPlayerObjectTemplate (VRCPlayerObject)
     └── CalibrationHandle (VRCPickup, kinematic Rigidbody, collider; Pickup layer, inactive)
 
 ThrowAim (scene, local only; root active and named ThrowAim)
-├── Targets/FirstBase, SecondBase, ThirdBase, HomePlate   (Transforms placed by the world
-│                                                          author; relay targets go here)
+├── Targets/FirstBase, SecondBase, ThirdBase, HomePlate   (TargetBehaviour each, placed by the
+│                                                          world author; relay targets go here)
 └── Tracker (ThrowAimBehaviour, inactive until local HandHeld)
     ├── Marker1B, Marker2B, Marker3B, MarkerHome          (Marker Roots, one per target)
     │   ├── Reticle (Quad MeshFilter + MeshRenderer, MT_ThrowAimReticle)
@@ -87,8 +87,8 @@ radius times the Mount scale is the catch radius.
    the `Glove` object, as for the Bat (see [PlayerObject validation](bat-player-object.md));
    add the missing entry without regenerating existing IDs.
 2. Place `Runtime/Prefabs/ThrowAim.prefab` with its root on the rear tip of
-   home plate (+Z toward the pitcher, like HomePlate). Move `Targets/*` to the
-   receiving point of each base (default: 27.43 m base paths at 1.1 m height,
+   home plate (+Z toward the pitcher, like HomePlate). Move `Targets/*` (each a
+   TargetBehaviour) to the receiving point of each base (default: 27.43 m base paths at 1.1 m height,
    home plate at 1.0 m). Relay targets are added as described in
    [Throw targets](#throw-targets). The Ball finds it by itself: with `throwAim` left
    empty, it looks up the active scene object named `ThrowAim` with
@@ -330,38 +330,93 @@ outside this path, the adoption above and the existing serialization retry.
 
 ### Throw targets
 
-`ThrowAimBehaviour` (Inspector on `ThrowAim/Tracker`) has any number of fixed
-targets. A target is one index across parallel arrays. An array of a
-`[Serializable]` struct compiles in T#, but Tsukimi stores it as one Udon
-variable per member under names that are not a stable interface, so it cannot
-be set reliably from the Inspector or an editor script; parallel arrays are
-plain Udon variables. `baseTargets` and `markers` keep their earlier names so
-existing scene references survive.
+Each throw target is a `TargetBehaviour` (`Ball/Fielding/TargetBehaviour`, no
+sync, no per-frame work) on the target's own object, for example
+`ThrowAim/Targets/FirstBase`. `ThrowAimBehaviour` (Inspector on
+`ThrowAim/Tracker`) only lists them in `targets` (`TargetBehaviour[]`); its
+length is the number of targets and an empty entry is skipped. Responsibilities:
 
-| Array | Per target | Missing entry |
+- **TargetBehaviour** holds one target's settings and references, below. It is
+  never disabled to switch a target off; its settings decide.
+- **ThrowAimBehaviour** reads every target once at the first hold
+  (`EnsureTargets`) into its own per-target arrays, so no call into another
+  Behaviour is made per frame, then places, shows and hides the markers, culls
+  by distance and mode, selects the target and computes the launch. The array is
+  not resized while playing; Inspector changes to a target during play take
+  effect from the next scene load.
+
+| Field | Meaning | Unset |
 |---|---|---|
-| `baseTargets` (Transform) | Target Transform: the point a throw is aimed at, at receiving height. Its length is the number of targets. | — (an empty entry is skipped) |
-| `targetNames` (string) | Name written to the Label and used by the feedback | the Transform's name |
-| `markers` (Transform) | Marker Root: moved, turned and shown/hidden by ThrowAim | no marker shown; the target is still selectable while in range |
-| `reticleRenderers` (MeshRenderer) | Reticle quad | no colour applied |
-| `labelTexts` (TextMeshPro) | Label | no text set |
-| `markerColors` (Color) | Reticle colour | white |
-| `minDistances`, `maxDistances` (float, m) | Distance culling range | 0 = no limit |
-| `targetEnabled` (bool) | Whether the target is used | enabled |
+| `targetPoint` (Transform) | The point a throw is aimed at, at receiving height | the target is skipped |
+| `displayName` (string) | Written to the Label and used by the feedback | the Target Point's name |
+| `marker` (Transform) | Marker Root: moved, turned and shown/hidden by ThrowAim | no marker shown; the target is still selectable while in range |
+| `reticleRenderer` (MeshRenderer) | Reticle quad | no colour applied |
+| `labelText` (TextMeshPro) | Label | no text set |
+| `markerColor` (Color) | Reticle colour | white |
+| `minDistance`, `maxDistance` (float, m) | Distance culling range | 0 = no limit |
+| `targetEnabled` (bool) | Whether the target is used at all | on |
+| `allowDuringPitcherMode` (bool) | Whether it is offered while the local player is in pitcher mode | on |
+
+`ThrowAim.prefab` sets the four bases this way: `Targets/FirstBase`,
+`SecondBase`, `ThirdBase` and `HomePlate` each carry a TargetBehaviour whose
+`targetPoint` is that object itself and whose marker references are the
+matching `Tracker/Marker1B` … `MarkerHome` with their `Reticle` and `Label`;
+all are enabled, the colour is RGBA (1, 0.85, 0.1, 0.95), no distance limits,
+and `allowDuringPitcherMode` is on for the three bases and **off for
+HomePlate**. The Marker Roots stay under `Tracker` and are the only objects
+ThrowAim shows or hides; the TargetBehaviours on `Targets/*` are never toggled.
+`PracticeSpace.unity` uses these values unchanged. `Bullpen.unity` (no bases) keeps
+every target off, as its earlier `targetEnabled` override did: each of its four
+TargetBehaviours overrides `targetEnabled` to off, so its throws are no-target throws.
+
+The earlier layout, one index across nine parallel arrays on ThrowAim
+(`baseTargets`, `targetNames`, `markers`, `reticleRenderers`, `labelTexts`,
+`markerColors`, `minDistances`, `maxDistances`, `targetEnabled`), was replaced
+by this component: the values were moved onto the TargetBehaviours of the
+prefab unchanged, and the arrays were removed. A list of components is used
+rather than an array of a `[Serializable]` struct because Tsukimi stores such a
+struct as one Udon variable per member under names that are not a stable
+interface.
 
 The label is a 3D `TextMeshPro` (no canvas), not the Unity `TextMesh` the
 original specification named: the Udon node registry of the declared Worlds SDK
 has no `UnityEngine.TextMesh` node at all (checked with
 `UdonEditorManager.GetNodeDefinitions`, and T# does not resolve the type), so a
-`TextMesh` could neither be referenced nor named from `targetNames` at runtime,
+`TextMesh` could neither be referenced nor named at runtime,
 while `TMPro.TextMeshPro.set_text` is exposed. `MaterialPropertyBlock` (ctor,
 `SetColor`) and `MeshRenderer.SetPropertyBlock` are exposed and appear in the
-generated UdonProgram. Arrays whose length differs from `baseTargets` are
-logged once (`ThrowAim: … missing entries use defaults`). The arrays are read
-at the first hold (`EnsureTargets`) and are not resized while playing.
+generated UdonProgram.
+
+**When a target is offered.** A target is shown and selectable when all hold:
+its entry and `targetPoint` are set; `targetEnabled` is on and its distance
+range is valid; the local mode allows it
+(`FieldingMath.TargetUsable`: `targetEnabled && (!pitcherMode ||
+allowDuringPitcherMode)`); and the thrower is inside its distance range.
+
+**Pitcher mode.** While the local player is in pitcher mode on a mound (see
+[Manual pitching](manual-pitching.md#pitcher-mode)), only targets with
+`allowDuringPitcherMode` on are offered. A held ball whose release is not
+recognized as a pitch falls back to the ordinary throw; with this setting the
+fallback can be a pickoff throw to first, second or third base (a `ThrowState`,
+never a `HandPitch`) but never a throw home. If no allowed target is in range,
+the release is the usual no-target throw along the arm or head. The exclusion
+follows each TargetBehaviour's setting, never an array index or a name, so
+reordering or renaming targets changes nothing. Outside pitcher mode the
+setting is ignored and HomePlate is a normal target.
+
+The mode is local, not synced. The Ball knows it (its mound calls
+`SetManualPitcher` / `ClearManualPitcher`) and passes it to
+`ThrowAimBehaviour.SetPitcherMode`: before each hold (`BeginAim`), at once when
+the mound enters or leaves pitcher mode while the ball is held in the hand, and
+again before each fallback throw. A change marks the markers stale, so the next
+`PostLateUpdate` places them again even when the eye point has not moved (the
+2 cm movement gate does not hold it back), and the forced pass before the
+release does the same. `ComputeRelease` also checks the mode for each candidate
+itself, so a target that is not allowed is never chosen even from markers
+placed in the other mode.
 
 **Distance culling.** The distance is the horizontal (XZ) distance from the
-thrower (player position) to the target Transform. A target is shown and
+thrower (player position) to the Target Point. A target is shown and
 selectable when `minDistance <= distance <= maxDistance` (squared distances
 are compared; 0 means no limit on that side). A negative or non-finite limit is
 logged and read as 0. A maximum below the minimum is logged and disables the
@@ -370,24 +425,28 @@ same pass that places the markers, so a hidden target can never be chosen.
 The pass runs in the existing `PostLateUpdate` when the eye point moved more
 than 2 cm, and again (forced) immediately before each release. There is no
 hysteresis or fade: a marker switches at the boundary. The defaults (all
-limits 0, all enabled) show the four bases as before.
+limits 0, all enabled) show the four bases as before (HomePlate not in pitcher
+mode).
 
-**Relay targets.** Add a Transform under `ThrowAim/Targets` at the relay
-point and receiving height, duplicate a Marker Root (for example `MarkerHome`)
-under `Tracker`, then append one entry to every array above: the new target,
-its name, the new Marker Root, its `Reticle` renderer, its `Label`, a colour
-and the distance range (for example a cutoff shown only beyond 45 m). Relay
-targets use the same selection, culling and launch computation as the bases.
-No coordinates are built in; the world author places them.
+**Relay targets.** Add an object under `ThrowAim/Targets` at the relay
+point and receiving height, add a `TargetBehaviour` to it (its `targetPoint`
+can be the object itself), duplicate a Marker Root (for example `MarkerHome`)
+under `Tracker` and assign it with its `Reticle` renderer and `Label`, set a
+name, a colour, the distance range (for example a cutoff shown only beyond
+45 m) and whether it is offered in pitcher mode, then append it to
+`ThrowAim.targets`. Relay targets use the same selection, culling and launch
+computation as the bases. No coordinates are built in; the world author places
+them.
 
-The target position is read from the Transform in one place
+The target position is read from the Target Point in one place
 (`ReadTargetPositions`); culling, markers, selection and launch use only the
 positions it produced. A future fielder-following target needs only another
 source for that position. Fielder targets, Grip mode switching and movement
 prediction are not implemented.
 
-With no target, an empty or missing (null) array, only null Transforms, every target disabled or
-every target culled, the release is `NoTarget` and uses the head/arm direction
+With no target, an empty or missing (null) `targets` array, only empty entries or
+Target Points, every target disabled, not allowed in the current mode or
+culled, the release is `NoTarget` and uses the head/arm direction
 fallback as before.
 
 ### Aim markers
@@ -415,7 +474,7 @@ white ring with four ticks on a transparent background, no colour baked in,
 Cull Back, imported at 256 px), and `Label`, a 3D TextMeshPro above it (LiberationSans SDF from TMP
 Essentials, which VRChat projects include). Size and offset of reticle and
 label are set on those children in the prefab; replacing the texture keeps the
-setup. The texture and material are shared by every target; `markerColors[i]`
+setup. The texture and material are shared by every target; each target's `markerColor`
 is applied once per reticle with a `MaterialPropertyBlock` (`_Color`), so no
 material is instantiated and one target's colour never changes another's. The
 label colour is the TextMeshPro's own and is independent of the reticle and of
@@ -441,8 +500,11 @@ All values are decided once on the releasing client:
   `minErrorDegrees` and `maxErrorDegrees` default to **0** (source and
   `ThrowAim.prefab`) for the current real-client verification: with a target
   selected, the launch does not depend on the random numbers. The Ball still
-  draws them, in the same order. The cone code is kept; setting for example
-  0.5 / 8 (the earlier tuning) restores it, which a test covers.
+  draws them, in the same order. This is a provisional balance setting for
+  real-client verification, not the removal of the error system: the cone code
+  is kept, the ray distance (`releaseMiss`) is still measured and shown, and
+  setting for example 0.5 / 8 (the earlier tuning) on `ThrowAim/Tracker`
+  restores it, which a test covers. No scene overrides these two values.
 - **Launch**: azimuth toward the selected target; elevation from the solver
   below, within ±`maxLaunchElevation` (12°). Backspin `throwSpinRpm` (1500).
 
@@ -467,7 +529,7 @@ Ball's own flight model; the flight itself is unchanged.
   The Ball passes `dragCoefficient`, `magnusCoefficient`, `battedSpinHalfLife`,
   `−Physics.gravity.y` and `Time.fixedDeltaTime`. The height at the target's
   horizontal distance is interpolated between the two fixed steps around it.
-  The target point is the target Transform's position.
+  The target point is the TargetBehaviour's Target Point position.
 - **Solver** (`FieldingMath.SolveLaunchElevation`): the closed form gives the
   first guess, one step along the geometric slope `d / cos²θ` follows, then
   secant steps inside a bracket (bisection when a secant leaves it). It stops
@@ -526,7 +588,7 @@ the selected marker, and `Feedback/Label` (a world-space canvas turned toward
 the player) lists the target name, sphere error, ray distance, arm speed,
 throw speed and elevation, and the target distance with the predicted height
 error and reach; the same line goes to the log. These debug colours are
-independent of `markerColors`. Markers, points and label stay where they were
+independent of the targets' `markerColor`. Markers, points and label stay where they were
 at release while the player moves. Tracker stays active until the feedback
 ends (a later release replaces it, a new hold hides it), then deactivates
 itself; without feedback it deactivates at once, as before. All objects are

@@ -419,8 +419,7 @@ public partial class ThrowAimBehaviour
     [TsukimiTest]
     public void ADisabledTargetIsNeitherShownNorSelected()
     {
-        targetEnabled = new bool[] { true, false, true, true };
-        SetBases();
+        SetTargetsWith(BasePositions(), null, new bool[] { true, false, true, true }, null, null, null);
         Vector3 origin = new Vector3(0f, 1.5f, 10f);
         PlaceMarkersAt(origin);
         Assert.IsFalse(MarkerShown(1));
@@ -432,9 +431,8 @@ public partial class ThrowAimBehaviour
     [TsukimiTest]
     public void DistanceRangesIncludeTheirBoundsAndExcludeTheRest()
     {
-        minDistances = new float[] { 10f, 0f, 0f };
-        maxDistances = new float[] { 0f, 30f, 0f };
-        SetTargets(new Vector3[] { new Vector3(10f, 1f, 0f), new Vector3(-30f, 1f, 0f), new Vector3(0f, 1f, 50f) });
+        SetTargetsWith(new Vector3[] { new Vector3(10f, 1f, 0f), new Vector3(-30f, 1f, 0f), new Vector3(0f, 1f, 50f) },
+            null, null, null, new float[] { 10f, 0f, 0f }, new float[] { 0f, 30f, 0f });
         PlaceMarkersAt(new Vector3(0f, 1.5f, 0f));
         Assert.IsTrue(MarkerShown(0), "exactly the minimum");
         Assert.IsTrue(MarkerShown(1), "exactly the maximum");
@@ -450,8 +448,7 @@ public partial class ThrowAimBehaviour
     [TsukimiTest]
     public void MovingAcrossARangeShowsAndHidesTheTargetAndSelectionFollows()
     {
-        maxDistances = new float[] { 0f, 20f };
-        SetTargets(new Vector3[] { new Vector3(0f, 1f, -30f), new Vector3(0f, 1f, 30f) });
+        SetTargetsWith(new Vector3[] { new Vector3(0f, 1f, -30f), new Vector3(0f, 1f, 30f) }, null, null, null, null, new float[] { 0f, 20f });
         Vector3 far = new Vector3(0f, 1.5f, 0f);
         PlaceMarkersAt(far);
         Assert.IsFalse(MarkerShown(1), "30 m away, limit 20 m");
@@ -470,27 +467,18 @@ public partial class ThrowAimBehaviour
     [TsukimiTest]
     public void WhenEveryTargetIsCulledTheThrowHasNoTarget()
     {
-        maxDistances = new float[] { 5f, 5f };
-        SetTargets(new Vector3[] { new Vector3(0f, 1f, -30f), new Vector3(0f, 1f, 30f) });
+        SetTargetsWith(new Vector3[] { new Vector3(0f, 1f, -30f), new Vector3(0f, 1f, 30f) }, null, null, null, null, new float[] { 5f, 5f });
         PlaceMarkersAt(new Vector3(0f, 1.5f, 0f));
         AimAtPoint(new Vector3(0f, 1.5f, 0f), new Vector3(0f, 1f, 30f));
         Assert.AreEqual(NoTarget, selectedTarget);
         Assert.IsTrue(FieldingMath.Finite(releaseVelocity.x) && releaseVelocity.sqrMagnitude > 1f);
     }
 
-    // An incomplete Inspector setup (arrays missing altogether) is read as no targets.
+    // An incomplete Inspector setup (the targets array missing altogether) is read as no targets.
     [TsukimiTest]
-    public void MissingArraysMeanNoTargetsAndTheThrowStillFlies()
+    public void AMissingTargetsArrayMeansNoTargetsAndTheThrowStillFlies()
     {
-        baseTargets = null;
-        targetNames = null;
-        markers = null;
-        reticleRenderers = null;
-        labelTexts = null;
-        markerColors = null;
-        minDistances = null;
-        maxDistances = null;
-        targetEnabled = null;
+        targets = null;
         _targetCount = -1;
         Vector3 origin = new Vector3(0f, 1.5f, 10f);
         PlaceMarkersAt(origin);
@@ -504,8 +492,7 @@ public partial class ThrowAimBehaviour
     [TsukimiTest]
     public void WhenEveryTargetIsDisabledTheThrowHasNoTarget()
     {
-        targetEnabled = new bool[] { false, false, false, false };
-        SetBases();
+        SetTargetsWith(BasePositions(), null, new bool[] { false, false, false, false }, null, null, null);
         Vector3 origin = new Vector3(0f, 1.5f, 10f);
         PlaceMarkersAt(origin);
         for (int i = 0; i < 4; i++) Assert.IsFalse(MarkerShown(i));
@@ -536,7 +523,7 @@ public partial class ThrowAimBehaviour
     }
 
     [TsukimiTest]
-    public void TargetNamesComeFromTheNameArray()
+    public void TargetNamesComeFromTheDisplayNames()
     {
         SetBases();
         Assert.AreEqual("FirstBase", TargetName(0));
@@ -545,9 +532,180 @@ public partial class ThrowAimBehaviour
         Assert.AreEqual("HomePlate", TargetName(3));
         Assert.AreEqual("NoTarget", TargetName(NoTarget));
         Assert.AreEqual("NoTarget", TargetName(4));
-        targetNames = new string[] { "Cutoff", "" };
+        SetTargetsWith(new Vector3[2], new string[] { "Cutoff", "" }, null, null, null, null);
         Assert.AreEqual("Cutoff", TargetName(0));
-        Assert.AreEqual("Target1", TargetName(1), "empty name, no Transform");
+        Assert.AreEqual("Target1", TargetName(1), "empty name, no Target Point");
+    }
+
+    // Empty entries in the targets array are counted and skipped, never dereferenced.
+    [TsukimiTest]
+    public void EmptyTargetEntriesAreSkipped()
+    {
+        targets = new TargetBehaviour[3];
+        _targetCount = -1;
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        PlaceMarkers(origin, true);
+        Assert.AreEqual(3, TargetCount());
+        for (int i = 0; i < 3; i++) Assert.IsFalse(MarkerShown(i), "empty " + i);
+        HeadRelease(origin);
+        Assert.AreEqual(NoTarget, selectedTarget);
+        Assert.AreEqual("Target2", TargetName(2));
+        Assert.IsTrue(releaseVelocity.sqrMagnitude > 1f, "the fallback throw");
+    }
+
+    // The Target Point's position is read at each placement. (Its name as the fallback label
+    // reads Transform.name, which the runner does not model.)
+    [TsukimiTest]
+    public void TheTargetPointIsReadAtEachPlacement()
+    {
+        targets = new TargetBehaviour[1];
+        _targetCount = -1;
+        EnsureTargets();
+        ConfigureTarget(0, transform, "Cutoff", null, true, true, 0f, 0f);
+        Assert.AreEqual("Cutoff", TargetName(0));
+        transform.position = new Vector3(3f, 1f, 30f);
+        Vector3 origin = new Vector3(0f, 1.5f, 0f);
+        PlaceMarkers(origin, true);
+        Assert.IsTrue(MarkerShown(0));
+        Assert.AreEqual(new Vector3(3f, 1f, 30f), _targetPositions[0]);
+        transform.position = new Vector3(-3f, 1f, 25f);
+        PlaceMarkers(origin, true);
+        Assert.AreEqual(new Vector3(-3f, 1f, 25f), _targetPositions[0], "follows the Target Point");
+        HeadRelease(origin);
+        Assert.AreEqual(0, selectedTarget);
+    }
+
+    // ---- 4. Pitcher mode ----
+
+    // HomePlate (allowDuringPitcherMode off) is a normal target outside pitcher mode only.
+    [TsukimiTest]
+    public void HomePlateIsHiddenAndNeverChosenInPitcherMode()
+    {
+        SetBases();
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        Vector3 home = new Vector3(0f, 1f, 0f);
+        PlaceMarkersAt(origin);
+        Assert.IsTrue(MarkerShown(3));
+        AimAtPoint(origin, home);
+        Assert.AreEqual(3, selectedTarget, "home outside pitcher mode");
+        SetPitcherMode(true);
+        PlaceMarkersAt(origin);
+        Assert.IsFalse(MarkerShown(3), "no home marker in pitcher mode");
+        for (int i = 0; i < 3; i++) Assert.IsTrue(MarkerShown(i), "base " + i);
+        AimAtPoint(origin, home);
+        Assert.IsTrue(selectedTarget != 3, "the throw home is not offered");
+        Assert.IsTrue(selectedTarget == NoTarget || MarkerShown(selectedTarget));
+        SetPitcherMode(false);
+        PlaceMarkersAt(origin);
+        Assert.IsTrue(MarkerShown(3), "home returns");
+        AimAtPoint(origin, home);
+        Assert.AreEqual(3, selectedTarget);
+    }
+
+    // Pickoff throws: every base stays selectable in pitcher mode.
+    [TsukimiTest]
+    public void BasesStaySelectableInPitcherMode()
+    {
+        SetBases();
+        SetPitcherMode(true);
+        Vector3 origin = new Vector3(0f, 1.5f, 18.44f);
+        PlaceMarkersAt(origin);
+        for (int i = 0; i < 3; i++)
+        {
+            AimAt(origin, i);
+            Assert.AreEqual(i, selectedTarget, "pickoff to " + TargetName(i));
+            Assert.IsTrue(releaseVelocity.sqrMagnitude > 1f && releaseReach != ReachNoTarget);
+        }
+    }
+
+    // The mode is checked at selection too: markers placed before the mode changed cannot
+    // bring HomePlate back.
+    [TsukimiTest]
+    public void SelectionChecksTheModeEvenBeforeTheMarkersArePlacedAgain()
+    {
+        SetBases();
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        PlaceMarkersAt(origin);
+        SetPitcherMode(true);
+        AimAtPoint(origin, new Vector3(0f, 1f, 0f));
+        Assert.IsTrue(selectedTarget != 3);
+    }
+
+    // A mode change is applied by the next ordinary marker update even if the player did not
+    // move (the 2 cm movement gate would otherwise skip it).
+    [TsukimiTest]
+    public void AModeChangeReplacesTheMarkersWithoutMoving()
+    {
+        targets = new TargetBehaviour[1];
+        _targetCount = -1;
+        EnsureTargets();
+        ConfigureTarget(0, transform, "HomePlate", null, true, false, 0f, 0f);
+        transform.position = new Vector3(0f, 1f, 0f);
+        Vector3 origin = new Vector3(0f, 1.5f, 18.44f);
+        PlaceMarkers(origin, false);
+        Assert.IsTrue(MarkerShown(0));
+        PlaceMarkers(origin, false);
+        SetPitcherMode(true);
+        PlaceMarkers(origin, false);
+        Assert.IsFalse(MarkerShown(0), "entering pitcher mode in place");
+        SetPitcherMode(true);
+        PlaceMarkers(origin, false);
+        Assert.IsFalse(MarkerShown(0));
+        SetPitcherMode(false);
+        PlaceMarkers(origin, false);
+        Assert.IsTrue(MarkerShown(0), "leaving pitcher mode in place");
+    }
+
+    // A failed recognition on the mound falls back to a throw; with only HomePlate there is
+    // no target, and the throw still flies as a no-target throw.
+    [TsukimiTest]
+    public void WithOnlyHomePlateAPitcherModeThrowHasNoTarget()
+    {
+        SetTargetsWith(new Vector3[] { new Vector3(0f, 1f, 0f) }, new string[] { "HomePlate" }, null, new bool[] { false }, null, null);
+        SetPitcherMode(true);
+        Vector3 origin = new Vector3(0f, 1.5f, 18.44f);
+        PlaceMarkersAt(origin);
+        AimAtPoint(origin, new Vector3(0f, 1f, 0f));
+        Assert.AreEqual(NoTarget, selectedTarget);
+        Assert.AreEqual(ReachNoTarget, releaseReach);
+        Assert.IsTrue(releaseVelocity.sqrMagnitude > 1f);
+        Assert.IsTrue(releaseVelocity.z < 0f, "along the arm, toward the plate");
+    }
+
+    // The rule comes from each target's settings, not from its index or name.
+    [TsukimiTest]
+    public void TheTargetOrderDoesNotChangeThePitcherModeResult()
+    {
+        SetTargetsWith(new Vector3[] { new Vector3(0f, 1f, 0f), new Vector3(20f, 1f, 20f), new Vector3(0f, 1f, 38.8f), new Vector3(-20f, 1f, 20f) },
+            new string[] { "HomePlate", "FirstBase", "SecondBase", "ThirdBase" }, null, new bool[] { false, true, true, true }, null, null);
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        SetPitcherMode(true);
+        PlaceMarkersAt(origin);
+        Assert.IsFalse(MarkerShown(0));
+        AimAtPoint(origin, new Vector3(0f, 1f, 0f));
+        Assert.IsTrue(selectedTarget != 0, "home first in the array: still not offered");
+        AimAt(origin, 2);
+        Assert.AreEqual(2, selectedTarget, "second base");
+        SetPitcherMode(false);
+        PlaceMarkersAt(origin);
+        AimAtPoint(origin, new Vector3(0f, 1f, 0f));
+        Assert.AreEqual(0, selectedTarget);
+        // A target named HomePlate that allows pitcher mode is offered: names do not matter.
+        SetTargetsWith(new Vector3[] { new Vector3(0f, 1f, 0f) }, new string[] { "HomePlate" }, null, null, null, null);
+        SetPitcherMode(true);
+        PlaceMarkersAt(origin);
+        Assert.IsTrue(MarkerShown(0));
+    }
+
+    [TsukimiTest]
+    public void ADisabledTargetStaysOffInPitcherMode()
+    {
+        SetTargetsWith(BasePositions(), null, new bool[] { false, true, true, true }, new bool[] { true, true, true, false }, null, null);
+        SetPitcherMode(true);
+        PlaceMarkersAt(new Vector3(0f, 1.5f, 10f));
+        Assert.IsFalse(MarkerShown(0), "disabled");
+        Assert.IsTrue(MarkerShown(1) && MarkerShown(2));
+        Assert.IsFalse(MarkerShown(3), "not allowed in pitcher mode");
     }
 
     // ---- 5. Release feedback ----
@@ -764,30 +922,38 @@ public partial class ThrowAimBehaviour
         return Mathf.Abs(expected - actual) <= 0.0001f + Mathf.Abs(expected) * 0.000001f;
     }
 
-    private void SetBases()
+    private Vector3[] BasePositions()
     {
-        SetTargets(new Vector3[] { new Vector3(20f, 1f, 20f), new Vector3(0f, 1f, 38.8f), new Vector3(-20f, 1f, 20f), new Vector3(0f, 1f, 0f) });
+        return new Vector3[] { new Vector3(20f, 1f, 20f), new Vector3(0f, 1f, 38.8f), new Vector3(-20f, 1f, 20f), new Vector3(0f, 1f, 0f) };
     }
 
-    // Targets known by position only (tests have no scene Transforms): the acquisition step
-    // is replaced, everything after it is the real code.
+    // The four bases as ThrowAim.prefab sets them up: HomePlate is not offered in pitcher mode.
+    private void SetBases()
+    {
+        SetTargetsWith(BasePositions(), new string[] { "FirstBase", "SecondBase", "ThirdBase", "HomePlate" },
+            null, new bool[] { true, true, true, false }, null, null);
+    }
+
     private void SetTargets(Vector3[] positions)
     {
+        SetTargetsWith(positions, null, null, null, null, null);
+    }
+
+    // Targets known by position only. A test run does not wire Behaviours held in an array,
+    // so the TargetBehaviour read is replaced by ConfigureTarget with the same settings
+    // (null: the TargetBehaviour default); everything after it is the real code.
+    private void SetTargetsWith(Vector3[] positions, string[] names, bool[] enabled, bool[] allowDuringPitcherMode,
+        float[] minDistance, float[] maxDistance)
+    {
         int count = positions.Length;
-        // Arrays of another length would make EnsureTargets warn; the runner does not model that.
-        if (targetNames.Length != count) targetNames = new string[0];
-        if (markers.Length != count) markers = new Transform[0];
-        if (reticleRenderers.Length != count) reticleRenderers = new MeshRenderer[0];
-        if (labelTexts.Length != count) labelTexts = new TMPro.TextMeshPro[0];
-        if (markerColors.Length != count) markerColors = new Color[0];
-        if (minDistances.Length != count) minDistances = new float[0];
-        if (maxDistances.Length != count) maxDistances = new float[0];
-        if (targetEnabled.Length != count) targetEnabled = new bool[0];
-        baseTargets = new Transform[count];
+        targets = new TargetBehaviour[count];
         _targetCount = -1;
         EnsureTargets();
-        for (int i = 0; i < positions.Length; i++)
+        for (int i = 0; i < count; i++)
         {
+            ConfigureTarget(i, null, names != null ? names[i] : "", null, enabled == null || enabled[i],
+                allowDuringPitcherMode == null || allowDuringPitcherMode[i],
+                minDistance != null ? minDistance[i] : 0f, maxDistance != null ? maxDistance[i] : 0f);
             _targetPositions[i] = positions[i];
             _targetPresent[i] = _targetUsable[i];
         }

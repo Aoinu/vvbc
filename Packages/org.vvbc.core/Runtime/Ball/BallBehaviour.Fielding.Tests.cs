@@ -288,6 +288,25 @@ public partial class BallBehaviour
         Assert.AreEqual(0, _throwAimSearches, "no scene search");
     }
 
+    // While aiming, a mound entering or leaving pitcher mode reaches ThrowAim at once (the
+    // targets it offers change); while not aiming, BeginAim and the release pass it instead.
+    [TsukimiTest]
+    public void PitcherModeReachesThrowAimWhileAiming()
+    {
+        Assert.IsNotNull(throwAim);
+        ManualPitchBehaviour mound = manualPitcher;
+        Assert.IsNotNull(mound, "the runner wires the mound of this folder");
+        manualPitcher = null;
+        _aimActive = true;
+        SetManualPitcher(mound);
+        Assert.IsTrue(throwAim.PitcherMode(), "entered while holding");
+        ClearManualPitcher(mound);
+        Assert.IsFalse(throwAim.PitcherMode(), "left while holding");
+        _aimActive = false;
+        SetManualPitcher(mound);
+        Assert.IsFalse(throwAim.PitcherMode(), "not aiming: nothing is sent");
+    }
+
     [TsukimiTest]
     public void ThrowAimSearchesAreBoundedAndAMissingOneFallsBack()
     {

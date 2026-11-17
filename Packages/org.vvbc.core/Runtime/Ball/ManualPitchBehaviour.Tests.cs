@@ -68,6 +68,18 @@ public partial class ManualPitchBehaviour
 
     private Vector3 TowardPlate() { return Vector3.back * 20f; }
 
+    // The earlier tuning (before the zero defaults for real-client verification): tests of the
+    // penalty mechanics set it, so they show the penalties still work once configured.
+    private void EarlierPenaltiesForTest()
+    {
+        controlGainX = 0.5f;
+        controlGainY = 0.5f;
+        spinLossAtBadPose = 0.5f;
+        gyroAtBadPose = 0.5f;
+        axisTransferGain = 0.5f;
+        wakeLossAtBadPose = 1f;
+    }
+
     // ---- Calibration ----
 
     [TsukimiTest]
@@ -229,6 +241,7 @@ public partial class ManualPitchBehaviour
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
         Assert.IsTrue(CalibrateForTest(Overhand));
+        EarlierPenaltiesForTest();
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
         Assert.AreEqual(1f, debugPoseQuality);
@@ -929,6 +942,8 @@ public partial class ManualPitchBehaviour
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
         Assert.IsTrue(CalibrateForTest(Overhand));
+        controlGainX = 0.5f;
+        controlGainY = 0.5f;
         LockForTest(new Vector3(0f, 0.75f, 0f));
         debugPredictedTarget = new Vector3(-0.02f, 0.76f, 0f);
         debugSolverError = 0.0224f;
@@ -963,8 +978,115 @@ public partial class ManualPitchBehaviour
         }
         Assert.IsTrue(Vector3.Distance(ManualPitchMath.ControlDirection(d, 0.1f, -0.08f, 1f, 1f, 17.5f), d) < 0.000001f);
         Assert.IsTrue(Vector3.Distance(ManualPitchMath.ControlDirection(d, 0.1f, -0.08f, 0f, 0f, 0f), d) < 0.000001f, "no distance: unchanged");
-        Assert.AreEqual(0.5f, controlGainX);
-        Assert.AreEqual(0.5f, controlGainY);
+    }
+
+    // Real-client verification defaults: no release-position or pose penalty. Recognition and
+    // the diagnostic switch keep their values; the penalties are settings, not removed code.
+    [TsukimiTest]
+    public void ByDefaultThereIsNoPositionOrPosePenalty()
+    {
+        Assert.AreEqual(0f, controlGainX);
+        Assert.AreEqual(0f, controlGainY);
+        Assert.AreEqual(0f, spinLossAtBadPose);
+        Assert.AreEqual(0f, gyroAtBadPose);
+        Assert.AreEqual(0f, axisTransferGain);
+        Assert.AreEqual(0f, wakeLossAtBadPose);
+        Assert.IsFalse(diagnosticIdealSpin, "the diagnostic stays off");
+        Assert.AreEqual(new Vector3(0.60f, 0.55f, 0.80f), recognitionRadii);
+        Assert.AreEqual(1f, minArmSpeed);
+        Assert.AreEqual(60f, maxDirectionErrorDegrees);
+    }
+
+    // With the zero defaults a bad pose is still measured (quality, pose error) but leaves the
+    // spin, its axis and the SSW as calibrated; the earlier tuning brings the changes back.
+    [TsukimiTest]
+    public void ABadPoseIsMeasuredButChangesNothingUntilPenaltiesAreSet()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Quaternion ideal = IdealHand(TestChest);
+        Quaternion bad = ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ideal, TowardPlate()));
+        Vector3 idealSpin = releaseSpin;
+        float idealWake = releaseWakeCoefficient;
+        Vector3 idealWakeDirection = releaseWakeDirection;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
+        Assert.IsTrue(debugPoseQuality < 0.7f, "quality still measured: " + debugPoseQuality);
+        Assert.IsTrue(debugPoseAngle > 30f, "pose error still measured: " + debugPoseAngle);
+        Assert.IsTrue(Vector3.Distance(idealSpin, releaseSpin) < 0.001f, "no spin loss, gyro or axis change");
+        Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude * 60f / (2f * Mathf.PI) - 2500f) < 0.5f, "2500 rpm");
+        Assert.AreEqual(idealWake, releaseWakeCoefficient, "no SSW loss");
+        Assert.IsTrue(Vector3.Distance(idealWakeDirection, releaseWakeDirection) < 0.00001f);
+        Assert.IsTrue(ReleaseDetailText().Contains("pose error"), "the panel still shows it");
+
+        EarlierPenaltiesForTest();
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
+        Assert.IsTrue(releaseSpin.magnitude < idealSpin.magnitude - 1f, "spin loss returns");
+        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) > 1f, "axis change and gyro return");
+        Assert.IsTrue(releaseWakeCoefficient < idealWake, "SSW loss returns");
+    }
+
+    // Each coefficient alone brings back only its own change.
+    [TsukimiTest]
+    public void EachPoseCoefficientActsAlone()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Quaternion ideal = IdealHand(TestChest);
+        Quaternion bad = ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ideal, TowardPlate()));
+        Vector3 idealSpin = releaseSpin;
+        float idealWake = releaseWakeCoefficient;
+
+        spinLossAtBadPose = 0.5f;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
+        Assert.IsTrue(releaseSpin.magnitude < idealSpin.magnitude - 1f, "spin loss");
+        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) < 0.01f, "same axis");
+        Assert.AreEqual(idealWake, releaseWakeCoefficient);
+        spinLossAtBadPose = 0f;
+
+        gyroAtBadPose = 0.5f;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
+        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) > 1f, "gyro turns the axis");
+        Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude - idealSpin.magnitude) < 0.01f, "same rpm");
+        gyroAtBadPose = 0f;
+
+        axisTransferGain = 0.5f;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
+        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) > 1f, "the pose turns the axis");
+        Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude - idealSpin.magnitude) < 0.01f, "same rpm");
+        axisTransferGain = 0f;
+
+        wakeLossAtBadPose = 1f;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
+        Assert.IsTrue(releaseWakeCoefficient < idealWake, "SSW loss");
+        Assert.IsTrue(Vector3.Distance(idealSpin, releaseSpin) < 0.001f, "spin unchanged");
+    }
+
+    // Gain 0 cancels the controller offset's own miss in the launch direction; the offset is
+    // still measured and shown.
+    [TsukimiTest]
+    public void AZeroGainKeepsTheReleaseOffsetMeasured()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        LockForTest(new Vector3(0f, 0.7f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, new Vector3(0.1f, -0.08f, 0f), IdealHand(TestChest), TowardPlate()));
+        Assert.IsTrue(Vector3.Distance(debugPositionError, new Vector3(0.1f, -0.08f, 0f)) < 0.00001f, "position error measured");
+        Assert.IsTrue(_releaseRangeRatio > 0f, "share of the recognition range measured");
+        string detail = ReleaseDetailText();
+        Assert.IsTrue(detail.Contains("RELEASE POSITION") && detail.Contains("control gain x 0.00  y 0.00"), detail);
     }
 
     // With the solver and the shared flight model, and the pose's spin changes switched off,
@@ -1015,6 +1137,7 @@ public partial class ManualPitchBehaviour
         ActiveForTest(GloveBehaviour.HandRight);
         Assert.IsTrue(CalibrateForTest(Overhand));
         Assert.IsFalse(diagnosticIdealSpin, "off by default");
+        EarlierPenaltiesForTest();
         Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
         Vector3 hand = HandAt(TestChest, Overhand);
         Quaternion bad = ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));

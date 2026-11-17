@@ -535,11 +535,20 @@ public partial class BallBehaviour
     public void SetManualPitcher(ManualPitchBehaviour pitcher)
     {
         manualPitcher = pitcher;
+        UpdateAimPitcherMode();
     }
 
     public void ClearManualPitcher(ManualPitchBehaviour pitcher)
     {
         if (manualPitcher == pitcher) manualPitcher = null;
+        UpdateAimPitcherMode();
+    }
+
+    // ThrowAim offers only the targets allowed in pitcher mode (no throw home) while a mound
+    // has this Ball. Passed while aiming; BeginAim and the release pass it again.
+    private void UpdateAimPitcherMode()
+    {
+        if (_aimActive && throwAim != null) throwAim.SetPitcherMode(manualPitcher != null);
     }
 
     // ---- Release ----
@@ -570,6 +579,8 @@ public partial class BallBehaviour
         }
         else if (aiming)
         {
+            // A recognition that failed in pitcher mode falls back to a throw without HomePlate.
+            throwAim.SetPitcherMode(manualPitcher != null);
             throwAim.RefreshMarkers();
             throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, battedSpinHalfLife,
                 -Physics.gravity.y, Time.fixedDeltaTime, Random.Range(0f, 2f * Mathf.PI), Random.value);
@@ -639,6 +650,7 @@ public partial class BallBehaviour
         if (throwAim == null) return;
         _aimActive = true;
         throwAim.gameObject.SetActive(true);
+        throwAim.SetPitcherMode(manualPitcher != null);
         throwAim.BeginHold(transform);
     }
 

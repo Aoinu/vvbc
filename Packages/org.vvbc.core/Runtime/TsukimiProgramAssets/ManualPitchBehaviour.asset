@@ -36,71 +36,70 @@ MonoBehaviour:
     armSpeedCurve: %UnityEngineAnimationCurve, null\n    .export armSpeedCurve\n   
     solverSpeedRatio: %SystemSingle, 0.97\n    .export solverSpeedRatio\n    fourSeamSpinRpm:
     %SystemSingle, 2500\n    .export fourSeamSpinRpm\n    maxFourSeamSpinRpm: %SystemSingle,
-    2800\n    .export maxFourSeamSpinRpm\n    spinLossAtBadPose: %SystemSingle, 0.5\n   
-    .export spinLossAtBadPose\n    gyroAtBadPose: %SystemSingle, 0.5\n    .export
-    gyroAtBadPose\n    wakeCoefficient: %SystemSingle, 0.006\n    .export wakeCoefficient\n   
-    wakeClockDegrees: %SystemSingle, 90\n    .export wakeClockDegrees\n    wakeLossAtBadPose:
-    %SystemSingle, 1\n    .export wakeLossAtBadPose\n    goodPoseAngle: %SystemSingle,
-    12\n    .export goodPoseAngle\n    badPoseAngle: %SystemSingle, 50\n    .export
-    badPoseAngle\n    axisTransferGain: %SystemSingle, 0.5\n    .export axisTransferGain\n   
-    recognitionRadii: %UnityEngineVector3, null\n    .export recognitionRadii\n   
-    minArmSpeed: %SystemSingle, 1\n    .export minArmSpeed\n    maxDirectionErrorDegrees:
-    %SystemSingle, 60\n    .export maxDirectionErrorDegrees\n    velocityWindowSeconds:
-    %SystemSingle, 0.08\n    .export velocityWindowSeconds\n    controlGainX: %SystemSingle,
-    0.5\n    .export controlGainX\n    controlGainY: %SystemSingle, 0.5\n    .export
-    controlGainY\n    solverAcceptMeters: %SystemSingle, 0.1\n    .export solverAcceptMeters\n   
-    showReleaseFeedback: %SystemBoolean, null\n    .export showReleaseFeedback\n   
-    showRecognitionRange: %SystemBoolean, null\n    .export showRecognitionRange\n   
-    idealMarkerColor: %UnityEngineColor, null\n    .export idealMarkerColor\n   
-    actualMarkerColor: %UnityEngineColor, null\n    .export actualMarkerColor\n   
-    errorLineColor: %UnityEngineColor, null\n    .export errorLineColor\n    idealMarkerDiameter:
-    %SystemSingle, 0.09\n    .export idealMarkerDiameter\n    releaseMarkerDiameter:
-    %SystemSingle, 0.07\n    .export releaseMarkerDiameter\n    errorLineWidth: %SystemSingle,
-    0.012\n    .export errorLineWidth\n    idealMarker: %UnityEngineTransform, null\n   
-    .export idealMarker\n    rangeMarker: %UnityEngineTransform, null\n    .export
-    rangeMarker\n    releaseIdealMarker: %UnityEngineTransform, null\n    .export
-    releaseIdealMarker\n    releaseActualMarker: %UnityEngineTransform, null\n   
-    .export releaseActualMarker\n    releaseErrorLine: %UnityEngineLineRenderer,
-    null\n    .export releaseErrorLine\n    arrivalTimeoutSeconds: %SystemSingle,
-    3\n    .export arrivalTimeoutSeconds\n    releaseResultText: %SystemString, \"\"\n   
-    .export releaseResultText\n    releaseDetailText: %SystemString, \"\"\n    .export
-    releaseDetailText\n    diagnosticIdealSpin: %SystemBoolean, null\n    .export
-    diagnosticIdealSpin\n    showDebug: %SystemBoolean, null\n    .export showDebug\n   
-    debugLabel: %UnityEngineUIText, null\n    .export debugLabel\n    debugSeconds:
-    %SystemSingle, 6\n    .export debugSeconds\n    state: %SystemInt32, 0\n    .export
-    state\n    releaseVelocity: %UnityEngineVector3, null\n    .export releaseVelocity\n   
-    releaseSpin: %UnityEngineVector3, null\n    .export releaseSpin\n    releaseWakeMode:
-    %SystemInt32, 0\n    .export releaseWakeMode\n    releaseWakeCoefficient: %SystemSingle,
-    0\n    .export releaseWakeCoefficient\n    releaseWakeDirection: %UnityEngineVector3,
-    null\n    .export releaseWakeDirection\n    debugInput: %SystemInt32, 0\n   
-    .export debugInput\n    debugRecognized: %SystemBoolean, null\n    .export debugRecognized\n   
-    debugReason: %SystemString, \"\"\n    .export debugReason\n    debugPositionError:
-    %UnityEngineVector3, null\n    .export debugPositionError\n    debugArmSpeed:
-    %SystemSingle, 0\n    .export debugArmSpeed\n    debugDirectionError: %SystemSingle,
-    0\n    .export debugDirectionError\n    debugPoseAngle: %SystemSingle, 0\n   
-    .export debugPoseAngle\n    debugPoseQuality: %SystemSingle, 0\n    .export debugPoseQuality\n   
-    debugSpinRpm: %SystemSingle, 0\n    .export debugSpinRpm\n    debugSpinAxis:
-    %UnityEngineVector3, null\n    .export debugSpinAxis\n    debugWake: %SystemSingle,
-    0\n    .export debugWake\n    debugSolverError: %SystemSingle, -1\n    .export
-    debugSolverError\n    debugPredictedTarget: %UnityEngineVector3, null\n    .export
-    debugPredictedTarget\n    ArrivalNotPitch: %SystemInt32, 0\n    ArrivalMeasuring:
-    %SystemInt32, 1\n    ArrivalMeasured: %SystemInt32, 2\n    ArrivalHeld: %SystemInt32,
-    3\n    ArrivalHit: %SystemInt32, 4\n    ArrivalGrounded: %SystemInt32, 5\n   
-    ArrivalNextFlight: %SystemInt32, 6\n    ArrivalStopped: %SystemInt32, 7\n   
-    ArrivalTimeout: %SystemInt32, 8\n    ArrivalLeftMound: %SystemInt32, 9\n    ClickWindowFrames:
-    %SystemInt32, 2\n    NoFrame: %SystemInt32, -1000\n    _ball: %VRCUdonUdonBehaviour,
-    null\n    _pressHeld: %SystemBooleanArray, null\n    _pressCancelled: %SystemBooleanArray,
-    null\n    _pressCaptured: %SystemBooleanArray, null\n    _pressToggled: %SystemBooleanArray,
-    null\n    _pressRestoreState: %SystemInt32Array, null\n    _pressLockEpoch: %SystemInt32Array,
-    null\n    _pressFrame: %SystemInt32Array, null\n    _clickFrame: %SystemInt32,
-    -1000\n    _lockEpoch: %SystemInt32, 0\n    _triggerChest: %UnityEngineVector3,
-    null\n    _triggerPlate: %UnityEngineVector3, null\n    _triggerHandRotation:
-    %UnityEngineQuaternion, null\n    _inMound: %SystemBoolean, null\n    _vr: %SystemBoolean,
-    null\n    _glove: %VRCUdonUdonBehaviour, null\n    _nextGloveSearch: %SystemSingle,
-    0\n    _activeHand: %SystemInt32, 2\n    _hasCursor: %SystemBoolean, null\n   
-    _rayValid: %SystemBoolean, null\n    _cursorH: %SystemSingle, 0\n    _cursorV:
-    %SystemSingle, 0\n    _cursorBlock: %UnityEngineMaterialPropertyBlock, null\n   
-    _lockTarget: %UnityEngineVector3, null\n    _lockRelease: %UnityEngineVector3,
+    2800\n    .export maxFourSeamSpinRpm\n    spinLossAtBadPose: %SystemSingle, 0\n   
+    .export spinLossAtBadPose\n    gyroAtBadPose: %SystemSingle, 0\n    .export gyroAtBadPose\n   
+    wakeCoefficient: %SystemSingle, 0.006\n    .export wakeCoefficient\n    wakeClockDegrees:
+    %SystemSingle, 90\n    .export wakeClockDegrees\n    wakeLossAtBadPose: %SystemSingle,
+    0\n    .export wakeLossAtBadPose\n    goodPoseAngle: %SystemSingle, 12\n    .export
+    goodPoseAngle\n    badPoseAngle: %SystemSingle, 50\n    .export badPoseAngle\n   
+    axisTransferGain: %SystemSingle, 0\n    .export axisTransferGain\n    recognitionRadii:
+    %UnityEngineVector3, null\n    .export recognitionRadii\n    minArmSpeed: %SystemSingle,
+    1\n    .export minArmSpeed\n    maxDirectionErrorDegrees: %SystemSingle, 60\n   
+    .export maxDirectionErrorDegrees\n    velocityWindowSeconds: %SystemSingle, 0.08\n   
+    .export velocityWindowSeconds\n    controlGainX: %SystemSingle, 0\n    .export
+    controlGainX\n    controlGainY: %SystemSingle, 0\n    .export controlGainY\n   
+    solverAcceptMeters: %SystemSingle, 0.1\n    .export solverAcceptMeters\n    showReleaseFeedback:
+    %SystemBoolean, null\n    .export showReleaseFeedback\n    showRecognitionRange:
+    %SystemBoolean, null\n    .export showRecognitionRange\n    idealMarkerColor:
+    %UnityEngineColor, null\n    .export idealMarkerColor\n    actualMarkerColor:
+    %UnityEngineColor, null\n    .export actualMarkerColor\n    errorLineColor: %UnityEngineColor,
+    null\n    .export errorLineColor\n    idealMarkerDiameter: %SystemSingle, 0.09\n   
+    .export idealMarkerDiameter\n    releaseMarkerDiameter: %SystemSingle, 0.07\n   
+    .export releaseMarkerDiameter\n    errorLineWidth: %SystemSingle, 0.012\n   
+    .export errorLineWidth\n    idealMarker: %UnityEngineTransform, null\n    .export
+    idealMarker\n    rangeMarker: %UnityEngineTransform, null\n    .export rangeMarker\n   
+    releaseIdealMarker: %UnityEngineTransform, null\n    .export releaseIdealMarker\n   
+    releaseActualMarker: %UnityEngineTransform, null\n    .export releaseActualMarker\n   
+    releaseErrorLine: %UnityEngineLineRenderer, null\n    .export releaseErrorLine\n   
+    arrivalTimeoutSeconds: %SystemSingle, 3\n    .export arrivalTimeoutSeconds\n   
+    releaseResultText: %SystemString, \"\"\n    .export releaseResultText\n    releaseDetailText:
+    %SystemString, \"\"\n    .export releaseDetailText\n    diagnosticIdealSpin:
+    %SystemBoolean, null\n    .export diagnosticIdealSpin\n    showDebug: %SystemBoolean,
+    null\n    .export showDebug\n    debugLabel: %UnityEngineUIText, null\n    .export
+    debugLabel\n    debugSeconds: %SystemSingle, 6\n    .export debugSeconds\n   
+    state: %SystemInt32, 0\n    .export state\n    releaseVelocity: %UnityEngineVector3,
+    null\n    .export releaseVelocity\n    releaseSpin: %UnityEngineVector3, null\n   
+    .export releaseSpin\n    releaseWakeMode: %SystemInt32, 0\n    .export releaseWakeMode\n   
+    releaseWakeCoefficient: %SystemSingle, 0\n    .export releaseWakeCoefficient\n   
+    releaseWakeDirection: %UnityEngineVector3, null\n    .export releaseWakeDirection\n   
+    debugInput: %SystemInt32, 0\n    .export debugInput\n    debugRecognized: %SystemBoolean,
+    null\n    .export debugRecognized\n    debugReason: %SystemString, \"\"\n   
+    .export debugReason\n    debugPositionError: %UnityEngineVector3, null\n    .export
+    debugPositionError\n    debugArmSpeed: %SystemSingle, 0\n    .export debugArmSpeed\n   
+    debugDirectionError: %SystemSingle, 0\n    .export debugDirectionError\n    debugPoseAngle:
+    %SystemSingle, 0\n    .export debugPoseAngle\n    debugPoseQuality: %SystemSingle,
+    0\n    .export debugPoseQuality\n    debugSpinRpm: %SystemSingle, 0\n    .export
+    debugSpinRpm\n    debugSpinAxis: %UnityEngineVector3, null\n    .export debugSpinAxis\n   
+    debugWake: %SystemSingle, 0\n    .export debugWake\n    debugSolverError: %SystemSingle,
+    -1\n    .export debugSolverError\n    debugPredictedTarget: %UnityEngineVector3,
+    null\n    .export debugPredictedTarget\n    ArrivalNotPitch: %SystemInt32, 0\n   
+    ArrivalMeasuring: %SystemInt32, 1\n    ArrivalMeasured: %SystemInt32, 2\n   
+    ArrivalHeld: %SystemInt32, 3\n    ArrivalHit: %SystemInt32, 4\n    ArrivalGrounded:
+    %SystemInt32, 5\n    ArrivalNextFlight: %SystemInt32, 6\n    ArrivalStopped:
+    %SystemInt32, 7\n    ArrivalTimeout: %SystemInt32, 8\n    ArrivalLeftMound: %SystemInt32,
+    9\n    ClickWindowFrames: %SystemInt32, 2\n    NoFrame: %SystemInt32, -1000\n   
+    _ball: %VRCUdonUdonBehaviour, null\n    _pressHeld: %SystemBooleanArray, null\n   
+    _pressCancelled: %SystemBooleanArray, null\n    _pressCaptured: %SystemBooleanArray,
+    null\n    _pressToggled: %SystemBooleanArray, null\n    _pressRestoreState: %SystemInt32Array,
+    null\n    _pressLockEpoch: %SystemInt32Array, null\n    _pressFrame: %SystemInt32Array,
+    null\n    _clickFrame: %SystemInt32, -1000\n    _lockEpoch: %SystemInt32, 0\n   
+    _triggerChest: %UnityEngineVector3, null\n    _triggerPlate: %UnityEngineVector3,
+    null\n    _triggerHandRotation: %UnityEngineQuaternion, null\n    _inMound: %SystemBoolean,
+    null\n    _vr: %SystemBoolean, null\n    _glove: %VRCUdonUdonBehaviour, null\n   
+    _nextGloveSearch: %SystemSingle, 0\n    _activeHand: %SystemInt32, 2\n    _hasCursor:
+    %SystemBoolean, null\n    _rayValid: %SystemBoolean, null\n    _cursorH: %SystemSingle,
+    0\n    _cursorV: %SystemSingle, 0\n    _cursorBlock: %UnityEngineMaterialPropertyBlock,
+    null\n    _lockTarget: %UnityEngineVector3, null\n    _lockRelease: %UnityEngineVector3,
     null\n    _lockDirection: %UnityEngineVector3, null\n    _lockSpinLocal: %UnityEngineVector3,
     null\n    _lockWakeLocal: %UnityEngineVector3, null\n    _lockSolverSpeedKmh:
     %SystemSingle, 0\n    _lockConverged: %SystemBoolean, null\n    _lockWakeClock:
@@ -37646,7 +37645,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: af6ce4992a010e34cbdc2c74286f5d86, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 668de8aa377e938969d08739dfda52f00ae54d7c7a2349cfc514025aa736a599
+  sourceFingerprint: f7a675c86fd6f0de46b4bdb5f6577fe37ffa1e9a79be7e7b2c315a174fdaa71a
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -37776,7 +37775,8 @@ MonoBehaviour:
     rangeMax: 0
   - symbol: spinLossAtBadPose
     header: 
-    tooltip: Fraction of the spin lost at a fully failed pose. Default 0.5.
+    tooltip: Fraction of the spin lost at a fully failed pose. Default 0 (no pose
+      penalty, for real-client verification); 0.5 was the earlier tuning.
     hidden: 0
     space: 0
     hasRange: 1
@@ -37785,7 +37785,7 @@ MonoBehaviour:
   - symbol: gyroAtBadPose
     header: 
     tooltip: Fraction of the spin axis turned into gyro spin at a fully failed pose.
-      Default 0.5.
+      Default 0 (no pose penalty); 0.5 was the earlier tuning.
     hidden: 0
     space: 0
     hasRange: 1
@@ -37811,7 +37811,8 @@ MonoBehaviour:
     rangeMax: 0
   - symbol: wakeLossAtBadPose
     header: 
-    tooltip: Fraction of the wake lost at a fully failed pose. Default 1.
+    tooltip: Fraction of the wake lost at a fully failed pose. Default 0 (no pose
+      penalty); 1 was the earlier tuning.
     hidden: 0
     space: 0
     hasRange: 1
@@ -37836,7 +37837,8 @@ MonoBehaviour:
     rangeMax: 0
   - symbol: axisTransferGain
     header: 
-    tooltip: Part of the pose error carried into the spin axis. Default 0.5.
+    tooltip: Part of the pose error carried into the spin axis. Default 0 (no pose
+      penalty); 0.5 was the earlier tuning.
     hidden: 0
     space: 0
     hasRange: 1
@@ -37880,7 +37882,9 @@ MonoBehaviour:
     header: Control
     tooltip: 'Total lateral miss per lateral controller release error, approximately:
       0 cancels the miss the offset makes by itself, 0.5 halves it, 1 adds nothing,
-      1.5 amplifies it. Spin and wake changes are not compensated. Default 0.5.'
+      1.5 amplifies it. Spin and wake changes are not compensated. Default 0 (the
+      controller offset''s miss cancelled, for real-client verification); 0.5 was
+      the earlier tuning.'
     hidden: 0
     space: 0
     hasRange: 1
@@ -37889,7 +37893,7 @@ MonoBehaviour:
   - symbol: controlGainY
     header: 
     tooltip: Total vertical miss per vertical controller release error, approximately
-      (see controlGainX). Default 0.5.
+      (see controlGainX). Default 0; 0.5 was the earlier tuning.
     hidden: 0
     space: 0
     hasRange: 1
@@ -38434,71 +38438,70 @@ MonoBehaviour:
     armSpeedCurve: %UnityEngineAnimationCurve, null\n    .export armSpeedCurve\n   
     solverSpeedRatio: %SystemSingle, 0.97\n    .export solverSpeedRatio\n    fourSeamSpinRpm:
     %SystemSingle, 2500\n    .export fourSeamSpinRpm\n    maxFourSeamSpinRpm: %SystemSingle,
-    2800\n    .export maxFourSeamSpinRpm\n    spinLossAtBadPose: %SystemSingle, 0.5\n   
-    .export spinLossAtBadPose\n    gyroAtBadPose: %SystemSingle, 0.5\n    .export
-    gyroAtBadPose\n    wakeCoefficient: %SystemSingle, 0.006\n    .export wakeCoefficient\n   
-    wakeClockDegrees: %SystemSingle, 90\n    .export wakeClockDegrees\n    wakeLossAtBadPose:
-    %SystemSingle, 1\n    .export wakeLossAtBadPose\n    goodPoseAngle: %SystemSingle,
-    12\n    .export goodPoseAngle\n    badPoseAngle: %SystemSingle, 50\n    .export
-    badPoseAngle\n    axisTransferGain: %SystemSingle, 0.5\n    .export axisTransferGain\n   
-    recognitionRadii: %UnityEngineVector3, null\n    .export recognitionRadii\n   
-    minArmSpeed: %SystemSingle, 1\n    .export minArmSpeed\n    maxDirectionErrorDegrees:
-    %SystemSingle, 60\n    .export maxDirectionErrorDegrees\n    velocityWindowSeconds:
-    %SystemSingle, 0.08\n    .export velocityWindowSeconds\n    controlGainX: %SystemSingle,
-    0.5\n    .export controlGainX\n    controlGainY: %SystemSingle, 0.5\n    .export
-    controlGainY\n    solverAcceptMeters: %SystemSingle, 0.1\n    .export solverAcceptMeters\n   
-    showReleaseFeedback: %SystemBoolean, null\n    .export showReleaseFeedback\n   
-    showRecognitionRange: %SystemBoolean, null\n    .export showRecognitionRange\n   
-    idealMarkerColor: %UnityEngineColor, null\n    .export idealMarkerColor\n   
-    actualMarkerColor: %UnityEngineColor, null\n    .export actualMarkerColor\n   
-    errorLineColor: %UnityEngineColor, null\n    .export errorLineColor\n    idealMarkerDiameter:
-    %SystemSingle, 0.09\n    .export idealMarkerDiameter\n    releaseMarkerDiameter:
-    %SystemSingle, 0.07\n    .export releaseMarkerDiameter\n    errorLineWidth: %SystemSingle,
-    0.012\n    .export errorLineWidth\n    idealMarker: %UnityEngineTransform, null\n   
-    .export idealMarker\n    rangeMarker: %UnityEngineTransform, null\n    .export
-    rangeMarker\n    releaseIdealMarker: %UnityEngineTransform, null\n    .export
-    releaseIdealMarker\n    releaseActualMarker: %UnityEngineTransform, null\n   
-    .export releaseActualMarker\n    releaseErrorLine: %UnityEngineLineRenderer,
-    null\n    .export releaseErrorLine\n    arrivalTimeoutSeconds: %SystemSingle,
-    3\n    .export arrivalTimeoutSeconds\n    releaseResultText: %SystemString, \"\"\n   
-    .export releaseResultText\n    releaseDetailText: %SystemString, \"\"\n    .export
-    releaseDetailText\n    diagnosticIdealSpin: %SystemBoolean, null\n    .export
-    diagnosticIdealSpin\n    showDebug: %SystemBoolean, null\n    .export showDebug\n   
-    debugLabel: %UnityEngineUIText, null\n    .export debugLabel\n    debugSeconds:
-    %SystemSingle, 6\n    .export debugSeconds\n    state: %SystemInt32, 0\n    .export
-    state\n    releaseVelocity: %UnityEngineVector3, null\n    .export releaseVelocity\n   
-    releaseSpin: %UnityEngineVector3, null\n    .export releaseSpin\n    releaseWakeMode:
-    %SystemInt32, 0\n    .export releaseWakeMode\n    releaseWakeCoefficient: %SystemSingle,
-    0\n    .export releaseWakeCoefficient\n    releaseWakeDirection: %UnityEngineVector3,
-    null\n    .export releaseWakeDirection\n    debugInput: %SystemInt32, 0\n   
-    .export debugInput\n    debugRecognized: %SystemBoolean, null\n    .export debugRecognized\n   
-    debugReason: %SystemString, \"\"\n    .export debugReason\n    debugPositionError:
-    %UnityEngineVector3, null\n    .export debugPositionError\n    debugArmSpeed:
-    %SystemSingle, 0\n    .export debugArmSpeed\n    debugDirectionError: %SystemSingle,
-    0\n    .export debugDirectionError\n    debugPoseAngle: %SystemSingle, 0\n   
-    .export debugPoseAngle\n    debugPoseQuality: %SystemSingle, 0\n    .export debugPoseQuality\n   
-    debugSpinRpm: %SystemSingle, 0\n    .export debugSpinRpm\n    debugSpinAxis:
-    %UnityEngineVector3, null\n    .export debugSpinAxis\n    debugWake: %SystemSingle,
-    0\n    .export debugWake\n    debugSolverError: %SystemSingle, -1\n    .export
-    debugSolverError\n    debugPredictedTarget: %UnityEngineVector3, null\n    .export
-    debugPredictedTarget\n    ArrivalNotPitch: %SystemInt32, 0\n    ArrivalMeasuring:
-    %SystemInt32, 1\n    ArrivalMeasured: %SystemInt32, 2\n    ArrivalHeld: %SystemInt32,
-    3\n    ArrivalHit: %SystemInt32, 4\n    ArrivalGrounded: %SystemInt32, 5\n   
-    ArrivalNextFlight: %SystemInt32, 6\n    ArrivalStopped: %SystemInt32, 7\n   
-    ArrivalTimeout: %SystemInt32, 8\n    ArrivalLeftMound: %SystemInt32, 9\n    ClickWindowFrames:
-    %SystemInt32, 2\n    NoFrame: %SystemInt32, -1000\n    _ball: %VRCUdonUdonBehaviour,
-    null\n    _pressHeld: %SystemBooleanArray, null\n    _pressCancelled: %SystemBooleanArray,
-    null\n    _pressCaptured: %SystemBooleanArray, null\n    _pressToggled: %SystemBooleanArray,
-    null\n    _pressRestoreState: %SystemInt32Array, null\n    _pressLockEpoch: %SystemInt32Array,
-    null\n    _pressFrame: %SystemInt32Array, null\n    _clickFrame: %SystemInt32,
-    -1000\n    _lockEpoch: %SystemInt32, 0\n    _triggerChest: %UnityEngineVector3,
-    null\n    _triggerPlate: %UnityEngineVector3, null\n    _triggerHandRotation:
-    %UnityEngineQuaternion, null\n    _inMound: %SystemBoolean, null\n    _vr: %SystemBoolean,
-    null\n    _glove: %VRCUdonUdonBehaviour, null\n    _nextGloveSearch: %SystemSingle,
-    0\n    _activeHand: %SystemInt32, 2\n    _hasCursor: %SystemBoolean, null\n   
-    _rayValid: %SystemBoolean, null\n    _cursorH: %SystemSingle, 0\n    _cursorV:
-    %SystemSingle, 0\n    _cursorBlock: %UnityEngineMaterialPropertyBlock, null\n   
-    _lockTarget: %UnityEngineVector3, null\n    _lockRelease: %UnityEngineVector3,
+    2800\n    .export maxFourSeamSpinRpm\n    spinLossAtBadPose: %SystemSingle, 0\n   
+    .export spinLossAtBadPose\n    gyroAtBadPose: %SystemSingle, 0\n    .export gyroAtBadPose\n   
+    wakeCoefficient: %SystemSingle, 0.006\n    .export wakeCoefficient\n    wakeClockDegrees:
+    %SystemSingle, 90\n    .export wakeClockDegrees\n    wakeLossAtBadPose: %SystemSingle,
+    0\n    .export wakeLossAtBadPose\n    goodPoseAngle: %SystemSingle, 12\n    .export
+    goodPoseAngle\n    badPoseAngle: %SystemSingle, 50\n    .export badPoseAngle\n   
+    axisTransferGain: %SystemSingle, 0\n    .export axisTransferGain\n    recognitionRadii:
+    %UnityEngineVector3, null\n    .export recognitionRadii\n    minArmSpeed: %SystemSingle,
+    1\n    .export minArmSpeed\n    maxDirectionErrorDegrees: %SystemSingle, 60\n   
+    .export maxDirectionErrorDegrees\n    velocityWindowSeconds: %SystemSingle, 0.08\n   
+    .export velocityWindowSeconds\n    controlGainX: %SystemSingle, 0\n    .export
+    controlGainX\n    controlGainY: %SystemSingle, 0\n    .export controlGainY\n   
+    solverAcceptMeters: %SystemSingle, 0.1\n    .export solverAcceptMeters\n    showReleaseFeedback:
+    %SystemBoolean, null\n    .export showReleaseFeedback\n    showRecognitionRange:
+    %SystemBoolean, null\n    .export showRecognitionRange\n    idealMarkerColor:
+    %UnityEngineColor, null\n    .export idealMarkerColor\n    actualMarkerColor:
+    %UnityEngineColor, null\n    .export actualMarkerColor\n    errorLineColor: %UnityEngineColor,
+    null\n    .export errorLineColor\n    idealMarkerDiameter: %SystemSingle, 0.09\n   
+    .export idealMarkerDiameter\n    releaseMarkerDiameter: %SystemSingle, 0.07\n   
+    .export releaseMarkerDiameter\n    errorLineWidth: %SystemSingle, 0.012\n   
+    .export errorLineWidth\n    idealMarker: %UnityEngineTransform, null\n    .export
+    idealMarker\n    rangeMarker: %UnityEngineTransform, null\n    .export rangeMarker\n   
+    releaseIdealMarker: %UnityEngineTransform, null\n    .export releaseIdealMarker\n   
+    releaseActualMarker: %UnityEngineTransform, null\n    .export releaseActualMarker\n   
+    releaseErrorLine: %UnityEngineLineRenderer, null\n    .export releaseErrorLine\n   
+    arrivalTimeoutSeconds: %SystemSingle, 3\n    .export arrivalTimeoutSeconds\n   
+    releaseResultText: %SystemString, \"\"\n    .export releaseResultText\n    releaseDetailText:
+    %SystemString, \"\"\n    .export releaseDetailText\n    diagnosticIdealSpin:
+    %SystemBoolean, null\n    .export diagnosticIdealSpin\n    showDebug: %SystemBoolean,
+    null\n    .export showDebug\n    debugLabel: %UnityEngineUIText, null\n    .export
+    debugLabel\n    debugSeconds: %SystemSingle, 6\n    .export debugSeconds\n   
+    state: %SystemInt32, 0\n    .export state\n    releaseVelocity: %UnityEngineVector3,
+    null\n    .export releaseVelocity\n    releaseSpin: %UnityEngineVector3, null\n   
+    .export releaseSpin\n    releaseWakeMode: %SystemInt32, 0\n    .export releaseWakeMode\n   
+    releaseWakeCoefficient: %SystemSingle, 0\n    .export releaseWakeCoefficient\n   
+    releaseWakeDirection: %UnityEngineVector3, null\n    .export releaseWakeDirection\n   
+    debugInput: %SystemInt32, 0\n    .export debugInput\n    debugRecognized: %SystemBoolean,
+    null\n    .export debugRecognized\n    debugReason: %SystemString, \"\"\n   
+    .export debugReason\n    debugPositionError: %UnityEngineVector3, null\n    .export
+    debugPositionError\n    debugArmSpeed: %SystemSingle, 0\n    .export debugArmSpeed\n   
+    debugDirectionError: %SystemSingle, 0\n    .export debugDirectionError\n    debugPoseAngle:
+    %SystemSingle, 0\n    .export debugPoseAngle\n    debugPoseQuality: %SystemSingle,
+    0\n    .export debugPoseQuality\n    debugSpinRpm: %SystemSingle, 0\n    .export
+    debugSpinRpm\n    debugSpinAxis: %UnityEngineVector3, null\n    .export debugSpinAxis\n   
+    debugWake: %SystemSingle, 0\n    .export debugWake\n    debugSolverError: %SystemSingle,
+    -1\n    .export debugSolverError\n    debugPredictedTarget: %UnityEngineVector3,
+    null\n    .export debugPredictedTarget\n    ArrivalNotPitch: %SystemInt32, 0\n   
+    ArrivalMeasuring: %SystemInt32, 1\n    ArrivalMeasured: %SystemInt32, 2\n   
+    ArrivalHeld: %SystemInt32, 3\n    ArrivalHit: %SystemInt32, 4\n    ArrivalGrounded:
+    %SystemInt32, 5\n    ArrivalNextFlight: %SystemInt32, 6\n    ArrivalStopped:
+    %SystemInt32, 7\n    ArrivalTimeout: %SystemInt32, 8\n    ArrivalLeftMound: %SystemInt32,
+    9\n    ClickWindowFrames: %SystemInt32, 2\n    NoFrame: %SystemInt32, -1000\n   
+    _ball: %VRCUdonUdonBehaviour, null\n    _pressHeld: %SystemBooleanArray, null\n   
+    _pressCancelled: %SystemBooleanArray, null\n    _pressCaptured: %SystemBooleanArray,
+    null\n    _pressToggled: %SystemBooleanArray, null\n    _pressRestoreState: %SystemInt32Array,
+    null\n    _pressLockEpoch: %SystemInt32Array, null\n    _pressFrame: %SystemInt32Array,
+    null\n    _clickFrame: %SystemInt32, -1000\n    _lockEpoch: %SystemInt32, 0\n   
+    _triggerChest: %UnityEngineVector3, null\n    _triggerPlate: %UnityEngineVector3,
+    null\n    _triggerHandRotation: %UnityEngineQuaternion, null\n    _inMound: %SystemBoolean,
+    null\n    _vr: %SystemBoolean, null\n    _glove: %VRCUdonUdonBehaviour, null\n   
+    _nextGloveSearch: %SystemSingle, 0\n    _activeHand: %SystemInt32, 2\n    _hasCursor:
+    %SystemBoolean, null\n    _rayValid: %SystemBoolean, null\n    _cursorH: %SystemSingle,
+    0\n    _cursorV: %SystemSingle, 0\n    _cursorBlock: %UnityEngineMaterialPropertyBlock,
+    null\n    _lockTarget: %UnityEngineVector3, null\n    _lockRelease: %UnityEngineVector3,
     null\n    _lockDirection: %UnityEngineVector3, null\n    _lockSpinLocal: %UnityEngineVector3,
     null\n    _lockWakeLocal: %UnityEngineVector3, null\n    _lockSolverSpeedKmh:
     %SystemSingle, 0\n    _lockConverged: %SystemBoolean, null\n    _lockWakeClock:
@@ -76063,71 +76066,70 @@ MonoBehaviour:
     armSpeedCurve: %UnityEngineAnimationCurve, null\n    .export armSpeedCurve\n   
     solverSpeedRatio: %SystemSingle, 0.97\n    .export solverSpeedRatio\n    fourSeamSpinRpm:
     %SystemSingle, 2500\n    .export fourSeamSpinRpm\n    maxFourSeamSpinRpm: %SystemSingle,
-    2800\n    .export maxFourSeamSpinRpm\n    spinLossAtBadPose: %SystemSingle, 0.5\n   
-    .export spinLossAtBadPose\n    gyroAtBadPose: %SystemSingle, 0.5\n    .export
-    gyroAtBadPose\n    wakeCoefficient: %SystemSingle, 0.006\n    .export wakeCoefficient\n   
-    wakeClockDegrees: %SystemSingle, 90\n    .export wakeClockDegrees\n    wakeLossAtBadPose:
-    %SystemSingle, 1\n    .export wakeLossAtBadPose\n    goodPoseAngle: %SystemSingle,
-    12\n    .export goodPoseAngle\n    badPoseAngle: %SystemSingle, 50\n    .export
-    badPoseAngle\n    axisTransferGain: %SystemSingle, 0.5\n    .export axisTransferGain\n   
-    recognitionRadii: %UnityEngineVector3, null\n    .export recognitionRadii\n   
-    minArmSpeed: %SystemSingle, 1\n    .export minArmSpeed\n    maxDirectionErrorDegrees:
-    %SystemSingle, 60\n    .export maxDirectionErrorDegrees\n    velocityWindowSeconds:
-    %SystemSingle, 0.08\n    .export velocityWindowSeconds\n    controlGainX: %SystemSingle,
-    0.5\n    .export controlGainX\n    controlGainY: %SystemSingle, 0.5\n    .export
-    controlGainY\n    solverAcceptMeters: %SystemSingle, 0.1\n    .export solverAcceptMeters\n   
-    showReleaseFeedback: %SystemBoolean, null\n    .export showReleaseFeedback\n   
-    showRecognitionRange: %SystemBoolean, null\n    .export showRecognitionRange\n   
-    idealMarkerColor: %UnityEngineColor, null\n    .export idealMarkerColor\n   
-    actualMarkerColor: %UnityEngineColor, null\n    .export actualMarkerColor\n   
-    errorLineColor: %UnityEngineColor, null\n    .export errorLineColor\n    idealMarkerDiameter:
-    %SystemSingle, 0.09\n    .export idealMarkerDiameter\n    releaseMarkerDiameter:
-    %SystemSingle, 0.07\n    .export releaseMarkerDiameter\n    errorLineWidth: %SystemSingle,
-    0.012\n    .export errorLineWidth\n    idealMarker: %UnityEngineTransform, null\n   
-    .export idealMarker\n    rangeMarker: %UnityEngineTransform, null\n    .export
-    rangeMarker\n    releaseIdealMarker: %UnityEngineTransform, null\n    .export
-    releaseIdealMarker\n    releaseActualMarker: %UnityEngineTransform, null\n   
-    .export releaseActualMarker\n    releaseErrorLine: %UnityEngineLineRenderer,
-    null\n    .export releaseErrorLine\n    arrivalTimeoutSeconds: %SystemSingle,
-    3\n    .export arrivalTimeoutSeconds\n    releaseResultText: %SystemString, \"\"\n   
-    .export releaseResultText\n    releaseDetailText: %SystemString, \"\"\n    .export
-    releaseDetailText\n    diagnosticIdealSpin: %SystemBoolean, null\n    .export
-    diagnosticIdealSpin\n    showDebug: %SystemBoolean, null\n    .export showDebug\n   
-    debugLabel: %UnityEngineUIText, null\n    .export debugLabel\n    debugSeconds:
-    %SystemSingle, 6\n    .export debugSeconds\n    state: %SystemInt32, 0\n    .export
-    state\n    releaseVelocity: %UnityEngineVector3, null\n    .export releaseVelocity\n   
-    releaseSpin: %UnityEngineVector3, null\n    .export releaseSpin\n    releaseWakeMode:
-    %SystemInt32, 0\n    .export releaseWakeMode\n    releaseWakeCoefficient: %SystemSingle,
-    0\n    .export releaseWakeCoefficient\n    releaseWakeDirection: %UnityEngineVector3,
-    null\n    .export releaseWakeDirection\n    debugInput: %SystemInt32, 0\n   
-    .export debugInput\n    debugRecognized: %SystemBoolean, null\n    .export debugRecognized\n   
-    debugReason: %SystemString, \"\"\n    .export debugReason\n    debugPositionError:
-    %UnityEngineVector3, null\n    .export debugPositionError\n    debugArmSpeed:
-    %SystemSingle, 0\n    .export debugArmSpeed\n    debugDirectionError: %SystemSingle,
-    0\n    .export debugDirectionError\n    debugPoseAngle: %SystemSingle, 0\n   
-    .export debugPoseAngle\n    debugPoseQuality: %SystemSingle, 0\n    .export debugPoseQuality\n   
-    debugSpinRpm: %SystemSingle, 0\n    .export debugSpinRpm\n    debugSpinAxis:
-    %UnityEngineVector3, null\n    .export debugSpinAxis\n    debugWake: %SystemSingle,
-    0\n    .export debugWake\n    debugSolverError: %SystemSingle, -1\n    .export
-    debugSolverError\n    debugPredictedTarget: %UnityEngineVector3, null\n    .export
-    debugPredictedTarget\n    ArrivalNotPitch: %SystemInt32, 0\n    ArrivalMeasuring:
-    %SystemInt32, 1\n    ArrivalMeasured: %SystemInt32, 2\n    ArrivalHeld: %SystemInt32,
-    3\n    ArrivalHit: %SystemInt32, 4\n    ArrivalGrounded: %SystemInt32, 5\n   
-    ArrivalNextFlight: %SystemInt32, 6\n    ArrivalStopped: %SystemInt32, 7\n   
-    ArrivalTimeout: %SystemInt32, 8\n    ArrivalLeftMound: %SystemInt32, 9\n    ClickWindowFrames:
-    %SystemInt32, 2\n    NoFrame: %SystemInt32, -1000\n    _ball: %VRCUdonUdonBehaviour,
-    null\n    _pressHeld: %SystemBooleanArray, null\n    _pressCancelled: %SystemBooleanArray,
-    null\n    _pressCaptured: %SystemBooleanArray, null\n    _pressToggled: %SystemBooleanArray,
-    null\n    _pressRestoreState: %SystemInt32Array, null\n    _pressLockEpoch: %SystemInt32Array,
-    null\n    _pressFrame: %SystemInt32Array, null\n    _clickFrame: %SystemInt32,
-    -1000\n    _lockEpoch: %SystemInt32, 0\n    _triggerChest: %UnityEngineVector3,
-    null\n    _triggerPlate: %UnityEngineVector3, null\n    _triggerHandRotation:
-    %UnityEngineQuaternion, null\n    _inMound: %SystemBoolean, null\n    _vr: %SystemBoolean,
-    null\n    _glove: %VRCUdonUdonBehaviour, null\n    _nextGloveSearch: %SystemSingle,
-    0\n    _activeHand: %SystemInt32, 2\n    _hasCursor: %SystemBoolean, null\n   
-    _rayValid: %SystemBoolean, null\n    _cursorH: %SystemSingle, 0\n    _cursorV:
-    %SystemSingle, 0\n    _cursorBlock: %UnityEngineMaterialPropertyBlock, null\n   
-    _lockTarget: %UnityEngineVector3, null\n    _lockRelease: %UnityEngineVector3,
+    2800\n    .export maxFourSeamSpinRpm\n    spinLossAtBadPose: %SystemSingle, 0\n   
+    .export spinLossAtBadPose\n    gyroAtBadPose: %SystemSingle, 0\n    .export gyroAtBadPose\n   
+    wakeCoefficient: %SystemSingle, 0.006\n    .export wakeCoefficient\n    wakeClockDegrees:
+    %SystemSingle, 90\n    .export wakeClockDegrees\n    wakeLossAtBadPose: %SystemSingle,
+    0\n    .export wakeLossAtBadPose\n    goodPoseAngle: %SystemSingle, 12\n    .export
+    goodPoseAngle\n    badPoseAngle: %SystemSingle, 50\n    .export badPoseAngle\n   
+    axisTransferGain: %SystemSingle, 0\n    .export axisTransferGain\n    recognitionRadii:
+    %UnityEngineVector3, null\n    .export recognitionRadii\n    minArmSpeed: %SystemSingle,
+    1\n    .export minArmSpeed\n    maxDirectionErrorDegrees: %SystemSingle, 60\n   
+    .export maxDirectionErrorDegrees\n    velocityWindowSeconds: %SystemSingle, 0.08\n   
+    .export velocityWindowSeconds\n    controlGainX: %SystemSingle, 0\n    .export
+    controlGainX\n    controlGainY: %SystemSingle, 0\n    .export controlGainY\n   
+    solverAcceptMeters: %SystemSingle, 0.1\n    .export solverAcceptMeters\n    showReleaseFeedback:
+    %SystemBoolean, null\n    .export showReleaseFeedback\n    showRecognitionRange:
+    %SystemBoolean, null\n    .export showRecognitionRange\n    idealMarkerColor:
+    %UnityEngineColor, null\n    .export idealMarkerColor\n    actualMarkerColor:
+    %UnityEngineColor, null\n    .export actualMarkerColor\n    errorLineColor: %UnityEngineColor,
+    null\n    .export errorLineColor\n    idealMarkerDiameter: %SystemSingle, 0.09\n   
+    .export idealMarkerDiameter\n    releaseMarkerDiameter: %SystemSingle, 0.07\n   
+    .export releaseMarkerDiameter\n    errorLineWidth: %SystemSingle, 0.012\n   
+    .export errorLineWidth\n    idealMarker: %UnityEngineTransform, null\n    .export
+    idealMarker\n    rangeMarker: %UnityEngineTransform, null\n    .export rangeMarker\n   
+    releaseIdealMarker: %UnityEngineTransform, null\n    .export releaseIdealMarker\n   
+    releaseActualMarker: %UnityEngineTransform, null\n    .export releaseActualMarker\n   
+    releaseErrorLine: %UnityEngineLineRenderer, null\n    .export releaseErrorLine\n   
+    arrivalTimeoutSeconds: %SystemSingle, 3\n    .export arrivalTimeoutSeconds\n   
+    releaseResultText: %SystemString, \"\"\n    .export releaseResultText\n    releaseDetailText:
+    %SystemString, \"\"\n    .export releaseDetailText\n    diagnosticIdealSpin:
+    %SystemBoolean, null\n    .export diagnosticIdealSpin\n    showDebug: %SystemBoolean,
+    null\n    .export showDebug\n    debugLabel: %UnityEngineUIText, null\n    .export
+    debugLabel\n    debugSeconds: %SystemSingle, 6\n    .export debugSeconds\n   
+    state: %SystemInt32, 0\n    .export state\n    releaseVelocity: %UnityEngineVector3,
+    null\n    .export releaseVelocity\n    releaseSpin: %UnityEngineVector3, null\n   
+    .export releaseSpin\n    releaseWakeMode: %SystemInt32, 0\n    .export releaseWakeMode\n   
+    releaseWakeCoefficient: %SystemSingle, 0\n    .export releaseWakeCoefficient\n   
+    releaseWakeDirection: %UnityEngineVector3, null\n    .export releaseWakeDirection\n   
+    debugInput: %SystemInt32, 0\n    .export debugInput\n    debugRecognized: %SystemBoolean,
+    null\n    .export debugRecognized\n    debugReason: %SystemString, \"\"\n   
+    .export debugReason\n    debugPositionError: %UnityEngineVector3, null\n    .export
+    debugPositionError\n    debugArmSpeed: %SystemSingle, 0\n    .export debugArmSpeed\n   
+    debugDirectionError: %SystemSingle, 0\n    .export debugDirectionError\n    debugPoseAngle:
+    %SystemSingle, 0\n    .export debugPoseAngle\n    debugPoseQuality: %SystemSingle,
+    0\n    .export debugPoseQuality\n    debugSpinRpm: %SystemSingle, 0\n    .export
+    debugSpinRpm\n    debugSpinAxis: %UnityEngineVector3, null\n    .export debugSpinAxis\n   
+    debugWake: %SystemSingle, 0\n    .export debugWake\n    debugSolverError: %SystemSingle,
+    -1\n    .export debugSolverError\n    debugPredictedTarget: %UnityEngineVector3,
+    null\n    .export debugPredictedTarget\n    ArrivalNotPitch: %SystemInt32, 0\n   
+    ArrivalMeasuring: %SystemInt32, 1\n    ArrivalMeasured: %SystemInt32, 2\n   
+    ArrivalHeld: %SystemInt32, 3\n    ArrivalHit: %SystemInt32, 4\n    ArrivalGrounded:
+    %SystemInt32, 5\n    ArrivalNextFlight: %SystemInt32, 6\n    ArrivalStopped:
+    %SystemInt32, 7\n    ArrivalTimeout: %SystemInt32, 8\n    ArrivalLeftMound: %SystemInt32,
+    9\n    ClickWindowFrames: %SystemInt32, 2\n    NoFrame: %SystemInt32, -1000\n   
+    _ball: %VRCUdonUdonBehaviour, null\n    _pressHeld: %SystemBooleanArray, null\n   
+    _pressCancelled: %SystemBooleanArray, null\n    _pressCaptured: %SystemBooleanArray,
+    null\n    _pressToggled: %SystemBooleanArray, null\n    _pressRestoreState: %SystemInt32Array,
+    null\n    _pressLockEpoch: %SystemInt32Array, null\n    _pressFrame: %SystemInt32Array,
+    null\n    _clickFrame: %SystemInt32, -1000\n    _lockEpoch: %SystemInt32, 0\n   
+    _triggerChest: %UnityEngineVector3, null\n    _triggerPlate: %UnityEngineVector3,
+    null\n    _triggerHandRotation: %UnityEngineQuaternion, null\n    _inMound: %SystemBoolean,
+    null\n    _vr: %SystemBoolean, null\n    _glove: %VRCUdonUdonBehaviour, null\n   
+    _nextGloveSearch: %SystemSingle, 0\n    _activeHand: %SystemInt32, 2\n    _hasCursor:
+    %SystemBoolean, null\n    _rayValid: %SystemBoolean, null\n    _cursorH: %SystemSingle,
+    0\n    _cursorV: %SystemSingle, 0\n    _cursorBlock: %UnityEngineMaterialPropertyBlock,
+    null\n    _lockTarget: %UnityEngineVector3, null\n    _lockRelease: %UnityEngineVector3,
     null\n    _lockDirection: %UnityEngineVector3, null\n    _lockSpinLocal: %UnityEngineVector3,
     null\n    _lockWakeLocal: %UnityEngineVector3, null\n    _lockSolverSpeedKmh:
     %SystemSingle, 0\n    _lockConverged: %SystemBoolean, null\n    _lockWakeClock:

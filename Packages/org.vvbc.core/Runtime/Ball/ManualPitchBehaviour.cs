@@ -58,24 +58,24 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float fourSeamSpinRpm = 2500f;
     [Tooltip("Upper limit of the 4-Seam spin, in rpm. Default 2800.")]
     public float maxFourSeamSpinRpm = 2800f;
-    [Range(0f, 1f), Tooltip("Fraction of the spin lost at a fully failed pose. Default 0.5.")]
-    public float spinLossAtBadPose = 0.5f;
-    [Range(0f, 1f), Tooltip("Fraction of the spin axis turned into gyro spin at a fully failed pose. Default 0.5.")]
-    public float gyroAtBadPose = 0.5f;
+    [Range(0f, 1f), Tooltip("Fraction of the spin lost at a fully failed pose. Default 0 (no pose penalty, for real-client verification); 0.5 was the earlier tuning.")]
+    public float spinLossAtBadPose = 0f;
+    [Range(0f, 1f), Tooltip("Fraction of the spin axis turned into gyro spin at a fully failed pose. Default 0 (no pose penalty); 0.5 was the earlier tuning.")]
+    public float gyroAtBadPose = 0f;
     [Tooltip("Fixed seam-shifted wake coefficient, in 1/s (capped at 0.055). Default 0.006.")]
     public float wakeCoefficient = 0.006f;
     [Tooltip("Wake direction as a clock angle seen from behind the pitcher: 0 up, 90 arm side. Default 90.")]
     public float wakeClockDegrees = 90f;
-    [Range(0f, 1f), Tooltip("Fraction of the wake lost at a fully failed pose. Default 1.")]
-    public float wakeLossAtBadPose = 1f;
+    [Range(0f, 1f), Tooltip("Fraction of the wake lost at a fully failed pose. Default 0 (no pose penalty); 1 was the earlier tuning.")]
+    public float wakeLossAtBadPose = 0f;
 
     [Header("Pose quality")]
     [Tooltip("Controller rotation error with full quality, in degrees. Default 12.")]
     public float goodPoseAngle = 12f;
     [Tooltip("Controller rotation error with no quality left, in degrees. Default 50.")]
     public float badPoseAngle = 50f;
-    [Range(0f, 1f), Tooltip("Part of the pose error carried into the spin axis. Default 0.5.")]
-    public float axisTransferGain = 0.5f;
+    [Range(0f, 1f), Tooltip("Part of the pose error carried into the spin axis. Default 0 (no pose penalty); 0.5 was the earlier tuning.")]
+    public float axisTransferGain = 0f;
 
     [Header("Recognition")]
     [Tooltip("Radii of the recognition ellipsoid around the calibrated release (right, up, forward), in metres.")]
@@ -88,10 +88,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float velocityWindowSeconds = 0.08f;
 
     [Header("Control")]
-    [Range(0f, 2f), Tooltip("Total lateral miss per lateral controller release error, approximately: 0 cancels the miss the offset makes by itself, 0.5 halves it, 1 adds nothing, 1.5 amplifies it. Spin and wake changes are not compensated. Default 0.5.")]
-    public float controlGainX = 0.5f;
-    [Range(0f, 2f), Tooltip("Total vertical miss per vertical controller release error, approximately (see controlGainX). Default 0.5.")]
-    public float controlGainY = 0.5f;
+    [Range(0f, 2f), Tooltip("Total lateral miss per lateral controller release error, approximately: 0 cancels the miss the offset makes by itself, 0.5 halves it, 1 adds nothing, 1.5 amplifies it. Spin and wake changes are not compensated. Default 0 (the controller offset's miss cancelled, for real-client verification); 0.5 was the earlier tuning.")]
+    public float controlGainX = 0f;
+    [Range(0f, 2f), Tooltip("Total vertical miss per vertical controller release error, approximately (see controlGainX). Default 0; 0.5 was the earlier tuning.")]
+    public float controlGainY = 0f;
     [Tooltip("Best solver error still accepted when it did not converge, in metres. Default 0.10.")]
     public float solverAcceptMeters = 0.10f;
 
