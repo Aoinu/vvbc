@@ -562,7 +562,16 @@ sphere of radius `catchRadius + ballRadius`:
 
 At 160 km/h (44.4 m/s) a 20 ms step moves 0.89 m, far more than the catch
 radius, which is why the segment test is required. The trigger collider is a
-second path for slow balls and is enabled only on the owner's client. No
+second path for slow balls and is enabled only on the owner's client while the
+glove is worn and not calibrating. It is also disabled (`Collider.enabled`, the
+GameObject and layer unchanged) while the ball is in that glove, because the
+ball then sits inside it while the throwing hand picks it up. The glove derives
+this from its ball mode, which every possession change sets through
+`HoldBall`/`ReleaseBall` (catch, recall, transfer to the hand, release, reset,
+abandoned speculation), so it does not rely on `OnTriggerExit` and needs no
+synced field or event. Re-enabling it over the held or resting ball does not
+catch it again: the trigger path accepts only a free, flying, non-kinematic
+ball. No
 Physics query, scene search or allocation is made. A catch candidate sends
 nothing by itself; only an accepted catch queues one snapshot.
 

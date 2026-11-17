@@ -153,6 +153,32 @@ public partial class GloveBehaviour
     }
 
     [TsukimiTest]
+    public void TheCatchTriggerIsOffOnlyWhileTheBallIsInTheGlove()
+    {
+        Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        Start();
+        Assert.IsFalse(CatchTriggerEnabled(), "not worn");
+        SetEquipped(true);
+        Assert.IsTrue(CatchTriggerEnabled(), "worn, free ball");
+        HoldBall(transform, BallInSocket, Vector3.zero);
+        Assert.IsFalse(CatchTriggerEnabled(), "caught: the ball is inside the trigger");
+        ReleaseBall();
+        Assert.IsTrue(CatchTriggerEnabled(), "taken into the hand, released or reset");
+        HoldBall(transform, BallInSocket, Vector3.zero);
+        HoldBall(null, BallInSocket, Vector3.zero);
+        Assert.IsTrue(CatchTriggerEnabled(), "no ball bound");
+        Mimic.Deliver();
+        Mimic.Become(other);
+        Start();
+        Assert.IsTrue(equipped);
+        HoldBall(transform, BallInRemoteHand, Vector3.zero);
+        Assert.IsFalse(CatchTriggerEnabled(), "never on another player's glove");
+        ReleaseBall();
+        Assert.IsFalse(CatchTriggerEnabled(), "never on another player's glove");
+    }
+
+    [TsukimiTest]
     public void TheCatchVolumeIsShownOnlyToTheOwnerWhenEnabled()
     {
         Mimic.Join();
