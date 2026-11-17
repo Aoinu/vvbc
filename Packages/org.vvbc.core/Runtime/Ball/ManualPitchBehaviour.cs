@@ -48,8 +48,12 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public Color lockedCursorColor = new Color(1f, 0.85f, 0.2f, 1f);
 
     [Header("4-Seam")]
-    [Tooltip("Release speed, in km/h. Default 140.")]
-    public float pitchSpeedKmh = 140f;
+    [Tooltip("Highest release speed, in km/h: a pitch leaves at this times the arm-speed curve's output. Default 140.")]
+    public float maxPitchSpeedKmh = 140f;
+    [Tooltip("Arm speed (x, m/s, the recognition's averaged sample) to normalized release speed (y, 0..1). The output is clamped to 0..1 and held at the end keys outside them. Without keys every pitch leaves at maxPitchSpeedKmh.")]
+    public AnimationCurve armSpeedCurve;
+    [Range(0f, 1f), Tooltip("Speed the solver aims with, as a fraction of maxPitchSpeedKmh, taken when the course is locked. Never applied to the release itself. Default 0.97.")]
+    public float solverSpeedRatio = 0.97f;
     [Tooltip("Spin of a 4-Seam released in the calibrated pose, in rpm. Default 2500.")]
     public float fourSeamSpinRpm = 2500f;
     [Tooltip("Upper limit of the 4-Seam spin, in rpm. Default 2800.")]
@@ -203,7 +207,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // Snapshot taken when the course is locked.
     private Vector3 _lockTarget, _lockRelease, _lockDirection;
     private Vector3 _lockSpinLocal, _lockWakeLocal;
-    private float _lockSpeed;
+    // The single speed the solver aims with (maxPitchSpeedKmh x solverSpeedRatio at the lock), in km/h.
+    private float _lockSolverSpeedKmh;
+    private bool _lockConverged;
     private float _lockWakeClock;
     private int _debugToken;
 
@@ -220,6 +226,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private Vector3 _resultTarget, _resultPredicted, _resultPlanePoint, _resultPitcherRight;
     private float _resultSolverError = -1f;
     private float _resultSpeedKmh = -1f;
+    // Speed model of the release: the curve's clamped output, whether the curve had keys, the
+    // maximum at the release and the solver's speed and convergence at the lock (-1 unknown).
+    private float _resultCurveOutput = -1f;
+    private bool _resultCurveSet;
+    private float _resultMaxSpeedKmh = -1f;
+    private float _resultSolverSpeedKmh = -1f;
+    private bool _resultConverged;
     private float _resultGainX, _resultGainY;
     private float _resultWakeClock;
     private bool _resultIdealSpin;
@@ -544,14 +557,17 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Quaternion idealHand = ManualPitchMath.Multiply(frame, _calRotation);
         _lockTarget = CursorWorld(planePoint, planeNormal);
         _lockRelease = ManualPitchMath.FromFrame(frame, chest, _calPosition) + ManualPitchMath.Rotate(idealHand, grip);
-        _lockSpeed = Mathf.Max(0f, pitchSpeedKmh) / 3.6f;
+        // One solver speed for the whole solve, independent of the arm-speed curve; the release
+        // never solves again for its own speed.
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
+        _lockConverged = false;
         _lockSpinLocal = ManualPitchMath.FourSeamSpin(ManualPitchMath.FourSeamAxis(_calPosition),
             fourSeamSpinRpm, maxFourSeamSpinRpm, 0f, spinLossAtBadPose, gyroAtBadPose);
         _lockWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
         _lockWakeClock = wakeClockDegrees;
         state = StateSolving;
         _lockEpoch++;
-        aimSolver.BeginSolveRelativeSpin(_lockRelease, _lockTarget, -planeNormal, _lockSpeed, _lockSpinLocal,
+        aimSolver.BeginSolveRelativeSpin(_lockRelease, _lockTarget, -planeNormal, _lockSolverSpeedKmh / 3.6f, _lockSpinLocal,
             WakeMode(wakeCoefficient), wakeCoefficient, _lockWakeLocal, 0f, 0f, gravity,
             _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
         if (!aimSolver.solving) CompleteSolve(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
@@ -571,6 +587,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (state != StateSolving) return;
         debugSolverError = error;
         debugPredictedTarget = crossing;
+        _lockConverged = converged;
         if ((converged || (ManualPitchMath.Finite(error) && error <= solverAcceptMeters)) && ManualPitchMath.FiniteVector(direction) && direction.sqrMagnitude > 0.5f)
         {
             _lockDirection = direction.normalized;
@@ -714,9 +731,26 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return result;
     }
 
-    // Recognition, control and 4-Seam quality from explicit tracking data (tested directly).
+    // Recognition, control, speed and 4-Seam quality from explicit tracking data (tested
+    // directly). The release speed comes from armSpeedCurve at the recognition's arm speed.
     public bool ResolveReleaseAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
         Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input)
+    {
+        return ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, armVelocity, planePoint, planeNormal,
+            input, false, 0f);
+    }
+
+    // The same release with the curve's output given instead of evaluated (the test runner does
+    // not model AnimationCurve); everything else is identical.
+    public bool ResolveReleaseWithCurveOutputAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
+        Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input, float curveOutput)
+    {
+        return ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, armVelocity, planePoint, planeNormal,
+            input, true, curveOutput);
+    }
+
+    private bool ResolveReleaseCore(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
+        Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input, bool curveGiven, float givenCurveOutput)
     {
         ClearResult();
         // The target, the solver's prediction and the settings as they are at this release.
@@ -724,6 +758,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultTarget = _lockTarget;
         _resultPredicted = debugPredictedTarget;
         _resultSolverError = debugSolverError;
+        _resultSolverSpeedKmh = _resultHasTarget ? _lockSolverSpeedKmh : -1f;
+        _resultConverged = _lockConverged;
         _resultPlanePoint = planePoint;
         _resultPitcherRight = Vector3.Cross(Vector3.up, -planeNormal);
         _resultGainX = controlGainX;
@@ -778,7 +814,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             spinLossAtBadPose, gyroAtBadPose);
         float wake = Mathf.Max(0f, wakeCoefficient) * (1f - Mathf.Clamp01(wakeLossAtBadPose) * failure);
 
-        releaseVelocity = direction * _lockSpeed;
+        // Raw speed (before any pitcher ability): Vmax x Clamp01(C(|arm velocity|)), from the
+        // same averaged sample the recognition used. Pose and release position never change it,
+        // and no aim correction follows from its difference to the solver's speed.
+        _resultCurveSet = curveGiven || ArmSpeedCurveUsable();
+        _resultCurveOutput = ManualPitchMath.SpeedRatio(curveGiven ? givenCurveOutput
+            : _resultCurveSet ? EvaluateArmSpeedCurve(debugArmSpeed) : 1f);
+        _resultMaxSpeedKmh = ManualPitchMath.SpeedSetting(maxPitchSpeedKmh);
+        releaseVelocity = direction.normalized * (_resultMaxSpeedKmh * _resultCurveOutput / 3.6f);
         releaseSpin = PitchSpin.ToWorld(spinLocal, direction);
         releaseWakeMode = WakeMode(wake);
         releaseWakeCoefficient = releaseWakeMode == BallAerodynamics.WakeNone ? 0f : wake;
@@ -792,6 +835,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultPitched = true;
         _resultSpeedKmh = releaseVelocity.magnitude * 3.6f;
         return true;
+    }
+
+    private bool ArmSpeedCurveUsable()
+    {
+        return armSpeedCurve != null && armSpeedCurve.length > 0;
+    }
+
+    // Outside its keys the curve holds the end values, whatever wrap mode the Inspector set.
+    private float EvaluateArmSpeedCurve(float armSpeed)
+    {
+        armSpeedCurve.preWrapMode = WrapMode.ClampForever;
+        armSpeedCurve.postWrapMode = WrapMode.ClampForever;
+        return armSpeedCurve.Evaluate(ManualPitchMath.CurveArmSpeed(armSpeed));
     }
 
     private bool Reject(string reason)
@@ -820,6 +876,11 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultPitched = false;
         _resultHasTarget = false;
         _resultSpeedKmh = -1f;
+        _resultCurveOutput = -1f;
+        _resultCurveSet = false;
+        _resultMaxSpeedKmh = -1f;
+        _resultSolverSpeedKmh = -1f;
+        _resultConverged = false;
         _resultSolverError = -1f;
         _resultPitcherRight = Vector3.zero;
         debugPositionError = Vector3.zero;
@@ -1067,6 +1128,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
                 "\n  pose error " + debugPoseAngle.ToString("F0") + " deg";
         }
         else text += "\n  no tracking";
+        text += SpeedText();
         if (_resultPitched)
         {
             text += "   quality " + (debugPoseQuality * 100f).ToString("F0") + "%";
@@ -1082,12 +1144,35 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (_resultSolverError >= 0f)
         {
             Vector2 solver = PlaneError(_resultPredicted);
-            text += "\n  solver   " + PlaneText(_resultPredicted) + "   miss " + AbsCm(solver.magnitude) + " (at lock)";
+            text += "\n  solver   " + PlaneText(_resultPredicted) + "   miss " + AbsCm(solver.magnitude) +
+                (_resultConverged ? " (at lock, converged)" : " (at lock, NOT converged: accepted)");
         }
         else text += "\n  solver   -";
         if (arrivalStatus == ArrivalMeasured)
             text += "\n  actual   " + PlaneText(arrivalCrossing) + "   miss " + AbsCm(arrivalError.magnitude);
         else text += "\n  actual   " + ArrivalStatusText(arrivalStatus);
+        return text;
+    }
+
+    private static string Kmh(float kmh)
+    {
+        return kmh >= 0f ? kmh.ToString("F1") + " km/h" : "-";
+    }
+
+    // The speed model of this release: arm speed, curve output and maximum give the release
+    // speed; the solver's speed is the one fixed at the lock. A throw never reads the curve.
+    public string SpeedText()
+    {
+        if (!_resultPitched) return "\nSPEED  not a pitch: arm-speed curve not applied";
+        string text = "\nSPEED" + (_resultCurveSet ? "" : "  (curve has no keys: full speed)") +
+            "\n  arm " + debugArmSpeed.ToString("F1") + " m/s   curve " + (_resultCurveOutput * 100f).ToString("F1") +
+            "%   max " + Kmh(_resultMaxSpeedKmh) +
+            "\n  solver " + Kmh(_resultSolverSpeedKmh) + "   release " + Kmh(_resultSpeedKmh);
+        if (_resultSolverSpeedKmh >= 0f && _resultSpeedKmh >= 0f)
+        {
+            float delta = _resultSpeedKmh - _resultSolverSpeedKmh;
+            text += "   delta " + (delta >= 0f ? "+" : "") + delta.ToString("F1") + " km/h";
+        }
         return text;
     }
 
@@ -1120,6 +1205,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             "\nReleaseInput: " + ManualPitchMath.InputName(debugInput) + "  Recognized: " + debugRecognized + " (" + debugReason + ")" +
             "\nReleaseError xyz: " + debugPositionError.ToString("F2") +
             "\nArmSpeed: " + debugArmSpeed.ToString("F2") + " m/s  ArmDirError: " + debugDirectionError.ToString("F1") + " deg" +
+            "\nCurve: " + (_resultCurveOutput * 100f).ToString("F1") + "%  Max: " + Kmh(_resultMaxSpeedKmh) +
+            "  Solver: " + Kmh(_resultSolverSpeedKmh) + "  Release: " + Kmh(_resultSpeedKmh) +
             "\nPoseError: " + debugPoseAngle.ToString("F1") + " deg  Quality: " + (debugPoseQuality * 100f).ToString("F0") + "%" +
             "\nSpin: " + debugSpinRpm.ToString("F0") + " rpm  Axis: " + debugSpinAxis.ToString("F2") + "  SSW: " + debugWake.ToString("F4") +
             "\nSolverError: " + debugSolverError.ToString("F3") + " m  Predicted: " + debugPredictedTarget.ToString("F2");

@@ -53,7 +53,8 @@ public partial class ManualPitchBehaviour
         _lockTarget = target;
         _lockRelease = ManualPitchMath.FromFrame(frame, TestChest, _calPosition);
         _lockDirection = (target - _lockRelease).normalized;
-        _lockSpeed = 140f / 3.6f;
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
+        _lockConverged = true;
         _lockWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
         _lockWakeClock = wakeClockDegrees;
         state = StateLockedReady;
@@ -509,7 +510,7 @@ public partial class ManualPitchBehaviour
         {
             Assert.IsTrue(SolveLock(targets[t]), "solved " + t);
             Vector3 hand = HandAt(TestChest, Overhand);
-            Assert.IsTrue(ResolveReleaseAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+            Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
             Assert.AreEqual(BallAerodynamics.WakeFixed, releaseWakeMode, "the 4-Seam has its wake");
             Vector3 crossing = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
             Assert.IsTrue(Vector3.Distance(crossing, LockedTarget()) <= aimSolver.tolerance + 0.005f, "target " + t);
@@ -530,7 +531,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
         Vector3 moved = TestChest + new Vector3(0.3f, -0.05f, -0.4f);
         Vector3 hand = HandAt(moved, Overhand);
-        Assert.IsTrue(ResolveReleaseAt(moved, hand, IdealHand(moved), hand, TowardPlate(), TestPlate, TestNormal, InputGrip));
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(moved, hand, IdealHand(moved), hand, TowardPlate(), TestPlate, TestNormal, InputGrip, solverSpeedRatio));
         Vector3 crossing = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         float residual = Vector3.Distance(crossing, LockedTarget());
         Assert.IsTrue(residual < 0.05f, "residual " + residual + " (13.4 mm measured)");
@@ -937,7 +938,7 @@ public partial class ManualPitchBehaviour
         string detail = ReleaseDetailText();
         Assert.IsTrue(detail.Contains("pose error 30 deg") && detail.Contains("rpm") && detail.Contains("SSW 0.00"), detail);
         Assert.IsTrue(detail.Contains("control gain x 0.50  y 0.50"), "the gains of the release, not later edits: " + detail);
-        Assert.IsTrue(detail.Contains("solver   x +0.02  y 0.76 m   miss 2.2 cm (at lock)"), detail);
+        Assert.IsTrue(detail.Contains("solver   x +0.02  y 0.76 m   miss 2.2 cm (at lock, converged)"), detail);
         Assert.IsTrue(detail.Contains("actual   measuring...") || detail.Contains("actual   not measured"), detail);
     }
 
@@ -979,7 +980,7 @@ public partial class ManualPitchBehaviour
         diagnosticIdealSpin = true;
         Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
         Vector3 hand = HandAt(TestChest, Overhand);
-        Assert.IsTrue(ResolveReleaseAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Vector3 reference = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Assert.IsTrue(Vector3.Distance(reference, LockedTarget()) <= aimSolver.tolerance + 0.005f, "solver vs actual");
         Assert.IsTrue(Vector3.Distance(reference, debugPredictedTarget) < 0.01f, "the flight follows the solver's own prediction");
@@ -994,7 +995,7 @@ public partial class ManualPitchBehaviour
                 controlGainY = gains[g];
                 state = StateLockedReady;
                 Vector3 at = hand + ManualPitchMath.Rotate(TestFrame(TestChest), offsets[s]);
-                Assert.IsTrue(ResolveReleaseAt(TestChest, at, IdealHand(TestChest), at, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+                Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, at, IdealHand(TestChest), at, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
                 Vector2 miss = ViewOffset(FlyToPlate(at, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection), reference);
                 Vector2 expected = new Vector2(offsets[s].x, offsets[s].y) * gains[g];
                 Assert.IsTrue((miss - expected).magnitude < 0.01f,
@@ -1017,15 +1018,15 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
         Vector3 hand = HandAt(TestChest, Overhand);
         Quaternion bad = ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
-        Assert.IsTrue(ResolveReleaseAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Vector3 ideal = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         state = StateLockedReady;
-        Assert.IsTrue(ResolveReleaseAt(TestChest, hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Assert.IsTrue(debugPoseQuality < 0.7f);
         Vector3 posed = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         diagnosticIdealSpin = true;
         state = StateLockedReady;
-        Assert.IsTrue(ResolveReleaseAt(TestChest, hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Assert.AreEqual(1f, debugPoseQuality);
         Vector3 diagnosed = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Assert.IsTrue(Vector3.Distance(diagnosed, ideal) < 0.001f, "the pose no longer moves the pitch");
@@ -1047,10 +1048,218 @@ public partial class ManualPitchBehaviour
             wakeClockDegrees = clocks[c];
             Assert.IsTrue(SolveLock(new Vector3(0.2f, 0.8f, 0f)), "solved " + c);
             Vector3 hand = HandAt(TestChest, Overhand);
-            Assert.IsTrue(ResolveReleaseAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+            Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
             Assert.IsTrue(releaseWakeDirection.y > 0.8f, "mostly upward " + c);
             Vector3 crossing = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
             Assert.IsTrue(Vector3.Distance(crossing, LockedTarget()) <= aimSolver.tolerance + 0.005f, "clock " + clocks[c]);
         }
+    }
+
+    // ---- Release speed (arm-speed curve, maximum and the solver's single speed) ----
+
+    private bool CurveReleaseForTest(Vector3 handOffset, Quaternion rotation, Vector3 armVelocity, float curveOutput)
+    {
+        Vector3 hand = HandAt(TestChest, _calPosition) + ManualPitchMath.Rotate(TestFrame(TestChest), handOffset);
+        return ResolveReleaseWithCurveOutputAt(TestChest, hand, rotation, hand, armVelocity, TestPlate, TestNormal, InputTrigger, curveOutput);
+    }
+
+    private bool Near(float a, float b, float tolerance) { return Mathf.Abs(a - b) <= tolerance; }
+
+    [TsukimiTest]
+    public void TheSpeedHelpersClampEveryInvalidInput()
+    {
+        Assert.AreEqual(0f, ManualPitchMath.CurveArmSpeed(-1f));
+        Assert.AreEqual(0f, ManualPitchMath.CurveArmSpeed(float.NaN));
+        Assert.AreEqual(ManualPitchMath.MaxCurveArmSpeed, ManualPitchMath.CurveArmSpeed(float.PositiveInfinity));
+        Assert.AreEqual(5.8f, ManualPitchMath.CurveArmSpeed(5.8f));
+        Assert.AreEqual(0f, ManualPitchMath.SpeedRatio(-0.2f));
+        Assert.AreEqual(1f, ManualPitchMath.SpeedRatio(1.3f));
+        Assert.AreEqual(0f, ManualPitchMath.SpeedRatio(float.NaN));
+        Assert.AreEqual(1f, ManualPitchMath.SpeedRatio(float.PositiveInfinity));
+        Assert.AreEqual(0.65f, ManualPitchMath.SpeedRatio(0.65f));
+        Assert.AreEqual(0f, ManualPitchMath.SpeedSetting(-5f));
+        Assert.AreEqual(0f, ManualPitchMath.SpeedSetting(float.NaN));
+        Assert.AreEqual(0f, ManualPitchMath.SpeedSetting(float.PositiveInfinity));
+        Assert.IsTrue(Near(ManualPitchMath.ScaledSpeedKmh(140f, 0.97f), 135.8f, 0.001f));
+        Assert.AreEqual(0f, ManualPitchMath.ScaledSpeedKmh(float.NaN, 0.97f));
+        Assert.AreEqual(140f, ManualPitchMath.ScaledSpeedKmh(140f, 2f));
+    }
+
+    [TsukimiTest]
+    public void TheSpeedDefaultsAreTheMaximumAndTheSolverRatio()
+    {
+        Assert.AreEqual(140f, maxPitchSpeedKmh);
+        Assert.AreEqual(0.97f, solverSpeedRatio);
+        Assert.AreEqual(1f, minArmSpeed, "recognition keeps its own minimum");
+    }
+
+    // The release speed is maxPitchSpeedKmh x Clamp01(curve output), from the recognition's arm
+    // sample; the same output gives the same speed, and pose and release position change nothing.
+    [TsukimiTest]
+    public void TheReleaseSpeedIsTheMaximumTimesTheCurveOutput()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Quaternion ideal = IdealHand(TestChest);
+        Vector3 target = new Vector3(0f, 0.75f, 0f);
+        float[] outputs = { 0.30f, 0.65f, 0.97f, 0.98f, 1f, 1.4f };
+        float[] expected = { 42f, 91f, 135.8f, 137.2f, 140f, 140f };
+        for (int i = 0; i < outputs.Length; i++)
+        {
+            LockForTest(target);
+            Assert.IsTrue(CurveReleaseForTest(Vector3.zero, ideal, TowardPlate(), outputs[i]), "pitch " + i);
+            Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, expected[i], 0.01f), "output " + outputs[i] + ": " + releaseVelocity.magnitude * 3.6f);
+        }
+        LockForTest(target);
+        Assert.IsTrue(CurveReleaseForTest(Vector3.zero, ideal, TowardPlate(), 0.97f));
+        Vector3 first = releaseVelocity;
+        LockForTest(target);
+        Assert.IsTrue(CurveReleaseForTest(Vector3.zero, ideal, TowardPlate(), 0.97f));
+        Assert.AreEqual(first, releaseVelocity, "the same output gives the same release");
+        // Position and pose errors change the direction and the spin, never the speed.
+        LockForTest(target);
+        Assert.IsTrue(CurveReleaseForTest(new Vector3(0.3f, -0.2f, 0.2f),
+            ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(Vector3.right, 40f)), TowardPlate(), 0.97f));
+        Assert.IsTrue(debugPoseQuality < 1f && Vector3.Distance(releaseVelocity.normalized, first.normalized) > 0.001f);
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 135.8f, 0.01f), "speed " + releaseVelocity.magnitude * 3.6f);
+        // An invalid maximum gives no speed rather than NaN.
+        maxPitchSpeedKmh = float.NaN;
+        LockForTest(target);
+        Assert.IsTrue(CurveReleaseForTest(Vector3.zero, ideal, TowardPlate(), 0.97f));
+        Assert.AreEqual(Vector3.zero, releaseVelocity);
+    }
+
+    // Without keys the curve is not used: every pitch leaves at the maximum, and the panel says so.
+    [TsukimiTest]
+    public void ACurveWithoutKeysPitchesAtTheMaximum()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        armSpeedCurve = null;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), Vector3.back * 1.5f));
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 140f, 0.01f));
+        Assert.IsTrue(ReleaseDetailText().Contains("curve has no keys: full speed"), ReleaseDetailText());
+    }
+
+    // Below the recognition's minimum it is the existing throw; the curve is not read, and no
+    // new speed condition refuses a slow pitch.
+    [TsukimiTest]
+    public void ASlowArmIsAThrowAndASlowPitchIsStillAPitch()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsFalse(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.back * 0.5f, 0.97f));
+        Assert.AreEqual("arm speed", debugReason);
+        Assert.AreEqual(Vector3.zero, releaseVelocity);
+        Assert.IsTrue(ReleaseDetailText().Contains("SPEED  not a pitch: arm-speed curve not applied"), ReleaseDetailText());
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.back * 1.2f, 0.32f), "a slow pitch is still a pitch");
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 44.8f, 0.01f));
+    }
+
+    // The solver aims with maxPitchSpeedKmh x solverSpeedRatio taken at the lock; later setting
+    // changes and the release's own speed never touch it, and the release does not solve again.
+    [TsukimiTest(maxSteps: 60000000)]
+    public void TheSolverUsesOneSpeedFixedAtTheLock()
+    {
+        Mimic.Join();
+        _ball = strikeZone != null ? strikeZone.ball : null;
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        Vector3 eye = new Vector3(0f, 1.6f, 18f);
+        Assert.IsTrue(UpdateCursor(eye, (new Vector3(0f, 0.72f, 0f) - eye).normalized, TestPlate, TestNormal, 0.016f));
+        Assert.IsTrue(BeginLockAt(TestChest, TestPlate, TestNormal, Vector3.zero, TestGravity, 0.02f));
+        Assert.IsTrue(Near(_lockSolverSpeedKmh, 135.8f, 0.001f), "solver speed " + _lockSolverSpeedKmh);
+        maxPitchSpeedKmh = 90f;
+        solverSpeedRatio = 0.5f;
+        for (int i = 0; i < 200 && state == StateSolving; i++) AdvanceSolve();
+        Assert.AreEqual(StateLockedReady, state);
+        Assert.IsTrue(Near(_lockSolverSpeedKmh, 135.8f, 0.001f), "setting changes after the lock are not used");
+        Vector3 lockDirection = _lockDirection;
+        int iterations = aimSolver.iterations;
+        Vector3 hand = HandAt(TestChest, Overhand);
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 0.5f));
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 45f, 0.01f), "the release reads the maximum at the release");
+        Assert.IsFalse(aimSolver.solving, "the release does not solve again");
+        Assert.AreEqual(iterations, aimSolver.iterations);
+        Assert.AreEqual(lockDirection, _lockDirection);
+        Assert.IsTrue(ReleaseDetailText().Contains("solver 135.8 km/h"), ReleaseDetailText());
+    }
+
+    // Actual speed = solver speed with the ideal spin and SSW, the ideal release and ball centre
+    // and no control penalty: the flight follows the solver's prediction. A faster or slower
+    // release keeps the solved direction (no aim correction for speed) and arrives higher or
+    // lower; a deliberately slow pitch misses the course by much more.
+    [TsukimiTest(maxSteps: 90000000)]
+    public void SpeedDifferencesFromTheSolverAreNotCorrected()
+    {
+        Mimic.Join();
+        _ball = strikeZone != null ? strikeZone.ball : null;
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        diagnosticIdealSpin = true;
+        controlGainX = 0f;
+        controlGainY = 0f;
+        Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
+        Vector3 hand = HandAt(TestChest, Overhand);
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+        Assert.AreEqual(Vector3.zero, _releaseBallOffset, "the ball centre is the ideal one");
+        Vector3 matched = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
+        Vector3 direction = releaseVelocity.normalized;
+        Assert.IsTrue(Vector3.Distance(matched, debugPredictedTarget) < 0.001f, "the flight follows the solver's prediction: " + Vector3.Distance(matched, debugPredictedTarget));
+        Assert.IsTrue(Vector3.Distance(matched, LockedTarget()) <= aimSolver.tolerance, "and arrives at the target");
+        Assert.IsTrue(Vector3.Distance(matched, FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection)) == 0f,
+            "the same initial state flies the same way (as a receiver's catch-up does)");
+
+        state = StateLockedReady;
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 1f));
+        Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, direction) < 0.000001f, "faster: same direction");
+        Vector3 fast = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
+        Assert.IsTrue(fast.y > matched.y + 0.02f, "faster arrives higher: " + (fast.y - matched.y));
+
+        state = StateLockedReady;
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(TestChest, hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 95f / 140f));
+        Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, direction) < 0.000001f, "slower: same direction");
+        Vector3 slow = FlyToPlate(hand, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
+        Assert.IsTrue(slow.y < matched.y - 0.3f, "a 95 km/h pitch drops well below the course: " + (slow.y - matched.y));
+        Assert.IsTrue(matched.y - slow.y > (fast.y - matched.y) * 5f, "the slow miss is much larger than the fast one");
+    }
+
+    // The panel shows the solver's and the actual speed apart, the signed difference and the
+    // curve output, all as snapshotted at this release.
+    [TsukimiTest]
+    public void TheSpeedResultIsASnapshotOfThisRelease()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(CalibrateForTest(Overhand));
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), TowardPlate(), 1f));
+        string text = SpeedText();
+        Assert.IsTrue(text.Contains("arm 20.0 m/s   curve 100.0%   max 140.0 km/h"), text);
+        Assert.IsTrue(text.Contains("solver 135.8 km/h   release 140.0 km/h   delta +4.2 km/h"), text);
+        maxPitchSpeedKmh = 100f;
+        solverSpeedRatio = 0.5f;
+        Assert.AreEqual(text, SpeedText(), "later setting changes do not rewrite the result");
+
+        maxPitchSpeedKmh = 140f;
+        solverSpeedRatio = 0.97f;
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), TowardPlate(), 0.68f));
+        text = SpeedText();
+        Assert.IsTrue(text.Contains("curve 68.0%") && text.Contains("release 95.2 km/h   delta -40.6 km/h"), text);
+        RecordLaunch(releaseVelocity);
+        Assert.IsTrue(releaseDetailText.Contains("delta -40.6 km/h"), "the launched speed is the release's: " + releaseDetailText);
+
+        // A throw after a pitch shows none of the pitch's speed model.
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsFalse(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.left * 20f, 1f));
+        text = ReleaseDetailText();
+        Assert.IsTrue(text.Contains("SPEED  not a pitch") && !text.Contains("delta") && !text.Contains("solver 135.8"), text);
     }
 }

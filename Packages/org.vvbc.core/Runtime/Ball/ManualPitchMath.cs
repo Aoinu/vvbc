@@ -201,6 +201,39 @@ public static class ManualPitchMath
         return new Vector3(Mathf.Sin(t) * armSide, Mathf.Cos(t), 0f);
     }
 
+    // ---- Release speed (raw, before any pitcher ability) ----
+
+    // The arm speed handed to the arm-speed curve, in m/s: negative or NaN reads as 0, and
+    // anything above MaxCurveArmSpeed (infinity included) as MaxCurveArmSpeed, so the curve
+    // is only ever evaluated at a finite time.
+    public const float MaxCurveArmSpeed = 1000f;
+
+    public static float CurveArmSpeed(float armSpeed)
+    {
+        if (!(armSpeed > 0f)) return 0f;
+        return armSpeed < MaxCurveArmSpeed ? armSpeed : MaxCurveArmSpeed;
+    }
+
+    // Normalized speed from the curve's output: clamped to 0..1, NaN reads as 0.
+    public static float SpeedRatio(float curveOutput)
+    {
+        if (!(curveOutput > 0f)) return 0f;
+        return curveOutput < 1f ? curveOutput : 1f;
+    }
+
+    // A speed setting in km/h: negative, NaN or infinite reads as 0.
+    public static float SpeedSetting(float kmh)
+    {
+        return Finite(kmh) && kmh > 0f ? kmh : 0f;
+    }
+
+    // V = Vmax x Clamp01(ratio), in km/h. The solver uses it with solverSpeedRatio, the release
+    // with the curve's output; the two are never mixed.
+    public static float ScaledSpeedKmh(float maxKmh, float ratio)
+    {
+        return SpeedSetting(maxKmh) * SpeedRatio(ratio);
+    }
+
     // E2 = (dx/Rx)^2 + (dy/Ry)^2 + (dz/Rz)^2; inside the recognition volume when <= 1.
     public static float RecognitionValue(Vector3 delta, Vector3 radii)
     {

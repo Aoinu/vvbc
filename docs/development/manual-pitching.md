@@ -186,7 +186,8 @@ The glove-hand trigger (`InputUse` on the mound, filtered to the hand that is no
 `throwHand`; ignored outside pitcher mode) toggles the lock when it goes down (see above). Locking in `Targeting` with a
 valid ray and a usable calibration snapshots the smoothed cursor `T`, the ideal release
 `P0 = C + Qframe r + Qideal grip` (grip = the held ball's offset in the hand, zero when no
-ball is held), the speed (`pitchSpeedKmh`, 140) and the ideal spin and wake, and starts
+ball is held), the solver speed (`maxPitchSpeedKmh` x `solverSpeedRatio`, 140 x 0.97 =
+135.8 km/h; see [Release speed](#release-speed)) and the ideal spin and wake, and starts
 `BallAimSolverBehaviour.BeginSolveRelativeSpin` once with the Ball's drag and Magnus,
 `Physics.gravity` and the fixed step. The mound advances it in `Update` (64 steps per frame).
 A converged solve, or the best one within `solverAcceptMeters` (0.10 m), gives `LockedReady`
@@ -220,8 +221,50 @@ Flight of a recognized pitch:
 P1  = ideal release now (current chest, same grip)
 D1  = FromToRotation(T - P0, T - P1) * D0                     body correction, no new solve
 D   = normalize(D1 + ((Gx-1) dx / L) R' + ((Gy-1) dy / L) U')  R', U' perpendicular to D1
-v   = D x speed;  spin and wake turned by D (PitchSpin.ToWorld)
+v   = D x Vraw;  spin and wake turned by D (PitchSpin.ToWorld)
 ```
+
+### Release speed
+
+The raw release speed (before any future pitcher ability) comes from the arm speed, only for a
+recognized pitch; a throw never reads it:
+
+```text
+Vraw    = maxPitchSpeedKmh x Clamp01(armSpeedCurve(|v_arm|))      km/h, 140 by default
+Vsolver = maxPitchSpeedKmh x Clamp01(solverSpeedRatio)            km/h, at the lock, 0.97 by default
+```
+
+`|v_arm|` is the same averaged ThrowAim sample (`ArmVelocityOver(velocityWindowSeconds)`) that
+recognition tested, so recognition and speed never read different samples; its direction does
+not matter. `minArmSpeed` stays the only speed condition of recognition: a slow pitch is still a
+pitch, only slower. Pose and release position never change the speed.
+
+`armSpeedCurve` (x arm speed in m/s, y normalized speed) is edited in the Inspector. Before it is
+evaluated its wrap modes are set to `ClampForever`, so outside its keys it holds the end values;
+the arm speed is read as 0 when negative or NaN and capped at 1000 m/s; the output is clamped to
+0..1 (NaN is 0). A curve with no keys (null or empty) is not used: the pitch leaves at
+`maxPitchSpeedKmh`, and the panel says so. An invalid maximum (negative, NaN, infinite) is 0.
+T# cannot read `Keyframe` members and the T# test runner does not model `AnimationCurve`, so
+`ResolveReleaseWithCurveOutputAt` takes the curve's output directly in tests, and the curve's
+own evaluation is checked in the Editor.
+
+Provisional curve (not final balance; `ManualPitchMound.prefab` and every scene instance):
+monotone cubic (PCHIP) tangents, so it rises monotonically without overshoot.
+
+| Arm speed m/s | 0 | 1 | 2 | 3 | 4 | 5 | 8 | 12 |
+|---|---|---|---|---|---|---|---|---|
+| Normalized speed | 0.00 | 0.30 | 0.65 | 0.88 | 0.96 | 0.97 | 0.98 | 1.00 |
+
+The solver aims with the single speed `Vsolver` fixed at the lock (setting changes during or
+after the solve are not read), runs to its own end once (`maxIterations`, `tolerance`,
+`stepsPerFrame` unchanged) and is never run again at the release. The release does **not**
+correct the aim for `Vraw - Vsolver`: a faster pitch arrives higher, a slower one lower, and a
+deliberately slow pitch misses the course by much more (tested:
+`SpeedDifferencesFromTheSolverAreNotCorrected`). With `Vraw = Vsolver`, ideal spin and SSW
+(`diagnosticIdealSpin`), the ideal release and ball centre and gains 0, the flight follows the
+solver's prediction within 1 mm. For a real-client check of the solver against the flight, edit
+the curve so the usual arm speeds give `solverSpeedRatio`; the panel shows both speeds and the
+difference.
 
 `L` is the distance from the ball to the target plane; `Gx`, `Gy` = `controlGainX/Y` (0.5,
 Inspector range 0..2; 1.5 before). The ball is launched from its actual position, so the release
@@ -286,7 +329,8 @@ texture), coloured with a MaterialPropertyBlock set once in `Start` (`idealMarke
 
 Each release takes a **result snapshot** that later lock, cursor, chest, setting or ball changes
 never rewrite: locked target, solver prediction and error (from the lock), plate plane, gains,
-SSW clock, diagnostic flag, release errors and the launched speed. `ClearResult` forgets the
+SSW clock, diagnostic flag, release errors, the speed model (arm speed, curve output, maximum,
+solver speed and convergence from the lock) and the launched speed. `ClearResult` forgets the
 previous release's outputs first, so an earlier pitch's `releaseVelocity` is never shown or
 launched. The Ball reports the velocity it launches, pitch or throw (`RecordLaunch`); the speed
 shown is `|v| x 3.6` km/h.
@@ -298,8 +342,11 @@ its `Update` only until that crossing; a hold or catch, a hit, a ground touch (`
 another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving the mound ends it as
 **not measured** with that reason, never as 0 cm. The `Detail` text (analysis): the controller's
 release position error (total, right/up/forward, % of range) and the ball centre's; the release
-motion (input, arm speed, arm direction error, pose error, quality); spin rpm, pitch-local axis,
-SSW coefficient and clock, gains; and the aim: target, solver crossing and miss (at the lock), and
+motion (input, arm speed, arm direction error, pose error, quality); `SPEED` (arm speed, curve
+output %, maximum, the solver's speed from the lock, the release speed and their signed
+difference; a throw shows that the curve was not applied); spin rpm, pitch-local axis,
+SSW coefficient and clock, gains; and the aim: target, solver crossing and miss (at the lock,
+converged or not converged but accepted within `solverAcceptMeters`), and
 actual crossing and miss, in plate-plane coordinates. The texts are built only at a release, a
 launch and the end of a follow.
 
@@ -381,14 +428,17 @@ variables (`strikeZone`, `showDebug`), and a prefab instance stores them as one 
 references added to the prefab later do not reach it by themselves: the five feedback
 references were set on the instance when they were added. Check them after changing the
 prefab's mound variables. Value fields (gains, colours, `showRecognitionRange`,
-`diagnosticIdealSpin`) are in neither table and take the program's defaults. The instance does
+`diagnosticIdealSpin`, `maxPitchSpeedKmh`, `solverSpeedRatio`) are in neither table and take the
+program's defaults. `armSpeedCurve` has no program default (an `AnimationCurve` initializer is
+not a compile-time value), so it is set in the prefab's table **and** in every instance's table
+(PracticeSpace's mound and Bullpen's three); a mound without it pitches at the maximum. The instance does
 not override the Panel, so `detailLabel` and the layout come from the prefab.
 
 ## Debug
 
 `diagnosticIdealSpin` is described under [Release](#release). `showDebug` (off by default) writes, after every release, `PitcherMode`, `PitchState`,
 release input (Trigger/Grip), recognition and reason, release position error xyz, arm speed
-and direction error, pose error and quality, spin rpm and axis, SSW, solver error and
+and direction error, curve output, maximum, solver and release speed, pose error and quality, spin rpm and axis, SSW, solver error and
 predicted target to `debugLabel` for `debugSeconds` (6) and to the log. With it off nothing
 is shown or logged.
 
@@ -400,6 +450,7 @@ against `OnDrop`, and the SDK throw velocity after a Drop (re-asserted on the ne
 step); chest-bone availability and position on varied avatars; controller rotation frames
 across headsets (the calibration absorbs a constant offset); whether glove-hand `InputUse`
 arrives while the throwing hand holds a pickup; the feel of all default values; the cursor's
-readability; and the CPU cost of the lock-time solve on Quest. Two-client checks: the remote
+readability; the CPU cost of the lock-time solve on Quest; and the arm speeds real releases
+produce (the provisional curve's breakpoints are guesses until measured). Two-client checks: the remote
 view of a HandPitch (wake, strike zone, bat contact), a hit on a manual pitch, and a contest
 between a manual pitch and another player's pickup.
