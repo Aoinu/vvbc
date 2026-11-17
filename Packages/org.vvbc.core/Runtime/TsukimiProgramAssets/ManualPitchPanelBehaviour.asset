@@ -20,35 +20,38 @@ MonoBehaviour:
     null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    pitcher:
     %VRCUdonUdonBehaviour, null\n    .export pitcher\n    statusLabel: %UnityEngineUIText,
     null\n    .export statusLabel\n    resultLabel: %UnityEngineUIText, null\n   
-    .export resultLabel\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
-    %SystemString, \"ManualPitchPanelBehaviour\"\n    __refl_typeids: %SystemInt64Array,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnManualPitchChanged_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __StartCalibration___t0: %VRCUdonUdonBehaviour,
-    null\n    __StartCalibration_retjump: %SystemUInt32, 0xFFFFFFFC\n    __CancelCalibration___t0:
-    %VRCUdonUdonBehaviour, null\n    __CancelCalibration_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    __RecallBall___t0: %VRCUdonUdonBehaviour, null\n    __RecallBall___t1:
-    %SystemBoolean, null\n    __RecallBall_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __Clicked___t0: %VRCUdonUdonBehaviour, null\n    __Clicked_ret: %SystemBoolean,
-    null\n    __Clicked_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Refresh___t0: %UnityEngineUIText,
-    null\n    __Refresh___t1: %UnityEngineUIText, null\n    __Refresh___t2: %VRCUdonUdonBehaviour,
-    null\n    __Refresh___t3: %SystemString, null\n    __Refresh_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    __StatusText_calibration: %SystemString, null\n    __StatusText___t0:
-    %SystemString, null\n    __StatusText___t1: %VRCUdonUdonBehaviour, null\n   
-    __StatusText___t2: %SystemBoolean, null\n    __StatusText___t3: %SystemString,
-    null\n    __StatusText___t4: %VRCUdonUdonBehaviour, null\n    __StatusText___t5:
-    %SystemInt32, 0\n    __StatusText_text: %SystemString, null\n    __StatusText___t6:
-    %VRCUdonUdonBehaviour, null\n    __StatusText___t7: %SystemInt32, 0\n    __StatusText___t8:
-    %VRCUdonUdonBehaviour, null\n    __StatusText___t9: %SystemBoolean, null\n   
-    __StatusText___t10: %SystemString, null\n    __StatusText___t11: %VRCUdonUdonBehaviour,
-    null\n    __StatusText___t12: %SystemString, null\n    __StatusText___t13: %SystemString,
-    null\n    __StatusText___t14: %VRCUdonUdonBehaviour, null\n    __StatusText___t15:
-    %SystemString, null\n    __StatusText___inl_t0: %SystemString, null\n    __StatusText___inl0__value:
-    %SystemInt32, 0\n    __StatusText_ret: %SystemString, null\n    .export __StatusText_ret\n   
-    __StatusText_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray,
-    null\n    __recSp: %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n   
-    __returnValue: %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n   
-    __retaddr_0: %SystemUInt32, 0x0000001C\n    __retaddr_1: %SystemUInt32, 0x00000040\n   
-    __const_0: %VRCUdonUdonBehaviour, null\n    __const_1: %SystemInt32, 1\n    __retaddr_2:
+    .export resultLabel\n    detailLabel: %UnityEngineUIText, null\n    .export detailLabel\n   
+    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchPanelBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Start_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __OnManualPitchChanged_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __StartCalibration___t0: %VRCUdonUdonBehaviour, null\n    __StartCalibration_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __CancelCalibration___t0: %VRCUdonUdonBehaviour,
+    null\n    __CancelCalibration_retjump: %SystemUInt32, 0xFFFFFFFC\n    __RecallBall___t0:
+    %VRCUdonUdonBehaviour, null\n    __RecallBall___t1: %SystemBoolean, null\n   
+    __RecallBall_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Clicked___t0: %VRCUdonUdonBehaviour,
+    null\n    __Clicked_ret: %SystemBoolean, null\n    __Clicked_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __Refresh___t0: %UnityEngineUIText, null\n    __Refresh___t1:
+    %UnityEngineUIText, null\n    __Refresh___t2: %VRCUdonUdonBehaviour, null\n   
+    __Refresh___t3: %SystemString, null\n    __Refresh___t4: %UnityEngineUIText,
+    null\n    __Refresh___t5: %VRCUdonUdonBehaviour, null\n    __Refresh___t6: %SystemString,
+    null\n    __Refresh_retjump: %SystemUInt32, 0xFFFFFFFC\n    __StatusText_calibration:
+    %SystemString, null\n    __StatusText___t0: %SystemString, null\n    __StatusText___t1:
+    %VRCUdonUdonBehaviour, null\n    __StatusText___t2: %SystemBoolean, null\n   
+    __StatusText___t3: %SystemString, null\n    __StatusText___t4: %VRCUdonUdonBehaviour,
+    null\n    __StatusText___t5: %SystemInt32, 0\n    __StatusText_text: %SystemString,
+    null\n    __StatusText___t6: %VRCUdonUdonBehaviour, null\n    __StatusText___t7:
+    %SystemInt32, 0\n    __StatusText___t8: %VRCUdonUdonBehaviour, null\n    __StatusText___t9:
+    %SystemBoolean, null\n    __StatusText___t10: %SystemString, null\n    __StatusText___t11:
+    %VRCUdonUdonBehaviour, null\n    __StatusText___t12: %SystemString, null\n   
+    __StatusText___t13: %SystemString, null\n    __StatusText___t14: %VRCUdonUdonBehaviour,
+    null\n    __StatusText___t15: %SystemString, null\n    __StatusText___inl_t0:
+    %SystemString, null\n    __StatusText___inl0__value: %SystemInt32, 0\n    __StatusText_ret:
+    %SystemString, null\n    .export __StatusText_ret\n    __StatusText_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
+    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __returnValue:
+    %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __retaddr_0:
+    %SystemUInt32, 0x0000001C\n    __retaddr_1: %SystemUInt32, 0x00000040\n    __const_0:
+    %VRCUdonUdonBehaviour, null\n    __const_1: %SystemInt32, 1\n    __retaddr_2:
     %SystemUInt32, 0x000000A4\n    __StartCalibration_intnl_0: %SystemBoolean, null\n   
     __StartCalibration_intnl_1: %VRCUdonUdonBehaviour, null\n    __const_2: %SystemString,
     \"BeginCalibration\"\n    __retaddr_3: %SystemUInt32, 0x00000318\n    __CancelCalibration_intnl_0:
@@ -63,35 +66,38 @@ MonoBehaviour:
     __const_9: %SystemBoolean, null\n    __const_10: %UnityEngineUIText, null\n   
     __const_11: %SystemString, null\n    __Refresh_intnl_0: %SystemBoolean, null\n   
     __Refresh_intnl_1: %SystemBoolean, null\n    __Refresh_intnl_2: %UnityEngineUIText,
-    null\n    __retaddr_5: %SystemUInt32, 0x00000E98\n    __Refresh_intnl_3: %SystemString,
+    null\n    __retaddr_5: %SystemUInt32, 0x00000F94\n    __Refresh_intnl_3: %SystemString,
     null\n    __Refresh_intnl_4: %SystemBoolean, null\n    __const_12: %SystemString,
     \"releaseResultText\"\n    __Refresh_intnl_5: %SystemObject, null\n    __Refresh_intnl_6:
-    %SystemString, null\n    __const_13: %SystemInt32, 0\n    __StatusText_intnl_0:
-    %VRCUdonUdonBehaviour, null\n    __const_14: %SystemString, \"HasCalibration\"\n   
-    __const_15: %SystemString, \"__HasCalibration_ret\"\n    __StatusText_intnl_1:
-    %SystemObject, null\n    __StatusText_intnl_2: %SystemBoolean, null\n    __StatusText_intnl_3:
-    %VRCUdonUdonBehaviour, null\n    __const_16: %SystemString, \"CalibratedHand\"\n   
-    __const_17: %SystemString, \"__CalibratedHand_ret\"\n    __StatusText_intnl_4:
-    %SystemObject, null\n    __StatusText_intnl_5: %SystemInt32, 0\n    __StatusText_intnl_6:
-    %SystemBoolean, null\n    __const_18: %SystemString, \"saved (left hand)\"\n   
-    __const_19: %SystemString, \"saved (right hand)\"\n    __const_20: %SystemString,
-    \"none\"\n    __const_21: %SystemString, \"state\"\n    __StatusText_intnl_7:
-    %SystemObject, null\n    __StatusText_intnl_8: %SystemInt32, 0\n    __StatusText_intnl_9:
-    %SystemBoolean, null\n    __const_22: %SystemString, \"Targeting\"\n    __const_23:
-    %SystemInt32, 2\n    __StatusText_intnl_10: %SystemBoolean, null\n    __const_24:
-    %SystemString, \"Solving\"\n    __const_25: %SystemInt32, 3\n    __StatusText_intnl_11:
-    %SystemBoolean, null\n    __const_26: %SystemString, \"LockedReady\"\n    __const_27:
-    %SystemString, \"Inactive\"\n    __const_28: %SystemString, \"4-Seam  |  \"\n   
-    __StatusText_intnl_12: %SystemString, null\n    __const_29: %SystemString, \" 
-    |  Calibration: \"\n    __StatusText_intnl_13: %SystemString, null\n    __StatusText_intnl_14:
-    %SystemString, null\n    __StatusText_intnl_15: %VRCUdonUdonBehaviour, null\n   
-    __const_30: %SystemString, \"Calibrating\"\n    __const_31: %SystemString, \"__Calibrating_ret\"\n   
-    __StatusText_intnl_16: %SystemObject, null\n    __StatusText_intnl_17: %SystemBoolean,
-    null\n    __const_32: %SystemString, \"\\nCALIBRATING\"\n    __const_33: %SystemString,
-    \"statusText\"\n    __StatusText_intnl_19: %SystemObject, null\n    __StatusText_intnl_20:
-    %SystemString, null\n    __StatusText_intnl_21: %SystemInt32, 0\n    __StatusText_intnl_22:
+    %SystemString, null\n    __Refresh_intnl_7: %SystemBoolean, null\n    __const_13:
+    %SystemString, \"releaseDetailText\"\n    __Refresh_intnl_8: %SystemObject, null\n   
+    __Refresh_intnl_9: %SystemString, null\n    __const_14: %SystemInt32, 0\n   
+    __StatusText_intnl_0: %VRCUdonUdonBehaviour, null\n    __const_15: %SystemString,
+    \"HasCalibration\"\n    __const_16: %SystemString, \"__HasCalibration_ret\"\n   
+    __StatusText_intnl_1: %SystemObject, null\n    __StatusText_intnl_2: %SystemBoolean,
+    null\n    __StatusText_intnl_3: %VRCUdonUdonBehaviour, null\n    __const_17:
+    %SystemString, \"CalibratedHand\"\n    __const_18: %SystemString, \"__CalibratedHand_ret\"\n   
+    __StatusText_intnl_4: %SystemObject, null\n    __StatusText_intnl_5: %SystemInt32,
+    0\n    __StatusText_intnl_6: %SystemBoolean, null\n    __const_19: %SystemString,
+    \"saved (left hand)\"\n    __const_20: %SystemString, \"saved (right hand)\"\n   
+    __const_21: %SystemString, \"none\"\n    __const_22: %SystemString, \"state\"\n   
+    __StatusText_intnl_7: %SystemObject, null\n    __StatusText_intnl_8: %SystemInt32,
+    0\n    __StatusText_intnl_9: %SystemBoolean, null\n    __const_23: %SystemString,
+    \"Targeting\"\n    __const_24: %SystemInt32, 2\n    __StatusText_intnl_10: %SystemBoolean,
+    null\n    __const_25: %SystemString, \"Solving\"\n    __const_26: %SystemInt32,
+    3\n    __StatusText_intnl_11: %SystemBoolean, null\n    __const_27: %SystemString,
+    \"LockedReady\"\n    __const_28: %SystemString, \"Inactive\"\n    __const_29:
+    %SystemString, \"4-Seam  |  \"\n    __StatusText_intnl_12: %SystemString, null\n   
+    __const_30: %SystemString, \"  |  Calibration: \"\n    __StatusText_intnl_13:
+    %SystemString, null\n    __StatusText_intnl_14: %SystemString, null\n    __StatusText_intnl_15:
+    %VRCUdonUdonBehaviour, null\n    __const_31: %SystemString, \"Calibrating\"\n   
+    __const_32: %SystemString, \"__Calibrating_ret\"\n    __StatusText_intnl_16:
+    %SystemObject, null\n    __StatusText_intnl_17: %SystemBoolean, null\n    __const_33:
+    %SystemString, \"\\nCALIBRATING\"\n    __const_34: %SystemString, \"statusText\"\n   
+    __StatusText_intnl_19: %SystemObject, null\n    __StatusText_intnl_20: %SystemString,
+    null\n    __StatusText_intnl_21: %SystemInt32, 0\n    __StatusText_intnl_22:
     %SystemBoolean, null\n    __StatusText_intnl_23: %SystemObject, null\n    __StatusText_intnl_24:
-    %SystemString, null\n    __const_34: %SystemString, \"\\n\"\n    __StatusText_intnl_25:
+    %SystemString, null\n    __const_35: %SystemString, \"\\n\"\n    __StatusText_intnl_25:
     %SystemString, null\n.data_end\n.code_start\n    .export _start\n    _start:\n       
     PUSH, __retaddr_0\n        PUSH, __Refresh_retjump\n        COPY\n        JUMP,
     __Refresh_body\n        JUMP_INDIRECT, __Start_retjump\n    .export OnManualPitchChanged\n   
@@ -256,8 +262,11 @@ MonoBehaviour:
     Refresh:\n        PUSH, __retaddr_end\n        PUSH, __Refresh_retjump\n       
     COPY\n    __Refresh_body:\n        PUSH, __const_10\n        PUSH, __Refresh___t1\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Refresh___t2\n        COPY\n       
-    PUSH, __const_11\n        PUSH, __Refresh___t3\n        COPY\n        PUSH, pitcher\n       
-    PUSH, __const_7\n        PUSH, __Refresh_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __const_11\n        PUSH, __Refresh___t3\n        COPY\n        PUSH, __const_10\n       
+    PUSH, __Refresh___t4\n        COPY\n        PUSH, __const_0\n        PUSH, __Refresh___t5\n       
+    COPY\n        PUSH, __const_11\n        PUSH, __Refresh___t6\n        COPY\n       
+    PUSH, pitcher\n        PUSH, __const_7\n        PUSH, __Refresh_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __Refresh_intnl_0\n        JUMP_IF_FALSE, __Refresh_L1\n        JUMP_INDIRECT,
     __Refresh_retjump\n    __Refresh_L1:\n        PUSH, statusLabel\n        PUSH,
     __const_7\n        PUSH, __Refresh_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
@@ -275,6 +284,18 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t5\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t6\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -308,6 +329,15 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __Refresh_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t6\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t5\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t3\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -328,16 +358,24 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __Refresh_intnl_5\n        PUSH, __Refresh___t3\n        COPY\n       
     PUSH, __Refresh___t1\n        PUSH, __Refresh_intnl_5\n        EXTERN, \"UnityEngineUIText.__set_text__SystemString__SystemVoid\"\n   
-    __Refresh_L5:\n        JUMP_INDIRECT, __Refresh_retjump\n    .export StatusText\n   
+    __Refresh_L5:\n        PUSH, detailLabel\n        PUSH, __const_7\n        PUSH,
+    __Refresh_intnl_7\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __Refresh_intnl_7\n        JUMP_IF_FALSE, __Refresh_L7\n        PUSH, detailLabel\n       
+    PUSH, __Refresh___t4\n        COPY\n        PUSH, pitcher\n        PUSH, __Refresh___t5\n       
+    COPY\n        PUSH, __Refresh___t5\n        PUSH, __const_13\n        PUSH, __Refresh_intnl_8\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __Refresh_intnl_8\n        PUSH, __Refresh___t6\n        COPY\n       
+    PUSH, __Refresh___t4\n        PUSH, __Refresh_intnl_8\n        EXTERN, \"UnityEngineUIText.__set_text__SystemString__SystemVoid\"\n   
+    __Refresh_L7:\n        JUMP_INDIRECT, __Refresh_retjump\n    .export StatusText\n   
     StatusText:\n        PUSH, __retaddr_end\n        PUSH, __StatusText_retjump\n       
     COPY\n    __StatusText_body:\n        PUSH, __const_11\n        PUSH, __StatusText_calibration\n       
     COPY\n        PUSH, __const_11\n        PUSH, __StatusText___t0\n        COPY\n       
     PUSH, __const_4\n        PUSH, __StatusText___t2\n        COPY\n        PUSH,
     __const_11\n        PUSH, __StatusText___t3\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __StatusText___t4\n        COPY\n        PUSH, __const_13\n        PUSH,
+    PUSH, __StatusText___t4\n        COPY\n        PUSH, __const_14\n        PUSH,
     __StatusText___t5\n        COPY\n        PUSH, __const_11\n        PUSH, __StatusText_text\n       
     COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t6\n        COPY\n       
-    PUSH, __const_13\n        PUSH, __StatusText___t7\n        COPY\n        PUSH,
+    PUSH, __const_14\n        PUSH, __StatusText___t7\n        COPY\n        PUSH,
     __const_0\n        PUSH, __StatusText___t8\n        COPY\n        PUSH, __const_4\n       
     PUSH, __StatusText___t9\n        COPY\n        PUSH, __const_11\n        PUSH,
     __StatusText___t10\n        COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t11\n       
@@ -345,7 +383,7 @@ MonoBehaviour:
     PUSH, __const_11\n        PUSH, __StatusText___t13\n        COPY\n        PUSH,
     __const_0\n        PUSH, __StatusText___t14\n        COPY\n        PUSH, __const_11\n       
     PUSH, __StatusText___t15\n        COPY\n        PUSH, __const_11\n        PUSH,
-    __StatusText___inl_t0\n        COPY\n        PUSH, __const_13\n        PUSH,
+    __StatusText___inl_t0\n        COPY\n        PUSH, __const_14\n        PUSH,
     __StatusText___inl0__value\n        COPY\n        PUSH, pitcher\n        PUSH,
     __StatusText___t1\n        COPY\n        PUSH, pitcher\n        PUSH, __StatusText_intnl_0\n       
     COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_11\n       
@@ -367,7 +405,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_0\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_13\n        EXTERN,
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_14\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_11\n        EXTERN,
@@ -376,7 +414,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_0\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_13\n        EXTERN,
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_14\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_0\n        EXTERN,
@@ -406,7 +444,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_11\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_13\n        EXTERN,
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_14\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __StatusText_retjump\n       
@@ -416,7 +454,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, pitcher\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_0\n        PUSH, __const_14\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_0\n        PUSH, __const_15\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_0\n       
@@ -484,7 +522,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t1\n        PUSH, __const_15\n        PUSH, __StatusText_intnl_1\n       
+    __StatusText___t1\n        PUSH, __const_16\n        PUSH, __StatusText_intnl_1\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_1\n        PUSH, __StatusText_intnl_2\n        COPY\n       
     PUSH, __StatusText_intnl_1\n        PUSH, __StatusText___t2\n        COPY\n       
@@ -588,7 +626,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, pitcher\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_3\n        PUSH, __const_16\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_3\n        PUSH, __const_17\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_3\n       
@@ -665,41 +703,41 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t4\n        PUSH, __const_17\n        PUSH, __StatusText_intnl_4\n       
+    __StatusText___t4\n        PUSH, __const_18\n        PUSH, __StatusText_intnl_4\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __StatusText_intnl_5\n        COPY\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __StatusText___t5\n        COPY\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __const_1\n        PUSH, __StatusText_intnl_6\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_6\n        JUMP_IF_FALSE, __StatusText_L2\n        PUSH,
-    __const_18\n        PUSH, __StatusText___t3\n        COPY\n        JUMP, __StatusText_L3\n   
-    __StatusText_L2:\n        PUSH, __const_19\n        PUSH, __StatusText___t3\n       
+    __const_19\n        PUSH, __StatusText___t3\n        COPY\n        JUMP, __StatusText_L3\n   
+    __StatusText_L2:\n        PUSH, __const_20\n        PUSH, __StatusText___t3\n       
     COPY\n    __StatusText_L3:\n        PUSH, __StatusText___t3\n        PUSH, __StatusText___t0\n       
-    COPY\n        JUMP, __StatusText_L1\n    __StatusText_L0:\n        PUSH, __const_20\n       
+    COPY\n        JUMP, __StatusText_L1\n    __StatusText_L0:\n        PUSH, __const_21\n       
     PUSH, __StatusText___t0\n        COPY\n    __StatusText_L1:\n        PUSH, __StatusText___t0\n       
     PUSH, __StatusText_calibration\n        COPY\n        PUSH, pitcher\n       
     PUSH, __StatusText___t6\n        COPY\n        PUSH, __StatusText___t6\n       
-    PUSH, __const_21\n        PUSH, __StatusText_intnl_7\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_22\n        PUSH, __StatusText_intnl_7\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText_intnl_8\n        COPY\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText___t7\n        COPY\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText___inl0__value\n       
     COPY\n        PUSH, __StatusText_intnl_7\n        PUSH, __const_1\n        PUSH,
     __StatusText_intnl_9\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_9\n        JUMP_IF_FALSE, __StatusText_L4\n        PUSH,
-    __const_22\n        PUSH, __StatusText___inl_t0\n        COPY\n        JUMP,
+    __const_23\n        PUSH, __StatusText___inl_t0\n        COPY\n        JUMP,
     __StatusText_L9\n    __StatusText_L4:\n        PUSH, __StatusText___inl0__value\n       
-    PUSH, __const_23\n        PUSH, __StatusText_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_24\n        PUSH, __StatusText_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_10\n        JUMP_IF_FALSE, __StatusText_L6\n       
-    PUSH, __const_24\n        PUSH, __StatusText___inl_t0\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __StatusText___inl_t0\n        COPY\n       
     JUMP, __StatusText_L9\n    __StatusText_L6:\n        PUSH, __StatusText___inl0__value\n       
-    PUSH, __const_25\n        PUSH, __StatusText_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_26\n        PUSH, __StatusText_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_11\n        JUMP_IF_FALSE, __StatusText_L8\n       
-    PUSH, __const_26\n        PUSH, __StatusText___inl_t0\n        COPY\n       
-    JUMP, __StatusText_L9\n    __StatusText_L8:\n        PUSH, __const_27\n       
+    PUSH, __const_27\n        PUSH, __StatusText___inl_t0\n        COPY\n       
+    JUMP, __StatusText_L9\n    __StatusText_L8:\n        PUSH, __const_28\n       
     PUSH, __StatusText___inl_t0\n        COPY\n    __StatusText_L9:\n        PUSH,
-    __const_28\n        PUSH, __StatusText___inl_t0\n        PUSH, __StatusText_intnl_12\n       
+    __const_29\n        PUSH, __StatusText___inl_t0\n        PUSH, __StatusText_intnl_12\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
-    PUSH, __StatusText_intnl_12\n        PUSH, __const_29\n        PUSH, __StatusText_intnl_13\n       
+    PUSH, __StatusText_intnl_12\n        PUSH, __const_30\n        PUSH, __StatusText_intnl_13\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText_intnl_13\n        PUSH, __StatusText_calibration\n       
     PUSH, __StatusText_intnl_14\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
@@ -851,7 +889,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, pitcher\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_15\n        PUSH, __const_30\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_15\n        PUSH, __const_31\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_15\n       
@@ -964,27 +1002,27 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t8\n        PUSH, __const_31\n        PUSH, __StatusText_intnl_16\n       
+    __StatusText___t8\n        PUSH, __const_32\n        PUSH, __StatusText_intnl_16\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_16\n        PUSH, __StatusText___t9\n        COPY\n       
     PUSH, __StatusText_intnl_16\n        JUMP_IF_FALSE, __StatusText_L11\n       
     PUSH, __StatusText_text\n        PUSH, __StatusText___t10\n        COPY\n       
-    PUSH, __StatusText_text\n        PUSH, __const_32\n        PUSH, __StatusText_text\n       
+    PUSH, __StatusText_text\n        PUSH, __const_33\n        PUSH, __StatusText_text\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n   
     __StatusText_L11:\n        PUSH, pitcher\n        PUSH, __StatusText___t11\n       
-    COPY\n        PUSH, __StatusText___t11\n        PUSH, __const_33\n        PUSH,
+    COPY\n        PUSH, __StatusText___t11\n        PUSH, __const_34\n        PUSH,
     __StatusText_intnl_19\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_19\n        PUSH, __StatusText___t12\n        COPY\n       
     PUSH, __StatusText_intnl_19\n        PUSH, __StatusText_intnl_21\n        EXTERN,
     \"SystemString.__get_Length__SystemInt32\"\n        PUSH, __StatusText_intnl_21\n       
-    PUSH, __const_13\n        PUSH, __StatusText_intnl_22\n        EXTERN, \"SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_14\n        PUSH, __StatusText_intnl_22\n        EXTERN, \"SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_22\n        JUMP_IF_FALSE, __StatusText_L13\n       
     PUSH, __StatusText_text\n        PUSH, __StatusText___t13\n        COPY\n       
     PUSH, pitcher\n        PUSH, __StatusText___t14\n        COPY\n        PUSH,
-    __StatusText___t14\n        PUSH, __const_33\n        PUSH, __StatusText_intnl_23\n       
+    __StatusText___t14\n        PUSH, __const_34\n        PUSH, __StatusText_intnl_23\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_23\n        PUSH, __StatusText___t15\n        COPY\n       
-    PUSH, __const_34\n        PUSH, __StatusText_intnl_23\n        PUSH, __StatusText_intnl_25\n       
+    PUSH, __const_35\n        PUSH, __StatusText_intnl_23\n        PUSH, __StatusText_intnl_25\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText___t13\n        PUSH, __StatusText_intnl_25\n        PUSH,
     __StatusText_text\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n   
@@ -994,7 +1032,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 84731b3df00bdc64895bdc15efa08e8c, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: e6ba3d36ff78280ba4e5c1d6aa52fb3a59050fcbb318ec60c4fed055dde0cd6d
+  sourceFingerprint: 54432d4033e37e52cf278d40d88450f98f0a9fc0aa8bd721f9750d3b8185d028
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -1003,7 +1041,17 @@ MonoBehaviour:
   fieldLabels:
   - symbol: resultLabel
     header: 
-    tooltip: Text showing the last release's errors and result.
+    tooltip: 'Text showing the last release''s result: pitch or throw, speed and
+      course miss.'
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  - symbol: detailLabel
+    header: 
+    tooltip: 'Text showing the last release''s analysis: release position and motion,
+      spin and SSW, aim.'
     hidden: 0
     space: 0
     hasRange: 0
@@ -1013,7 +1061,9 @@ MonoBehaviour:
   - pitcher
   - statusLabel
   - resultLabel
+  - detailLabel
   inspectorPaths:
+  - 
   - 
   - 
   - 
@@ -1023,35 +1073,38 @@ MonoBehaviour:
     null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    pitcher:
     %VRCUdonUdonBehaviour, null\n    .export pitcher\n    statusLabel: %UnityEngineUIText,
     null\n    .export statusLabel\n    resultLabel: %UnityEngineUIText, null\n   
-    .export resultLabel\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
-    %SystemString, \"ManualPitchPanelBehaviour\"\n    __refl_typeids: %SystemInt64Array,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnManualPitchChanged_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __StartCalibration___t0: %VRCUdonUdonBehaviour,
-    null\n    __StartCalibration_retjump: %SystemUInt32, 0xFFFFFFFC\n    __CancelCalibration___t0:
-    %VRCUdonUdonBehaviour, null\n    __CancelCalibration_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    __RecallBall___t0: %VRCUdonUdonBehaviour, null\n    __RecallBall___t1:
-    %SystemBoolean, null\n    __RecallBall_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __Clicked___t0: %VRCUdonUdonBehaviour, null\n    __Clicked_ret: %SystemBoolean,
-    null\n    __Clicked_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Refresh___t0: %UnityEngineUIText,
-    null\n    __Refresh___t1: %UnityEngineUIText, null\n    __Refresh___t2: %VRCUdonUdonBehaviour,
-    null\n    __Refresh___t3: %SystemString, null\n    __Refresh_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    __StatusText_calibration: %SystemString, null\n    __StatusText___t0:
-    %SystemString, null\n    __StatusText___t1: %VRCUdonUdonBehaviour, null\n   
-    __StatusText___t2: %SystemBoolean, null\n    __StatusText___t3: %SystemString,
-    null\n    __StatusText___t4: %VRCUdonUdonBehaviour, null\n    __StatusText___t5:
-    %SystemInt32, 0\n    __StatusText_text: %SystemString, null\n    __StatusText___t6:
-    %VRCUdonUdonBehaviour, null\n    __StatusText___t7: %SystemInt32, 0\n    __StatusText___t8:
-    %VRCUdonUdonBehaviour, null\n    __StatusText___t9: %SystemBoolean, null\n   
-    __StatusText___t10: %SystemString, null\n    __StatusText___t11: %VRCUdonUdonBehaviour,
-    null\n    __StatusText___t12: %SystemString, null\n    __StatusText___t13: %SystemString,
-    null\n    __StatusText___t14: %VRCUdonUdonBehaviour, null\n    __StatusText___t15:
-    %SystemString, null\n    __StatusText___inl_t0: %SystemString, null\n    __StatusText___inl0__value:
-    %SystemInt32, 0\n    __StatusText_ret: %SystemString, null\n    .export __StatusText_ret\n   
-    __StatusText_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray,
-    null\n    __recSp: %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n   
-    __returnValue: %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n   
-    __retaddr_0: %SystemUInt32, 0x0000001C\n    __retaddr_1: %SystemUInt32, 0x00000040\n   
-    __const_0: %VRCUdonUdonBehaviour, null\n    __const_1: %SystemInt32, 1\n    __retaddr_2:
+    .export resultLabel\n    detailLabel: %UnityEngineUIText, null\n    .export detailLabel\n   
+    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchPanelBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Start_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __OnManualPitchChanged_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __StartCalibration___t0: %VRCUdonUdonBehaviour, null\n    __StartCalibration_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __CancelCalibration___t0: %VRCUdonUdonBehaviour,
+    null\n    __CancelCalibration_retjump: %SystemUInt32, 0xFFFFFFFC\n    __RecallBall___t0:
+    %VRCUdonUdonBehaviour, null\n    __RecallBall___t1: %SystemBoolean, null\n   
+    __RecallBall_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Clicked___t0: %VRCUdonUdonBehaviour,
+    null\n    __Clicked_ret: %SystemBoolean, null\n    __Clicked_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __Refresh___t0: %UnityEngineUIText, null\n    __Refresh___t1:
+    %UnityEngineUIText, null\n    __Refresh___t2: %VRCUdonUdonBehaviour, null\n   
+    __Refresh___t3: %SystemString, null\n    __Refresh___t4: %UnityEngineUIText,
+    null\n    __Refresh___t5: %VRCUdonUdonBehaviour, null\n    __Refresh___t6: %SystemString,
+    null\n    __Refresh_retjump: %SystemUInt32, 0xFFFFFFFC\n    __StatusText_calibration:
+    %SystemString, null\n    __StatusText___t0: %SystemString, null\n    __StatusText___t1:
+    %VRCUdonUdonBehaviour, null\n    __StatusText___t2: %SystemBoolean, null\n   
+    __StatusText___t3: %SystemString, null\n    __StatusText___t4: %VRCUdonUdonBehaviour,
+    null\n    __StatusText___t5: %SystemInt32, 0\n    __StatusText_text: %SystemString,
+    null\n    __StatusText___t6: %VRCUdonUdonBehaviour, null\n    __StatusText___t7:
+    %SystemInt32, 0\n    __StatusText___t8: %VRCUdonUdonBehaviour, null\n    __StatusText___t9:
+    %SystemBoolean, null\n    __StatusText___t10: %SystemString, null\n    __StatusText___t11:
+    %VRCUdonUdonBehaviour, null\n    __StatusText___t12: %SystemString, null\n   
+    __StatusText___t13: %SystemString, null\n    __StatusText___t14: %VRCUdonUdonBehaviour,
+    null\n    __StatusText___t15: %SystemString, null\n    __StatusText___inl_t0:
+    %SystemString, null\n    __StatusText___inl0__value: %SystemInt32, 0\n    __StatusText_ret:
+    %SystemString, null\n    .export __StatusText_ret\n    __StatusText_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
+    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __returnValue:
+    %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __retaddr_0:
+    %SystemUInt32, 0x0000001C\n    __retaddr_1: %SystemUInt32, 0x00000040\n    __const_0:
+    %VRCUdonUdonBehaviour, null\n    __const_1: %SystemInt32, 1\n    __retaddr_2:
     %SystemUInt32, 0x000000B8\n    __StartCalibration_intnl_0: %SystemBoolean, null\n   
     __StartCalibration_intnl_1: %VRCUdonUdonBehaviour, null\n    __const_2: %SystemString,
     \"BeginCalibration\"\n    __retaddr_3: %SystemUInt32, 0x00000354\n    __CancelCalibration_intnl_0:
@@ -1066,35 +1119,38 @@ MonoBehaviour:
     __const_9: %SystemBoolean, null\n    __const_10: %UnityEngineUIText, null\n   
     __const_11: %SystemString, null\n    __Refresh_intnl_0: %SystemBoolean, null\n   
     __Refresh_intnl_1: %SystemBoolean, null\n    __Refresh_intnl_2: %UnityEngineUIText,
-    null\n    __retaddr_5: %SystemUInt32, 0x00000F54\n    __Refresh_intnl_3: %SystemString,
+    null\n    __retaddr_5: %SystemUInt32, 0x00001050\n    __Refresh_intnl_3: %SystemString,
     null\n    __Refresh_intnl_4: %SystemBoolean, null\n    __const_12: %SystemString,
     \"releaseResultText\"\n    __Refresh_intnl_5: %SystemObject, null\n    __Refresh_intnl_6:
-    %SystemString, null\n    __const_13: %SystemInt32, 0\n    __StatusText_intnl_0:
-    %VRCUdonUdonBehaviour, null\n    __const_14: %SystemString, \"HasCalibration\"\n   
-    __const_15: %SystemString, \"__HasCalibration_ret\"\n    __StatusText_intnl_1:
-    %SystemObject, null\n    __StatusText_intnl_2: %SystemBoolean, null\n    __StatusText_intnl_3:
-    %VRCUdonUdonBehaviour, null\n    __const_16: %SystemString, \"CalibratedHand\"\n   
-    __const_17: %SystemString, \"__CalibratedHand_ret\"\n    __StatusText_intnl_4:
-    %SystemObject, null\n    __StatusText_intnl_5: %SystemInt32, 0\n    __StatusText_intnl_6:
-    %SystemBoolean, null\n    __const_18: %SystemString, \"saved (left hand)\"\n   
-    __const_19: %SystemString, \"saved (right hand)\"\n    __const_20: %SystemString,
-    \"none\"\n    __const_21: %SystemString, \"state\"\n    __StatusText_intnl_7:
-    %SystemObject, null\n    __StatusText_intnl_8: %SystemInt32, 0\n    __StatusText_intnl_9:
-    %SystemBoolean, null\n    __const_22: %SystemString, \"Targeting\"\n    __const_23:
-    %SystemInt32, 2\n    __StatusText_intnl_10: %SystemBoolean, null\n    __const_24:
-    %SystemString, \"Solving\"\n    __const_25: %SystemInt32, 3\n    __StatusText_intnl_11:
-    %SystemBoolean, null\n    __const_26: %SystemString, \"LockedReady\"\n    __const_27:
-    %SystemString, \"Inactive\"\n    __const_28: %SystemString, \"4-Seam  |  \"\n   
-    __StatusText_intnl_12: %SystemString, null\n    __const_29: %SystemString, \" 
-    |  Calibration: \"\n    __StatusText_intnl_13: %SystemString, null\n    __StatusText_intnl_14:
-    %SystemString, null\n    __StatusText_intnl_15: %VRCUdonUdonBehaviour, null\n   
-    __const_30: %SystemString, \"Calibrating\"\n    __const_31: %SystemString, \"__Calibrating_ret\"\n   
-    __StatusText_intnl_16: %SystemObject, null\n    __StatusText_intnl_17: %SystemBoolean,
-    null\n    __const_32: %SystemString, \"\\nCALIBRATING\"\n    __StatusText_intnl_18:
-    %SystemString, null\n    __const_33: %SystemString, \"statusText\"\n    __StatusText_intnl_19:
+    %SystemString, null\n    __Refresh_intnl_7: %SystemBoolean, null\n    __const_13:
+    %SystemString, \"releaseDetailText\"\n    __Refresh_intnl_8: %SystemObject, null\n   
+    __Refresh_intnl_9: %SystemString, null\n    __const_14: %SystemInt32, 0\n   
+    __StatusText_intnl_0: %VRCUdonUdonBehaviour, null\n    __const_15: %SystemString,
+    \"HasCalibration\"\n    __const_16: %SystemString, \"__HasCalibration_ret\"\n   
+    __StatusText_intnl_1: %SystemObject, null\n    __StatusText_intnl_2: %SystemBoolean,
+    null\n    __StatusText_intnl_3: %VRCUdonUdonBehaviour, null\n    __const_17:
+    %SystemString, \"CalibratedHand\"\n    __const_18: %SystemString, \"__CalibratedHand_ret\"\n   
+    __StatusText_intnl_4: %SystemObject, null\n    __StatusText_intnl_5: %SystemInt32,
+    0\n    __StatusText_intnl_6: %SystemBoolean, null\n    __const_19: %SystemString,
+    \"saved (left hand)\"\n    __const_20: %SystemString, \"saved (right hand)\"\n   
+    __const_21: %SystemString, \"none\"\n    __const_22: %SystemString, \"state\"\n   
+    __StatusText_intnl_7: %SystemObject, null\n    __StatusText_intnl_8: %SystemInt32,
+    0\n    __StatusText_intnl_9: %SystemBoolean, null\n    __const_23: %SystemString,
+    \"Targeting\"\n    __const_24: %SystemInt32, 2\n    __StatusText_intnl_10: %SystemBoolean,
+    null\n    __const_25: %SystemString, \"Solving\"\n    __const_26: %SystemInt32,
+    3\n    __StatusText_intnl_11: %SystemBoolean, null\n    __const_27: %SystemString,
+    \"LockedReady\"\n    __const_28: %SystemString, \"Inactive\"\n    __const_29:
+    %SystemString, \"4-Seam  |  \"\n    __StatusText_intnl_12: %SystemString, null\n   
+    __const_30: %SystemString, \"  |  Calibration: \"\n    __StatusText_intnl_13:
+    %SystemString, null\n    __StatusText_intnl_14: %SystemString, null\n    __StatusText_intnl_15:
+    %VRCUdonUdonBehaviour, null\n    __const_31: %SystemString, \"Calibrating\"\n   
+    __const_32: %SystemString, \"__Calibrating_ret\"\n    __StatusText_intnl_16:
+    %SystemObject, null\n    __StatusText_intnl_17: %SystemBoolean, null\n    __const_33:
+    %SystemString, \"\\nCALIBRATING\"\n    __StatusText_intnl_18: %SystemString,
+    null\n    __const_34: %SystemString, \"statusText\"\n    __StatusText_intnl_19:
     %SystemObject, null\n    __StatusText_intnl_20: %SystemString, null\n    __StatusText_intnl_21:
     %SystemInt32, 0\n    __StatusText_intnl_22: %SystemBoolean, null\n    __StatusText_intnl_23:
-    %SystemObject, null\n    __StatusText_intnl_24: %SystemString, null\n    __const_34:
+    %SystemObject, null\n    __StatusText_intnl_24: %SystemString, null\n    __const_35:
     %SystemString, \"\\n\"\n    __StatusText_intnl_25: %SystemString, null\n    __StatusText_intnl_26:
     %SystemString, null\n.data_end\n.code_start\n    .export _start\n    _start:\n       
     PUSH, __retaddr_0\n        PUSH, __Refresh_retjump\n        COPY\n        JUMP,
@@ -1274,8 +1330,11 @@ MonoBehaviour:
     COPY\n        JUMP, __Refresh_body\n    __Refresh_body:\n        PUSH, __const_10\n       
     PUSH, __Refresh___t0\n        COPY\n        PUSH, __const_10\n        PUSH, __Refresh___t1\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Refresh___t2\n        COPY\n       
-    PUSH, __const_11\n        PUSH, __Refresh___t3\n        COPY\n        PUSH, pitcher\n       
-    PUSH, __const_7\n        PUSH, __Refresh_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __const_11\n        PUSH, __Refresh___t3\n        COPY\n        PUSH, __const_10\n       
+    PUSH, __Refresh___t4\n        COPY\n        PUSH, __const_0\n        PUSH, __Refresh___t5\n       
+    COPY\n        PUSH, __const_11\n        PUSH, __Refresh___t6\n        COPY\n       
+    PUSH, pitcher\n        PUSH, __const_7\n        PUSH, __Refresh_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __Refresh_intnl_0\n        JUMP_IF_FALSE, __Refresh_L1\n        JUMP_INDIRECT,
     __Refresh_retjump\n    __Refresh_L1:\n        PUSH, statusLabel\n        PUSH,
     __const_7\n        PUSH, __Refresh_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
@@ -1294,6 +1353,18 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t5\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t6\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1328,6 +1399,15 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __Refresh_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t6\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t5\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t3\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1350,7 +1430,16 @@ MonoBehaviour:
     PUSH, __Refresh_intnl_5\n        PUSH, __Refresh_intnl_6\n        COPY\n       
     PUSH, __Refresh_intnl_6\n        PUSH, __Refresh___t3\n        COPY\n       
     PUSH, __Refresh___t1\n        PUSH, __Refresh___t3\n        EXTERN, \"UnityEngineUIText.__set_text__SystemString__SystemVoid\"\n   
-    __Refresh_L5:\n        JUMP_INDIRECT, __Refresh_retjump\n    .export StatusText\n   
+    __Refresh_L5:\n        PUSH, detailLabel\n        PUSH, __const_7\n        PUSH,
+    __Refresh_intnl_7\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __Refresh_intnl_7\n        JUMP_IF_FALSE, __Refresh_L7\n        PUSH, detailLabel\n       
+    PUSH, __Refresh___t4\n        COPY\n        PUSH, pitcher\n        PUSH, __Refresh___t5\n       
+    COPY\n        PUSH, __Refresh___t5\n        PUSH, __const_13\n        PUSH, __Refresh_intnl_8\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __Refresh_intnl_8\n        PUSH, __Refresh_intnl_9\n        COPY\n       
+    PUSH, __Refresh_intnl_9\n        PUSH, __Refresh___t6\n        COPY\n       
+    PUSH, __Refresh___t4\n        PUSH, __Refresh___t6\n        EXTERN, \"UnityEngineUIText.__set_text__SystemString__SystemVoid\"\n   
+    __Refresh_L7:\n        JUMP_INDIRECT, __Refresh_retjump\n    .export StatusText\n   
     StatusText:\n        PUSH, __retaddr_end\n        PUSH, __StatusText_retjump\n       
     COPY\n        JUMP, __StatusText_body\n    __StatusText_body:\n        PUSH,
     __const_11\n        PUSH, __StatusText_calibration\n        COPY\n        PUSH,
@@ -1358,9 +1447,9 @@ MonoBehaviour:
     PUSH, __StatusText___t1\n        COPY\n        PUSH, __const_4\n        PUSH,
     __StatusText___t2\n        COPY\n        PUSH, __const_11\n        PUSH, __StatusText___t3\n       
     COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t4\n        COPY\n       
-    PUSH, __const_13\n        PUSH, __StatusText___t5\n        COPY\n        PUSH,
+    PUSH, __const_14\n        PUSH, __StatusText___t5\n        COPY\n        PUSH,
     __const_11\n        PUSH, __StatusText_text\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __StatusText___t6\n        COPY\n        PUSH, __const_13\n        PUSH,
+    PUSH, __StatusText___t6\n        COPY\n        PUSH, __const_14\n        PUSH,
     __StatusText___t7\n        COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t8\n       
     COPY\n        PUSH, __const_4\n        PUSH, __StatusText___t9\n        COPY\n       
     PUSH, __const_11\n        PUSH, __StatusText___t10\n        COPY\n        PUSH,
@@ -1369,7 +1458,7 @@ MonoBehaviour:
     __StatusText___t13\n        COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t14\n       
     COPY\n        PUSH, __const_11\n        PUSH, __StatusText___t15\n        COPY\n       
     PUSH, __const_11\n        PUSH, __StatusText___inl_t0\n        COPY\n       
-    PUSH, __const_13\n        PUSH, __StatusText___inl0__value\n        COPY\n       
+    PUSH, __const_14\n        PUSH, __StatusText___inl0__value\n        COPY\n       
     PUSH, pitcher\n        PUSH, __StatusText___t1\n        COPY\n        PUSH, __StatusText___t1\n       
     PUSH, __StatusText_intnl_0\n        COPY\n        PUSH, __recStack\n        PUSH,
     __recSp\n        PUSH, __StatusText_calibration\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
@@ -1459,7 +1548,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_0\n        PUSH, __const_14\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_0\n        PUSH, __const_15\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_0\n       
@@ -1527,7 +1616,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t1\n        PUSH, __const_15\n        PUSH, __StatusText_intnl_1\n       
+    __StatusText___t1\n        PUSH, __const_16\n        PUSH, __StatusText_intnl_1\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_1\n        PUSH, __StatusText_intnl_2\n        COPY\n       
     PUSH, __StatusText_intnl_2\n        PUSH, __StatusText___t2\n        COPY\n       
@@ -1633,7 +1722,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_3\n        PUSH, __const_16\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_3\n        PUSH, __const_17\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_3\n       
@@ -1710,41 +1799,41 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t4\n        PUSH, __const_17\n        PUSH, __StatusText_intnl_4\n       
+    __StatusText___t4\n        PUSH, __const_18\n        PUSH, __StatusText_intnl_4\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __StatusText_intnl_5\n        COPY\n       
     PUSH, __StatusText_intnl_5\n        PUSH, __StatusText___t5\n        COPY\n       
     PUSH, __StatusText___t5\n        PUSH, __const_1\n        PUSH, __StatusText_intnl_6\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_6\n        JUMP_IF_FALSE, __StatusText_L2\n        PUSH,
-    __const_18\n        PUSH, __StatusText___t3\n        COPY\n        JUMP, __StatusText_L3\n   
-    __StatusText_L2:\n        PUSH, __const_19\n        PUSH, __StatusText___t3\n       
+    __const_19\n        PUSH, __StatusText___t3\n        COPY\n        JUMP, __StatusText_L3\n   
+    __StatusText_L2:\n        PUSH, __const_20\n        PUSH, __StatusText___t3\n       
     COPY\n    __StatusText_L3:\n        PUSH, __StatusText___t3\n        PUSH, __StatusText___t0\n       
-    COPY\n        JUMP, __StatusText_L1\n    __StatusText_L0:\n        PUSH, __const_20\n       
+    COPY\n        JUMP, __StatusText_L1\n    __StatusText_L0:\n        PUSH, __const_21\n       
     PUSH, __StatusText___t0\n        COPY\n    __StatusText_L1:\n        PUSH, __StatusText___t0\n       
     PUSH, __StatusText_calibration\n        COPY\n        PUSH, pitcher\n       
     PUSH, __StatusText___t6\n        COPY\n        PUSH, __StatusText___t6\n       
-    PUSH, __const_21\n        PUSH, __StatusText_intnl_7\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_22\n        PUSH, __StatusText_intnl_7\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText_intnl_8\n        COPY\n       
     PUSH, __StatusText_intnl_8\n        PUSH, __StatusText___t7\n        COPY\n       
     PUSH, __StatusText___t7\n        PUSH, __StatusText___inl0__value\n        COPY\n       
     PUSH, __StatusText___inl0__value\n        PUSH, __const_1\n        PUSH, __StatusText_intnl_9\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_9\n        JUMP_IF_FALSE, __StatusText_L4\n        PUSH,
-    __const_22\n        PUSH, __StatusText___inl_t0\n        COPY\n        JUMP,
+    __const_23\n        PUSH, __StatusText___inl_t0\n        COPY\n        JUMP,
     __StatusText_L9\n    __StatusText_L4:\n        PUSH, __StatusText___inl0__value\n       
-    PUSH, __const_23\n        PUSH, __StatusText_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_24\n        PUSH, __StatusText_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_10\n        JUMP_IF_FALSE, __StatusText_L6\n       
-    PUSH, __const_24\n        PUSH, __StatusText___inl_t0\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __StatusText___inl_t0\n        COPY\n       
     JUMP, __StatusText_L9\n    __StatusText_L6:\n        PUSH, __StatusText___inl0__value\n       
-    PUSH, __const_25\n        PUSH, __StatusText_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_26\n        PUSH, __StatusText_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_11\n        JUMP_IF_FALSE, __StatusText_L8\n       
-    PUSH, __const_26\n        PUSH, __StatusText___inl_t0\n        COPY\n       
-    JUMP, __StatusText_L9\n    __StatusText_L8:\n        PUSH, __const_27\n       
+    PUSH, __const_27\n        PUSH, __StatusText___inl_t0\n        COPY\n       
+    JUMP, __StatusText_L9\n    __StatusText_L8:\n        PUSH, __const_28\n       
     PUSH, __StatusText___inl_t0\n        COPY\n    __StatusText_L9:\n        PUSH,
-    __const_28\n        PUSH, __StatusText___inl_t0\n        PUSH, __StatusText_intnl_12\n       
+    __const_29\n        PUSH, __StatusText___inl_t0\n        PUSH, __StatusText_intnl_12\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
-    PUSH, __StatusText_intnl_12\n        PUSH, __const_29\n        PUSH, __StatusText_intnl_13\n       
+    PUSH, __StatusText_intnl_12\n        PUSH, __const_30\n        PUSH, __StatusText_intnl_13\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText_intnl_13\n        PUSH, __StatusText_calibration\n       
     PUSH, __StatusText_intnl_14\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
@@ -1898,7 +1987,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_15\n        PUSH, __const_30\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_15\n        PUSH, __const_31\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_15\n       
@@ -2011,31 +2100,31 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t8\n        PUSH, __const_31\n        PUSH, __StatusText_intnl_16\n       
+    __StatusText___t8\n        PUSH, __const_32\n        PUSH, __StatusText_intnl_16\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_16\n        PUSH, __StatusText_intnl_17\n        COPY\n       
     PUSH, __StatusText_intnl_17\n        PUSH, __StatusText___t9\n        COPY\n       
     PUSH, __StatusText___t9\n        JUMP_IF_FALSE, __StatusText_L11\n        PUSH,
     __StatusText_text\n        PUSH, __StatusText___t10\n        COPY\n        PUSH,
-    __StatusText___t10\n        PUSH, __const_32\n        PUSH, __StatusText_intnl_18\n       
+    __StatusText___t10\n        PUSH, __const_33\n        PUSH, __StatusText_intnl_18\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText_intnl_18\n        PUSH, __StatusText_text\n        COPY\n   
     __StatusText_L11:\n        PUSH, pitcher\n        PUSH, __StatusText___t11\n       
-    COPY\n        PUSH, __StatusText___t11\n        PUSH, __const_33\n        PUSH,
+    COPY\n        PUSH, __StatusText___t11\n        PUSH, __const_34\n        PUSH,
     __StatusText_intnl_19\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_19\n        PUSH, __StatusText_intnl_20\n        COPY\n       
     PUSH, __StatusText_intnl_20\n        PUSH, __StatusText___t12\n        COPY\n       
     PUSH, __StatusText___t12\n        PUSH, __StatusText_intnl_21\n        EXTERN,
     \"SystemString.__get_Length__SystemInt32\"\n        PUSH, __StatusText_intnl_21\n       
-    PUSH, __const_13\n        PUSH, __StatusText_intnl_22\n        EXTERN, \"SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_14\n        PUSH, __StatusText_intnl_22\n        EXTERN, \"SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_22\n        JUMP_IF_FALSE, __StatusText_L13\n       
     PUSH, __StatusText_text\n        PUSH, __StatusText___t13\n        COPY\n       
     PUSH, pitcher\n        PUSH, __StatusText___t14\n        COPY\n        PUSH,
-    __StatusText___t14\n        PUSH, __const_33\n        PUSH, __StatusText_intnl_23\n       
+    __StatusText___t14\n        PUSH, __const_34\n        PUSH, __StatusText_intnl_23\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_23\n        PUSH, __StatusText_intnl_24\n        COPY\n       
     PUSH, __StatusText_intnl_24\n        PUSH, __StatusText___t15\n        COPY\n       
-    PUSH, __const_34\n        PUSH, __StatusText___t15\n        PUSH, __StatusText_intnl_25\n       
+    PUSH, __const_35\n        PUSH, __StatusText___t15\n        PUSH, __StatusText_intnl_25\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText___t13\n        PUSH, __StatusText_intnl_25\n        PUSH,
     __StatusText_intnl_26\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
@@ -2049,35 +2138,38 @@ MonoBehaviour:
     null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    pitcher:
     %VRCUdonUdonBehaviour, null\n    .export pitcher\n    statusLabel: %UnityEngineUIText,
     null\n    .export statusLabel\n    resultLabel: %UnityEngineUIText, null\n   
-    .export resultLabel\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
-    %SystemString, \"ManualPitchPanelBehaviour\"\n    __refl_typeids: %SystemInt64Array,
-    null\n    __Start_retjump: %SystemUInt32, 0xFFFFFFFC\n    __OnManualPitchChanged_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __StartCalibration___t0: %VRCUdonUdonBehaviour,
-    null\n    __StartCalibration_retjump: %SystemUInt32, 0xFFFFFFFC\n    __CancelCalibration___t0:
-    %VRCUdonUdonBehaviour, null\n    __CancelCalibration_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    __RecallBall___t0: %VRCUdonUdonBehaviour, null\n    __RecallBall___t1:
-    %SystemBoolean, null\n    __RecallBall_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __Clicked___t0: %VRCUdonUdonBehaviour, null\n    __Clicked_ret: %SystemBoolean,
-    null\n    __Clicked_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Refresh___t0: %UnityEngineUIText,
-    null\n    __Refresh___t1: %UnityEngineUIText, null\n    __Refresh___t2: %VRCUdonUdonBehaviour,
-    null\n    __Refresh___t3: %SystemString, null\n    __Refresh_retjump: %SystemUInt32,
-    0xFFFFFFFC\n    __StatusText_calibration: %SystemString, null\n    __StatusText___t0:
-    %SystemString, null\n    __StatusText___t1: %VRCUdonUdonBehaviour, null\n   
-    __StatusText___t2: %SystemBoolean, null\n    __StatusText___t3: %SystemString,
-    null\n    __StatusText___t4: %VRCUdonUdonBehaviour, null\n    __StatusText___t5:
-    %SystemInt32, 0\n    __StatusText_text: %SystemString, null\n    __StatusText___t6:
-    %VRCUdonUdonBehaviour, null\n    __StatusText___t7: %SystemInt32, 0\n    __StatusText___t8:
-    %VRCUdonUdonBehaviour, null\n    __StatusText___t9: %SystemBoolean, null\n   
-    __StatusText___t10: %SystemString, null\n    __StatusText___t11: %VRCUdonUdonBehaviour,
-    null\n    __StatusText___t12: %SystemString, null\n    __StatusText___t13: %SystemString,
-    null\n    __StatusText___t14: %VRCUdonUdonBehaviour, null\n    __StatusText___t15:
-    %SystemString, null\n    __StatusText___inl_t0: %SystemString, null\n    __StatusText___inl0__value:
-    %SystemInt32, 0\n    __StatusText_ret: %SystemString, null\n    .export __StatusText_ret\n   
-    __StatusText_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray,
-    null\n    __recSp: %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n   
-    __returnValue: %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n   
-    __retaddr_0: %SystemUInt32, 0x0000001C\n    __retaddr_1: %SystemUInt32, 0x00000040\n   
-    __const_0: %VRCUdonUdonBehaviour, null\n    __const_1: %SystemInt32, 1\n    __retaddr_2:
+    .export resultLabel\n    detailLabel: %UnityEngineUIText, null\n    .export detailLabel\n   
+    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchPanelBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    __Start_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __OnManualPitchChanged_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __StartCalibration___t0: %VRCUdonUdonBehaviour, null\n    __StartCalibration_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __CancelCalibration___t0: %VRCUdonUdonBehaviour,
+    null\n    __CancelCalibration_retjump: %SystemUInt32, 0xFFFFFFFC\n    __RecallBall___t0:
+    %VRCUdonUdonBehaviour, null\n    __RecallBall___t1: %SystemBoolean, null\n   
+    __RecallBall_retjump: %SystemUInt32, 0xFFFFFFFC\n    __Clicked___t0: %VRCUdonUdonBehaviour,
+    null\n    __Clicked_ret: %SystemBoolean, null\n    __Clicked_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __Refresh___t0: %UnityEngineUIText, null\n    __Refresh___t1:
+    %UnityEngineUIText, null\n    __Refresh___t2: %VRCUdonUdonBehaviour, null\n   
+    __Refresh___t3: %SystemString, null\n    __Refresh___t4: %UnityEngineUIText,
+    null\n    __Refresh___t5: %VRCUdonUdonBehaviour, null\n    __Refresh___t6: %SystemString,
+    null\n    __Refresh_retjump: %SystemUInt32, 0xFFFFFFFC\n    __StatusText_calibration:
+    %SystemString, null\n    __StatusText___t0: %SystemString, null\n    __StatusText___t1:
+    %VRCUdonUdonBehaviour, null\n    __StatusText___t2: %SystemBoolean, null\n   
+    __StatusText___t3: %SystemString, null\n    __StatusText___t4: %VRCUdonUdonBehaviour,
+    null\n    __StatusText___t5: %SystemInt32, 0\n    __StatusText_text: %SystemString,
+    null\n    __StatusText___t6: %VRCUdonUdonBehaviour, null\n    __StatusText___t7:
+    %SystemInt32, 0\n    __StatusText___t8: %VRCUdonUdonBehaviour, null\n    __StatusText___t9:
+    %SystemBoolean, null\n    __StatusText___t10: %SystemString, null\n    __StatusText___t11:
+    %VRCUdonUdonBehaviour, null\n    __StatusText___t12: %SystemString, null\n   
+    __StatusText___t13: %SystemString, null\n    __StatusText___t14: %VRCUdonUdonBehaviour,
+    null\n    __StatusText___t15: %SystemString, null\n    __StatusText___inl_t0:
+    %SystemString, null\n    __StatusText___inl0__value: %SystemInt32, 0\n    __StatusText_ret:
+    %SystemString, null\n    .export __StatusText_ret\n    __StatusText_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
+    %SystemInt32, 0\n    __recRetStack: %SystemObjectArray, null\n    __returnValue:
+    %SystemObject, null\n    __retaddr_end: %SystemUInt32, 0xFFFFFFFC\n    __retaddr_0:
+    %SystemUInt32, 0x0000001C\n    __retaddr_1: %SystemUInt32, 0x00000040\n    __const_0:
+    %VRCUdonUdonBehaviour, null\n    __const_1: %SystemInt32, 1\n    __retaddr_2:
     %SystemUInt32, 0x000000A4\n    __StartCalibration_intnl_0: %SystemBoolean, null\n   
     __StartCalibration_intnl_1: %VRCUdonUdonBehaviour, null\n    __const_2: %SystemString,
     \"BeginCalibration\"\n    __retaddr_3: %SystemUInt32, 0x00000318\n    __CancelCalibration_intnl_0:
@@ -2092,35 +2184,38 @@ MonoBehaviour:
     __const_9: %SystemBoolean, null\n    __const_10: %UnityEngineUIText, null\n   
     __const_11: %SystemString, null\n    __Refresh_intnl_0: %SystemBoolean, null\n   
     __Refresh_intnl_1: %SystemBoolean, null\n    __Refresh_intnl_2: %UnityEngineUIText,
-    null\n    __retaddr_5: %SystemUInt32, 0x00000E98\n    __Refresh_intnl_3: %SystemString,
+    null\n    __retaddr_5: %SystemUInt32, 0x00000F94\n    __Refresh_intnl_3: %SystemString,
     null\n    __Refresh_intnl_4: %SystemBoolean, null\n    __const_12: %SystemString,
     \"releaseResultText\"\n    __Refresh_intnl_5: %SystemObject, null\n    __Refresh_intnl_6:
-    %SystemString, null\n    __const_13: %SystemInt32, 0\n    __StatusText_intnl_0:
-    %VRCUdonUdonBehaviour, null\n    __const_14: %SystemString, \"HasCalibration\"\n   
-    __const_15: %SystemString, \"__HasCalibration_ret\"\n    __StatusText_intnl_1:
-    %SystemObject, null\n    __StatusText_intnl_2: %SystemBoolean, null\n    __StatusText_intnl_3:
-    %VRCUdonUdonBehaviour, null\n    __const_16: %SystemString, \"CalibratedHand\"\n   
-    __const_17: %SystemString, \"__CalibratedHand_ret\"\n    __StatusText_intnl_4:
-    %SystemObject, null\n    __StatusText_intnl_5: %SystemInt32, 0\n    __StatusText_intnl_6:
-    %SystemBoolean, null\n    __const_18: %SystemString, \"saved (left hand)\"\n   
-    __const_19: %SystemString, \"saved (right hand)\"\n    __const_20: %SystemString,
-    \"none\"\n    __const_21: %SystemString, \"state\"\n    __StatusText_intnl_7:
-    %SystemObject, null\n    __StatusText_intnl_8: %SystemInt32, 0\n    __StatusText_intnl_9:
-    %SystemBoolean, null\n    __const_22: %SystemString, \"Targeting\"\n    __const_23:
-    %SystemInt32, 2\n    __StatusText_intnl_10: %SystemBoolean, null\n    __const_24:
-    %SystemString, \"Solving\"\n    __const_25: %SystemInt32, 3\n    __StatusText_intnl_11:
-    %SystemBoolean, null\n    __const_26: %SystemString, \"LockedReady\"\n    __const_27:
-    %SystemString, \"Inactive\"\n    __const_28: %SystemString, \"4-Seam  |  \"\n   
-    __StatusText_intnl_12: %SystemString, null\n    __const_29: %SystemString, \" 
-    |  Calibration: \"\n    __StatusText_intnl_13: %SystemString, null\n    __StatusText_intnl_14:
-    %SystemString, null\n    __StatusText_intnl_15: %VRCUdonUdonBehaviour, null\n   
-    __const_30: %SystemString, \"Calibrating\"\n    __const_31: %SystemString, \"__Calibrating_ret\"\n   
-    __StatusText_intnl_16: %SystemObject, null\n    __StatusText_intnl_17: %SystemBoolean,
-    null\n    __const_32: %SystemString, \"\\nCALIBRATING\"\n    __const_33: %SystemString,
-    \"statusText\"\n    __StatusText_intnl_19: %SystemObject, null\n    __StatusText_intnl_20:
-    %SystemString, null\n    __StatusText_intnl_21: %SystemInt32, 0\n    __StatusText_intnl_22:
+    %SystemString, null\n    __Refresh_intnl_7: %SystemBoolean, null\n    __const_13:
+    %SystemString, \"releaseDetailText\"\n    __Refresh_intnl_8: %SystemObject, null\n   
+    __Refresh_intnl_9: %SystemString, null\n    __const_14: %SystemInt32, 0\n   
+    __StatusText_intnl_0: %VRCUdonUdonBehaviour, null\n    __const_15: %SystemString,
+    \"HasCalibration\"\n    __const_16: %SystemString, \"__HasCalibration_ret\"\n   
+    __StatusText_intnl_1: %SystemObject, null\n    __StatusText_intnl_2: %SystemBoolean,
+    null\n    __StatusText_intnl_3: %VRCUdonUdonBehaviour, null\n    __const_17:
+    %SystemString, \"CalibratedHand\"\n    __const_18: %SystemString, \"__CalibratedHand_ret\"\n   
+    __StatusText_intnl_4: %SystemObject, null\n    __StatusText_intnl_5: %SystemInt32,
+    0\n    __StatusText_intnl_6: %SystemBoolean, null\n    __const_19: %SystemString,
+    \"saved (left hand)\"\n    __const_20: %SystemString, \"saved (right hand)\"\n   
+    __const_21: %SystemString, \"none\"\n    __const_22: %SystemString, \"state\"\n   
+    __StatusText_intnl_7: %SystemObject, null\n    __StatusText_intnl_8: %SystemInt32,
+    0\n    __StatusText_intnl_9: %SystemBoolean, null\n    __const_23: %SystemString,
+    \"Targeting\"\n    __const_24: %SystemInt32, 2\n    __StatusText_intnl_10: %SystemBoolean,
+    null\n    __const_25: %SystemString, \"Solving\"\n    __const_26: %SystemInt32,
+    3\n    __StatusText_intnl_11: %SystemBoolean, null\n    __const_27: %SystemString,
+    \"LockedReady\"\n    __const_28: %SystemString, \"Inactive\"\n    __const_29:
+    %SystemString, \"4-Seam  |  \"\n    __StatusText_intnl_12: %SystemString, null\n   
+    __const_30: %SystemString, \"  |  Calibration: \"\n    __StatusText_intnl_13:
+    %SystemString, null\n    __StatusText_intnl_14: %SystemString, null\n    __StatusText_intnl_15:
+    %VRCUdonUdonBehaviour, null\n    __const_31: %SystemString, \"Calibrating\"\n   
+    __const_32: %SystemString, \"__Calibrating_ret\"\n    __StatusText_intnl_16:
+    %SystemObject, null\n    __StatusText_intnl_17: %SystemBoolean, null\n    __const_33:
+    %SystemString, \"\\nCALIBRATING\"\n    __const_34: %SystemString, \"statusText\"\n   
+    __StatusText_intnl_19: %SystemObject, null\n    __StatusText_intnl_20: %SystemString,
+    null\n    __StatusText_intnl_21: %SystemInt32, 0\n    __StatusText_intnl_22:
     %SystemBoolean, null\n    __StatusText_intnl_23: %SystemObject, null\n    __StatusText_intnl_24:
-    %SystemString, null\n    __const_34: %SystemString, \"\\n\"\n    __StatusText_intnl_25:
+    %SystemString, null\n    __const_35: %SystemString, \"\\n\"\n    __StatusText_intnl_25:
     %SystemString, null\n.data_end\n.code_start\n    .export _start\n    _start:\n       
     PUSH, __retaddr_0\n        PUSH, __Refresh_retjump\n        COPY\n        JUMP,
     __Refresh_body\n        JUMP_INDIRECT, __Start_retjump\n    .export OnManualPitchChanged\n   
@@ -2285,8 +2380,11 @@ MonoBehaviour:
     Refresh:\n        PUSH, __retaddr_end\n        PUSH, __Refresh_retjump\n       
     COPY\n    __Refresh_body:\n        PUSH, __const_10\n        PUSH, __Refresh___t1\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Refresh___t2\n        COPY\n       
-    PUSH, __const_11\n        PUSH, __Refresh___t3\n        COPY\n        PUSH, pitcher\n       
-    PUSH, __const_7\n        PUSH, __Refresh_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __const_11\n        PUSH, __Refresh___t3\n        COPY\n        PUSH, __const_10\n       
+    PUSH, __Refresh___t4\n        COPY\n        PUSH, __const_0\n        PUSH, __Refresh___t5\n       
+    COPY\n        PUSH, __const_11\n        PUSH, __Refresh___t6\n        COPY\n       
+    PUSH, pitcher\n        PUSH, __const_7\n        PUSH, __Refresh_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __Refresh_intnl_0\n        JUMP_IF_FALSE, __Refresh_L1\n        JUMP_INDIRECT,
     __Refresh_retjump\n    __Refresh_L1:\n        PUSH, statusLabel\n        PUSH,
     __const_7\n        PUSH, __Refresh_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
@@ -2304,6 +2402,18 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t5\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t6\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -2337,6 +2447,15 @@ MonoBehaviour:
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __Refresh_retjump\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t6\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t5\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Refresh___t3\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -2357,16 +2476,24 @@ MonoBehaviour:
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __Refresh_intnl_5\n        PUSH, __Refresh___t3\n        COPY\n       
     PUSH, __Refresh___t1\n        PUSH, __Refresh_intnl_5\n        EXTERN, \"UnityEngineUIText.__set_text__SystemString__SystemVoid\"\n   
-    __Refresh_L5:\n        JUMP_INDIRECT, __Refresh_retjump\n    .export StatusText\n   
+    __Refresh_L5:\n        PUSH, detailLabel\n        PUSH, __const_7\n        PUSH,
+    __Refresh_intnl_7\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __Refresh_intnl_7\n        JUMP_IF_FALSE, __Refresh_L7\n        PUSH, detailLabel\n       
+    PUSH, __Refresh___t4\n        COPY\n        PUSH, pitcher\n        PUSH, __Refresh___t5\n       
+    COPY\n        PUSH, __Refresh___t5\n        PUSH, __const_13\n        PUSH, __Refresh_intnl_8\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __Refresh_intnl_8\n        PUSH, __Refresh___t6\n        COPY\n       
+    PUSH, __Refresh___t4\n        PUSH, __Refresh_intnl_8\n        EXTERN, \"UnityEngineUIText.__set_text__SystemString__SystemVoid\"\n   
+    __Refresh_L7:\n        JUMP_INDIRECT, __Refresh_retjump\n    .export StatusText\n   
     StatusText:\n        PUSH, __retaddr_end\n        PUSH, __StatusText_retjump\n       
     COPY\n    __StatusText_body:\n        PUSH, __const_11\n        PUSH, __StatusText_calibration\n       
     COPY\n        PUSH, __const_11\n        PUSH, __StatusText___t0\n        COPY\n       
     PUSH, __const_4\n        PUSH, __StatusText___t2\n        COPY\n        PUSH,
     __const_11\n        PUSH, __StatusText___t3\n        COPY\n        PUSH, __const_0\n       
-    PUSH, __StatusText___t4\n        COPY\n        PUSH, __const_13\n        PUSH,
+    PUSH, __StatusText___t4\n        COPY\n        PUSH, __const_14\n        PUSH,
     __StatusText___t5\n        COPY\n        PUSH, __const_11\n        PUSH, __StatusText_text\n       
     COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t6\n        COPY\n       
-    PUSH, __const_13\n        PUSH, __StatusText___t7\n        COPY\n        PUSH,
+    PUSH, __const_14\n        PUSH, __StatusText___t7\n        COPY\n        PUSH,
     __const_0\n        PUSH, __StatusText___t8\n        COPY\n        PUSH, __const_4\n       
     PUSH, __StatusText___t9\n        COPY\n        PUSH, __const_11\n        PUSH,
     __StatusText___t10\n        COPY\n        PUSH, __const_0\n        PUSH, __StatusText___t11\n       
@@ -2374,7 +2501,7 @@ MonoBehaviour:
     PUSH, __const_11\n        PUSH, __StatusText___t13\n        COPY\n        PUSH,
     __const_0\n        PUSH, __StatusText___t14\n        COPY\n        PUSH, __const_11\n       
     PUSH, __StatusText___t15\n        COPY\n        PUSH, __const_11\n        PUSH,
-    __StatusText___inl_t0\n        COPY\n        PUSH, __const_13\n        PUSH,
+    __StatusText___inl_t0\n        COPY\n        PUSH, __const_14\n        PUSH,
     __StatusText___inl0__value\n        COPY\n        PUSH, pitcher\n        PUSH,
     __StatusText___t1\n        COPY\n        PUSH, pitcher\n        PUSH, __StatusText_intnl_0\n       
     COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_11\n       
@@ -2396,7 +2523,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_0\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_13\n        EXTERN,
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_14\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_11\n        EXTERN,
@@ -2405,7 +2532,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_0\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_13\n        EXTERN,
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_14\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_0\n        EXTERN,
@@ -2435,7 +2562,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_11\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_13\n        EXTERN,
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __const_14\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recRetStack\n        PUSH, __recSp\n        PUSH, __StatusText_retjump\n       
@@ -2445,7 +2572,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, pitcher\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_0\n        PUSH, __const_14\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_0\n        PUSH, __const_15\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_0\n       
@@ -2513,7 +2640,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t1\n        PUSH, __const_15\n        PUSH, __StatusText_intnl_1\n       
+    __StatusText___t1\n        PUSH, __const_16\n        PUSH, __StatusText_intnl_1\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_1\n        PUSH, __StatusText_intnl_2\n        COPY\n       
     PUSH, __StatusText_intnl_1\n        PUSH, __StatusText___t2\n        COPY\n       
@@ -2617,7 +2744,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, pitcher\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_3\n        PUSH, __const_16\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_3\n        PUSH, __const_17\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_3\n       
@@ -2694,41 +2821,41 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t4\n        PUSH, __const_17\n        PUSH, __StatusText_intnl_4\n       
+    __StatusText___t4\n        PUSH, __const_18\n        PUSH, __StatusText_intnl_4\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __StatusText_intnl_5\n        COPY\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __StatusText___t5\n        COPY\n       
     PUSH, __StatusText_intnl_4\n        PUSH, __const_1\n        PUSH, __StatusText_intnl_6\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_6\n        JUMP_IF_FALSE, __StatusText_L2\n        PUSH,
-    __const_18\n        PUSH, __StatusText___t3\n        COPY\n        JUMP, __StatusText_L3\n   
-    __StatusText_L2:\n        PUSH, __const_19\n        PUSH, __StatusText___t3\n       
+    __const_19\n        PUSH, __StatusText___t3\n        COPY\n        JUMP, __StatusText_L3\n   
+    __StatusText_L2:\n        PUSH, __const_20\n        PUSH, __StatusText___t3\n       
     COPY\n    __StatusText_L3:\n        PUSH, __StatusText___t3\n        PUSH, __StatusText___t0\n       
-    COPY\n        JUMP, __StatusText_L1\n    __StatusText_L0:\n        PUSH, __const_20\n       
+    COPY\n        JUMP, __StatusText_L1\n    __StatusText_L0:\n        PUSH, __const_21\n       
     PUSH, __StatusText___t0\n        COPY\n    __StatusText_L1:\n        PUSH, __StatusText___t0\n       
     PUSH, __StatusText_calibration\n        COPY\n        PUSH, pitcher\n       
     PUSH, __StatusText___t6\n        COPY\n        PUSH, __StatusText___t6\n       
-    PUSH, __const_21\n        PUSH, __StatusText_intnl_7\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_22\n        PUSH, __StatusText_intnl_7\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText_intnl_8\n        COPY\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText___t7\n        COPY\n       
     PUSH, __StatusText_intnl_7\n        PUSH, __StatusText___inl0__value\n       
     COPY\n        PUSH, __StatusText_intnl_7\n        PUSH, __const_1\n        PUSH,
     __StatusText_intnl_9\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_9\n        JUMP_IF_FALSE, __StatusText_L4\n        PUSH,
-    __const_22\n        PUSH, __StatusText___inl_t0\n        COPY\n        JUMP,
+    __const_23\n        PUSH, __StatusText___inl_t0\n        COPY\n        JUMP,
     __StatusText_L9\n    __StatusText_L4:\n        PUSH, __StatusText___inl0__value\n       
-    PUSH, __const_23\n        PUSH, __StatusText_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_24\n        PUSH, __StatusText_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_10\n        JUMP_IF_FALSE, __StatusText_L6\n       
-    PUSH, __const_24\n        PUSH, __StatusText___inl_t0\n        COPY\n       
+    PUSH, __const_25\n        PUSH, __StatusText___inl_t0\n        COPY\n       
     JUMP, __StatusText_L9\n    __StatusText_L6:\n        PUSH, __StatusText___inl0__value\n       
-    PUSH, __const_25\n        PUSH, __StatusText_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_26\n        PUSH, __StatusText_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_11\n        JUMP_IF_FALSE, __StatusText_L8\n       
-    PUSH, __const_26\n        PUSH, __StatusText___inl_t0\n        COPY\n       
-    JUMP, __StatusText_L9\n    __StatusText_L8:\n        PUSH, __const_27\n       
+    PUSH, __const_27\n        PUSH, __StatusText___inl_t0\n        COPY\n       
+    JUMP, __StatusText_L9\n    __StatusText_L8:\n        PUSH, __const_28\n       
     PUSH, __StatusText___inl_t0\n        COPY\n    __StatusText_L9:\n        PUSH,
-    __const_28\n        PUSH, __StatusText___inl_t0\n        PUSH, __StatusText_intnl_12\n       
+    __const_29\n        PUSH, __StatusText___inl_t0\n        PUSH, __StatusText_intnl_12\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
-    PUSH, __StatusText_intnl_12\n        PUSH, __const_29\n        PUSH, __StatusText_intnl_13\n       
+    PUSH, __StatusText_intnl_12\n        PUSH, __const_30\n        PUSH, __StatusText_intnl_13\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText_intnl_13\n        PUSH, __StatusText_calibration\n       
     PUSH, __StatusText_intnl_14\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
@@ -2880,7 +3007,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, pitcher\n        EXTERN,
     \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __StatusText_intnl_15\n        PUSH, __const_30\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __StatusText_intnl_15\n        PUSH, __const_31\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_intnl_15\n       
@@ -2993,27 +3120,27 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __StatusText_calibration\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __StatusText___t8\n        PUSH, __const_31\n        PUSH, __StatusText_intnl_16\n       
+    __StatusText___t8\n        PUSH, __const_32\n        PUSH, __StatusText_intnl_16\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_16\n        PUSH, __StatusText___t9\n        COPY\n       
     PUSH, __StatusText_intnl_16\n        JUMP_IF_FALSE, __StatusText_L11\n       
     PUSH, __StatusText_text\n        PUSH, __StatusText___t10\n        COPY\n       
-    PUSH, __StatusText_text\n        PUSH, __const_32\n        PUSH, __StatusText_text\n       
+    PUSH, __StatusText_text\n        PUSH, __const_33\n        PUSH, __StatusText_text\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n   
     __StatusText_L11:\n        PUSH, pitcher\n        PUSH, __StatusText___t11\n       
-    COPY\n        PUSH, __StatusText___t11\n        PUSH, __const_33\n        PUSH,
+    COPY\n        PUSH, __StatusText___t11\n        PUSH, __const_34\n        PUSH,
     __StatusText_intnl_19\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_19\n        PUSH, __StatusText___t12\n        COPY\n       
     PUSH, __StatusText_intnl_19\n        PUSH, __StatusText_intnl_21\n        EXTERN,
     \"SystemString.__get_Length__SystemInt32\"\n        PUSH, __StatusText_intnl_21\n       
-    PUSH, __const_13\n        PUSH, __StatusText_intnl_22\n        EXTERN, \"SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __const_14\n        PUSH, __StatusText_intnl_22\n        EXTERN, \"SystemInt32.__op_GreaterThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __StatusText_intnl_22\n        JUMP_IF_FALSE, __StatusText_L13\n       
     PUSH, __StatusText_text\n        PUSH, __StatusText___t13\n        COPY\n       
     PUSH, pitcher\n        PUSH, __StatusText___t14\n        COPY\n        PUSH,
-    __StatusText___t14\n        PUSH, __const_33\n        PUSH, __StatusText_intnl_23\n       
+    __StatusText___t14\n        PUSH, __const_34\n        PUSH, __StatusText_intnl_23\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __StatusText_intnl_23\n        PUSH, __StatusText___t15\n        COPY\n       
-    PUSH, __const_34\n        PUSH, __StatusText_intnl_23\n        PUSH, __StatusText_intnl_25\n       
+    PUSH, __const_35\n        PUSH, __StatusText_intnl_23\n        PUSH, __StatusText_intnl_25\n       
     EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
     PUSH, __StatusText___t13\n        PUSH, __StatusText_intnl_25\n        PUSH,
     __StatusText_text\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n   
@@ -3051,10 +3178,10 @@ MonoBehaviour:
   - "=__recRetStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
   - "=__const_9\tBoolTrue\t\t0\t\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 473
-  optExternAfter: 473
-  optInsnBefore: 2226
-  optInsnAfter: 2173
-  optBytesBefore: 17420
-  optBytesAfter: 17064
+  optExternBefore: 488
+  optExternAfter: 488
+  optInsnBefore: 2308
+  optInsnAfter: 2252
+  optBytesBefore: 18048
+  optBytesAfter: 17672
   optStage: ran

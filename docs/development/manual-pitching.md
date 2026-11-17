@@ -82,7 +82,12 @@ press records position and rotation together (taken when the trigger goes down),
 to PlayerData and ends calibration; the panel then shows what was saved (release offset,
 arm-slot angle and form, spin axis, break direction). To change a calibration, calibrate
 again from the start; there is no partial re-recording and no Save button. **Cancel** leaves
-without recording. While the throwing hand holds the ball, its trigger is the ball's release
+without recording.
+
+Difference from the first specification (kept on purpose, after the first real-client test): the
+first design recorded with the **glove-hand** trigger while the throwing hand held the ball, and
+allowed re-recording the position or the rotation alone. Both were removed: the record is the
+empty throwing hand's trigger, and position and rotation are always recorded together. While the throwing hand holds the ball, its trigger is the ball's release
 and records nothing (the panel asks to put the ball down). The glove-hand trigger does
 nothing while calibrating.
 
@@ -146,19 +151,39 @@ in front of the plane, `cursorSize` (0.12 m), coloured with a MaterialPropertyBl
 
 ## Triggers and panel clicks
 
-Either trigger also clicks the panel. A trigger press (glove hand: lock; empty throwing hand
-while calibrating: record and save) therefore acts only on its release, two frames later,
-after the UI click of that release, and every panel button first calls `CancelTriggerPress`,
-so a press that clicked a button does nothing else. The calibration pose is captured when the
-trigger goes down. Found in the first real-client test: clicking Save with the glove-hand
-trigger recorded the resting throwing hand as the release pose (every pitch was then
-rejected for release position, about 1 m low and 1 m back, with about 110° of pose error),
-and clicking Ball → Glove toggled the lock. `showDebug` also logs the saved calibration.
+Either trigger also clicks the panel, and VRChat does not promise where the click falls against
+the trigger's own `InputUse` events (same frame before or after, or a later frame). Each hand has
+its own press state (`_press*[Slot(hand)]`); the two hands never share a field, so pressing both,
+in any order, never swaps which hand a press belongs to.
+
+- **Glove hand** toggles the lock when its trigger **goes down** (as first specified). Every
+  panel button calls `CancelTriggerPress` -> `CancelPressAt(frame)`, which matches the click to a
+  press: a hand whose trigger changed in that very frame; otherwise the hand that changed most
+  recently within `ClickWindowFrames` (2), and the click is also kept for a trigger change later
+  in the same frame (a click sent before its press or release). The matched press is cancelled:
+  a glove-hand toggle is **undone** (back to the state before the press) unless a lock has
+  started or ended since (`_lockEpoch`, so an undo never brings back a lock a release ended).
+  Two hands that changed in the same frame cannot be told apart and are both cancelled.
+- **Throwing hand** (empty, while calibrating) captures the pose when its trigger goes down
+  (`InputUse`) and records and saves it `ClickWindowFrames + 1` frames after its release
+  (`ApplyLeftPress`/`ApplyRightPress`), unless a click cancelled that press. A stale apply while
+  the same hand is pressed again does nothing.
+- With the ball in the throwing hand its trigger is the Ball's Pickup Use; the mound's `InputUse`
+  for that hand only matters while calibrating (where it asks to put the ball down).
+
+Found in the first real-client test: clicking Save with the glove-hand trigger recorded the
+resting throwing hand as the release pose (every pitch was then rejected for release position,
+about 1 m low and 1 m back, with about 110 deg of pose error), and clicking Ball -> Glove toggled
+the lock. The previous fix acted on every press only after its release plus two frames. Not
+verified on a client: which of the click orders above VRChat produces (when a click follows the
+press, the toggle is visible for the frames until the click undoes it), and whether glove-hand
+`InputUse` arrives while the throwing hand holds a pickup. `showDebug` also logs the saved
+calibration.
 
 ## Lock and solver
 
 The glove-hand trigger (`InputUse` on the mound, filtered to the hand that is not
-`throwHand`; ignored outside pitcher mode) toggles the lock. Locking in `Targeting` with a
+`throwHand`; ignored outside pitcher mode) toggles the lock when it goes down (see above). Locking in `Targeting` with a
 valid ray and a usable calibration snapshots the smoothed cursor `T`, the ideal release
 `P0 = C + Qframe r + Qideal grip` (grip = the held ball's offset in the hand, zero when no
 ball is held), the speed (`pitchSpeedKmh`, 140) and the ideal spin and wake, and starts
@@ -198,10 +223,39 @@ D   = normalize(D1 + ((Gx-1) dx / L) R' + ((Gy-1) dy / L) U')  R', U' perpendicu
 v   = D x speed;  spin and wake turned by D (PitchSpin.ToWorld)
 ```
 
-`L` is the distance from the ball to the target plane; `Gx`, `Gy` = `controlGainX/Y` (1.5).
-The ball is launched from its actual position, so the release offset already moves the
-pitch by itself; only `G - 1` is added (gain 1 adds nothing, tested). Pose never changes the
-direction (tested); it changes spin and wake, which may move the arrival through physics.
+`L` is the distance from the ball to the target plane; `Gx`, `Gy` = `controlGainX/Y` (0.5,
+Inspector range 0..2; 1.5 before). The ball is launched from its actual position, so the release
+offset already moves the pitch by itself; only `G - 1` is added (gain 1 adds nothing, tested).
+The total miss is therefore about `G x` the controller offset: 0 cancels it, 0.5 halves it, 1 is
+the natural offset alone, 1.5 the former amplification. `dx`, `dy` are the **controller** offset
+(the recognition basis). The ball centre differs from it by the grip turned with the pose; that
+part is not compensated and is shown separately on the panel. Pose never changes the direction
+(tested); it changes spin and wake, which move the arrival through physics.
+
+`diagnosticIdealSpin` (off; diagnostics only) keeps the calibrated spin, axis and SSW the solver
+aimed with, whatever the pose, so that (1) the solver's own error, (2) the release-position miss
+and (3) the pose-made ball change can be separated.
+
+Measured with the real solver and the shared flight model (0.02 s steps, overhand calibration,
+target (0, 0.72), controller offset right 8 cm / up 6 cm; tested by
+`TheCrossingMovesByTheGainTimesTheReleaseOffset` within 1 cm for both signs):
+
+| Gain | Miss, ideal pose (right, up) | Miss, 25 deg pose error (quality 73 %) |
+|---|---|---|
+| 0.0 | (0.0, -0.1) cm | (-8.6, -10.3) cm |
+| 0.5 | (4.0, 2.9) cm | (-4.6, -7.3) cm |
+| 1.0 | (8.0, 5.9) cm | (-0.6, -4.3) cm |
+| 1.5 | (12.0, 8.9) cm | (3.4, -1.3) cm |
+| 2.0 | (16.0, 11.9) cm | (7.4, 1.7) cm |
+
+The solver's predicted crossing equals the flight (< 0.1 mm), 0.8 mm from the target; a release
+15 cm forward misses by 1.4 cm (up). A 25 deg pose error adds about (-8.6, -10.2) cm at every gain
+(less spin, gyro, a turned axis and less SSW): the pose-made part is as large as the
+position-made part, and the gain does not affect it. The SSW at 90 deg (arm side) moves the
+crossing 2.5 cm to the arm side, at 0 deg (up) 2.5 cm up; the solver aims either the same way
+(`AnUpwardWakeIsAimedAndFlownTheSameWay`). The default stays 90 deg: which wake a VR release
+gives is not modelled, and the spin axis still comes from the calibrated arm slot (the
+calibrated rotation only scores the pose); a different axis model is an open design question.
 
 Measured with the real solver and the shared flight model (0.02 s step): solved pitches
 with the wake arrive within the solver tolerance (3 cm) of the locked target, and the same
@@ -212,26 +266,42 @@ leaves a residual of 13.4 mm after body correction, against more than 25 cm with
 
 ## Release feedback
 
-With `showReleaseFeedback` (on by default), local to the pitcher:
+With `showReleaseFeedback` (on by default), local to the pitcher. The markers are plain spheres
+and a LineRenderer sharing one plain material, `MT_ManualPitchMarker` (VVBC/Unlit Transparent, no
+texture), coloured with a MaterialPropertyBlock set once in `Start` (`idealMarkerColor`,
+`actualMarkerColor`, `errorLineColor`, `idealMarkerDiameter` 0.09, `releaseMarkerDiameter` 0.07,
+`errorLineWidth` 0.012). None has a collider. Nothing is synced.
 
-- **Ideal release** (`Feedback/IdealMarker`, cyan sphere, 9 cm): the calibrated release point
-  in the current pitching frame, moved every frame in pitcher mode with the chest. Around it,
-  `Feedback/RangeMarker` shows the recognition ellipsoid (`recognitionRadii`, frame-aligned,
-  `MT_ManualPitchRange`: faint green, both faces drawn so it is visible from inside).
-- **Last release** (`ReleaseIdealMarker` cyan, `ReleaseActualMarker` magenta, 7 cm, joined by
-  `ReleaseErrorLine`): the ideal point at the moment of release (the live marker moves on
-  with the body) and where the throwing controller actually was. Shown for every release
-  whose tracking was valid, pitch or throw (also before a lock), until the ball is next held
-  in the throwing hand or the mode ends.
-- **Release result** on the panel (`Result`): pitch or throw with the reason; release error
-  right / up / forward in cm and as a percentage of the recognition range; arm speed and
-  direction error; pose error; for a pitch, quality, spin and SSW, and the **arrival error**:
-  where the pitch crossed the front-edge plane relative to the locked target (right / up in
-  the pitcher's view, cm). The mound follows a pitched ball in its `Update` only until that
-  crossing, a catch, a hit, another flight or `arrivalTimeoutSeconds` (3 s); without a
-  crossing the panel says it was not measured.
+- **Ideal release** (`Feedback/IdealMarker`, cyan): the calibrated controller release point in the
+  current pitching frame, moved every frame in pitcher mode with the chest.
+- **Recognition range** (`Feedback/RangeMarker`, `MT_ManualPitchRange`, faint green, both faces):
+  only with `showRecognitionRange` (off by default); the ellipsoid of `recognitionRadii` around the
+  ideal release, frame-aligned (a unit-diameter sphere scaled by `2 x radii` under unit-scale
+  parents). Display only: recognition never reads it (tested).
+- **Last release** (`ReleaseIdealMarker` cyan, `ReleaseActualMarker` pink, joined by the yellow
+  `ReleaseErrorLine`): the ideal and the actual **throwing-controller** positions at the release,
+  frozen as world positions. Shown for every release whose tracking was valid, pitch or throw,
+  and kept until the next release is decided (picking the ball up again does not hide them) or
+  the mode ends.
 
-The markers reuse the ThrowAim debug materials; none has a collider. Nothing is synced.
+Each release takes a **result snapshot** that later lock, cursor, chest, setting or ball changes
+never rewrite: locked target, solver prediction and error (from the lock), plate plane, gains,
+SSW clock, diagnostic flag, release errors and the launched speed. `ClearResult` forgets the
+previous release's outputs first, so an earlier pitch's `releaseVelocity` is never shown or
+launched. The Ball reports the velocity it launches, pitch or throw (`RecordLaunch`); the speed
+shown is `|v| x 3.6` km/h.
+
+The panel's `Result` text (summary): pitch or throw with the reason, release speed, and the
+**course miss**: where the pitch crossed the front-edge plane (`ArrivalStep`) against the
+snapshotted target, total / right / up in the pitcher's view. The mound follows a pitched ball in
+its `Update` only until that crossing; a hold or catch, a hit, a ground touch (`FlightGrounded`),
+another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving the mound ends it as
+**not measured** with that reason, never as 0 cm. The `Detail` text (analysis): the controller's
+release position error (total, right/up/forward, % of range) and the ball centre's; the release
+motion (input, arm speed, arm direction error, pose error, quality); spin rpm, pitch-local axis,
+SSW coefficient and clock, gains; and the aim: target, solver crossing and miss (at the lock), and
+actual crossing and miss, in plate-plane coordinates. The texts are built only at a release, a
+launch and the end of a follow.
 
 ## Recalling the ball
 
@@ -293,7 +363,7 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 │   ├── IdealMarker, RangeMarker
 │   └── ReleaseIdealMarker, ReleaseActualMarker, ReleaseErrorLine (LineRenderer)
 └── Panel (world-space Canvas, VRC_UiShape, ManualPitchPanelBehaviour)
-    ├── Status (Text), Result (Text)
+    ├── Status (Text), Result (Text, summary), Detail (Text, analysis; detailLabel)
     ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
     └── Buttons: Start Calibration, Cancel, Ball → Glove
 ```
@@ -304,17 +374,19 @@ must be set). Move `Panel` beside the mound. Several mounds may target different
 
 `Samples/Scenes/PracticeSpace.unity` has one instance, `ManualPitchMound`, as a scene root
 (not inside the `HomePlateSet` prefab instance) at (0, 0, 18.4) turned 180°, targeting
-`HomePlateSet/SharedRig/HomePlate`, with `showDebug` on for integrated testing. Its panel
-stands at x = −2.2 m facing the mound. Stop that lane's batting pitcher before pitching by
+`HomePlateSet/SharedRig/HomePlate`, with `showDebug` on for integrated testing. Its panel (1500 x 1000 at 0.0012, two columns)
+stands at x = −2.6 m facing the mound. Stop that lane's batting pitcher before pitching by
 hand (see [Batting pitcher](#batting-pitcher)). The instance overrides the mound's Udon
 variables (`strikeZone`, `showDebug`), and a prefab instance stores them as one table, so
 references added to the prefab later do not reach it by themselves: the five feedback
 references were set on the instance when they were added. Check them after changing the
-prefab's mound variables.
+prefab's mound variables. Value fields (gains, colours, `showRecognitionRange`,
+`diagnosticIdealSpin`) are in neither table and take the program's defaults. The instance does
+not override the Panel, so `detailLabel` and the layout come from the prefab.
 
 ## Debug
 
-`showDebug` (off by default) writes, after every release, `PitcherMode`, `PitchState`,
+`diagnosticIdealSpin` is described under [Release](#release). `showDebug` (off by default) writes, after every release, `PitcherMode`, `PitchState`,
 release input (Trigger/Grip), recognition and reason, release position error xyz, arm speed
 and direction error, pose error and quality, spin rpm and axis, SSW, solver error and
 predicted target to `debugLabel` for `debugSeconds` (6) and to the log. With it off nothing

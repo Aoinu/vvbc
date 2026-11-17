@@ -9,8 +9,10 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
 {
     public ManualPitchBehaviour pitcher;
     public Text statusLabel;
-    [Tooltip("Text showing the last release's errors and result.")]
+    [Tooltip("Text showing the last release's result: pitch or throw, speed and course miss.")]
     public Text resultLabel;
+    [Tooltip("Text showing the last release's analysis: release position and motion, spin and SSW, aim.")]
+    public Text detailLabel;
 
     private void Start()
     {
@@ -23,7 +25,7 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
     }
 
     // Every click first cancels the trigger press that made it, so clicking a button never
-    // records a calibration or toggles the course lock.
+    // records a calibration and undoes a course-lock toggle made by that press.
     public void StartCalibration() { if (Clicked()) pitcher.BeginCalibration(); }
     public void CancelCalibration() { if (Clicked()) pitcher.CancelCalibration(); }
     public void RecallBall() { if (Clicked()) pitcher.RecallBall(); }
@@ -40,6 +42,7 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
         if (pitcher == null) return;
         if (statusLabel != null) statusLabel.text = StatusText();
         if (resultLabel != null) resultLabel.text = pitcher.releaseResultText;
+        if (detailLabel != null) detailLabel.text = pitcher.releaseDetailText;
     }
 
     public string StatusText()

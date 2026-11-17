@@ -173,6 +173,12 @@ public partial class BallBehaviour
         return LocalId() > 0 && !IsHeld() && !FieldingPending() && (!flying || _flightGrounded);
     }
 
+    // Whether the current flight has touched a groundLayers collider (cleared by every new flight).
+    public bool FlightGrounded()
+    {
+        return _flightGrounded;
+    }
+
     // Puts the ball into the local player's glove as a catch would, without catch effects.
     // Published as an ordinary Possession, so ownership and conflicts follow the catch path.
     public bool RecallToLocalGlove(double serverTime)
@@ -577,6 +583,8 @@ public partial class BallBehaviour
             velocity = direction * (fallbackThrowSpeedKmh / 3.6f);
             spin = Vector3.zero;
         }
+        // The mound shows the speed this release is launched with, pitch or throw.
+        if (manualPitcher != null) manualPitcher.RecordLaunch(velocity);
         LaunchRelease(position, velocity, spin, pitched, wake, Networking.GetServerTimeInSeconds());
     }
 
