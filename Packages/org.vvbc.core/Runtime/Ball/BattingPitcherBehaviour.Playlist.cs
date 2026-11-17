@@ -60,7 +60,8 @@ public partial class BattingPitcherBehaviour
 
     // ---- Queries (local; no network) ----
 
-    public bool IsRunning() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.RunningFlag); }
+    // Running means pitching now: the synced Running flag, unless the lane stops this pitcher.
+    public bool IsRunning() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.RunningFlag) && !_laneStopped; }
     public bool IsSequence() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.SequenceFlag); }
     public bool IsResetOnTimer() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.TimerFlag); }
     public int PlaylistCount() { return PitchPlaylist.Count(_playlistState); }

@@ -174,6 +174,8 @@ namespace VVBC.Editor
             }
             string builderError = CheckPitchBuilder(page);
             if (builderError != null) return builderError;
+            string machineError = CheckMachineVisibility(set, page, pitcher);
+            if (machineError != null) return machineError;
             if (UdonFields.Read(pitcher, "localOnly", false) || UdonFields.Read(zone, "localOnly", false))
                 return "The SharedRig must not be local-only.";
             var ball = ReadReference(zone, "ball");
@@ -190,6 +192,35 @@ namespace VVBC.Editor
             if (occupantObjects != null && occupantObjects.Any(o => o == null || !o.transform.IsChildOf(root)))
                 return "The bat switches must belong to the lane.";
             return CheckPitcher(pitcher) ?? Check(zone) ?? CheckInsideRoot(root);
+        }
+
+        // The batting machine starts Hidden: the lane shows and hides the page's own panel and the
+        // shared machine model, and its SHOW / HIDE switch sits outside that panel.
+        internal static string CheckMachineVisibility(UdonBehaviour set, UdonBehaviour page, UdonBehaviour pitcher)
+        {
+            var root = set.transform;
+            var canvas = UdonFields.Read<Canvas>(set, "settingsCanvas");
+            var collider = UdonFields.Read<Collider>(set, "settingsCollider");
+            if (canvas == null || !page.transform.IsChildOf(canvas.transform) || !canvas.transform.IsChildOf(root))
+                return "HomePlateSet settingsCanvas must be the Canvas of its PitchSettingsPanel.";
+            if (collider == null || collider.gameObject != canvas.gameObject)
+                return "HomePlateSet settingsCollider must be the pointer collider of its PitchSettingsPanel.";
+            if (canvas.enabled || collider.enabled)
+                return "The PitchSettingsPanel must start hidden (Canvas and collider disabled); the lane shows it.";
+            var animator = UdonFields.Read<Animator>(pitcher, "animator");
+            if (animator == null || animator.gameObject == pitcher.gameObject || animator.gameObject.activeSelf)
+                return "The shared machine model must start inactive; the lane shows it.";
+            var toggle = ReadReference(set, "visibilitySwitch");
+            if (!IsProgram(toggle, "MachineVisibilitySwitchBehaviour") || !toggle.transform.IsChildOf(root))
+                return "HomePlateSet visibilitySwitch must be a MachineVisibilitySwitchBehaviour of the lane.";
+            if (toggle.transform.IsChildOf(canvas.transform))
+                return "The machine visibility switch must stay outside the PitchSettingsPanel.";
+            if (ReadReference(toggle, "lane") != set) return "The machine visibility switch must name its lane.";
+            if (!toggle.gameObject.activeSelf || toggle.SyncMethod != VRC.SDKBase.Networking.SyncType.None)
+                return "The machine visibility switch must be active and unsynced.";
+            var colliders = toggle.GetComponents<Collider>();
+            if (colliders.Length != 1 || !colliders[0].enabled) return "The machine visibility switch needs one enabled collider.";
+            return null;
         }
 
         // The Pitch Builder needs one complete row per parameter (A, B, C), all on the page itself.

@@ -114,8 +114,11 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     // Owner-local seed of Rotating wake phases, drawn once at Start; advanced only when a pitch
     // with a Rotating wake (Knuckle) is prepared. Never synced: the phase itself is.
     private int _phaseSeed = 54321;
-    // Lane in Local Mode (or LocalRig ending): nothing is prepared, played or sent.
+    // Lane in Local Mode, lane machine hidden, or LocalRig ending: nothing is prepared, played or sent.
     private bool _suspended;
+    // The lane (HomePlateSet) does not run this pitcher: no new preparation even when the synced
+    // Running flag is set. Local to each client; the lane's synced state decides it.
+    private bool _laneStopped;
 
     private void Start()
     {
@@ -184,29 +187,51 @@ public partial class BattingPitcherBehaviour : TsukimiBehaviour
     // find their pitch already handled. Settings and the playlist are kept.
     public void Suspend()
     {
-        SuspendAt(ServerNow());
+        SuspendAt(ServerNow(), true);
     }
 
-    private void SuspendAt(double now)
+    // The lane hid the machine. The same forced stop as Suspend, but the Ball is left exactly as
+    // it is: a released pitch keeps flying, and a manual pitch, a batted ball, a throw or a held
+    // ball are not touched. An unreleased schedule never releases. Repeating it does nothing.
+    public void Halt()
+    {
+        if (_suspended) return;
+        SuspendAt(ServerNow(), false);
+    }
+
+    private void SuspendAt(double now, bool stageBall)
     {
         _suspended = true;
         DropOwnerWork();
         _checkPending = false;
         MarkAppliedHandled(now);
-        if (animator != null)
+        // Before Start the idle pose is not captured yet; the animator is still in it.
+        if (animator != null && _initialized)
         {
             animator.transform.localPosition = _visualStartPosition;
             animator.transform.localRotation = _visualStartRotation;
-            if (_initialized && animator.isActiveAndEnabled) animator.Play("Pitch Idle", 0, 0f);
+            if (animator.isActiveAndEnabled) animator.Play("Pitch Idle", 0, 0f);
         }
-        if (ball != null && ball.body != null && !ball.IsHeld()) ball.Stage(ball.body.position);
+        if (stageBall && ball != null && !ball.IsHeld())
+            ball.Stage(ball.body != null ? ball.body.position : ball.transform.position);
+        NotifyListeners();
+    }
+
+    // The lane runs (false) or stops (true) this pitcher. Stopping cancels only an unsent
+    // preparation, as STOP does; a committed schedule plays on unless the lane also halts it.
+    public void SetLaneStopped(bool stopped)
+    {
+        if (_laneStopped == stopped) return;
+        _laneStopped = stopped;
+        if (stopped) StopPreparation();
+        else TryAdvanceCycle();
         NotifyListeners();
     }
 
     // Back to Shared Mode: an old schedule is never replayed; the cycle gate starts from now.
     public void Resume()
     {
-        ResumeAt(ServerNow());
+        if (_suspended) ResumeAt(ServerNow());
     }
 
     private void ResumeAt(double now)

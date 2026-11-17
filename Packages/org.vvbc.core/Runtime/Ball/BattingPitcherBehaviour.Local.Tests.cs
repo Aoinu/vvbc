@@ -29,7 +29,7 @@ public partial class BattingPitcherBehaviour
         CommitPitch(100.0, false, 3f);
         Assert.AreEqual(PhaseScheduled, CyclePhaseAt(99.8));
         int applied = _appliedId;
-        SuspendAt(99.8);
+        SuspendAt(99.8, true);
         Assert.IsTrue(IsSuspended());
         Assert.AreEqual(applied, _motionStartedId, "a leftover motion event finds its pitch handled");
         Assert.AreEqual(applied, _releasedId, "a leftover release event launches nothing");
@@ -45,7 +45,7 @@ public partial class BattingPitcherBehaviour
     public void AScheduleReceivedWhileSuspendedIsKeptButNeverPlayed()
     {
         _stateKnown = true;
-        SuspendAt(50.0);
+        SuspendAt(50.0, true);
         SetSyncedPitch(5, 100.0);
         Assert.IsTrue(ApplyPitch(), "the newer schedule is accepted, which keeps the ordering");
         Assert.AreEqual(_appliedId, _motionStartedId);
@@ -58,7 +58,7 @@ public partial class BattingPitcherBehaviour
     {
         _stateKnown = true;
         CommitPitch(100.0, false, 3f);
-        SuspendAt(99.9);
+        SuspendAt(99.9, true);
         ResumeAt(130.0);
         Assert.IsFalse(IsSuspended());
         Assert.AreEqual(_appliedId, _releasedId, "the suspended pitch is not released after Resume");

@@ -255,9 +255,13 @@ public partial class PitchSettingsBehaviour : TsukimiBehaviour
 
     // ---- Header ----
 
+    // A lane page goes through the lane, which keeps its machine state and the pitcher together;
+    // a page placed on its own drives its pitcher directly.
     public void _ToggleRunning()
     {
-        if (pitcher != null) pitcher.RequestRunning(!pitcher.IsRunning());
+        if (pitcher == null) return;
+        if (lane != null) lane.RequestMachineRunning(!pitcher.IsRunning());
+        else pitcher.RequestRunning(!pitcher.IsRunning());
     }
 
     private void RefreshHeader()
