@@ -150,16 +150,18 @@ public partial class BallBehaviour
         Assert.AreEqual(BallAerodynamics.WakeFixed, _pendingWake.mode);
         _pending = false;
         QueuePitch(Vector3.up, Vector3.forward * 30f, Vector3.left, 10.0, BallAerodynamics.WakeRotating, 0.04f, Vector3.forward, 1.2f, 0.7f);
-        Assert.AreEqual(PitchState, _kind);
-        Assert.AreEqual(BallAerodynamics.WakeRotating, _wakeMode);
-        Assert.AreEqual(0.04f, _wakeCoefficient);
+        Assert.AreEqual((byte)PitchState, _kind);
+        Assert.AreEqual((byte)BallAerodynamics.WakeRotating, _wakeMode);
+        Assert.AreEqual(0.04f, SyncedWake().coefficient);
+        Assert.AreEqual(0f, SyncedHitStrength());
         Assert.AreEqual(Vector3.forward, _wakeDirection);
         Assert.AreEqual(1.2f, _wakeConeAngle);
         Assert.AreEqual(0.7f, _wakePhase);
         QueueHit(Vector3.one, Vector3.right, Vector3.up, 11.0, 17, 0.5f);
-        Assert.AreEqual(HitState, _kind);
-        Assert.AreEqual(BallAerodynamics.WakeNone, _wakeMode);
-        Assert.AreEqual(0f, _wakeCoefficient);
+        Assert.AreEqual((byte)HitState, _kind);
+        Assert.AreEqual((byte)BallAerodynamics.WakeNone, _wakeMode);
+        Assert.AreEqual(0f, SyncedWake().coefficient);
+        Assert.AreEqual(0.5f, SyncedHitStrength());
         Assert.AreEqual(Vector3.zero, _wakeDirection);
     }
 
@@ -179,16 +181,16 @@ public partial class BallBehaviour
         Assert.AreEqual(Vector3.left, _acceptedWake.direction);
         // A snapshot differing only in its wake is not the accepted state.
         Assert.IsTrue(SameAsAccepted());
-        _wakeCoefficient = 0.03f;
+        _hitStrengthOrWakeCoefficient = 0.03f;
         Assert.IsFalse(SameAsAccepted());
-        _wakeCoefficient = 0.045f;
+        _hitStrengthOrWakeCoefficient = 0.045f;
         // Ownership arriving here republishes the accepted pitch, wake included.
         Networking.SetOwner(other, gameObject);
         OnOwnershipTransferred(other);
         Assert.AreEqual(other.playerId, _publisherId);
-        Assert.AreEqual(PitchState, _kind);
-        Assert.AreEqual(BallAerodynamics.WakeFixed, _wakeMode);
-        Assert.AreEqual(0.045f, _wakeCoefficient);
+        Assert.AreEqual((byte)PitchState, _kind);
+        Assert.AreEqual((byte)BallAerodynamics.WakeFixed, _wakeMode);
+        Assert.AreEqual(0.045f, SyncedWake().coefficient);
         Assert.AreEqual(Vector3.left, _wakeDirection);
     }
 
@@ -201,7 +203,7 @@ public partial class BallBehaviour
         Mimic.Become(b);
         Networking.SetOwner(a, gameObject);
         _wakeMode = BallAerodynamics.WakeRotating;
-        _wakeCoefficient = 0.04f;
+        _hitStrengthOrWakeCoefficient = 0.04f;
         _wakeDirection = Vector3.forward;
         _wakeConeAngle = 1.5f;
         _wakePhase = 2.5f;
@@ -211,10 +213,8 @@ public partial class BallBehaviour
         _velocity = Vector3.forward * 30f;
         _spin = Vector3.forward;
         _serverTime = 9.0;
-        _batterId = -1;
-        _hitStrength = 0f;
+        _batterOrHolderId = -1;
         _hold = HoldFree;
-        _holderId = 0;
         _publisherId = c.playerId;
         ReceiveSnapshot();
         Assert.IsTrue(HasCandidates());

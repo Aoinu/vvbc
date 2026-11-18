@@ -89,7 +89,7 @@ public partial class BallBehaviour
         _sequence = 4;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = y.playerId;
+        _batterOrHolderId = y.playerId;
         _publisherId = y.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(3, _acceptedSequence, "y is not the owner");
@@ -114,7 +114,7 @@ public partial class BallBehaviour
         _sequence = 4;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = x.playerId;
+        _batterOrHolderId = x.playerId;
         _publisherId = x.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
@@ -142,7 +142,7 @@ public partial class BallBehaviour
         _sequence = 5;
         _kind = ThrowState;
         _hold = HoldFree;
-        _holderId = 0;
+        _batterOrHolderId = -1;
         _publisherId = winner.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
@@ -160,7 +160,7 @@ public partial class BallBehaviour
         _sequence = 12;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = x.playerId;
+        _batterOrHolderId = x.playerId;
         _publisherId = x.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(12, _acceptedSequence);
@@ -186,7 +186,7 @@ public partial class BallBehaviour
         _sequence = 1;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = winner.playerId;
+        _batterOrHolderId = winner.playerId;
         _publisherId = winner.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(me.playerId, LocalHolderId());
@@ -211,7 +211,7 @@ public partial class BallBehaviour
         _sequence = 1;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = winner.playerId;
+        _batterOrHolderId = winner.playerId;
         _publisherId = winner.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(winner.playerId, LocalHolderId());
@@ -242,8 +242,8 @@ public partial class BallBehaviour
         ExitHold();
         QueueSnapshot(ThrowState, Vector3.one, new Vector3(0f, 2f, 30f), Vector3.zero, 2.0, -1, 0f, HoldFree, 0);
         Assert.IsFalse(IsHeld());
-        Assert.AreEqual(ThrowState, _kind);
-        Assert.AreEqual(-1, _batterId, "no batter for a throw");
+        Assert.AreEqual((byte)ThrowState, _kind);
+        Assert.AreEqual(-1, SyncedBatterId(), "no batter for a throw");
         Mimic.Deliver();
         Mimic.Become(other);
         Assert.AreEqual(ThrowState, _acceptedKind);
@@ -261,7 +261,7 @@ public partial class BallBehaviour
         _sequence = 3;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = rival.playerId;
+        _batterOrHolderId = rival.playerId;
         _publisherId = rival.playerId;
         ReceiveSnapshot();
         Assert.IsTrue(HasCandidates(), "the rival's catch is held back");
@@ -270,7 +270,7 @@ public partial class BallBehaviour
         Assert.AreEqual(4, _acceptedSequence, "republished above every sequence seen");
         Assert.AreEqual(4, _sequence);
         Assert.AreEqual(me.playerId, _publisherId);
-        Assert.AreEqual(me.playerId, _holderId, "the owner's own state is sent again");
+        Assert.AreEqual(me.playerId, SyncedHolderId(), "the owner's own state is sent again");
         Assert.AreEqual(1, _conflictRepublishes);
         Assert.IsTrue(CanRepublishConflict());
         _conflictRepublishes = maximumSerializationRetries;

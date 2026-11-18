@@ -10,15 +10,15 @@ public partial class BallBehaviour
         Mimic.Join();
         QueueState(1, Vector3.up, Vector3.zero, Vector3.zero, 0.0);
         Assert.AreEqual(1, _sequence);
-        Assert.AreEqual(1, _kind);
+        Assert.AreEqual((byte)1, _kind);
         Assert.AreEqual(Vector3.up, _position);
         QueueState(2, Vector3.right, Vector3.forward, Vector3.up, 0.0);
         Assert.AreEqual(2, _sequence);
-        Assert.AreEqual(2, _kind);
+        Assert.AreEqual((byte)2, _kind);
         Assert.AreEqual(Vector3.forward, _velocity);
         QueueState(3, Vector3.one, Vector3.left, Vector3.down, 42.0);
         Assert.AreEqual(3, _sequence);
-        Assert.AreEqual(3, _kind);
+        Assert.AreEqual((byte)3, _kind);
         Assert.AreEqual(Vector3.down, _spin);
         Assert.AreEqual(42.0, _serverTime);
     }
@@ -83,11 +83,11 @@ public partial class BallBehaviour
         Assert.AreEqual(1, _acceptedSequence);
         QueueState(3, Vector3.one, Vector3.right, Vector3.down, 11.0);
         Assert.AreEqual(2, _acceptedSequence);
-        Assert.AreEqual(3, _kind);
+        Assert.AreEqual((byte)3, _kind);
         Mimic.Deliver(pitcher);
         Mimic.Become(pitcher);
         Assert.AreEqual(2, _acceptedSequence);
-        Assert.AreEqual(3, _kind);
+        Assert.AreEqual((byte)3, _kind);
         Assert.AreEqual(Vector3.right, _velocity);
     }
 
@@ -111,14 +111,15 @@ public partial class BallBehaviour
         Assert.IsTrue(_pending);
         Networking.SetOwner(hitter, gameObject);
         Assert.AreEqual(1, _sequence);
-        Assert.AreEqual(3, _kind);
+        Assert.AreEqual((byte)3, _kind);
         Assert.AreEqual(Vector3.right, _velocity);
-        Assert.AreEqual(27, _batterId);
-        Assert.AreEqual(0.65f, _hitStrength);
-        _batterId = 0; _hitStrength = 0f;
+        Assert.AreEqual(27, SyncedBatterId());
+        Assert.AreEqual(0.65f, SyncedHitStrength());
+        _batterOrHolderId = 0;
+        _hitStrengthOrWakeCoefficient = 0f;
         OnPreSerialization();
-        Assert.AreEqual(27, _batterId);
-        Assert.AreEqual(0.65f, _hitStrength);
+        Assert.AreEqual(27, SyncedBatterId());
+        Assert.AreEqual(0.65f, SyncedHitStrength());
         Assert.IsFalse(_pending);
         OnOwnershipTransferred(hitter);
         Assert.AreEqual(1, _sequence);
@@ -129,16 +130,38 @@ public partial class BallBehaviour
     {
         Mimic.Join();
         QueueHit(Vector3.one, Vector3.right, Vector3.up, 42.0, 17, 1.5f);
-        Assert.AreEqual(17, _batterId);
-        Assert.AreEqual(1f, _hitStrength);
+        Assert.AreEqual(17, SyncedBatterId());
+        Assert.AreEqual(1f, SyncedHitStrength());
         Assert.AreEqual(42.0, _serverTime);
         QueueState(2, Vector3.zero, Vector3.right, Vector3.zero, 43.0);
-        Assert.AreEqual(-1, _batterId);
-        Assert.AreEqual(0f, _hitStrength);
+        Assert.AreEqual(-1, SyncedBatterId());
+        Assert.AreEqual(0f, SyncedHitStrength());
         QueueHit(Vector3.one, Vector3.right, Vector3.up, 44.0, 17, 0.4f);
         QueueState(1, Vector3.zero, Vector3.zero, Vector3.zero, 45.0);
-        Assert.AreEqual(-1, _batterId);
-        Assert.AreEqual(0f, _hitStrength);
+        Assert.AreEqual(-1, SyncedBatterId());
+        Assert.AreEqual(0f, SyncedHitStrength());
+    }
+
+    [TsukimiTest]
+    public void StashedHitKeepsItsBatterAndStrength()
+    {
+        Mimic.Join();
+        VRCPlayerApi batter = Mimic.Join();
+        _sequence = 1;
+        _kind = HitState;
+        _publisherId = batter.playerId;
+        _batterOrHolderId = batter.playerId;
+        _hitStrengthOrWakeCoefficient = 0.65f;
+        ReceiveSnapshot();
+
+        Assert.IsTrue(AcceptCandidateOf(batter.playerId));
+        Assert.AreEqual(batter.playerId, _acceptedBatterId);
+        Assert.AreEqual(0.65f, _acceptedHitStrength);
+        Assert.AreEqual(0, _acceptedHolderId);
+        Assert.AreEqual(0f, _acceptedWake.coefficient);
+        Assert.IsTrue(SameAsAccepted());
+        _hitStrengthOrWakeCoefficient = 0.7f;
+        Assert.IsFalse(SameAsAccepted());
     }
 
     [TsukimiTest]

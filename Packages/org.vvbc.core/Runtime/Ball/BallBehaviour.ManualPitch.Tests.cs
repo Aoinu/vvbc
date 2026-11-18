@@ -80,13 +80,13 @@ public partial class BallBehaviour
         Assert.AreEqual(BallAerodynamics.WakeFixed, MakeWake(HandPitchState, wake.mode, wake.coefficient, wake.direction, 0f, 0f).mode);
         Assert.AreEqual(BallAerodynamics.WakeNone, MakeWake(ThrowState, wake.mode, wake.coefficient, wake.direction, 0f, 0f).mode);
         QueueSnapshot(HandPitchState, Vector3.up, Vector3.forward * 38f, Vector3.left * 260f, 4.0, -1, 0f, HoldFree, 0, wake);
-        Assert.AreEqual(HandPitchState, _kind);
-        Assert.AreEqual(BallAerodynamics.WakeFixed, _wakeMode);
-        Assert.AreEqual(0.006f, _wakeCoefficient);
+        Assert.AreEqual((byte)HandPitchState, _kind);
+        Assert.AreEqual((byte)BallAerodynamics.WakeFixed, _wakeMode);
+        Assert.AreEqual(0.006f, SyncedWake().coefficient);
         QueueHit(Vector3.one, Vector3.right, Vector3.up, 5.0, 17, 0.5f);
-        Assert.AreEqual(BallAerodynamics.WakeNone, _wakeMode, "the hit does not carry the pitch wake");
+        Assert.AreEqual((byte)BallAerodynamics.WakeNone, _wakeMode, "the hit does not carry the pitch wake");
         QueueSnapshot(ThrowState, Vector3.up, Vector3.forward * 30f, Vector3.zero, 6.0, -1, 0f, HoldFree, 0, wake);
-        Assert.AreEqual(BallAerodynamics.WakeNone, _wakeMode, "a throw never carries a wake");
+        Assert.AreEqual((byte)BallAerodynamics.WakeNone, _wakeMode, "a throw never carries a wake");
     }
 
     [TsukimiTest]

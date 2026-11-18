@@ -120,11 +120,10 @@ public partial class BallBehaviour
         Mimic.Join();
         _acceptedSequence = 4;
         _acceptedKind = HandPitchState;
+        _acceptedBatterId = -1;
         _acceptedLineage.pitcher = 5;
         _acceptedLineage.number = 2;
-        _kind = HandPitchState;
-        _pitchPitcher = 5;
-        _pitchNumber = 2;
+        CopyAccepted();
         Assert.IsTrue(SameAsAccepted());
         _pitchNumber = 3;
         Assert.IsFalse(SameAsAccepted(), "another pitch with the same flight is not the same state");

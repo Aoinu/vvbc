@@ -104,7 +104,7 @@ public partial class BallBehaviour
         _sequence = 2;
         _kind = PossessionState;
         _hold = HoldHand;
-        _holderId = catcher.playerId;
+        _batterOrHolderId = catcher.playerId;
         _publisherId = catcher.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(HoldHand, LocalHoldState());
@@ -121,7 +121,7 @@ public partial class BallBehaviour
         _sequence = 4;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = catcher.playerId;
+        _batterOrHolderId = catcher.playerId;
         _publisherId = catcher.playerId;
         ReceiveSnapshot();
         Assert.AreEqual(HoldGlove, LocalHoldState(), "an existing hold is restored");

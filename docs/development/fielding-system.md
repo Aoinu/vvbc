@@ -209,10 +209,10 @@ in the local player's glove, and false while anyone else holds it.
 
 ## Synchronization and speculative ownership
 
-New synced fields on BallBehaviour: `_hold`, `_holderId`, `_publisherId`
-(three ints). For Possession snapshots `_position` is the ball position at the
-event and `_velocity` carries the holder-local grab offset. The existing
-sequence, kind, motion, time and hit fields are reused.
+For Possession snapshots, `_hold` is the hold state, `_batterOrHolderId` is the
+holder ID, and `_publisherId` is the publisher ID. The snapshot carries the ball
+position at the event in `_position` and the holder-local grab offset in
+`_velocity`. See [ball network](ball-network-prototype.md) for the synced layout.
 
 The Ball keeps three kinds of state apart:
 

@@ -18,15 +18,14 @@ public partial class BallBehaviour
     private void ArriveAt(int sequence, int kind, int hold, int holder, int publisher, double time, Vector3 position)
     {
         _sequence = sequence;
-        _kind = kind;
+        _kind = (byte)kind;
         _position = position;
         _velocity = Vector3.zero;
         _spin = Vector3.zero;
         _serverTime = time;
-        _batterId = -1;
-        _hitStrength = 0f;
-        _hold = hold;
-        _holderId = holder;
+        _batterOrHolderId = kind == PossessionState ? holder : -1;
+        _hitStrengthOrWakeCoefficient = 0f;
+        _hold = (byte)hold;
         _publisherId = publisher;
         ReceiveSnapshot();
     }
@@ -61,9 +60,9 @@ public partial class BallBehaviour
         Arrive(4, PitchState, HoldFree, 0, a.playerId, 9.0);
         Networking.SetOwner(b, gameObject);
         Assert.IsFalse(_pending);
-        Assert.AreEqual(PossessionState, _kind, "the catch is sent");
+        Assert.AreEqual((byte)PossessionState, _kind, "the catch is sent");
         Assert.AreEqual(b.playerId, _publisherId);
-        Assert.AreEqual(b.playerId, _holderId);
+        Assert.AreEqual(b.playerId, SyncedHolderId());
         Assert.AreEqual(5, _sequence, "above the old owner's snapshot");
         Assert.AreEqual(HoldGlove, LocalHoldState());
     }
@@ -89,7 +88,7 @@ public partial class BallBehaviour
         Assert.AreEqual(ThrowState, _pendingKind);
         Assert.AreEqual(HoldFree, LocalHoldState(), "the old owner's snapshot does not re-attach the ball");
         Networking.SetOwner(b, gameObject);
-        Assert.AreEqual(ThrowState, _kind, "the final throw is sent, not the catch");
+        Assert.AreEqual((byte)ThrowState, _kind, "the final throw is sent, not the catch");
         Assert.AreEqual(throwVelocity, _velocity);
         Assert.AreEqual(11.0, _serverTime);
         Assert.AreEqual(b.playerId, _publisherId);
@@ -112,7 +111,7 @@ public partial class BallBehaviour
         Assert.IsTrue(_pending, "a notification alone does not decide the contest");
         Assert.AreEqual(HoldGlove, LocalHoldState());
         Networking.SetOwner(b, gameObject);
-        Assert.AreEqual(PossessionState, _kind);
+        Assert.AreEqual((byte)PossessionState, _kind);
         Assert.AreEqual(b.playerId, _publisherId);
         Assert.AreEqual(HoldGlove, LocalHoldState());
     }
@@ -286,7 +285,7 @@ public partial class BallBehaviour
         Networking.SetOwner(x, gameObject);
         Assert.AreEqual(x.playerId, _publisherId, "the accepted state is republished as the owner's own");
         Assert.AreEqual(2, _sequence);
-        Assert.AreEqual(p.playerId, _holderId, "with the same content");
+        Assert.AreEqual(p.playerId, SyncedHolderId(), "with the same content");
         Mimic.Deliver();
         Mimic.Become(p);
         Assert.AreEqual(x.playerId, _acceptedPublisherId);
@@ -412,7 +411,7 @@ public partial class BallBehaviour
         Assert.AreEqual(a.playerId, LocalHolderId(), "the previous owner's state is taken over");
         Assert.AreEqual(n.playerId, _publisherId, "and published as the new owner's own");
         Assert.AreEqual(10, _sequence, "above every sequence seen");
-        Assert.AreEqual(a.playerId, _holderId);
+        Assert.AreEqual(a.playerId, SyncedHolderId());
         Assert.IsTrue(HasCandidates(), "b's snapshot is still not taken");
         // A later snapshot of a is now a conflict, not a second take-over.
         Arrive(7, ThrowState, HoldFree, 0, a.playerId, 4.5);
@@ -442,7 +441,7 @@ public partial class BallBehaviour
         _spin = Vector3.zero;
         _serverTime = 3.0;
         _hold = HoldGlove;
-        _holderId = a.playerId;
+        _batterOrHolderId = a.playerId;
         _publisherId = a.playerId;
         StoreCandidate();
         _lastRemoteOwner = a.playerId;
@@ -496,7 +495,7 @@ public partial class BallBehaviour
         Assert.IsFalse(_pending);
         Assert.IsFalse(_releaseReassert, "the local throw is stopped where it is");
         Assert.AreEqual(a.playerId, _acceptedPublisherId, "the throw was never accepted");
-        Assert.AreNotEqual(ThrowState, _kind, "nor sent");
+        Assert.AreNotEqual((byte)ThrowState, _kind, "nor sent");
         Assert.IsFalse(IsHeld());
         Arrive(2, PossessionState, HoldGlove, c.playerId, c.playerId, 10.4);
         Assert.AreEqual(c.playerId, LocalHolderId(), "the owner's later state is applied");

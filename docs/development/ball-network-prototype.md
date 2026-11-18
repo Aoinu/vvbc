@@ -9,7 +9,7 @@ receive time and then simulate the Rigidbody locally. No transform stream or
 periodic correction is used.
 
 The fielding system adds Throw and Possession snapshots, a possession state
-(`_hold`, `_holderId`) and the publisher's player ID. Receivers accept a
+with a hold kind and holder ID, and the publisher's player ID. Receivers accept a
 snapshot only from the publisher they see as owner and keep each other
 publisher's newest snapshot as a candidate until ownership settles. Ownership
 notifications are settled against the current owner, not their arrival order,
@@ -20,6 +20,12 @@ Every snapshot also carries a pitch lineage (`_pitchPitcher`, `_pitchNumber`, `_
 `_pitchBatter`): the manual pitch a HandPitch starts, and that a hit, catch or throw comes
 from. On the batter's client a HandPitch is launched by the batter's judge, and a pitch judged
 invalid is never launched again; see [manual pitch sync](manual-pitch-sync.md).
+
+The synced kind, hold and wake mode are bytes. One synced int carries the batter
+ID for Hit or the holder ID for Possession. One synced float carries hit strength
+for Hit or the wake coefficient for Pitch and HandPitch. The Ball decodes these
+before comparing, accepting or keeping a snapshot as a candidate. All 18 synced
+fields total 99 bytes by type size.
 
 ## Scene setup
 

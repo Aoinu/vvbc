@@ -13,20 +13,20 @@ public partial class BallBehaviour
     [HideInInspector] public UdonBehaviour contactListener;
 
     [UdonSynced] private int _sequence;
-    [UdonSynced] private int _kind;
+    [UdonSynced] private byte _kind;
     [UdonSynced] private Vector3 _position;
     // Possession snapshots carry the holder-local grab offset here.
     [UdonSynced] private Vector3 _velocity;
     [UdonSynced] private Vector3 _spin;
     [UdonSynced] private double _serverTime;
-    [UdonSynced] private int _batterId;
-    [UdonSynced] private float _hitStrength;
-    [UdonSynced] private int _hold;
-    [UdonSynced] private int _holderId;
+    // Hit supplies the batter ID and strength. Possession uses the ID for the holder,
+    // and Pitch or HandPitch uses the float for the wake coefficient.
+    [UdonSynced] private int _batterOrHolderId;
+    [UdonSynced] private float _hitStrengthOrWakeCoefficient;
+    [UdonSynced] private byte _hold;
     [UdonSynced] private int _publisherId;
-    // The WakeProfile of a Pitch snapshot (world space); None for every other kind.
-    [UdonSynced] private int _wakeMode;
-    [UdonSynced] private float _wakeCoefficient;
+    // The WakeProfile of a Pitch or HandPitch snapshot (world space).
+    [UdonSynced] private byte _wakeMode;
     [UdonSynced] private Vector3 _wakeDirection;
     [UdonSynced] private float _wakeConeAngle;
     [UdonSynced] private float _wakePhase;
@@ -42,7 +42,7 @@ public partial class BallBehaviour
     private const int HitState = 3;
     // A free flight released by a fielder; never treated as a pitch or a hit.
     private const int ThrowState = 4;
-    // A change of possession; _hold and _holderId describe it.
+    // A change of possession; _hold and _batterOrHolderId describe it.
     private const int PossessionState = 5;
     // A manual pitch released from a fielder's hand: a pitch flight (wake, strike zone, bat
     // contact) published as a fielding action (speculative ownership, never superseded).
@@ -589,18 +589,16 @@ public partial class BallBehaviour
     private void CopyAccepted()
     {
         _sequence = _acceptedSequence;
-        _kind = _acceptedKind;
+        _kind = (byte)_acceptedKind;
         _position = _acceptedPosition;
         _velocity = _acceptedVelocity;
         _spin = _acceptedSpin;
         _serverTime = _acceptedServerTime;
-        _batterId = _acceptedBatterId;
-        _hitStrength = _acceptedHitStrength;
-        _hold = _acceptedHold;
-        _holderId = _acceptedHolderId;
+        _batterOrHolderId = _acceptedKind == PossessionState ? _acceptedHolderId : _acceptedBatterId;
+        _hitStrengthOrWakeCoefficient = _acceptedKind == HitState ? _acceptedHitStrength : _acceptedWake.coefficient;
+        _hold = (byte)_acceptedHold;
         _publisherId = _acceptedPublisherId;
-        _wakeMode = _acceptedWake.mode;
-        _wakeCoefficient = _acceptedWake.coefficient;
+        _wakeMode = (byte)_acceptedWake.mode;
         _wakeDirection = _acceptedWake.direction;
         _wakeConeAngle = _acceptedWake.coneAngle;
         _wakePhase = _acceptedWake.initialPhase;
@@ -627,8 +625,12 @@ public partial class BallBehaviour
 
     private WakeProfile SyncedWake()
     {
-        return MakeWake(_kind, _wakeMode, _wakeCoefficient, _wakeDirection, _wakeConeAngle, _wakePhase);
+        return MakeWake(_kind, _wakeMode, _hitStrengthOrWakeCoefficient, _wakeDirection, _wakeConeAngle, _wakePhase);
     }
+
+    private int SyncedBatterId() => _kind == HitState ? _batterOrHolderId : -1;
+    private int SyncedHolderId() => _kind == PossessionState ? _batterOrHolderId : 0;
+    private float SyncedHitStrength() => _kind == HitState ? _hitStrengthOrWakeCoefficient : 0f;
 
     // A LocalRig ball accepts its own actions at once (QueueSnapshot -> PublishPending) and never sends.
     private void Send()
@@ -646,10 +648,10 @@ public partial class BallBehaviour
         _acceptedVelocity = _velocity;
         _acceptedSpin = _spin;
         _acceptedServerTime = _serverTime;
-        _acceptedBatterId = _batterId;
-        _acceptedHitStrength = _hitStrength;
+        _acceptedBatterId = SyncedBatterId();
+        _acceptedHitStrength = SyncedHitStrength();
         _acceptedHold = _hold;
-        _acceptedHolderId = _holderId;
+        _acceptedHolderId = SyncedHolderId();
         _acceptedPublisherId = _publisherId;
         _acceptedWake = SyncedWake();
         _acceptedLineage = SyncedLineage();
@@ -715,10 +717,10 @@ public partial class BallBehaviour
         _candidateVelocity[slot] = _velocity;
         _candidateSpin[slot] = _spin;
         _candidateServerTime[slot] = _serverTime;
-        _candidateBatterId[slot] = _batterId;
-        _candidateHitStrength[slot] = _hitStrength;
+        _candidateBatterId[slot] = SyncedBatterId();
+        _candidateHitStrength[slot] = SyncedHitStrength();
         _candidateHold[slot] = _hold;
-        _candidateHolderId[slot] = _holderId;
+        _candidateHolderId[slot] = SyncedHolderId();
         _candidatePublisherId[slot] = _publisherId;
         _candidateWake[slot] = SyncedWake();
         _candidateLineage[slot] = SyncedLineage();
@@ -855,8 +857,8 @@ public partial class BallBehaviour
     {
         return _acceptedSequence > 0 && _kind == _acceptedKind && _serverTime == _acceptedServerTime &&
             _position == _acceptedPosition && _velocity == _acceptedVelocity && _spin == _acceptedSpin &&
-            _batterId == _acceptedBatterId && _hitStrength == _acceptedHitStrength &&
-            _hold == _acceptedHold && _holderId == _acceptedHolderId && SameWake(SyncedWake(), _acceptedWake) &&
+            SyncedBatterId() == _acceptedBatterId && SyncedHitStrength() == _acceptedHitStrength &&
+            _hold == _acceptedHold && SyncedHolderId() == _acceptedHolderId && SameWake(SyncedWake(), _acceptedWake) &&
             SameLineage(SyncedLineage(), _acceptedLineage);
     }
 

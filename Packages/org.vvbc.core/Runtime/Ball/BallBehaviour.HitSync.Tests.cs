@@ -88,7 +88,7 @@ public partial class BallBehaviour
         Assert.IsTrue(_pending, "the hit is still waiting for ownership");
         Networking.SetOwner(batter, gameObject);
         Assert.IsFalse(_pending);
-        Assert.AreEqual(HitState, _kind, "the hit is published");
+        Assert.AreEqual((byte)HitState, _kind, "the hit is published");
         Assert.AreEqual(batter.playerId, _publisherId);
         Assert.AreEqual(5, _sequence, "above the pitch");
         Assert.AreEqual(10.45, _serverTime);
@@ -109,7 +109,7 @@ public partial class BallBehaviour
         Arrive(4, PitchState, HoldFree, 0, pitcher.playerId, 20.0);
         Assert.IsFalse(_pending, "a pitch released after the contact is a newer state");
         Networking.SetOwner(batter, gameObject);
-        Assert.AreNotEqual(HitState, _kind, "nothing old is published");
+        Assert.AreNotEqual((byte)HitState, _kind, "nothing old is published");
     }
 
     [TsukimiTest]

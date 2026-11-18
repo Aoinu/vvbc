@@ -10,18 +10,16 @@ public partial class BallBehaviour
     private void ArriveWake(int sequence, int kind, int publisher, double time, WakeProfile wake)
     {
         _sequence = sequence;
-        _kind = kind;
+        _kind = (byte)kind;
         _position = Vector3.up;
         _velocity = Vector3.forward * 33f;
         _spin = Vector3.left * 200f;
         _serverTime = time;
-        _batterId = -1;
-        _hitStrength = 0f;
+        _batterOrHolderId = -1;
         _hold = HoldFree;
-        _holderId = 0;
         _publisherId = publisher;
-        _wakeMode = wake.mode;
-        _wakeCoefficient = wake.coefficient;
+        _wakeMode = (byte)wake.mode;
+        _hitStrengthOrWakeCoefficient = wake.coefficient;
         _wakeDirection = wake.direction;
         _wakeConeAngle = wake.coneAngle;
         _wakePhase = wake.initialPhase;
@@ -115,8 +113,8 @@ public partial class BallBehaviour
         Assert.AreEqual(throwSequence, _acceptedSequence);
         Assert.AreEqual(BallAerodynamics.WakeNone, _acceptedWake.mode);
         OnPreSerialization();
-        Assert.AreEqual(ThrowState, _kind);
-        Assert.AreEqual(BallAerodynamics.WakeNone, _wakeMode, "the throw is serialized without a wake");
+        Assert.AreEqual((byte)ThrowState, _kind);
+        Assert.AreEqual((byte)BallAerodynamics.WakeNone, _wakeMode, "the throw is serialized without a wake");
     }
 
     [TsukimiTest]
