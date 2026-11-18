@@ -163,7 +163,7 @@ public partial class PitchJudgeBehaviour
     private const double JudgeServer = 1000.0;
 
     private PitchPrepBehaviour TestPrep() { return strikeZone.ball.manualPitcher.prepSync; }
-    private Vector3 TestIdeal() { return IdealHand(TestPrep(), JudgeChest, JudgePlane); }
+    private Vector3 TestIdeal() { return IdealHand(PreparedPitch.Read(TestPrep()), JudgeChest, JudgePlane); }
     private Vector3 TestRelease() { return TestIdeal() + new Vector3(0f, 0.05f, -0.06f); }
     private Vector3 TestDirection() { return (JudgeTarget - TestRelease()).normalized; }
 
@@ -184,7 +184,8 @@ public partial class PitchJudgeBehaviour
         _ball = strikeZone.ball;
         _assumeOccupantForTest = true;
         RegisterPrep(TestPrep());
-        Arm(TestPrep());
+        RememberPreparation(TestPrep());
+        Arm(PreparedPitch.Read(TestPrep()), 1);
         return TestPrep().prepGeneration;
     }
 
@@ -204,7 +205,8 @@ public partial class PitchJudgeBehaviour
     // Returns the verdict, or -1 when a step did not go as a pitch goes.
     private int JudgeOnePitchForTest(int pitcher, int batter, int number, int generation, float pass, float delayMs)
     {
-        Arm(TestPrep());
+        RememberPreparation(TestPrep());
+        Arm(PreparedPitch.Read(TestPrep()), number);
         float arrival = pass + delayMs * 0.001f;
         if (delayMs <= 0f)
         {
@@ -220,6 +222,85 @@ public partial class PitchJudgeBehaviour
             if (!GateHandPitchAt(pitcher, number, generation, batter, arrival, JudgeServer)) return -1;
         }
         return HasVerdictFor(pitcher, number) ? _knownStatus : -1;
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void ANewPreparationDoesNotInvalidateAReleaseObservedWithThePreviousGeneration()
+    {
+        VRCPlayerApi player = Mimic.Join();
+        int id = player.playerId;
+        PrepareForTest(id);
+        int generation = WatchForTest();
+        HandPassForTest(10f);
+        PrepareForTest(id);
+        OnPrepChangedAt(TestPrep(), JudgeServer);
+
+        Assert.IsTrue(GateHandPitchAt(id, 1, generation, id, 10.05f, JudgeServer));
+        Assert.AreEqual(PitchJudgeMath.StatusValid, KnownStatus());
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void AReleaseSeenBetweenTheNewPreparationAndTheOldHandPitchCanBeMatched()
+    {
+        VRCPlayerApi player = Mimic.Join();
+        int id = player.playerId;
+        PrepareForTest(id);
+        int releasedGeneration = WatchForTest();
+        PrepareForTest(id);
+        PitchPrepBehaviour prep = TestPrep();
+        OnPrepChangedAt(prep, JudgeServer);
+        Arm(PreparedPitch.Read(prep), 1);
+        HandPassForTest(10f);
+        Assert.AreEqual(prep.prepGeneration, _candidateGeneration);
+
+        Assert.IsTrue(GateHandPitchAt(id, 1, releasedGeneration, id, 10.05f, JudgeServer));
+        Assert.AreEqual(PitchJudgeMath.StatusValid, KnownStatus());
+    }
+
+    [TsukimiTest]
+    public void CancellationConvergesWhetherTheValidVerdictArrivesBeforeOrAfterIt()
+    {
+        Mimic.Join();
+        ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusValid, 0, 10f, true, 100f, JudgeServer, JudgeServer);
+        ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusCancelled, 4, 0f, false, 0f, JudgeServer + 3.0, JudgeServer + 3.0);
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, KnownStatus());
+        ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusValid, 0, 10f, true, 100f, JudgeServer + 4.0, JudgeServer + 4.0);
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, KnownStatus());
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void HandPitchBeforePreparationCanStillUseItsOwnReceivedGeneration()
+    {
+        VRCPlayerApi player = Mimic.Join();
+        int id = player.playerId;
+        PrepareForTest(id);
+        int generation = WatchForTest();
+        int nextGeneration = generation + 2;
+        Assert.IsTrue(GateHandPitchAt(id, 1, nextGeneration, id, 9.9f, JudgeServer));
+        Assert.IsFalse(monitoring);
+        PrepareForTest(id);
+        OnPrepChangedAt(TestPrep(), JudgeServer);
+        Assert.IsTrue(monitoring);
+        HandPassForTest(10f);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, KnownStatus());
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void APassForAnOldHandSessionIsNotUsedForTheNextPitchOnTheSameCourse()
+    {
+        VRCPlayerApi player = Mimic.Join();
+        int id = player.playerId;
+        PrepareForTest(id);
+        int generation = WatchForTest();
+        HandPassForTest(10f);
+        Assert.AreEqual(PhaseCandidate, phase);
+        Assert.IsTrue(GateHandPitchAt(id, 2, generation, id, 10.04f, JudgeServer));
+        Assert.AreEqual(PhaseAwaitMotion, phase);
+        Assert.AreEqual(PitchJudgeMath.StatusNone, KnownStatus());
+        HandPassForTest(10.15f);
+        Assert.AreEqual(2, KnownNumber());
+        Assert.AreEqual(PitchJudgeMath.StatusValid, KnownStatus());
+        Assert.IsTrue(KnownDelayMs() < -100f);
     }
 
     [TsukimiTest(maxSteps: 20000000)]
@@ -263,7 +344,7 @@ public partial class PitchJudgeBehaviour
         TickAt(10.2f, JudgeServer);
         Assert.AreEqual(PhaseTimedOut, phase, "past the threshold");
         Assert.AreEqual(PitchJudgeMath.StatusNone, _knownStatus, "a pass alone is never judged");
-        Arm(TestPrep());
+        Arm(PreparedPitch.Read(TestPrep()), 1);
         Assert.IsTrue(GateHandPitchAt(pitcher, 1, TestPrep().prepGeneration, batter, 13f, JudgeServer));
         Assert.AreEqual(PhaseAwaitMotion, phase, "beyond candidateMatchSeconds the data waits for its own motion");
     }
@@ -294,12 +375,15 @@ public partial class PitchJudgeBehaviour
         PrepareForTest(batter);
         int generation = WatchForTest();
         Assert.IsTrue(GateHandPitchAt(pitcher, 1, generation + 1, batter, 10f, JudgeServer));
+        TickAt(10.6f, JudgeServer);
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, _knownStatus);
         Assert.AreEqual(PitchJudgeMath.ReasonPrepMissing, _knownReason);
         Assert.IsTrue(GateHandPitchAt(pitcher + 50, 1, 3, batter, 11f, JudgeServer), "no data at all");
+        TickAt(11.6f, JudgeServer);
         Assert.AreEqual(PitchJudgeMath.ReasonPrepMissing, _knownReason);
         Assert.IsTrue(GateHandPitchAt(pitcher, 3, generation, batter, 12f, JudgeServer + 700.0),
             "expired data");
+        TickAt(12.6f, JudgeServer + 700.0);
         Assert.AreEqual(3, _knownNumber);
         Assert.AreEqual(PitchJudgeMath.ReasonPrepMissing, _knownReason);
     }
@@ -335,8 +419,8 @@ public partial class PitchJudgeBehaviour
             "an invalid pitch arriving again is still held back");
         Assert.AreEqual(sequence, verdictSequence, "no second verdict");
         Assert.AreEqual(PitchJudgeMath.StatusValid, JudgeOnePitchForTest(pitcher, batter, 2, generation, 12f, 30f));
-        Assert.IsFalse(GateHandPitchAt(pitcher, 2, generation, batter, 12.5f, JudgeServer),
-            "a valid pitch arriving again takes the usual path");
+        Assert.IsTrue(GateHandPitchAt(pitcher, 2, generation, batter, 12.5f, JudgeServer),
+            "a valid pitch arriving again does not fall through to launch");
         Assert.AreEqual(sequence + 1, verdictSequence);
     }
 
@@ -437,7 +521,7 @@ public partial class PitchJudgeBehaviour
         ApplyOutcomeAt(7, 2, PitchJudgeMath.StatusValid, PitchJudgeMath.ReasonNone, 20f, true, 100f, 101.0, 101.5);
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, _knownStatus, "invalid is final");
         ApplyOutcomeAt(7, 2, PitchJudgeMath.StatusCancelled, PitchJudgeMath.ReasonBatterChanged, 0f, false, 0f, 101.0, 101.5);
-        Assert.AreEqual(PitchJudgeMath.StatusInvalid, _knownStatus, "a cancel does not replace it either");
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, _knownStatus, "a synchronized cancellation takes precedence");
         ApplyOutcomeAt(7, 1, PitchJudgeMath.StatusValid, PitchJudgeMath.ReasonNone, 20f, true, 100f, 99.0, 101.5);
         Assert.AreEqual(2, _knownNumber, "an older pitch's verdict does not replace the newer one");
         ApplyOutcomeAt(7, 3, PitchJudgeMath.StatusValid, PitchJudgeMath.ReasonNone, 20f, true, 100f, 102.0, 102.5);

@@ -13,6 +13,7 @@ public partial class BallBehaviour
 
     public void Stage(Vector3 position)
     {
+        _voidPresentation = false;
         ExitHold();
         _releaseReassert = false;
         flying = false;
@@ -83,6 +84,7 @@ public partial class BallBehaviour
 
     private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
     {
+        _voidPresentation = false;
         ClearWake();
         ClearSpeculation();
         EndVisualCorrection();

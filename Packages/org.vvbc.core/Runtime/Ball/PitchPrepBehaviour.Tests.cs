@@ -69,7 +69,7 @@ public partial class PitchPrepBehaviour
         // The batter is not on the plate any more (it has no occupant) and judged nothing.
         CheckVerdictAt(1000f, PrepServer + 3.0);
         Assert.AreEqual(number, cancelPitchNumber);
-        Assert.AreEqual(batter.playerId, cancelBatterId);
+        Assert.AreEqual(pitcher.playerId, cancelPitcherId);
         Assert.AreEqual(PitchJudgeMath.ReasonBatterChanged, cancelReason);
         Assert.IsTrue(judge.HasVerdictFor(pitcher.playerId, number), "the pitcher follows its own cancellation");
         Assert.AreEqual(PitchJudgeMath.StatusCancelled, judge.KnownStatus());
@@ -89,6 +89,84 @@ public partial class PitchPrepBehaviour
             PrepServer, PrepServer);
         CheckVerdictAt(1000f, PrepServer + 3.0);
         Assert.AreEqual(0, cancelPitchNumber);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, judge.KnownStatus());
+    }
+
+    [TsukimiTest]
+    public void AStillPresentBatterWithoutAVerdictCancelsAtThreeSeconds()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        VRCPlayerApi batter = Mimic.Join();
+        PublishForTest(batter.playerId);
+        WatchPitch(3, batter.playerId, 5f);
+        CheckVerdictAt(7.9f, PrepServer, batter.playerId);
+        Assert.AreEqual(0, cancelPitchNumber);
+        CheckVerdictAt(8f, PrepServer + 3.0, batter.playerId);
+        Assert.AreEqual(PitchJudgeMath.ReasonVerdictMissing, cancelReason);
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, judge.KnownStatus());
+        Mimic.Deliver(batter);
+        Mimic.Become(batter);
+        Assert.AreEqual(pitcher.playerId, cancelPitcherId);
+        Assert.AreEqual(3, cancelPitchNumber);
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, judge.KnownStatus());
+    }
+
+    [TsukimiTest]
+    public void AStaleCompletionCannotConfirmTheLatestGenerationAndFailureRetriesIt()
+    {
+        Mimic.Join();
+        PublishForTest(8);
+        OnPreSerialization();
+        int first = prepGeneration;
+        PublishForTest(9);
+        FinishSend(true);
+        Assert.IsFalse(CurrentSent());
+        OnPreSerialization();
+        Assert.AreEqual(first + 1, _serializedGeneration);
+        FinishSend(false);
+        Assert.IsTrue(_retryScheduled);
+        for (int i = 0; i < MaximumRetries; i++)
+        {
+            RetrySend();
+            OnPreSerialization();
+            FinishSend(false);
+        }
+        Assert.IsTrue(SendFailed());
+        Assert.IsFalse(_retryScheduled);
+        PublishForTest(10);
+        OnPreSerialization();
+        FinishSend(false);
+        RetrySend();
+        OnPreSerialization();
+        FinishSend(true);
+        Assert.IsTrue(CurrentSent());
+        Assert.IsFalse(SendFailed());
+        Assert.AreEqual(10, prepTargetBatterId);
+    }
+
+    [TsukimiTest]
+    public void AnotherHandPitchDoesNotReplaceAnEarlierTimeout()
+    {
+        Mimic.Join();
+        WatchPitch(3, 2, 5f);
+        WatchPitch(4, 2, 6f);
+        CheckVerdictAt(8f, PrepServer);
+        Assert.AreEqual(3, cancelPitchNumber);
+        CheckVerdictAt(9f, PrepServer + 1.0);
+        Assert.AreEqual(4, cancelPitchNumber);
+    }
+
+    [TsukimiTest]
+    public void ANewerVerdictDoesNotConfirmAnEarlierPitch()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        WatchPitch(3, 2, 5f);
+        WatchPitch(4, 2, 6f);
+        judge.ApplyOutcomeAt(pitcher.playerId, 4, PitchJudgeMath.StatusValid, PitchJudgeMath.ReasonNone, 30f, true, 100f,
+            PrepServer, PrepServer);
+        CheckVerdictAt(9f, PrepServer + 3.0, 2);
+        Assert.AreEqual(3, cancelPitchNumber);
+        Assert.AreEqual(4, judge.KnownNumber());
         Assert.AreEqual(PitchJudgeMath.StatusValid, judge.KnownStatus());
     }
 

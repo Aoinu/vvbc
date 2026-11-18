@@ -12,7 +12,7 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 
 | Code | Responsibility |
 |---|---|
-| `Ball/PitchPrepBehaviour.cs` | On the mound (`ManualPitchMound/PitchPrep`), Manual sync, owned by the pitcher: the prepared pitch (generation, target batter, release points, calibrated release, course, direction, speed, spin, SSW, expiry), the pitcher's check that a pitch was judged, and the pitcher's cancellation of a pitch whose batter left. |
+| `Ball/PitchPrepBehaviour.cs` | On the mound (`ManualPitchMound/PitchPrep`), Manual sync, owned by the pitcher: the prepared pitch, publication retries, and the pitcher's cancellation when a verdict is unavailable at the deadline. |
 | `Ball/ManualPitchBehaviour.PitchSync.cs` | The mound publishes the course a release would use now, only when it changes, and gives each release its pitch ID. |
 | `Ball/PitchJudgeBehaviour.cs` | On the HomePlate root next to `StrikeZoneBehaviour` (so it shares that GameObject's owner, the occupant batter), Manual sync: remote release detection, the delay verdict, the speculative flight's start and end, the synced verdict and the message shown to everyone. |
 | `Ball/PitchJudgeMath.cs` | Pure rules: delay classification, the closest pass of the remote hand, texts. |
@@ -36,8 +36,9 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 
 ## Pitch ID and prepared data
 
-Each recognized release gets a **pitch number** from the mound (`_pitchCounter`); with the
-pitcher's player ID it is the **pitch ID**. The HandPitch snapshot carries the ID, the prepared
+Each pickup into the throwing hand starts a numbered Ball hold. The Ball shares the hold number
+in the unused spin fields of the hand possession snapshot. A recognized release uses that number
+and the pitcher's player ID as the **pitch ID**. The HandPitch snapshot carries the ID, the prepared
 generation it was released against and the batter it was prepared for (`_pitchPitcher`,
 `_pitchNumber`, `_pitchPrep`, `_pitchBatter`, four synced ints). That is the **lineage**. A hit, a
 catch or a throw keeps the lineage of the flight it comes from. A Stage, a batting-pitcher pitch
@@ -66,10 +67,19 @@ owner that is not the pitcher who published it withdraws it (the pitcher left).
 These are **predictions**: the release's own arm speed and pose still decide the formal flight.
 
 A release takes the published generation only when the prepared data describes that release's
-course (same source and batter). Otherwise it carries generation 0 and batter -1 and is never
-judged. The pitcher never assumes a publication arrived: whether it was serialized is shown on
-the panel (`pitch data: sent / sending`). The batter uses only what it received; a HandPitch
-whose generation it never received is invalid (`pitch data not prepared`).
+course (same source and batter). A release with generation 0 and batter -1 follows the shared
+flight without a batter verdict. The sender captures the publication revision in
+`OnPreSerialization`, retries a failed current revision up to three times, and prioritizes
+newer requests. The panel shows `sent` when the current revision serialized successfully,
+`sending` while pending, and `send failed` once retries are exhausted.
+
+The judge keeps up to 16 received generations, identified by publisher, generation and target
+batter, and retains the copy in use by a release candidate or a HandPitch awaiting its motion.
+An update or withdrawal leaves previously received generations available for the pending pitch.
+Once the HandPitch supplies the pitch ID, a pass must match its hold number and generation. If
+the preparation changed before the pass, the judge can check up to 80 recent hand samples
+from that same hold against the referenced generation. If the HandPitch arrives first, its
+generation can still arrive during the motion wait.
 
 ## Batter: release detection
 
@@ -99,7 +109,7 @@ A pass is only a **candidate**. Nothing is judged from it alone:
 |---|---|---|
 | Candidate | a pass with no HandPitch yet; the prepared pitch flies speculatively | the HandPitch (judged), a non-pitch state (dropped, no verdict), the threshold passing (TimedOut) |
 | TimedOut | `threshold` after the pass with no HandPitch; the speculative flight is rolled back | a HandPitch within `candidateMatchSeconds` (1.5 s, judged invalid by its delay), a newer pass, a non-pitch state |
-| AwaitMotion | a HandPitch first; it is held, the ball stays in the pitcher's hand | the pass (judged), `motionWaitSeconds` (0.5 s) without one (invalid: motion not detected) |
+| AwaitMotion | a HandPitch first; the judge waits for its preparation and the matching pass | the pass (judged) or `motionWaitSeconds` (0.5 s) expires (invalid: no usable preparation or motion) |
 
 A Throw or Possession after a pass (a pickoff, a throw, a recall, the pitcher keeping the ball)
 drops the candidate without any verdict. A pass never matches a HandPitch of another pitcher or
@@ -154,10 +164,13 @@ generation, batter, status, reason, delay, whether measured, threshold, server t
 event. A late joiner restores it: it follows the verdict and voids the pitch, but is not shown a
 message for a pitch it did not see.
 
-One pitch's outcome is final once followed: a later or repeated Valid never undoes an Invalid,
-and a cancellation does not replace it either. A record older (by its server time) than the one
-followed, about another pitch, is ignored, so an old pitch's verdict never reaches the next one.
-Pending is a local phase, not published.
+For one pitch ID, cancellation takes precedence over Invalid, and Invalid takes precedence over
+Valid. A later receipt of lower priority leaves the outcome in place. Older outcomes can void
+their own pitch without replacing the message for a newer pitch. Pending is a local phase.
+
+The Ball tracks which pitch IDs have already applied their formal flight. A late joiner can
+apply its first accepted HandPitch. Duplicate snapshots and ownership republishes preserve
+the applied flight, and an older HandPitch cannot replace its hit or catch.
 
 ## Invalid pitch
 
@@ -165,25 +178,23 @@ On every client:
 
 1. The message is shown for `messageSeconds` (8 s) on the plate's label and on the mound panel,
    for example `INVALID PITCH: sync delay 146 ms (limit 100 ms). Pitch again.`
-2. The Ball **voids** the pitch: a HandPitch or Hit with that lineage is never launched again,
-   however late or often it arrives. If it is what the client shows, its strike call and batting
-   feedback are dropped and it can no longer be hit.
+2. The Ball **voids** the pitch and its derived Hit, Possession and Throw. On the displayed ball
+   this stops the speculative or formal flight, clears strike and batting feedback, and disables
+   contact, catch and pickup. Pending actions for the same pitch are dropped. Late snapshots
+   from that pitch cannot restore them.
 3. The pitcher's client takes the ball back into its glove when the ball still comes from that
    pitch (an ordinary Possession, `RecallToLocalGlove`), so ownership, contests and late joiners
    follow the [fielding rules](fielding-system.md). The pitcher pitches again; nothing is replayed.
 
-The batter never hits or sees an invalid pitch's flight: its ball launches only a valid pitch,
-and a speculative flight allows no contact. A fielder may already have caught it; the pitcher's
-recall supersedes that possession. A ball that left that pitch's lineage (a new pitch, a Stage, a
-recall) is never touched. Fielding after the pitch (a throw back, a catch) keeps the lineage and
-is replaced by the recall, which is what voiding the pitch means.
+The batter can see the speculative flight while waiting for the verdict. A fielder may have
+caught the formal flight before learning its outcome. The invalidation and recall replace that
+possession. A newer pitch, Stage, or recall follows its own lineage.
 
-**Batter left or changed.** The pitcher checks each pitch prepared for a batter once,
-`verdictTimeoutSeconds` (3 s) after the release. Unjudged while that batter no longer occupies the
-plate, it is **cancelled** by the pitcher: `cancel*` on the prepared data, shown as
-`PITCH CANCELLED: batter changed`, and voided like an invalid pitch. That is not a validity
-verdict. Unjudged while the batter is still there, it is only reported to the pitcher
-(`Pitch not judged`), never assumed valid or invalid.
+The pitcher checks each pitch prepared for a batter after `verdictTimeoutSeconds` (3 s).
+Without a confirmed verdict it publishes a cancellation with the original pitcher and pitch
+number. The reason is `batter changed` or `batter verdict unavailable`. The cancellation
+voids the ball and lets the pitcher recall it. Formal validity verdicts remain the batter's
+responsibility. A verdict confirms its own pitch ID even when a different pitch is pending.
 
 ## No batter, LocalRig
 

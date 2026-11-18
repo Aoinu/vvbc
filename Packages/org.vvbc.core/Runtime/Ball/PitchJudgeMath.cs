@@ -10,7 +10,7 @@ public static class PitchJudgeMath
     public const int StatusPending = 1;
     public const int StatusValid = 2;
     public const int StatusInvalid = 3;
-    // Not a validity verdict: the pitcher withdrew the pitch because its batter left or changed.
+    // The pitcher withdrew the pitch without a confirmed batter verdict.
     public const int StatusCancelled = 4;
 
     public const int ReasonNone = 0;
@@ -22,6 +22,7 @@ public static class PitchJudgeMath
     public const int ReasonPrepMissing = 3;
     // Cancelled by the pitcher: the batter the pitch was prepared for left or changed.
     public const int ReasonBatterChanged = 4;
+    public const int ReasonVerdictMissing = 5;
 
     public const float DefaultThresholdMs = 100f;
     public const float MinThresholdMs = 0f;
@@ -110,6 +111,7 @@ public static class PitchJudgeMath
         if (reason == ReasonMotionNotDetected) return "release motion not detected";
         if (reason == ReasonPrepMissing) return "pitch data not prepared";
         if (reason == ReasonBatterChanged) return "batter changed";
+        if (reason == ReasonVerdictMissing) return "batter verdict unavailable";
         return "";
     }
 

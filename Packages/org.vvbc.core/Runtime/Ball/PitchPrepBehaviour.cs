@@ -3,6 +3,12 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon.Common;
 
+public struct PitchVerdictWatch
+{
+    public int number, batter;
+    public float due;
+}
+
 // The prepared pitch of one mound, published by its pitcher before the release so the batter
 // can recognise the release motion and fly the pitch speculatively
 // (docs/development/manual-pitch-sync.md). The mound fills the prep* fields and calls Publish
@@ -18,6 +24,7 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
 {
     public const int PitchTypeNone = 0;
     public const int PitchTypeFourSeam = 1;
+    private const int MaximumRetries = 3;
 
     [Tooltip("The mound this prepared data belongs to.")]
     public ManualPitchBehaviour mound;
@@ -53,19 +60,25 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     [UdonSynced] public float prepWakeCoefficient;
     [UdonSynced] public Vector3 prepWakeDirection;
     [UdonSynced] public double prepExpiresAt;
-    // The pitcher's cancellation of its own pitch (batter left or changed before judging it).
+    // A cancellation keeps its pitcher even when ownership of the mound changes.
     [UdonSynced] public int cancelPitchNumber;
-    [UdonSynced] public int cancelBatterId = -1;
+    [UdonSynced] public int cancelPitcherId;
     [UdonSynced] public int cancelReason;
     [UdonSynced] public double cancelServerTime;
 
     private bool _awaitingOwnership;
-    private int _sentGeneration;
-    private int _requestedGeneration;
-    private bool _watching;
-    private int _watchNumber;
-    private int _watchBatter = -1;
-    private float _watchDue;
+    private PreparedPitch _queuedPreparation;
+    private int _queuedCancelPitcher, _queuedCancelNumber, _queuedCancelReason;
+    private double _queuedCancelTime;
+    private int _localGeneration;
+    private int _latestReceivedPitcher, _latestReceivedGeneration;
+    private int _requestedRevision, _serializedRevision, _sentRevision;
+    private int _serializedGeneration;
+    private int _ownershipEpoch, _serializedEpoch;
+    private int _sendRetries;
+    private bool _retryScheduled;
+    private int _lastCancelledPitch;
+    private PitchVerdictWatch[] _watches = new PitchVerdictWatch[2];
 
     private void Start()
     {
@@ -104,9 +117,42 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     public bool UsableFor(int pitcher, double serverNow)
     {
         if (!prepReady || pitcher <= 0 || prepPitcherId != pitcher || prepGeneration <= 0) return false;
+        if (pitcher == _latestReceivedPitcher && prepGeneration < _latestReceivedGeneration) return false;
+        return serverNow < prepExpiresAt && PublishedBy(pitcher);
+    }
+
+    public bool PublishedBy(int pitcher)
+    {
         VRCPlayerApi owner = Networking.GetOwner(gameObject);
-        if (!Utilities.IsValid(owner) || owner.playerId != pitcher) return false;
-        return serverNow < prepExpiresAt;
+        return Utilities.IsValid(owner) && owner.playerId == pitcher;
+    }
+
+    private void RestoreQueuedPreparation()
+    {
+        PreparedPitch data = _queuedPreparation;
+        prepPitcherId = data.pitcher;
+        prepGeneration = data.generation;
+        prepTargetBatterId = data.batter;
+        prepThrowHand = data.hand;
+        prepWakeMode = data.wakeMode;
+        prepExpiresAt = data.expiresAt;
+        prepBallRelease = data.ballRelease;
+        prepControllerRelease = data.controllerRelease;
+        prepCalibratedLocal = data.calibratedLocal;
+        prepCalibratedRotation = data.rotation;
+        prepTarget = data.target;
+        prepDirection = data.direction;
+        prepSpin = data.spin;
+        prepWakeDirection = data.wakeDirection;
+        prepSpeed = data.speed;
+        prepWakeCoefficient = data.wakeCoefficient;
+        prepReady = data.ready;
+        prepCourseLocked = data.locked;
+        prepPitchType = data.ready ? PitchTypeFourSeam : PitchTypeNone;
+        cancelPitcherId = _queuedCancelPitcher;
+        cancelPitchNumber = _queuedCancelNumber;
+        cancelReason = _queuedCancelReason;
+        cancelServerTime = _queuedCancelTime;
     }
 
     // The pitcher's mode started: this client publishes from now on.
@@ -162,7 +208,8 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     {
         prepPitcherId = LocalId();
         prepReady = ready;
-        prepGeneration++;
+        _localGeneration = Mathf.Max(prepGeneration, _localGeneration) + 1;
+        prepGeneration = _localGeneration;
         if (!ready) prepPitchType = PitchTypeNone;
         prepExpiresAt = serverNow + Mathf.Max(1f, prepLifetimeSeconds);
     }
@@ -180,54 +227,101 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     private void Send()
     {
         RegisterWithJudge();
-        _requestedGeneration = prepGeneration;
+        _requestedRevision++;
+        _sendRetries = 0;
         if (!OwnedLocally())
         {
+            _queuedPreparation = PreparedPitch.Read(this);
+            _queuedCancelPitcher = cancelPitcherId;
+            _queuedCancelNumber = cancelPitchNumber;
+            _queuedCancelReason = cancelReason;
+            _queuedCancelTime = cancelServerTime;
             _awaitingOwnership = true;
             TakeOwnership();
             if (diagnostics) Diag("publish waits for ownership gen=" + prepGeneration);
-            if (!OwnedLocally()) return;
+            if (!_awaitingOwnership || !OwnedLocally()) return;
         }
         _awaitingOwnership = false;
         RequestSerialization();
         if (diagnostics) Diag("publish requested gen=" + prepGeneration + " ready=" + prepReady + " target=" + prepTargetBatterId);
     }
 
-    // Whether the current generation has been serialized successfully (not that anyone received it).
+    // A successful serialization reports the revision captured in OnPreSerialization.
     public bool CurrentSent()
     {
-        return _sentGeneration == prepGeneration && prepGeneration > 0;
+        return OwnedLocally() && _requestedRevision > 0 && _sentRevision == _requestedRevision;
+    }
+
+    public bool SendFailed() { return !CurrentSent() && _sendRetries > MaximumRetries; }
+
+    public override void OnPreSerialization()
+    {
+        _serializedRevision = _requestedRevision;
+        _serializedGeneration = prepGeneration;
+        _serializedEpoch = _ownershipEpoch;
     }
 
     public override void OnPostSerialization(SerializationResult result)
     {
-        if (result.success) _sentGeneration = _requestedGeneration;
-        if (diagnostics) Diag("sent gen=" + _requestedGeneration + " success=" + result.success + " bytes=" + result.byteCount);
+        FinishSend(result.success);
+        if (diagnostics) Diag("sent gen=" + _serializedGeneration + " success=" + result.success + " bytes=" + result.byteCount);
+    }
+
+    private void FinishSend(bool success)
+    {
+        if (!OwnedLocally() || _serializedEpoch != _ownershipEpoch || _serializedRevision == 0) return;
+        if (_serializedRevision == _requestedRevision)
+        {
+            if (success) _sentRevision = _serializedRevision;
+            else if (!_retryScheduled && _sendRetries <= MaximumRetries)
+            {
+                _sendRetries++;
+                if (_sendRetries <= MaximumRetries)
+                {
+                    _retryScheduled = true;
+                    SendCustomEventDelayedSeconds(nameof(RetrySend), 0.5f);
+                }
+            }
+        }
+        if (mound != null) mound.OnPitchJudgeChanged();
+    }
+
+    public void RetrySend()
+    {
+        if (!_retryScheduled) return;
+        _retryScheduled = false;
+        if (OwnedLocally() && !CurrentSent()) RequestSerialization();
     }
 
     public override void OnOwnershipTransferred(VRCPlayerApi player)
     {
-        if (!Utilities.IsValid(player) || !player.isLocal) return;
+        _ownershipEpoch++;
+        _sentRevision = 0;
+        if (!Utilities.IsValid(player) || !player.isLocal || !OwnedLocally()) return;
         if (_awaitingOwnership)
         {
             _awaitingOwnership = false;
-            prepPitcherId = LocalId();
+            RestoreQueuedPreparation();
             RequestSerialization();
             if (diagnostics) Diag("publish after ownership gen=" + prepGeneration);
             return;
         }
-        // Handed to this client because the pitcher left: the data is nobody's any more.
+        // Data from the former owner cannot prepare a new pitch.
         if (prepReady && prepPitcherId != LocalId())
         {
-            prepReady = false;
-            prepGeneration++;
-            _requestedGeneration = prepGeneration;
-            RequestSerialization();
+            StampGeneration(false, prepExpiresAt);
+            Send();
         }
     }
 
     public override void OnDeserialization()
     {
+        if (prepPitcherId > 0 && PublishedBy(prepPitcherId))
+        {
+            if (_latestReceivedPitcher != prepPitcherId) _latestReceivedGeneration = 0;
+            _latestReceivedPitcher = prepPitcherId;
+            _latestReceivedGeneration = Mathf.Max(_latestReceivedGeneration, prepGeneration);
+        }
         if (diagnostics)
             Diag("received gen=" + prepGeneration + " ready=" + prepReady + " pitcher=" + prepPitcherId + " target=" + prepTargetBatterId +
                 " cancel=" + cancelPitchNumber + " rt=" + Time.realtimeSinceStartup);
@@ -240,17 +334,33 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     // ---- The pitcher's check ----
 
     // A pitch released by this client for a batter is checked once after
-    // verdictTimeoutSeconds: unjudged while that batter left or changed, it is cancelled;
-    // unjudged while the batter is still there, it is only reported.
+    // verdictTimeoutSeconds. A pitch without a confirmed verdict is cancelled.
     public void WatchPitch(int number, int targetBatter, float now)
     {
         if (number <= 0 || targetBatter <= 0) return;
-        _watching = true;
-        _watchNumber = number;
-        _watchBatter = targetBatter;
+        RegisterWithJudge();
         float wait = Mathf.Max(0.1f, verdictTimeoutSeconds);
-        _watchDue = now + wait;
+        int slot = 0;
+        while (slot < _watches.Length && _watches[slot].number != 0) slot++;
+        if (slot == _watches.Length)
+        {
+            PitchVerdictWatch[] next = new PitchVerdictWatch[slot + 1];
+            for (int i = 0; i < slot; i++) next[i] = _watches[i];
+            _watches = next;
+        }
+        PitchVerdictWatch watch = new PitchVerdictWatch();
+        watch.number = number;
+        watch.batter = targetBatter;
+        watch.due = now + wait;
+        _watches[slot] = watch;
         SendCustomEventDelayedSeconds(nameof(CheckVerdict), wait);
+    }
+
+    public void ConfirmVerdict(int pitcher, int number)
+    {
+        if (pitcher != LocalId()) return;
+        for (int i = 0; i < _watches.Length; i++)
+            if (_watches[i].number == number) _watches[i] = new PitchVerdictWatch();
     }
 
     public void CheckVerdict()
@@ -260,35 +370,40 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
 
     public void CheckVerdictAt(float now, double serverNow)
     {
-        // An earlier pitch's check firing for a later pitch waits for that pitch's own check.
-        if (!_watching || now < _watchDue - 0.01f) return;
-        _watching = false;
-        int local = LocalId();
-        PitchJudgeBehaviour found = Judge();
-        if (found != null && found.HasVerdictFor(local, _watchNumber)) return;
-        // A batter who left the instance is cleared from the plate by its owner (StrikeZone).
-        bool batterHere = mound != null && mound.strikeZone != null && mound.strikeZone.occupantPlayerId == _watchBatter;
-        if (!batterHere)
+        int occupant = mound != null && mound.strikeZone != null ? mound.strikeZone.occupantPlayerId : -1;
+        CheckVerdictAt(now, serverNow, occupant);
+    }
+
+    private void CheckVerdictAt(float now, double serverNow, int occupant)
+    {
+        for (int i = 0; i < _watches.Length; i++)
         {
-            CancelPitch(_watchNumber, _watchBatter, PitchJudgeMath.ReasonBatterChanged, serverNow);
-            return;
+            PitchVerdictWatch watch = _watches[i];
+            if (watch.number == 0 || now < watch.due - 0.01f) continue;
+            _watches[i] = new PitchVerdictWatch();
+            int reason = occupant == watch.batter ? PitchJudgeMath.ReasonVerdictMissing : PitchJudgeMath.ReasonBatterChanged;
+            CancelPitch(watch.number, reason, serverNow);
         }
-        Debug.LogWarning("PitchPrep: no verdict for pitch " + local + "/" + _watchNumber + " from batter " + _watchBatter);
-        if (found != null) found.OnVerdictMissing(local, _watchNumber);
     }
 
     // Publishes the cancellation of this client's own pitch and applies it here at once.
-    public void CancelPitch(int number, int batter, int reason, double serverNow)
+    private void CancelPitch(int number, int reason, double serverNow)
     {
+        PitchJudgeBehaviour found = Judge();
+        int pitcher = LocalId();
+        if (number <= _lastCancelledPitch)
+        {
+            if (found != null) found.ApplyOutcomeAt(pitcher, number, PitchJudgeMath.StatusCancelled, reason, 0f, false,
+                0f, serverNow, serverNow);
+            return;
+        }
+        _lastCancelledPitch = number;
+        cancelPitcherId = pitcher;
         cancelPitchNumber = number;
-        cancelBatterId = batter;
         cancelReason = reason;
         cancelServerTime = serverNow;
-        prepPitcherId = LocalId();
-        _requestedGeneration = prepGeneration;
-        if (OwnedLocally()) RequestSerialization();
-        if (diagnostics) Diag("cancel pitch=" + LocalId() + "/" + number + " batter=" + batter + " reason=" + reason);
-        PitchJudgeBehaviour found = Judge();
+        Send();
+        if (diagnostics) Diag("cancel pitch=" + cancelPitcherId + "/" + number + " reason=" + reason);
         if (found != null) found.OnPrepChangedAt(this, serverNow);
     }
 

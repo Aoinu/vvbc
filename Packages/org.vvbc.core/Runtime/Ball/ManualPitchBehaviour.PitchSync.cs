@@ -20,8 +20,8 @@ public partial class ManualPitchBehaviour
     private int _prepSource = -1;
     private int _prepVersion = -1;
     private int _prepBatter = -2;
-    // Pitch numbers of this mound's releases; with the pitcher's player ID they are the pitch ID.
-    private int _pitchCounter;
+    // Bound by the Ball before reading release tracking.
+    private int _releaseHandSession;
     private bool _delayListening;
 
     // The course a release would use now, by the same rule as ResolveReleaseCore.
@@ -69,8 +69,7 @@ public partial class ManualPitchBehaviour
     // all its locals across it (WatchReleasedPitch runs after it, from EndRelease).
     private void TakePitchId(bool locked)
     {
-        _pitchCounter++;
-        releasePitchNumber = _pitchCounter;
+        releasePitchNumber = _releaseHandSession;
         releasePrepGeneration = 0;
         releaseTargetBatter = -1;
         int source = locked ? PrepSourceLock : PrepSourceDefault;
@@ -128,7 +127,9 @@ public partial class ManualPitchBehaviour
         PitchDelaySettingBehaviour setting = DelaySetting();
         string text = "Sync limit: " + Mathf.RoundToInt(setting != null ? setting.ThresholdMs() : PitchJudgeMath.DefaultThresholdMs) + " ms";
         if (prepSync != null && state != StateInactive)
-            text += _prepSource <= PrepSourceNone ? "  |  pitch data: none" : prepSync.CurrentSent() ? "  |  pitch data: sent" : "  |  pitch data: sending";
+            text += _prepSource <= PrepSourceNone ? "  |  pitch data: none" :
+                prepSync.CurrentSent() ? "  |  pitch data: sent" :
+                prepSync.SendFailed() ? "  |  pitch data: send failed" : "  |  pitch data: sending";
         PitchJudgeBehaviour judge = PitchJudge();
         string message = judge != null ? judge.MessageText() : "";
         if (message.Length > 0) text += "\n" + message;

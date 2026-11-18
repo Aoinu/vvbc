@@ -79,7 +79,7 @@ public partial class BallBehaviour
     // unconfirmed local hold and a pending possession.
     public bool IsHeld()
     {
-        return _localHold != HoldFree || (_acceptedKind == PossessionState && _acceptedHold != HoldFree) ||
+        return _localHold != HoldFree || (_acceptedKind == PossessionState && _acceptedHold != HoldFree && !VoidedMotion()) ||
             (_pending && _pendingHold != HoldFree);
     }
 
@@ -263,6 +263,7 @@ public partial class BallBehaviour
 
     private void EnterHold(int hold, int holderId, Vector3 offset)
     {
+        _voidPresentation = false;
         bool localHolder = holderId > 0 && holderId == LocalId();
         if (!localHolder && pickup != null && pickup.IsHeld) ForceDropPickup();
         _pickupResolving = false;
@@ -338,7 +339,7 @@ public partial class BallBehaviour
     {
         if (pickup == null) return;
         bool presented = ballCollider != null ? ballCollider.enabled : flying;
-        bool value = _localHold == HoldFree ? presented && !_speculative : HeldLocally();
+        bool value = !_voidPresentation && (_localHold == HoldFree ? presented && !_speculative : HeldLocally());
         if (pickup.pickupable != value) pickup.pickupable = value;
     }
 
@@ -405,6 +406,11 @@ public partial class BallBehaviour
     public override void OnPickup()
     {
         if (pickup == null) return;
+        if (_voidPresentation || _speculative)
+        {
+            ForceDropPickup();
+            return;
+        }
         if (_localHold != HoldFree && !HeldLocally())
         {
             ForceDropPickup();
@@ -475,7 +481,7 @@ public partial class BallBehaviour
             ? Quaternion.Inverse(boneRotation) * (position - bonePosition) : Vector3.zero;
         _handSession++;
         EnterHold(HoldHand, local, offset);
-        QueueSnapshot(PossessionState, position, offset, Vector3.zero,
+        QueueSnapshot(PossessionState, position, offset, EncodeHandSession(_handSession),
             Networking.GetServerTimeInSeconds(), -1, 0f, HoldHand, local);
     }
 
@@ -570,7 +576,7 @@ public partial class BallBehaviour
         bool aiming = throwAim != null && _aimActive;
         // The throwing controller's motion (never the ball's Transform) is sampled once more.
         if (aiming) throwAim.SampleController(Time.time);
-        bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input);
+        bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input, _handSession);
         if (pitched)
         {
             position = manualPitcher.releasePosition;
@@ -614,6 +620,7 @@ public partial class BallBehaviour
         {
             LaunchPitch(position, velocity, spin, wake, 0f);
             _lineage = _releaseLineage;
+            MarkHandPitchApplied(_lineage);
         }
         else
         {

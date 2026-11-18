@@ -999,8 +999,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // release is a recognized 4-Seam pitch; the flight is then in release* and leaves from
     // releasePosition. Any release ends the lock (back to targeting while the mode holds).
     // ballPosition is shown only: recognition, speed and launch never read it.
-    public bool ResolveRelease(Vector3 ballPosition, int input)
+    public bool ResolveRelease(Vector3 ballPosition, int input, int handSession)
     {
+        _releaseHandSession = handSession;
         VRCPlayerApi player = Networking.LocalPlayer;
         if (!Utilities.IsValid(player) || strikeZone == null)
         {

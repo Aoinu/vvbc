@@ -44,7 +44,9 @@ public partial class BallBehaviour
         _acceptedKind = HitState;
         Assert.IsTrue(VoidedMotion(), "a hit on the invalid pitch");
         _acceptedKind = ThrowState;
-        Assert.IsFalse(VoidedMotion(), "fielding after it is left to the pitcher's recall");
+        Assert.IsTrue(VoidedMotion(), "a throw from the invalid pitch");
+        _acceptedKind = PossessionState;
+        Assert.IsTrue(VoidedMotion(), "a catch from the invalid pitch");
         _acceptedKind = HandPitchState;
         _acceptedLineage.number = 10;
         Assert.IsFalse(VoidedMotion(), "the next pitch");
@@ -97,7 +99,10 @@ public partial class BallBehaviour
         _lineage.number = 1;
         _acceptedLineage = _lineage;
         _acceptedKind = HandPitchState;
+        flying = true;
         VoidPitch(40, 1, 20.0);
+        Assert.IsFalse(flying);
+        Assert.IsTrue(contactConsumed);
         Assert.AreEqual(HandPitchState, _acceptedKind, "only the pitcher recalls; others wait for it");
         Assert.AreEqual(HoldFree, _localHold);
     }
@@ -140,7 +145,106 @@ public partial class BallBehaviour
         Stage(Vector3.zero);
         Assert.IsFalse(_speculative, "a Stage");
         Assert.IsFalse(_lineage.IsPitch(), "a Stage ends the lineage");
-        Assert.IsFalse(BeginSpeculativePitch(1, Vector3.zero, Vector3.forward, Vector3.zero, 0, 0f, Vector3.zero, 0f),
+        Assert.IsFalse(BeginSpeculativePitch(1, 1, Vector3.zero, Vector3.forward, Vector3.zero, 0, 0f, Vector3.zero, 0f),
             "nothing to fly without the pitcher's hand holding the ball");
+    }
+
+    [TsukimiTest]
+    public void VoidStopsSpeculationOfOnlyTheIdentifiedAttempt()
+    {
+        Mimic.Join();
+        _speculative = true;
+        _speculativePitcher = 4;
+        _speculativeNumber = 2;
+        flying = true;
+        VoidPitch(4, 1, 10.0);
+        Assert.IsTrue(SpeculationActive());
+        VoidPitch(4, 2, 10.0);
+        Assert.IsFalse(SpeculationActive());
+        Assert.IsFalse(flying);
+        Assert.IsTrue(_voidPresentation);
+        Assert.IsTrue(contactConsumed);
+    }
+
+    [TsukimiTest]
+    public void RepublishedHandPitchCannotRestartFlightOrOverwriteADescendant()
+    {
+        Mimic.Join();
+        VRCPlayerApi pitcher = Mimic.Join();
+        Networking.SetOwner(pitcher, gameObject);
+        _acceptedKind = HandPitchState;
+        _acceptedLineage.pitcher = pitcher.playerId;
+        _acceptedLineage.number = 4;
+        _acceptedServerTime = 5.0;
+        _acceptedSequence = 3;
+        _acceptedPublisherId = pitcher.playerId;
+        MarkHandPitchApplied(_acceptedLineage);
+        CopyAccepted();
+        _sequence = 4;
+        int before = flightSequence;
+        ReceiveSnapshot();
+        Assert.AreEqual(before, flightSequence);
+        Assert.AreEqual(4, _acceptedSequence, "same pitch can still be adopted by the owner");
+        _acceptedKind = PossessionState;
+        _acceptedHold = HoldGlove;
+        _acceptedServerTime = 6.0;
+        _sequence = 5;
+        ReceiveSnapshot();
+        Assert.AreEqual(PossessionState, _acceptedKind);
+        Assert.AreEqual(before, flightSequence);
+        _acceptedKind = HitState;
+        ReceiveSnapshot();
+        Assert.AreEqual(HitState, _acceptedKind);
+    }
+
+    [TsukimiTest]
+    public void VoidedSnapshotsAndPendingFieldingCannotReplaceThePitchersRecall()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        PrepareReleaseLineage(5, 3, other.playerId);
+        _lineage = _releaseLineage;
+        _acceptedLineage = _releaseLineage;
+        _acceptedKind = HandPitchState;
+        _acceptedPublisherId = pitcher.playerId;
+        _acceptedSequence = 1;
+        RecordPending(ThrowState, Vector3.zero, Vector3.up, Vector3.zero, 6.0, -1, 0f, HoldFree, 0);
+        VoidPitch(pitcher.playerId, 5, 7.0);
+        Assert.IsFalse(_pending);
+        Mimic.Deliver(other);
+        Mimic.Become(other);
+        Assert.AreEqual(HoldGlove, LocalHoldState());
+        Assert.AreEqual(pitcher.playerId, LocalHolderId());
+        VoidPitch(pitcher.playerId, 5, 7.2);
+        Assert.AreEqual(HoldGlove, LocalHoldState(), "late cancellation preserves the recalled ball");
+        _pitchPitcher = pitcher.playerId;
+        _pitchNumber = 5;
+        _sequence = 100;
+        byte[] kinds = new byte[] { HandPitchState, HitState, PossessionState, ThrowState };
+        for (int i = 0; i < kinds.Length; i++)
+        {
+            _kind = kinds[i];
+            ReceiveSnapshot();
+            Assert.AreEqual(HoldGlove, LocalHoldState());
+            Assert.AreEqual(PossessionState, _acceptedKind);
+            Assert.IsFalse(flying);
+        }
+    }
+
+    [TsukimiTest]
+    public void ConsecutiveHandPossessionsCarryDifferentExactAttemptIds()
+    {
+        VRCPlayerApi player = Mimic.Join();
+        VRCPlayerApi observer = Mimic.Join();
+        int first = 16777217;
+        QueueSnapshot(PossessionState, Vector3.zero, Vector3.zero, EncodeHandSession(first), 5.0, -1, 0f, HoldHand, player.playerId);
+        Mimic.Deliver(observer);
+        Mimic.Become(observer);
+        Assert.AreEqual(first, AcceptedPitchAttempt(player.playerId));
+        Mimic.Become(player);
+        QueueSnapshot(PossessionState, Vector3.zero, Vector3.zero, EncodeHandSession(first + 1), 6.0, -1, 0f, HoldHand, player.playerId);
+        Mimic.Deliver(observer);
+        Mimic.Become(observer);
+        Assert.AreEqual(first + 1, AcceptedPitchAttempt(player.playerId));
     }
 }
