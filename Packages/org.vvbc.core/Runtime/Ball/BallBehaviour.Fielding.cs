@@ -564,7 +564,8 @@ public partial class BallBehaviour
         Vector3 spin;
         WakeProfile wake = new WakeProfile();
         bool aiming = throwAim != null && _aimActive;
-        if (aiming) throwAim.Sample(Time.time, position);
+        // The throwing controller's motion (never the ball's Transform) is sampled once more.
+        if (aiming) throwAim.SampleController(Time.time);
         bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input);
         if (pitched)
         {
@@ -674,7 +675,7 @@ public partial class BallBehaviour
         _aimActive = true;
         throwAim.gameObject.SetActive(true);
         throwAim.SetPitcherMode(manualPitcher != null);
-        throwAim.BeginHold(transform);
+        throwAim.BeginHold(transform, LocalThrowHand());
     }
 
     // ThrowAim deactivates itself, after any release feedback it shows.

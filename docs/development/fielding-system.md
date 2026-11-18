@@ -491,11 +491,18 @@ hidden Marker Root hides both Reticle and Label.
 
 All values are decided once on the releasing client:
 
-- **Arm velocity**: from a 16-sample fixed ring buffer of the held ball's
-  position (sampled in `PostLateUpdate`), over the newest `velocityWindow`
-  (0.08 s). A sample implying more than `maxTrackingSpeed` (40 m/s) from the
-  previous accepted sample is discarded; two consecutive discards restart the
-  buffer.
+- **Arm motion**: from a 16-sample fixed ring buffer of the **throwing
+  controller's** position (VRChat tracking data of the hand holding the ball,
+  sampled in `PostLateUpdate` and once more at the release), never the ball's
+  Transform. `FieldingMath.EstimateArmMotion`, shared with the manual pitch,
+  reads the newest three segments with their real sample times: the arm speed
+  is the weighted mean of the segment speeds (weights 1, 2, 3, oldest first)
+  and the direction the normalized weighted mean of the segment velocities. No
+  sample is discarded for its speed; a gap longer than `maxSampleGapSeconds`
+  (0.1 s) restarts the buffer, and non-finite or older samples are not stored.
+  Difference from the earlier specification (changed on purpose): the ball's
+  position was sampled, averaged over 0.08 s, and a sample faster than
+  `maxTrackingSpeed` (40 m/s) was discarded, which dropped real fast arms.
 - **Speed**: arm speed ≤ 2 m/s → 90 km/h, ≥ 10 m/s → 145 km/h, smoothstep in
   between. Unchanged.
 - **Target**: among the shown targets, the one whose marker is closest to the

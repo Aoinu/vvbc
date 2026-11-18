@@ -80,18 +80,32 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [Header("Recognition (throwing controller)")]
     [Tooltip("Minimum throwing-controller speed, in m/s. Default 1.")]
     public float minArmSpeed = 1f;
-    [Tooltip("Largest angle between the throwing controller's motion and the direction from the launch point to the target, in degrees. Default 60.")]
+    [Tooltip("Largest angle between the throwing controller's motion and the direction from the launch point to the target, in degrees. A recognition condition, separate from the arm-direction form penalty. Default 60.")]
     public float maxDirectionErrorDegrees = 60f;
-    [Tooltip("Window of the throwing-controller velocity, in seconds. Default 0.08.")]
-    public float velocityWindowSeconds = 0.08f;
-    [Tooltip("Controller sample-to-sample speed treated as a tracking jump and discarded, in m/s. Default 40 (as ThrowAim).")]
-    public float maxTrackingSpeed = 40f;
+    [Tooltip("Longest gap between two throwing-controller samples still joined into one motion, in seconds; a longer gap starts the motion and the trajectory again. Samples are never discarded for their speed. Default 0.1.")]
+    public float armSampleMaxGapSeconds = 0.1f;
 
-    [Header("Control")]
-    [Range(0f, 2f), Tooltip("Lateral miss per lateral controller release error, approximately: the pitch always leaves from the solver's release point, and its direction is turned so the crossing moves by gain x the offset. 0 adds nothing, 1 the offset itself. Spin and wake changes are separate. Default 0 (no position penalty, for real-client verification); 0.5 was the earlier tuning.")]
+    [Header("Release trajectory (throwing controller)")]
+    [Tooltip("How far back the controller trajectory is searched for its closest pass to the calibrated release, in seconds before the release. Default 0.25.")]
+    public float pastTrajectorySeconds = 0.25f;
+    [Tooltip("Longest extrapolation of an early release toward the calibrated release, in seconds; a pass further ahead is 'Prediction Unavailable'. Default 0.1.")]
+    public float earlyPredictionMaxSeconds = 0.1f;
+    [Tooltip("Frames between an early release and the predicted closest pass with no timing penalty. Default 3.")]
+    public int earlyReleaseGraceFrames = 3;
+    [Tooltip("Frames between the closest pass and a late release with no timing penalty. Default 3.")]
+    public int lateReleaseGraceFrames = 3;
+
+    [Header("Control penalties (control only; never speed, spin, axis or SSW)")]
+    [Range(0f, 2f), Tooltip("Lateral miss per lateral release position error, approximately. The error is the controller trajectory's closest pass (or, for an early release, the predicted pass) against the calibrated release, never the position at the release instant. The pitch always leaves from the solver's release point; its direction is turned so the crossing moves by gain x the error. Default 0 (no penalty, for real-client verification); 0.5 was the earlier tuning.")]
     public float controlGainX = 0f;
-    [Range(0f, 2f), Tooltip("Vertical miss per vertical controller release error, approximately (see controlGainX). Default 0; 0.5 was the earlier tuning.")]
+    [Range(0f, 2f), Tooltip("Vertical miss per vertical release position error, approximately (see controlGainX). Default 0; 0.5 was the earlier tuning.")]
     public float controlGainY = 0f;
+    [Tooltip("Crossing miss per frame of early release beyond earlyReleaseGraceFrames, in metres, against the arm's motion across the plate plane (the hand had not arrived yet). Default 0 (no penalty).")]
+    public float earlyReleasePenaltyPerFrame = 0f;
+    [Tooltip("Crossing miss per frame of late release beyond lateReleaseGraceFrames, in metres, along the arm's motion across the plate plane. Default 0 (no penalty).")]
+    public float lateReleasePenaltyPerFrame = 0f;
+    [Tooltip("Crossing miss per degree between the arm's motion and the direction from the release point to the target, in metres, toward where the arm moved. Independent of the controller rotation. Default 0 (no penalty).")]
+    public float armDirectionPenaltyPerDegree = 0f;
     [Tooltip("Best solver error still accepted when it did not converge, in metres. Default 0.10.")]
     public float solverAcceptMeters = 0.10f;
 
@@ -110,7 +124,11 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float releaseMarkerDiameter = 0.07f;
     [Tooltip("Width of the release error line, in metres. Default 0.012.")]
     public float errorLineWidth = 0.012f;
-    [Tooltip("Live ideal release point (moves with the chest).")]
+    [Tooltip("Colour of the ideal release marker while calibrating, when it follows the throwing controller and that position can be saved (0.05-1.5 m from the chest and 45-90 deg from the plate direction). Default blue.")]
+    public Color calibrationValidColor = new Color(0.15f, 0.4f, 1f, 0.9f);
+    [Tooltip("Colour of the ideal release marker while calibrating, when it follows the throwing controller and that position cannot be saved (outside the range). Default red.")]
+    public Color calibrationInvalidColor = new Color(1f, 0.15f, 0.15f, 0.9f);
+    [Tooltip("Live ideal release point: follows the chest, and the throwing controller while calibrating.")]
     public Transform idealMarker;
     [Tooltip("Ideal release point at the last release.")]
     public Transform releaseIdealMarker;
@@ -195,12 +213,36 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private GloveBehaviour _glove;
     private float _nextGloveSearch;
     private int _activeHand = GloveBehaviour.HandRight;
-    // Throwing-controller positions, sampled every frame in pitcher mode and once more at the
-    // release (FieldingMath.SampleMotion); the release's arm velocity comes only from these.
-    private const int ControllerSamples = 16;
-    private readonly float[] _controllerTimes = new float[ControllerSamples];
-    private readonly Vector3[] _controllerPositions = new Vector3[ControllerSamples];
-    private readonly int[] _controllerState = new int[3];
+    // Throwing-controller samples, taken every frame in pitcher mode and once more at the
+    // release (FieldingMath.SampleMotion); the release's arm motion and trajectory come only
+    // from these. Each sample keeps its time, frame number, world position (arm speed and
+    // direction) and its position in the pitching frame of that moment (trajectory against
+    // the calibrated release; invalid without a chest). Cleared after every release, when
+    // pitcher mode starts and when the throwing hand changes.
+    private const int ArmHistory = 32;
+    private readonly float[] _armTimes = new float[ArmHistory];
+    private readonly Vector3[] _armWorld = new Vector3[ArmHistory];
+    private readonly int[] _armFrames = new int[ArmHistory];
+    private readonly Vector3[] _armLocal = new Vector3[ArmHistory];
+    private readonly bool[] _armLocalValid = new bool[ArmHistory];
+    private readonly int[] _armState = new int[FieldingMath.MotionStateLength];
+    // Ordered copy of the evaluated trajectory (oldest first) and its tangents; reused, so the
+    // release allocates nothing.
+    private readonly float[] _trajTimes = new float[ArmHistory];
+    private readonly Vector3[] _trajPositions = new Vector3[ArmHistory];
+    private readonly Vector3[] _trajTangents = new Vector3[ArmHistory];
+    private readonly int[] _trajFrames = new int[ArmHistory];
+    // This frame's tracking from the sample, reused by the markers.
+    private bool _frameValid;
+    private Vector3 _frameChest, _frameController, _framePlanePoint;
+    // Ideal marker colour applied last (MarkerNormal / MarkerCalibrationValid / ...), so the
+    // property block is set only when it changes.
+    public const int MarkerNormal = 0;
+    public const int MarkerCalibrationValid = 1;
+    public const int MarkerCalibrationInvalid = 2;
+    private int _idealMarkerMode = -1;
+    private int _calibrationCandidateRange = -1;
+    private MeshRenderer _idealMarkerRenderer;
 
     // Cursor in plane coordinates (h right, v up from the plate origin height).
     private bool _hasCursor;
@@ -237,6 +279,22 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private Vector3 _releaseIdealPoint, _releaseActualPoint;
     // The throwing controller's velocity at the release, in pitching-frame coordinates.
     private Vector3 _releaseArmVelocity;
+    // Arm motion and trajectory of the release (snapshots; nothing after the release changes them).
+    private ArmMotion _resultArm;
+    private ReleaseApproach _resultApproach;
+    // Point the control error came from, in world space at the release (closest or predicted pass).
+    private Vector3 _releaseErrorPoint;
+    // Timing class and penalties, each kept on its own: grace, excess frames, crossing offsets
+    // (right, up, metres) of the position, early, late and arm-direction penalties and their sum.
+    private bool _resultWithinGrace;
+    private int _resultEarlyGrace, _resultLateGrace;
+    private float _resultEarlyExcess, _resultLateExcess;
+    private Vector2 _penaltyPosition, _penaltyEarly, _penaltyLate, _penaltyDirection, _penaltyTotal;
+    private float _resultEarlyK, _resultLateK, _resultDirectionK;
+    // Spin and SSW the pose (controller rotation) changed, against the calibrated ones.
+    private float _resultIdealRpm, _resultAxisTurn;
+    // The calibrated release (pitching frame) this release was measured against.
+    private Vector3 _resultIdealLocal;
     // The held ball's centre at the release, and its offset from the solver's release point
     // (pitching frame); shown only, never used to recognize or launch.
     private Vector3 _releaseBallPoint, _releaseBallOffset;
@@ -285,6 +343,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     {
         if (_markerBlock == null) _markerBlock = new MaterialPropertyBlock();
         StyleMarker(idealMarker, idealMarkerColor, idealMarkerDiameter);
+        _idealMarkerRenderer = idealMarker != null ? idealMarker.GetComponent<MeshRenderer>() : null;
+        _idealMarkerMode = MarkerNormal;
         StyleMarker(releaseIdealMarker, idealMarkerColor, releaseMarkerDiameter);
         StyleMarker(releaseActualMarker, actualMarkerColor, releaseMarkerDiameter);
         if (releaseErrorLine == null) return;
@@ -335,7 +395,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (state == StateTargeting) UpdateCursorFromHead();
         else if (state == StateSolving) AdvanceSolve();
         if (state != StateSolving && state != StateInactive) UpdateDefaultCourse();
-        if (showReleaseFeedback) UpdateIdealMarker();
+        // The calibration marker follows the controller while calibrating, whatever the feedback setting.
+        if (showReleaseFeedback || _calibrating) UpdateIdealMarker();
+        else if (_idealMarkerMode != MarkerNormal || (idealMarker != null && idealMarker.gameObject.activeSelf))
+        {
+            SetIdealMarkerMode(MarkerNormal);
+            SetActive(idealMarker, false);
+        }
         if (_trackingArrival) FollowArrival();
     }
 
@@ -354,10 +420,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (!want && state == StateInactive) return;
         if (want)
         {
-            _activeHand = glove.throwHand;
-            // The other hand's (or an earlier mode's) controller samples are not this arm's motion.
-            FieldingMath.ResetMotion(_controllerState);
-            InvalidateDefaultCourse();
+            SwitchThrowingHand(glove.throwHand);
             if (state != StateInactive) Unlock();
             else
             {
@@ -378,6 +441,15 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             _ball.ClearManualPitcher(this);
         }
         Notify();
+    }
+
+    // Pitcher mode starts or the throwing hand changes: the other hand's (or an earlier mode's)
+    // controller samples are not this arm's motion, and the default course is solved again.
+    public void SwitchThrowingHand(int hand)
+    {
+        _activeHand = hand;
+        ResetArmSamples();
+        InvalidateDefaultCourse();
     }
 
     private GloveBehaviour LocalGlove()
@@ -829,30 +901,78 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // ---- Throwing-controller motion ----
 
     // One sample of the throwing controller per frame in pitcher mode (and one at the release),
-    // so the release's arm velocity is the controller's own, never the held ball's.
+    // with the chest and the plate of that frame, so the release's arm motion and trajectory
+    // are the controller's own, never the held ball's.
     private void SampleThrowingController()
     {
+        _frameValid = false;
         VRCPlayerApi player = Networking.LocalPlayer;
         if (!Utilities.IsValid(player)) return;
-        SampleControllerAt(Time.time, player.GetTrackingData(HandTracking()).position);
+        Transform plate = strikeZone.PlateTransform();
+        _frameChest = player.GetBonePosition(HumanBodyBones.Chest);
+        _frameController = player.GetTrackingData(HandTracking()).position;
+        _framePlanePoint = PlanePoint(plate, StrikeZoneGeometry.Forward(plate.forward));
+        _frameValid = true;
+        SampleArmAt(Time.time, Time.frameCount, _frameChest, _framePlanePoint, _frameController);
     }
 
-    // Non-finite tracking is not sampled; jumps are discarded as ThrowAim does.
-    public void SampleControllerAt(float time, Vector3 controllerPosition)
+    // Stores one controller sample (FieldingMath.SampleMotion: never discarded for its speed;
+    // non-finite, older or after a gap longer than armSampleMaxGapSeconds handled there) with
+    // its frame number and its position in the pitching frame of this chest and plate.
+    public void SampleArmAt(float time, int frame, Vector3 chest, Vector3 planePoint, Vector3 controllerPosition)
     {
-        if (!ManualPitchMath.FiniteVector(controllerPosition)) return;
-        FieldingMath.SampleMotion(_controllerTimes, _controllerPositions, _controllerState, time, controllerPosition, maxTrackingSpeed);
+        int index = FieldingMath.SampleMotion(_armTimes, _armWorld, _armState, time, controllerPosition, armSampleMaxGapSeconds);
+        if (index < 0) return;
+        _armFrames[index] = frame;
+        Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
+        bool valid = ManualPitchMath.ValidPoint(chest) && forward != Vector3.zero;
+        _armLocalValid[index] = valid;
+        _armLocal[index] = valid ? ManualPitchMath.ToFrame(ManualPitchMath.Frame(forward), chest, controllerPosition) : Vector3.zero;
     }
 
-    // Average controller velocity over velocityWindowSeconds; zero with fewer than two samples.
+    // The arm speed and direction of the newest three segments (FieldingMath.EstimateArmMotion).
+    public ArmMotion ControllerMotion()
+    {
+        return FieldingMath.EstimateArmMotion(_armTimes, _armWorld, _armState);
+    }
+
     public Vector3 ControllerVelocity()
     {
-        return FieldingMath.MotionVelocity(_controllerTimes, _controllerPositions, _controllerState, velocityWindowSeconds);
+        return ControllerMotion().velocity;
     }
 
-    public void ResetControllerSamples()
+    public void ResetArmSamples()
     {
-        FieldingMath.ResetMotion(_controllerState);
+        FieldingMath.ResetMotion(_armState);
+    }
+
+    // The trajectory up to the newest sample (the release), against the calibrated release:
+    // the newest unbroken run of samples with a pitching frame, no older than
+    // pastTrajectorySeconds before the newest, copied oldest first. Nothing without a calibration.
+    public ReleaseApproach EvaluateTrajectory()
+    {
+        int count = _armState[FieldingMath.MotionCount];
+        int n = 0;
+        if (count > 0 && CalibrationUsable())
+        {
+            float newest = _armTimes[FieldingMath.MotionIndex(_armState, ArmHistory, 0)];
+            float window = ManualPitchMath.Finite(pastTrajectorySeconds) ? Mathf.Max(0f, pastTrajectorySeconds) : 0f;
+            for (int age = 0; age < count; age++)
+            {
+                int index = FieldingMath.MotionIndex(_armState, ArmHistory, age);
+                if (!_armLocalValid[index] || newest - _armTimes[index] > window) break;
+                n++;
+            }
+            for (int i = 0; i < n; i++)
+            {
+                int index = FieldingMath.MotionIndex(_armState, ArmHistory, n - 1 - i);
+                _trajTimes[i] = _armTimes[index];
+                _trajPositions[i] = _armLocal[index];
+                _trajFrames[i] = _armFrames[index];
+            }
+        }
+        return ManualPitchMath.EvaluateApproach(_trajTimes, _trajPositions, _trajFrames, _trajTangents, n, _calPosition,
+            earlyPredictionMaxSeconds);
     }
 
     // Called by the Ball once per hold, before it launches anything. Returns true when the
@@ -866,23 +986,41 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         {
             ClearResult();
             RecordRejection(input, "no player");
+            ResetArmSamples();
             return EndRelease(false, ballPosition, Time.time);
         }
         VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
         Transform plate = strikeZone.PlateTransform();
         Vector3 forward = StrikeZoneGeometry.Forward(plate.forward);
-        return ResolveTrackedReleaseAt(Time.time, player.GetBonePosition(HumanBodyBones.Chest), hand.position, hand.rotation,
-            ballPosition, PlanePoint(plate, forward), forward, input);
+        return ResolveTrackedReleaseAt(Time.time, Time.frameCount, player.GetBonePosition(HumanBodyBones.Chest), hand.position,
+            hand.rotation, ballPosition, PlanePoint(plate, forward), forward, input);
     }
 
-    // The release from the tracking read at `time`: the controller is sampled once more, the
-    // release is resolved with the controller's own velocity, and the release ends the lock.
-    public bool ResolveTrackedReleaseAt(float time, Vector3 chest, Vector3 handPosition, Quaternion handRotation,
+    // The release from the tracking read at `time` (frame `frame`): the controller is sampled
+    // once more, the arm motion and the trajectory are read from the samples, and the release
+    // ends the lock. The samples are then cleared, so no pass of this release reaches the next.
+    public bool ResolveTrackedReleaseAt(float time, int frame, Vector3 chest, Vector3 handPosition, Quaternion handRotation,
         Vector3 ballPosition, Vector3 planePoint, Vector3 planeNormal, int input)
     {
-        SampleControllerAt(time, handPosition);
-        bool result = ResolveReleaseAt(chest, handPosition, handRotation, ballPosition, ControllerVelocity(),
-            planePoint, planeNormal, input);
+        return ResolveTrackedCore(time, frame, chest, handPosition, handRotation, ballPosition, planePoint, planeNormal, input, false, 0f);
+    }
+
+    // The same with the curve's output given (the test runner does not model AnimationCurve).
+    public bool ResolveTrackedReleaseWithCurveOutputAt(float time, int frame, Vector3 chest, Vector3 handPosition,
+        Quaternion handRotation, Vector3 ballPosition, Vector3 planePoint, Vector3 planeNormal, int input, float curveOutput)
+    {
+        return ResolveTrackedCore(time, frame, chest, handPosition, handRotation, ballPosition, planePoint, planeNormal, input, true, curveOutput);
+    }
+
+    private bool ResolveTrackedCore(float time, int frame, Vector3 chest, Vector3 handPosition, Quaternion handRotation,
+        Vector3 ballPosition, Vector3 planePoint, Vector3 planeNormal, int input, bool curveGiven, float curveOutput)
+    {
+        SampleArmAt(time, frame, chest, planePoint, handPosition);
+        ArmMotion motion = ControllerMotion();
+        ReleaseApproach approach = EvaluateTrajectory();
+        bool result = ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, motion, approach, planePoint, planeNormal,
+            input, curveGiven, curveOutput);
+        ResetArmSamples();
         return EndRelease(result, ballPosition, time);
     }
 
@@ -898,11 +1036,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // Recognition, control, speed and 4-Seam quality from explicit tracking data (tested
     // directly). armVelocity is the throwing controller's velocity. The release speed comes
     // from armSpeedCurve at that speed.
+    // Without samples: the arm motion is the given velocity (one segment) and there is no
+    // trajectory, so the release position error is the controller's at the release instant.
     public bool ResolveReleaseAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
         Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input)
     {
-        return ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, armVelocity, planePoint, planeNormal,
-            input, false, 0f);
+        return ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, FieldingMath.GivenArmMotion(armVelocity),
+            new ReleaseApproach(), planePoint, planeNormal, input, false, 0f);
     }
 
     // The same release with the curve's output given instead of evaluated (the test runner does
@@ -910,14 +1050,17 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public bool ResolveReleaseWithCurveOutputAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
         Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input, float curveOutput)
     {
-        return ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, armVelocity, planePoint, planeNormal,
-            input, true, curveOutput);
+        return ResolveReleaseCore(chest, handPosition, handRotation, ballPosition, FieldingMath.GivenArmMotion(armVelocity),
+            new ReleaseApproach(), planePoint, planeNormal, input, true, curveOutput);
     }
 
     private bool ResolveReleaseCore(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 ballPosition,
-        Vector3 armVelocity, Vector3 planePoint, Vector3 planeNormal, int input, bool curveGiven, float givenCurveOutput)
+        ArmMotion arm, ReleaseApproach approach, Vector3 planePoint, Vector3 planeNormal, int input, bool curveGiven,
+        float givenCurveOutput)
     {
         ClearResult();
+        _resultArm = arm;
+        _resultApproach = approach;
         // The course: the locked one, or with no lock ready (Targeting or Solving) the default
         // course at the strike zone's centre once it has been solved.
         bool locked = state == StateLockedReady;
@@ -943,7 +1086,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultSolverRelease = courseRelease;
         if (!CalibrationUsable()) { RecordRejection(input, "no calibration"); return false; }
         if (!ManualPitchMath.ValidPoint(chest) || !ManualPitchMath.FiniteVector(handPosition) ||
-            !ManualPitchMath.ValidRotation(handRotation) || !ManualPitchMath.FiniteVector(armVelocity))
+            !ManualPitchMath.ValidRotation(handRotation) || !ManualPitchMath.Finite(arm.speed) || !ManualPitchMath.FiniteVector(arm.velocity))
         {
             RecordRejection(input, "invalid tracking");
             return false;
@@ -951,34 +1094,70 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
         if (forward == Vector3.zero) { RecordRejection(input, "invalid tracking"); return false; }
         // Everything below is the throwing controller's: its position against the calibrated
-        // release in the current pitching frame, its rotation against the calibrated pose, and
-        // its motion against the direction from the solver's release point to the target.
+        // release in the current pitching frame, its trajectory's closest pass, its rotation
+        // against the calibrated pose, and its motion against the direction from the solver's
+        // release point to the target. Speed, direction and rotation are separate measurements.
         Quaternion frame = ManualPitchMath.Frame(forward);
+        Quaternion toFrame = ManualPitchMath.Inverse(frame);
         Vector3 idealHand = ManualPitchMath.FromFrame(frame, chest, _calPosition);
         Quaternion idealRotation = ManualPitchMath.Multiply(frame, _calRotation);
         Vector3 delta = ManualPitchMath.ToFrame(frame, idealHand, handPosition);
+        _resultIdealLocal = _calPosition;
         debugInput = input;
         debugPositionError = delta;
-        debugArmSpeed = armVelocity.magnitude;
-        debugDirectionError = ManualPitchMath.DirectionError(armVelocity, courseTarget - courseRelease);
+        debugArmSpeed = arm.speed;
+        debugDirectionError = ManualPitchMath.DirectionError(arm.velocity, courseTarget - courseRelease);
         debugPoseAngle = ManualPitchMath.AngleBetween(handRotation, idealRotation);
         _releaseHasPoints = true;
         _releaseIdealPoint = idealHand;
         _releaseActualPoint = handPosition;
-        _releaseArmVelocity = ManualPitchMath.Rotate(ManualPitchMath.Inverse(frame), armVelocity);
+        _releaseArmVelocity = ManualPitchMath.Rotate(toFrame, arm.velocity);
+        // The position error used for control: the trajectory's closest pass (or an early
+        // release's predicted pass), never the release instant unless there is no trajectory.
+        Vector3 controlError = approach.samples > 0 ? approach.error : delta;
+        _releaseErrorPoint = ManualPitchMath.FromFrame(frame, idealHand, controlError);
         // The held ball's centre, for diagnosis only: it moves with the wrist and the grip.
         _releaseBallPoint = ballPosition;
         _releaseBallOffset = ManualPitchMath.FiniteVector(ballPosition) ? ManualPitchMath.ToFrame(frame, courseRelease, ballPosition) : Vector3.zero;
+        // Timing against each grace; measured for every release, pitch or throw.
+        _resultEarlyGrace = earlyReleaseGraceFrames;
+        _resultLateGrace = lateReleaseGraceFrames;
+        _resultEarlyExcess = approach.timing == ManualPitchMath.TimingEarly ? ManualPitchMath.ExcessFrames(approach.earlyFrames, earlyReleaseGraceFrames) : 0f;
+        _resultLateExcess = approach.timing == ManualPitchMath.TimingLate ? ManualPitchMath.ExcessFrames(approach.lateFrames, lateReleaseGraceFrames) : 0f;
+        _resultWithinGrace = approach.timing != ManualPitchMath.TimingUnavailable && _resultEarlyExcess == 0f && _resultLateExcess == 0f &&
+            (approach.timing == ManualPitchMath.TimingEarly ? approach.earlyFrames >= 0f : approach.lateFrames >= 0f);
         if (!_resultHasTarget) return Reject("not locked");
-        // The release position never refuses a pitch: its offset only feeds control below.
+        // The release position and the timing never refuse a pitch: they only feed control below.
+        if (arm.segments < 1) return Reject("arm not measured");
         if (!(debugArmSpeed >= minArmSpeed)) return Reject("arm speed");
         if (debugDirectionError > maxDirectionErrorDegrees) return Reject("arm direction");
 
+        // Control penalties, each kept on its own as a crossing offset (right, up, metres): the
+        // position error times the gains; the early and late frames beyond their grace, against
+        // or along the arm's motion across the plate plane; the angle of the arm's motion,
+        // toward where it moved. Every zero coefficient contributes exactly zero.
+        Vector3 armLocal = _releaseArmVelocity;
+        Vector2 across = ManualPitchMath.PlaneDirection(armLocal);
+        _resultEarlyK = earlyReleasePenaltyPerFrame;
+        _resultLateK = lateReleasePenaltyPerFrame;
+        _resultDirectionK = armDirectionPenaltyPerDegree;
+        _penaltyPosition = new Vector2(ManualPitchMath.Contribution(controlGainX, controlError.x),
+            ManualPitchMath.Contribution(controlGainY, controlError.y));
+        float early = ManualPitchMath.Contribution(earlyReleasePenaltyPerFrame, _resultEarlyExcess);
+        float late = ManualPitchMath.Contribution(lateReleasePenaltyPerFrame, _resultLateExcess);
+        _penaltyEarly = early == 0f ? Vector2.zero : -across * early;
+        _penaltyLate = late == 0f ? Vector2.zero : across * late;
+        float directionMiss = ManualPitchMath.Contribution(armDirectionPenaltyPerDegree, debugDirectionError);
+        Vector3 idealLocal = ManualPitchMath.Rotate(toFrame, (courseTarget - courseRelease).normalized);
+        _penaltyDirection = directionMiss == 0f ? Vector2.zero
+            : ManualPitchMath.PlaneDirection(arm.direction == Vector3.zero ? Vector3.zero : ManualPitchMath.Rotate(toFrame, arm.direction) - idealLocal) * directionMiss;
+        _penaltyTotal = _penaltyPosition + _penaltyEarly + _penaltyLate + _penaltyDirection;
+
         // The pitch leaves from the course's own release point along the solved direction; only
-        // the control gains turn that direction by the controller offset. No body correction:
-        // the launch point does not follow the chest, the head or the ball after the solve.
+        // the control penalties turn that direction. No body correction: the launch point does
+        // not follow the chest, the head, the controller's pass or the ball after the solve.
         float distance = Vector3.Dot(courseRelease - planePoint, planeNormal);
-        Vector3 direction = ManualPitchMath.ControlDirection(courseDirection, delta.x, delta.y, controlGainX, controlGainY, distance);
+        Vector3 direction = ManualPitchMath.ControlDirection(courseDirection, _penaltyTotal.x, _penaltyTotal.y, 1f, 1f, distance);
         releasePosition = courseRelease;
 
         // Pose: the whole 3D rotation error lowers quality; part of it turns the axis. The
@@ -990,6 +1169,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Vector3 spinLocal = ManualPitchMath.FourSeamSpin(axis, fourSeamSpinRpm, maxFourSeamSpinRpm, failure,
             spinLossAtBadPose, gyroAtBadPose);
         float wake = Mathf.Max(0f, wakeCoefficient) * (1f - Mathf.Clamp01(wakeLossAtBadPose) * failure);
+        // What the rotation (pose) changed against the calibrated 4-Seam: shown as its penalty.
+        _resultIdealRpm = Mathf.Clamp(ManualPitchMath.Finite(fourSeamSpinRpm) ? fourSeamSpinRpm : 0f, 0f, Mathf.Max(0f, maxFourSeamSpinRpm));
+        _resultAxisTurn = ManualPitchMath.VectorAngle(ManualPitchMath.FourSeamAxis(_calPosition), axis);
 
         // Raw speed (before any pitcher ability): Vmax x Clamp01(C(|arm velocity|)), from the
         // same averaged sample the recognition used. Pose and release position never change it,
@@ -1050,6 +1232,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         releaseWakeDirection = Vector3.zero;
         _releaseHasPoints = false;
         _releaseArmVelocity = Vector3.zero;
+        _releaseErrorPoint = Vector3.zero;
+        _resultArm = new ArmMotion();
+        _resultApproach = new ReleaseApproach();
+        _resultWithinGrace = false;
+        _resultEarlyExcess = 0f;
+        _resultLateExcess = 0f;
+        _penaltyPosition = Vector2.zero;
+        _penaltyEarly = Vector2.zero;
+        _penaltyLate = Vector2.zero;
+        _penaltyDirection = Vector2.zero;
+        _penaltyTotal = Vector2.zero;
+        _resultIdealRpm = 0f;
+        _resultAxisTurn = 0f;
         _releaseBallPoint = Vector3.zero;
         _releaseBallOffset = Vector3.zero;
         _resultSolverRelease = Vector3.zero;
@@ -1086,24 +1281,64 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // ---- Release feedback ----
 
-    // The live ideal (calibrated controller) release follows the chest in pitcher mode.
+    // The live ideal (calibrated controller) release follows the chest in pitcher mode; while
+    // calibrating it follows the throwing controller instead, blue where that position can be
+    // saved and red where it cannot. Uses this frame's sample (chest, controller, plate).
     private void UpdateIdealMarker()
     {
-        bool shown = false;
-        if (CalibrationUsable() && idealMarker != null)
+        if (!_frameValid)
         {
-            VRCPlayerApi player = Networking.LocalPlayer;
-            Vector3 chest = Utilities.IsValid(player) ? player.GetBonePosition(HumanBodyBones.Chest) : Vector3.zero;
-            Transform plate = strikeZone.PlateTransform();
-            Vector3 forward = ManualPitchMath.HorizontalDirection(chest, PlanePoint(plate, StrikeZoneGeometry.Forward(plate.forward)));
-            if (ManualPitchMath.ValidPoint(chest) && forward != Vector3.zero)
-            {
-                Quaternion frame = ManualPitchMath.Frame(forward);
-                idealMarker.position = ManualPitchMath.FromFrame(frame, chest, _calPosition);
-                shown = true;
-            }
+            SetActive(idealMarker, false);
+            return;
         }
+        if (_calibrating) UpdateCalibrationMarkerAt(_frameChest, _framePlanePoint, _frameController);
+        else UpdateIdealMarkerAt(_frameChest, _framePlanePoint);
+    }
+
+    // Outside calibration: the saved release relative to this chest and plate direction.
+    public void UpdateIdealMarkerAt(Vector3 chest, Vector3 planePoint)
+    {
+        SetIdealMarkerMode(MarkerNormal);
+        _calibrationCandidateRange = -1;
+        Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
+        bool shown = CalibrationUsable() && ManualPitchMath.ValidPoint(chest) && forward != Vector3.zero;
+        if (shown && idealMarker != null)
+            idealMarker.position = ManualPitchMath.FromFrame(ManualPitchMath.Frame(forward), chest, _calPosition);
         SetActive(idealMarker, shown);
+    }
+
+    // While calibrating: on the controller, coloured by whether that position is in range.
+    public void UpdateCalibrationMarkerAt(Vector3 chest, Vector3 planePoint, Vector3 controller)
+    {
+        Vector3 forward = ManualPitchMath.HorizontalDirection(chest, planePoint);
+        bool tracked = ManualPitchMath.FiniteVector(controller);
+        _calibrationCandidateRange = tracked && ManualPitchMath.ValidPoint(chest) && forward != Vector3.zero
+            ? ManualPitchMath.CalibrationRange(ManualPitchMath.ToFrame(ManualPitchMath.Frame(forward), chest, controller))
+            : ManualPitchMath.CalibrationInvalid;
+        SetIdealMarkerMode(_calibrationCandidateRange == ManualPitchMath.CalibrationInRange ? MarkerCalibrationValid : MarkerCalibrationInvalid);
+        if (tracked && idealMarker != null) idealMarker.position = controller;
+        SetActive(idealMarker, tracked);
+    }
+
+    public int IdealMarkerMode() { return _idealMarkerMode; }
+    public int CalibrationCandidateRange() { return _calibrationCandidateRange; }
+
+    public Color IdealMarkerColor()
+    {
+        if (_idealMarkerMode == MarkerCalibrationValid) return calibrationValidColor;
+        if (_idealMarkerMode == MarkerCalibrationInvalid) return calibrationInvalidColor;
+        return idealMarkerColor;
+    }
+
+    // Recolours the ideal marker only when its mode changes (no per-frame property block).
+    private void SetIdealMarkerMode(int mode)
+    {
+        if (mode == _idealMarkerMode) return;
+        _idealMarkerMode = mode;
+        if (_idealMarkerRenderer == null) return;
+        if (_markerBlock == null) _markerBlock = new MaterialPropertyBlock();
+        _markerBlock.SetColor("_Color", IdealMarkerColor());
+        _idealMarkerRenderer.SetPropertyBlock(_markerBlock);
     }
 
     // The last release's points are world positions frozen at the release; they stay until the
@@ -1122,9 +1357,11 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             Place(releaseActualMarker, _releaseActualPoint);
             if (releaseErrorLine != null)
             {
-                releaseErrorLine.positionCount = 2;
+                // Ideal release -> the pass the control error came from -> the controller at the release.
+                releaseErrorLine.positionCount = 3;
                 releaseErrorLine.SetPosition(0, _releaseIdealPoint);
-                releaseErrorLine.SetPosition(1, _releaseActualPoint);
+                releaseErrorLine.SetPosition(1, _releaseErrorPoint);
+                releaseErrorLine.SetPosition(2, _releaseActualPoint);
                 SetActive(releaseErrorLine.transform, true);
             }
         }
@@ -1292,31 +1529,118 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return (value >= 0f ? "+" : "") + value.ToString("F1");
     }
 
-    // Analysis: release position, controller motion, launch point, speed, spin and SSW, and the aim.
+    private static string Xyz(Vector3 local)
+    {
+        return "right " + Cm(local.x) + "  up " + Cm(local.y) + "  forward " + Cm(local.z) + " cm";
+    }
+
+    private static string Ms(float seconds)
+    {
+        return (seconds * 1000f).ToString("F0") + " ms";
+    }
+
+    private static string Frames(float frames)
+    {
+        return frames >= 0f ? frames.ToString("F1") + " f" : "- f";
+    }
+
+    private static string Offset(Vector2 offset)
+    {
+        return "right " + Cm(offset.x) + "  up " + Cm(offset.y) + " cm";
+    }
+
+    // Arm: segment speeds (newest first), weighted speed and direction, segments and time span.
+    public string ArmText()
+    {
+        string text = "\nARM  (" + ManualPitchMath.InputName(debugInput) + ", throwing controller)";
+        if (_resultArm.segments < 1) return text + "\n  not measured (fewer than two samples)";
+        text += "\n  segments " + SegmentSpeed(_resultArm.newestSpeed) + " / " + SegmentSpeed(_resultArm.middleSpeed) + " / " +
+            SegmentSpeed(_resultArm.oldestSpeed) + " m/s (newest first)   used " + _resultArm.segments + " over " + Ms(_resultArm.span) +
+            "\n  arm " + debugArmSpeed.ToString("F1") + " m/s   direction (right " + Mps(_releaseArmVelocity.x) + "  up " +
+            Mps(_releaseArmVelocity.y) + "  forward " + Mps(_releaseArmVelocity.z) + " m/s)";
+        return text;
+    }
+
+    private static string SegmentSpeed(float speed)
+    {
+        return speed >= 0f ? speed.ToString("F1") : "-";
+    }
+
+    // Trajectory: ideal, release and closest pass in the pitching frame (from the chest).
+    public string TrajectoryText()
+    {
+        string text = "\nTRAJECTORY  (pitching frame from the chest, cm)";
+        if (!_releaseHasPoints) return text + "\n  no tracking";
+        text += "\n  ideal   " + Xyz(_resultIdealLocal) +
+            "\n  release " + Xyz(_resultIdealLocal + debugPositionError) + "   error " + AbsCm(debugPositionError.magnitude);
+        ReleaseApproach a = _resultApproach;
+        if (a.samples < 1) return text + "\n  closest pass: no trajectory (release position used)";
+        text += "\n  closest " + Xyz(a.closestPosition) + "   " + AbsCm(a.closestDistance) +
+            "\n  closest error " + Xyz(a.closestPosition - _resultIdealLocal) + "   at " + Ms(a.closestTime - a.releaseTime) +
+            " (frame " + a.closestFrame.ToString("F1") + ", " + a.closestSpeed.ToString("F1") + " m/s" +
+            (a.closestAtRelease ? ", at release" : a.closestAtWindowEdge ? ", oldest sample" : ", past") + ")   " + a.samples + " samples";
+        if (a.predicted)
+            text += "\n  predicted " + (a.predictionValid ? Xyz(a.predictedPosition - _resultIdealLocal) + "   " + AbsCm(a.predictedDistance) +
+                "   in " + Ms(a.predictedSeconds) : "not within " + Ms(earlyPredictionMaxSeconds) + " (ahead " +
+                (ManualPitchMath.Finite(a.predictedSeconds) && a.predictedSeconds > 0f ? Ms(a.predictedSeconds) : "never") + ")");
+        string source = a.errorSource == ManualPitchMath.ErrorPredicted ? "predicted pass"
+            : a.errorSource == ManualPitchMath.ErrorPastClosest ? "closest pass" : "release position";
+        return text + "\n  control error from the " + source + ": " + Xyz(a.error);
+    }
+
+    // Timing: class, frames and milliseconds, grace and excess.
+    public string TimingText()
+    {
+        ReleaseApproach a = _resultApproach;
+        string text = "\nTIMING  ";
+        if (a.samples < 1) return text + "not measured";
+        text += ManualPitchMath.TimingName(a.timing, _resultWithinGrace);
+        if (a.timing == ManualPitchMath.TimingEarly)
+            text += "   early " + Frames(a.earlyFrames) + " (" + Ms(a.earlySeconds) + ")   grace " + _resultEarlyGrace + " f   excess " +
+                _resultEarlyExcess.ToString("F1") + " f";
+        else if (a.timing == ManualPitchMath.TimingLate)
+            text += "   late " + Frames(a.lateFrames) + " (" + Ms(a.lateSeconds) + ")   grace " + _resultLateGrace + " f   excess " +
+                _resultLateExcess.ToString("F1") + " f";
+        text += "\n  frames = ms / measured frame " + (a.frameInterval > 0f ? Ms(a.frameInterval) : "- (not measured)");
+        return text;
+    }
+
+    // Form: arm-motion direction and controller rotation, separately, and the pose quality.
+    public string FormText()
+    {
+        return "\nFORM  arm direction error " + debugDirectionError.ToString("F0") + " deg   rotation error " +
+            debugPoseAngle.ToString("F0") + " deg" + (_resultPitched ? "   quality " + (debugPoseQuality * 100f).ToString("F0") + "%" : "");
+    }
+
+    // Control: each penalty's crossing offset, and their sum (the applied correction).
+    public string ControlText()
+    {
+        string text = "\nCONTROL  (crossing offsets)";
+        if (!_resultPitched) return text + "\n  not a pitch: nothing applied";
+        text += "\n  position " + Offset(_penaltyPosition) + "   (gain x " + _resultGainX.ToString("F2") + "  y " + _resultGainY.ToString("F2") + ")" +
+            "\n  early " + Offset(_penaltyEarly) + "   (" + _resultEarlyK.ToString("F3") + " m/f)" +
+            "   late " + Offset(_penaltyLate) + "   (" + _resultLateK.ToString("F3") + " m/f)" +
+            "\n  arm direction " + Offset(_penaltyDirection) + "   (" + _resultDirectionK.ToString("F3") + " m/deg)" +
+            "   rotation: quality only, no control" +
+            "\n  total " + Offset(_penaltyTotal);
+        float rpmLoss = _resultIdealRpm - debugSpinRpm;
+        text += "\n  rotation quality penalty: spin " + (rpmLoss > 0.5f ? "-" + rpmLoss.ToString("F0") : "0") + " rpm   axis " +
+            _resultAxisTurn.ToString("F1") + " deg   SSW " + debugWake.ToString("F4") + " of " + Mathf.Max(0f, wakeCoefficient).ToString("F4");
+        return text;
+    }
+
+    // Analysis: arm, trajectory, timing, form, control, launch point, speed, spin and SSW, and the aim.
     public string ReleaseDetailText()
     {
-        string text = "RELEASE POSITION  (throwing controller vs calibrated)";
-        if (_releaseHasPoints)
-        {
-            text += "\n  " + AbsCm(debugPositionError.magnitude) + "   right " + Cm(debugPositionError.x) + "  up " + Cm(debugPositionError.y) +
-                "  forward " + Cm(debugPositionError.z) + " cm";
-            text += "\nRELEASE MOTION  (" + ManualPitchMath.InputName(debugInput) + ", throwing controller)" +
-                "\n  arm " + debugArmSpeed.ToString("F1") + " m/s   direction error " + debugDirectionError.ToString("F0") + " deg" +
-                "   (right " + Mps(_releaseArmVelocity.x) + "  up " + Mps(_releaseArmVelocity.y) + "  forward " + Mps(_releaseArmVelocity.z) + " m/s)" +
-                "\n  pose error " + debugPoseAngle.ToString("F0") + " deg";
-        }
-        else text += "\n  no tracking";
+        string text = "RELEASE  (throwing controller)";
+        if (!_releaseHasPoints) text += "\n  no tracking";
+        else text += ArmText() + TrajectoryText() + TimingText() + FormText() + ControlText();
         text += LaunchText();
         text += SpeedText();
         if (_resultPitched)
-        {
-            text += "   quality " + (debugPoseQuality * 100f).ToString("F0") + "%";
             text += "\nSPIN / SSW" + (_resultIdealSpin ? "  (diagnostic: ideal spin)" : "") +
                 "\n  " + debugSpinRpm.ToString("F0") + " rpm   axis " + debugSpinAxis.ToString("F2") +
-                "\n  SSW " + debugWake.ToString("F4") + " at " + _resultWakeClock.ToString("F0") + " deg   control gain x " +
-                _resultGainX.ToString("F2") + "  y " + _resultGainY.ToString("F2");
-        }
-        else text += "\nControl gain  x " + _resultGainX.ToString("F2") + "  y " + _resultGainY.ToString("F2");
+                "\n  SSW " + debugWake.ToString("F4") + " at " + _resultWakeClock.ToString("F0") + " deg";
         text += "\nAIM  (pitcher view, from the plate's front-edge centre)";
         if (!_resultHasTarget) return text + "\n  no locked target";
         text += "\n  target   " + PlaneText(_resultTarget) + (_resultDefaultCourse ? "   (centre: no course locked)" : "");
@@ -1329,7 +1653,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         }
         else text += "\n  solver   -";
         if (arrivalStatus == ArrivalMeasured)
+        {
             text += "\n  actual   " + PlaneText(arrivalCrossing) + "   miss " + AbsCm(arrivalError.magnitude);
+            if (_resultSolverError >= 0f)
+            {
+                Vector2 apart = PlaneError(arrivalCrossing) - PlaneError(_resultPredicted);
+                text += "\n  actual vs solver   " + AbsCm(apart.magnitude) + "   right " + Cm(apart.x) + "  up " + Cm(apart.y) + " cm";
+            }
+        }
         else text += "\n  actual   " + ArrivalStatusText(arrivalStatus);
         return text;
     }
@@ -1407,6 +1738,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return "PitcherMode: " + (state != StateInactive) + "  PitchState: " + ManualPitchMath.StateName(state) +
             "\nReleaseInput: " + ManualPitchMath.InputName(debugInput) + "  Recognized: " + debugRecognized + " (" + debugReason + ")" +
             "\nReleaseError xyz: " + debugPositionError.ToString("F2") +
+            "  ClosestError xyz: " + (_resultApproach.samples > 0 ? _resultApproach.error.ToString("F2") : "-") +
+            "\nTiming: " + (_resultApproach.samples > 0 ? ManualPitchMath.TimingName(_resultApproach.timing, _resultWithinGrace) : "-") +
+            "  early " + _resultApproach.earlyFrames.ToString("F1") + " f  late " + _resultApproach.lateFrames.ToString("F1") + " f" +
+            "  ControlOffset: " + _penaltyTotal.ToString("F3") +
             "\nControllerSpeed: " + debugArmSpeed.ToString("F2") + " m/s  DirError: " + debugDirectionError.ToString("F1") + " deg" +
             "\nLaunch: " + (debugRecognized ? releasePosition.ToString("F2") + " (solver release)" : "ball centre") +
             "\nCurve: " + (_resultCurveOutput * 100f).ToString("F1") + "%  Max: " + Kmh(_resultMaxSpeedKmh) +

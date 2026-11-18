@@ -11,13 +11,13 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 
 | Code | Responsibility |
 |---|---|
-| `Ball/ManualPitchMath.cs` | Pure math: pitching frame, calibration validity, arm slot and 4-Seam axis, pose failure, axis transfer, spin, arm direction, control, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
+| `Ball/ManualPitchMath.cs` | Pure math: pitching frame, calibration range (distance and 45-90 deg angle), release trajectory (PCHIP Hermite, closest pass, early prediction, timing frames, penalty contributions), arm slot and 4-Seam axis, pose failure, axis transfer, spin, arm direction, control, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
 | `Ball/ManualPitchBehaviour.cs` | Mound component (local only, no sync): mound trigger, pitcher-mode state, throwing-controller sampling, cursor, glove-hand lock, solver, release resolution, debug. |
 | `Ball/ManualPitchBehaviour.Calibration.cs` | Calibration draft, commit, PlayerData persistence. |
 | `Ball/ManualPitchPanelBehaviour.cs` | World-space panel: buttons and status text only. |
 | `Ball/BallBehaviour.Fielding.cs` | Single release gate (Pickup Use / Drop), pitch-or-throw branch, launch (a pitch from the mound's `releasePosition`), release re-assertion. |
 | `Ball/BallBehaviour.Network.cs` | `HandPitch` snapshot kind. |
-| `Ball/Fielding/FieldingMath.cs` | `SampleMotion` / `MotionVelocity`: the arm sampler (jump rejection, windowed average) shared by ThrowAim (the held ball, for throws) and the mound (the throwing controller, for pitches). |
+| `Ball/Fielding/FieldingMath.cs` | `SampleMotion` / `EstimateArmMotion`: the arm sampler (no speed rejection, gap restart; weighted speed and direction of the newest three segments) shared by ThrowAim (throws) and the mound (pitches), both from the throwing controller. |
 
 The Behaviours live in `Ball/` because the mound needs the Ball, the aim solver, the strike
 zone and the glove, and Tsukimi compiles a Behaviour with its own folder and the folders below.
@@ -105,8 +105,37 @@ nothing while calibrating.
 The calibration lives on the mound and in PlayerData only. Staging, recalling, releasing or
 resetting the ball never touches it (`BallResetsKeepTheCalibration`).
 
-Validation: a zero or non-finite chest, a hand closer than 5 cm or further than 1.5 m from
-the chest, or an invalid rotation records nothing. Saving is refused until
+Validation: a zero or non-finite chest, a hand outside the calibration range (below), or an
+invalid rotation records nothing.
+
+**Calibration range.** With `C` the chest, `F` the horizontal unit direction from the chest to
+the plate and `V = R - C` the candidate release (in frame coordinates `F` is +z):
+
+```text
+theta = acos(V.F / |V|)            from the full 3D offset, never its horizontal projection
+valid: 0.05 m <= |V| <= 1.5 m  and  45 deg <= theta <= 90 deg     (ends included, 0.01 deg / 0.01 mm tolerance)
+```
+
+Below 45 deg the release is in front of the body (toward the plate), above 90 deg behind the
+chest. The azimuth around `F` is free, so overhand, three-quarter, sidearm and underhand, right-
+or left-handed, all qualify; the controller rotation is never part of the test
+(`ManualPitchMath.CalibrationRange`, `TheReleaseAngleIsLimitedTo45To90Degrees`). Outside the
+range the record is refused with the reason on the panel ("Not saved: ..."), the saved
+calibration is kept and calibration goes on. Difference from the earlier specification (changed
+on purpose): only the distance was checked.
+
+**Marker while calibrating.** `Feedback/IdealMarker` follows the throwing controller every
+frame while calibrating (local only, whatever `showReleaseFeedback`), **blue**
+(`calibrationValidColor`) where that position is in range and **red**
+(`calibrationInvalidColor`) where it is not. The colour is set through the shared
+MaterialPropertyBlock only when it changes. After a save it returns to the saved release
+relative to the chest and plate direction (it moves with the body, it is not a world point);
+after Cancel to the kept calibration (hidden without one).
+
+**Stored data.** The PlayerData format is unchanged (version 1, same keys). Restore applies
+today's range too: a stored version 1 calibration taken before the angle limit and outside it is
+**not used** (a warning is logged and the panel asks to calibrate again); it stays stored until a
+new calibration overwrites it. An in-range stored calibration keeps working. Saving is refused until
 `OnPlayerRestored` has run for the local player. Restore accepts only version 1, a
 valid hand, a valid position and a finite unit quaternion (norm within 1 %). A calibration
 is used only for the hand it was taken with; changing the glove's throwing hand makes it
@@ -253,19 +282,100 @@ reads the throwing hand's tracking data in the same call (`ResolveRelease(ballPo
 
 ### Throwing-controller motion
 
-Recognition and release speed read the **throwing controller** only (VRChat tracking data of
-the glove's `throwHand`), never the ball's Transform or rotation. In pitcher mode the mound
-samples the controller position every frame in `Update`, and once more at the release with the
-tracking read there (`ResolveTrackedReleaseAt`). The samples use the arm sampler shared with
-ThrowAim (`FieldingMath.SampleMotion`): a single sample-to-sample jump faster than
-`maxTrackingSpeed` (40 m/s) is discarded, two in a row restart the ring there. The arm velocity
-`v_arm` is the average over the newest `velocityWindowSeconds` (0.08 s,
-`FieldingMath.MotionVelocity`). The ring is cleared when pitcher mode starts or the throwing
-hand changes. ThrowAim keeps sampling the held ball for throws, unchanged.
+Recognition, release speed, the trajectory and the form read the **throwing controller** only
+(VRChat tracking data of the glove's `throwHand`), never the ball's Transform or rotation; the
+ball's Transform is still used for holding, launching, flight, collision and sync. ThrowAim
+reads the same controller for throws (see [Fielding: release](fielding-system.md#release)).
+Difference from the earlier specification (changed on purpose): ThrowAim sampled the held ball.
 
-A wrist turn moves the ball centre with the grip but not the controller, so it is not an arm
-motion (`TheArmVelocityIsTheThrowingControllersOwn`). Both hands read the motion in the
-pitching frame the same way (`BothHandsReadTheControllerMotionTheSameWay`).
+In pitcher mode the mound samples, every frame in `Update` and once more at the release with the
+tracking read there (`ResolveTrackedReleaseAt`), the controller position with its time, frame
+number and its position in the **pitching frame of that sample** (that frame's chest and plate
+direction). The ring holds 32 samples. `FieldingMath.SampleMotion` never discards a sample for its
+speed; it ignores non-finite and older samples, replaces the newest at the same time, and starts
+again after a gap longer than `armSampleMaxGapSeconds` (0.1 s), so an old motion is never joined
+to a new one. The ring is cleared after every release, when pitcher mode starts and when the
+throwing hand changes (`SwitchThrowingHand`). Difference from the earlier specification (changed
+on purpose): a sample faster than `maxTrackingSpeed` (40 m/s) was discarded and the velocity was
+the 0.08 s window average; a real fast arm was then read slow or still.
+
+**Arm speed and direction** (`FieldingMath.EstimateArmMotion`), from the newest four samples
+(three segments, fewer when fewer exist), with the real sample times:
+
+```text
+v_i     = (p_i - p_{i-1}) / (t_i - t_{i-1})
+v_arm   = sum(w_i |v_i|) / sum(w_i)            speed: recognition and the speed curve
+d_arm   = normalize(sum(w_i v_i))              direction: recognition and form
+w       = 1, 2, 3 from the oldest segment to the newest (provisional)
+```
+
+Averaging the vectors before taking the length would read a turning arm as slower, so it is used
+only for the direction. Fewer than two samples is **not measured** (`segments == 0`, the release
+is a throw with reason `arm not measured`), which is different from a measured 0 m/s. A wrist
+turn moves the ball centre but not the controller (`TheArmVelocityIsTheThrowingControllersOwn`).
+
+### Release trajectory and timing
+
+The controller's path is compared with the calibrated release `r` in the pitching frame of each
+sample's own time, where `r` is a fixed point: a step or lean of the body does not enter the
+error (`TheChestMovingWithTheHandIsNotARelaseError`). The samples of the newest
+`pastTrajectorySeconds` (0.25 s) before the release, unbroken and with a valid chest, are joined
+by a **cubic Hermite curve with monotone (PCHIP, Fritsch-Butland) tangents** per component on the
+uneven sample times: it passes every sample, never overshoots between two of them, and is a
+straight line between two samples alone; the newest tangent is the newest segment's velocity. The
+bat's contact interpolation was the model, without its speed limits. Nothing after the release is
+read; the result is a snapshot of the release.
+
+**Closest pass** (`ManualPitchMath.EvaluateApproach`): every segment's chord picks the nearest
+segment, then it and its two neighbours are searched on the curve (a 9-point grid and 12
+golden-section steps each; bounded work, no allocation). Recorded: position, distance and signed
+error (right, up, forward), time, frame position (interpolated between the samples' frame
+numbers), speed there, and whether it is in the past, at the release, or on the oldest sample of
+the window (the arm may have been nearer before it; the late time is then at least the window,
+never 0).
+
+**Early release.** When the controller is still approaching `r` at the release, the path is
+extrapolated along the newest tangent, `t* = (r - p_rel).v / |v|^2`, at most
+`earlyPredictionMaxSeconds` (0.1 s) ahead. A predicted pass nearer than the past closest point
+makes the release **Early** by `t*`; its error is the predicted pass's. A pass that does not meet
+`r` is still a valid prediction with its own distance. A pass further ahead than the horizon, or no
+velocity, while the release point is the closest, is **Prediction Unavailable**: its error is the
+release point's.
+
+**Late release.** Otherwise the release is **Late** by the time since the past closest pass (0
+when it is the release itself).
+
+Frames are `seconds / measured frame interval`, the interval being (newest - oldest sample time)
+/ (newest - oldest frame number) of the trajectory: a measured, fractional value, never a whole
+frame count. Within `earlyReleaseGraceFrames` / `lateReleaseGraceFrames` (3 each, ends included
+with 0.01 frame tolerance) the release is **Within Grace**; beyond, the excess is
+`max(0, frames - grace)`. Timing never refuses a pitch and is not a recognition condition.
+
+### Control penalties
+
+Every penalty is a crossing offset (right, up, metres), kept on its own and added; each zero
+coefficient contributes exactly 0 (`ManualPitchMath.Contribution`), so with all of them at 0 the
+direction is `D0` bit for bit:
+
+```text
+position   = (Gx ex, Gy ey)                         e = the closest pass's error (the predicted
+                                                    pass for Early, the release point without one)
+early      = -u  x earlyReleasePenaltyPerFrame x excess_early     u = the arm's motion across the
+late       = +u  x lateReleasePenaltyPerFrame  x excess_late          plate plane (right, up), unit
+direction  = n   x armDirectionPenaltyPerDegree x angle(d_arm, T - P0)
+             n = the (right, up) direction from the ideal direction to the arm's
+total      = position + early + late + direction     -> ControlDirection(D0, total)
+```
+
+An early release is put against the arm's motion (the hand had not arrived), a late one along
+it; this mapping of a timing error to a direction is a provisional choice for tuning. All
+coefficients default to **0**. The controller rotation is not a control penalty: it is measured on
+its own (rotation error) and only scores the pose (below). Speed, spin, axis, SSW and pitch type
+are never touched by these penalties. `controlGainX/Y` keep their meaning (crossing miss about
+gain x error) but now take the trajectory's error: the release-instant offset is still measured
+and shown but no longer used, so nothing is counted twice. Difference from the earlier
+specification (changed on purpose): the gains took the controller's offset at the release
+instant, which depended on when the release event fired.
 
 ### Recognition
 
@@ -274,8 +384,8 @@ All needed; otherwise the existing throw (including pickoffs) from the ball cent
 1. a usable calibration and a course: the `LockedReady` lock, or else the solved
    [default course](#default-course-no-course-locked);
 2. valid chest, controller position and rotation, and a finite arm velocity;
-3. controller speed `|v_arm| >= minArmSpeed` (1 m/s);
-4. angle between `v_arm` and the direction from the course's release point `P0` to its target
+3. a measured arm motion and arm speed `v_arm >= minArmSpeed` (1 m/s);
+4. angle between `d_arm` and the direction from the course's release point `P0` to its target
    `T` `<= maxDirectionErrorDegrees` (60).
 
 The **release position is not a condition**: however far the controller is from the
@@ -307,8 +417,9 @@ in the HandPitch snapshot and starts its release re-assertion from it, so the lo
 Rigidbody, the snapshot, the re-assertion and the mound's arrival follow all use the same
 `P0`. A throw keeps launching from the ball centre.
 
-`dx`, `dy` are the controller offset from the calibrated release in the current pitching frame
-(right, up; the forward offset is measured and shown but has no control effect), `L` the
+`dx`, `dy` are the total control offset of [Control penalties](#control-penalties) (with the
+gains alone: the trajectory's closest-pass error, right and up; the forward error is measured and
+shown but has no control effect), `L` the
 distance from `P0` to the target plane, `Gx`, `Gy` = `controlGainX/Y` (default **0**, 0.5 the
 earlier tuning; Inspector range 0..2). The crossing moves by about `G x` the offset in its own
 direction (`TheCrossingMovesByTheGainTimesTheReleaseOffset`: within 1 cm for gains 0..2 and
@@ -375,7 +486,11 @@ With `Vraw = Vsolver`, the solver's spin and SSW (the zero pose coefficients, or
 speed, spin, wake), so the flight follows the solver's predicted crossing within 1 mm whatever
 the controller position (0.6 m off), the wrist pose (45 deg, which moves the ball centre) or a
 chest step since the lock (`WithGainsZeroTheFlightFollowsTheSolverWhateverTheRelease`, shared
-flight model, 0.02 s steps). For a real-client check of the solver against the flight, edit the
+flight model, 0.02 s steps). The trajectory evaluation adds nothing to that initial state while
+every penalty coefficient is 0: an early release with a 10 cm pass error leaves with exactly the
+velocity, spin, wake and launch point of the same release without a trajectory
+(`TheTrajectoryDoesNotChangeTheLaunchAtZeroPenalties`, `ZeroCoefficientsChangeNothingButEverythingIsMeasured`);
+the controller's pass is never the launch point. For a real-client check of the solver against the flight, edit the
 curve so the usual arm speeds give `solverSpeedRatio`; the panel shows both speeds and the
 difference, and the launch point applied against the solver's.
 
@@ -402,9 +517,11 @@ texture), coloured with a MaterialPropertyBlock set once in `Start` (`idealMarke
 `errorLineWidth` 0.012). None has a collider. Nothing is synced.
 
 - **Ideal release** (`Feedback/IdealMarker`, cyan): the calibrated controller release point in the
-  current pitching frame, moved every frame in pitcher mode with the chest.
+  current pitching frame, moved every frame in pitcher mode with the chest; while calibrating it
+  follows the controller in blue or red (see [Calibration](#calibration)).
 - **Last release** (`ReleaseIdealMarker` cyan, `ReleaseActualMarker` pink, joined by the yellow
-  `ReleaseErrorLine`): the ideal and the actual **throwing-controller** positions at the release,
+  `ReleaseErrorLine` through the pass the control error came from, ideal -> pass -> actual): the
+  ideal and the actual **throwing-controller** positions at the release,
   frozen as world positions. Shown for every release whose tracking was valid, pitch or throw,
   and kept until the next release is decided (picking the ball up again does not hide them) or
   the mode ends.
@@ -424,9 +541,15 @@ snapshotted target, total / right / up in the pitcher's view. The mound follows 
 its `Update` only until that crossing; a hold or catch, a hit, a ground touch (`FlightGrounded`),
 another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving the mound ends it as
 **not measured** with that reason, never as 0 cm. A pitch is followed from its launch point.
-The `Detail` text (analysis): the controller's release position error against the calibrated
-release (total, right/up/forward); the release motion of the throwing controller (input, speed,
-direction error, its velocity right/up/forward in the pitching frame, pose error, quality);
+The `Detail` text (analysis): `ARM` (input, the three segment speeds newest first, segments used
+and time span, the weighted speed and direction right/up/forward); `TRAJECTORY` (ideal, release
+and closest pass in the pitching frame, closest distance, signed error, time before the release,
+frame position and speed, the prediction and the point the control error came from); `TIMING`
+(Early / Within Grace / Late / Prediction Unavailable, frames and ms, grace, excess, measured
+frame interval); `FORM` (arm-direction error and controller-rotation error separately, quality);
+`CONTROL` (each penalty's crossing offset with its coefficient, the total applied, and the
+rotation's quality penalty: rpm lost, axis turn, SSW); measurements are shown whatever the
+coefficients;
 `LAUNCH` (a pitch: the solver's release point, the point the Ball applied and their distance; a
 throw: the ball centre it left from; and the ball centre's offset from the solver's release
 point, which nothing uses); `SPEED` (arm speed, curve
@@ -434,7 +557,7 @@ output %, maximum, the solver's speed from the lock, the release speed and their
 difference; a throw shows that the curve was not applied); spin rpm, pitch-local axis,
 SSW coefficient and clock, gains; and the aim: target, solver crossing and miss (at the lock,
 converged or not converged but accepted within `solverAcceptMeters`), and
-actual crossing and miss, in plate-plane coordinates. The texts are built only at a release, a
+actual crossing and miss and the actual crossing against the solver's, in plate-plane coordinates. The texts are built only at a release, a
 launch and the end of a follow.
 
 ## Recalling the ball
@@ -520,7 +643,8 @@ variables (`strikeZone`, `showDebug`), and a prefab instance stores them as one 
 references added to the prefab later do not reach it by themselves: the five feedback
 references were set on the instance when they were added. Check them after changing the
 prefab's mound variables. Value fields (gains, colours,
-`diagnosticIdealSpin`, `maxPitchSpeedKmh`, `solverSpeedRatio`, `maxTrackingSpeed`) are not in the prefab's table and
+`diagnosticIdealSpin`, `maxPitchSpeedKmh`, `solverSpeedRatio`, the trajectory settings, the grace frames and the
+penalty coefficients) are not in the prefab's table and
 take the program's defaults there and in Bullpen's mounds. PracticeSpace's instance table does
 store them, so a changed default must also be written there: the gains and pose coefficients
 were set to 0 on it with the defaults above. `armSpeedCurve` has no program default (an `AnimationCurve` initializer is

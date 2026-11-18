@@ -60,11 +60,9 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     [Tooltip("Largest error cone, in degrees. Default 0 (no random error); 8 was the earlier tuning.")]
     public float maxErrorDegrees = 0f;
 
-    [Header("Arm Tracking")]
-    [Tooltip("Newest span of hand samples used for the arm velocity, in seconds. Default 0.08.")]
-    public float velocityWindowSeconds = 0.08f;
-    [Tooltip("Sample-to-sample speed treated as a tracking jump and discarded, in m/s. Default 40.")]
-    public float maxTrackingSpeed = 40f;
+    [Header("Arm Tracking (throwing controller)")]
+    [Tooltip("Longest gap between two throwing-controller samples still joined into one motion, in seconds; a longer gap starts the motion again. Samples are never discarded for their speed. Default 0.1.")]
+    public float maxSampleGapSeconds = 0.1f;
     [Tooltip("Below this arm speed the aim ray uses the head direction, in m/s. Default 1.")]
     public float minDirectionSpeed = 1f;
 
@@ -111,9 +109,11 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     private readonly float[] _times = new float[Capacity];
     private readonly Vector3[] _positions = new Vector3[Capacity];
-    // { next, count, rejected } of the ring above (FieldingMath.Motion*).
-    private readonly int[] _sampleState = new int[3];
+    // { next, count } of the ring above (FieldingMath.Motion*): throwing-controller positions.
+    private readonly int[] _sampleState = new int[FieldingMath.MotionStateLength];
     private Transform _ball;
+    // The hand holding the ball (GloveBehaviour.HandLeft / HandRight); its controller is sampled.
+    private int _hand = GloveBehaviour.HandRight;
     private float _eyeHeight = 1.5f;
     private Vector3 _origin;
     private bool _hasOrigin;
@@ -154,11 +154,14 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     public bool PitcherMode() { return _pitcherMode; }
 
-    public void BeginHold(Transform ball)
+    // hand is the throwing hand holding the ball: the arm motion is read from its controller
+    // (VRChat tracking data), never from the ball's Transform.
+    public void BeginHold(Transform ball, int hand)
     {
         HideReleaseFeedback();
         EnsureTargets();
         _ball = ball;
+        _hand = hand;
         ResetSamples();
         _hasOrigin = false;
         VRCPlayerApi player = Networking.LocalPlayer;
@@ -180,7 +183,7 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     public override void PostLateUpdate()
     {
         if (_ball == null) return;
-        Sample(Time.time, _ball.position);
+        SampleController(Time.time);
         UpdateMarkers();
     }
 
@@ -369,17 +372,32 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         FieldingMath.ResetMotion(_sampleState);
     }
 
-    // The held ball's position (FieldingMath.SampleMotion): a single implausible jump is
-    // discarded; two in a row mean the hand really moved, so the buffer restarts there.
-    public void Sample(float time, Vector3 position)
+    // One sample of the throwing controller (the hand holding the ball) at `time`.
+    public void SampleController(float time)
     {
-        FieldingMath.SampleMotion(_times, _positions, _sampleState, time, position, maxTrackingSpeed);
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (!Utilities.IsValid(player)) return;
+        Sample(time, player.GetTrackingData(_hand == GloveBehaviour.HandLeft
+            ? VRCPlayerApi.TrackingDataType.LeftHand : VRCPlayerApi.TrackingDataType.RightHand).position);
     }
 
-    // Average velocity over the newest window; zero when the window holds one sample.
+    // One controller position (FieldingMath.SampleMotion): never discarded for its speed; a gap
+    // longer than maxSampleGapSeconds starts the motion again.
+    public void Sample(float time, Vector3 position)
+    {
+        FieldingMath.SampleMotion(_times, _positions, _sampleState, time, position, maxSampleGapSeconds);
+    }
+
+    // The arm motion of the newest three segments (FieldingMath.EstimateArmMotion).
+    public ArmMotion ArmMotionNow()
+    {
+        return FieldingMath.EstimateArmMotion(_times, _positions, _sampleState);
+    }
+
+    // Weighted mean velocity of the newest segments; zero when not measured.
     public Vector3 ArmVelocity()
     {
-        return FieldingMath.MotionVelocity(_times, _positions, _sampleState, velocityWindowSeconds);
+        return ArmMotionNow().velocity;
     }
 
     // Decides the release once from the markers placed last (call RefreshMarkers first).
@@ -391,9 +409,10 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         float spinHalfLife, float gravity, float fixedStep, float randomAngle, float randomRadius)
     {
         EnsureTargets();
-        Vector3 arm = ArmVelocity();
-        releaseArmSpeed = arm.magnitude;
-        Vector3 ray = releaseArmSpeed >= minDirectionSpeed ? arm / releaseArmSpeed : FlatForward(headForward);
+        // Speed and direction are read separately (FieldingMath.EstimateArmMotion).
+        ArmMotion arm = ArmMotionNow();
+        releaseArmSpeed = arm.speed;
+        Vector3 ray = releaseArmSpeed >= minDirectionSpeed && arm.direction != Vector3.zero ? arm.direction : FlatForward(headForward);
         selectedTarget = NoTarget;
         releaseMiss = 0f;
         float best = float.MaxValue;

@@ -92,9 +92,13 @@ public partial class ManualPitchBehaviour
         }
         Quaternion frame = ManualPitchMath.Frame(forward);
         Vector3 relative = ManualPitchMath.ToFrame(frame, chest, handPosition);
-        if (!ManualPitchMath.ValidRelativePosition(relative))
+        // Range: 0.05..1.5 m from the chest and 45..90 deg from the plate direction. Outside it
+        // nothing is recorded, the saved calibration stays, and calibration goes on (red marker).
+        int range = ManualPitchMath.CalibrationRange(relative);
+        if (range != ManualPitchMath.CalibrationInRange)
         {
-            statusText = "The hand is too close to or too far from the chest; nothing recorded.";
+            statusText = "Not saved: " + ManualPitchMath.CalibrationRangeText(range, relative) +
+                ". Move the hand until the marker turns blue, then pull the trigger again.";
             return false;
         }
         _draftPosition = relative;
@@ -183,11 +187,17 @@ public partial class ManualPitchBehaviour
             PlayerData.TryGetVector3(player, KeyPosition, out Vector3 position) &&
             PlayerData.TryGetQuaternion(player, KeyRotation, out Quaternion rotation) &&
             !RestoreCalibration(version, hand, position, rotation))
+        {
+            // Includes a version 1 calibration taken before the 45..90 deg range: it is not used
+            // (never silently accepted) and stays stored until a new calibration overwrites it.
             Debug.LogWarning("ManualPitch: ignored an invalid stored calibration");
+            statusText = "The saved calibration is outside the allowed range; calibrate again.";
+        }
         Notify();
     }
 
     // Accepts stored values only when every one is valid; anything else keeps no calibration.
+    // The stored format is unchanged (version 1); the position must also be inside today's range.
     public bool RestoreCalibration(int version, int hand, Vector3 position, Quaternion rotation)
     {
         if (version != CalibrationVersion || (hand != GloveBehaviour.HandLeft && hand != GloveBehaviour.HandRight) ||

@@ -77,31 +77,52 @@ public partial class ThrowAimBehaviour
         Assert.AreEqual(0f, FieldingMath.ErrorDegrees(3f, 0.15f, 1f, 0f, 0f), "zero settings give no error");
     }
 
+    // A fast arm is never discarded for its speed: a 60 m/s segment enters the motion as it is.
     [TsukimiTest]
-    public void ASingleTrackingJumpIsDiscardedAndTwoRestartTheBuffer()
+    public void FastSamplesAreNeverDiscardedForTheirSpeed()
     {
         ResetSamples();
         Sample(0.00f, new Vector3(0f, 1f, 0f));
-        Sample(0.02f, new Vector3(0.1f, 1f, 0f));
-        Sample(0.04f, new Vector3(5f, 1f, 0f));
-        Sample(0.06f, new Vector3(0.3f, 1f, 0f));
-        Vector3 velocity = ArmVelocity();
-        Assert.IsTrue(Mathf.Abs(velocity.x - 5f) < 0.001f, "the spike does not enter the velocity");
-        Sample(0.08f, new Vector3(10f, 1f, 0f));
-        Sample(0.10f, new Vector3(10.1f, 1f, 0f));
-        Assert.AreEqual(Vector3.zero, ArmVelocity(), "after two jumps only the new position remains");
-        Sample(0.12f, new Vector3(10.2f, 1f, 0f));
-        Assert.IsTrue(Mathf.Abs(ArmVelocity().x - 5f) < 0.001f, "tracking continues from the new place");
+        Sample(0.02f, new Vector3(1.2f, 1f, 0f));
+        Sample(0.04f, new Vector3(2.4f, 1f, 0f));
+        Sample(0.06f, new Vector3(3.6f, 1f, 0f));
+        ArmMotion motion = ArmMotionNow();
+        Assert.AreEqual(3, motion.segments);
+        Assert.IsTrue(Mathf.Abs(motion.speed - 60f) < 0.01f, "60 m/s kept: " + motion.speed);
+        Assert.IsTrue(Mathf.Abs(ArmVelocity().x - 60f) < 0.01f);
     }
 
+    // Weights 1, 2, 3 from the oldest of the newest three segments; older samples are not read.
     [TsukimiTest]
-    public void ArmVelocityUsesOnlyTheNewestWindow()
+    public void TheArmMotionWeightsTheNewestThreeSegments()
     {
         ResetSamples();
-        velocityWindowSeconds = 0.08f;
-        for (int i = 0; i <= 10; i++) Sample(i * 0.02f, new Vector3(i < 6 ? 0f : (i - 5) * 0.2f, 1f, 0f));
-        Vector3 velocity = ArmVelocity();
-        Assert.IsTrue(Mathf.Abs(velocity.x - 10f) < 0.001f, "the stationary start is outside the window");
+        for (int i = 0; i <= 6; i++) Sample(i * 0.02f, new Vector3(i < 4 ? 0f : (i - 3) * 0.2f, 1f, 0f));
+        // Segments newest first: 10, 10, 10 m/s (the stationary start is older than three segments).
+        Assert.IsTrue(Mathf.Abs(ArmMotionNow().speed - 10f) < 0.001f, "speed " + ArmMotionNow().speed);
+        ResetSamples();
+        Sample(0.00f, Vector3.zero);
+        Sample(0.02f, new Vector3(0.02f, 0f, 0f));
+        Sample(0.04f, new Vector3(0.06f, 0f, 0f));
+        Sample(0.06f, new Vector3(0.12f, 0f, 0f));
+        // 1, 2, 3 m/s weighted 1, 2, 3: (1 + 4 + 9) / 6.
+        Assert.IsTrue(Mathf.Abs(ArmMotionNow().speed - 14f / 6f) < 0.001f, "weighted " + ArmMotionNow().speed);
+    }
+
+    // A gap longer than maxSampleGapSeconds starts the motion again; an older time is ignored.
+    [TsukimiTest]
+    public void ALongGapStartsTheMotionAgain()
+    {
+        ResetSamples();
+        maxSampleGapSeconds = 0.1f;
+        Sample(0.00f, Vector3.zero);
+        Sample(0.02f, new Vector3(0.1f, 0f, 0f));
+        Sample(0.50f, new Vector3(10f, 0f, 0f));
+        Assert.AreEqual(0, ArmMotionNow().segments, "the old motion is not joined to the new one");
+        Assert.AreEqual(Vector3.zero, ArmVelocity());
+        Sample(0.40f, new Vector3(-50f, 0f, 0f));
+        Sample(0.52f, new Vector3(10.1f, 0f, 0f));
+        Assert.IsTrue(Mathf.Abs(ArmVelocity().x - 5f) < 0.001f, "continues from the new place: " + ArmVelocity());
     }
 
     [TsukimiTest]
