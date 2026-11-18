@@ -30,6 +30,12 @@ public partial class BallBehaviour
     [UdonSynced] private Vector3 _wakeDirection;
     [UdonSynced] private float _wakeConeAngle;
     [UdonSynced] private float _wakePhase;
+    // The PitchLineage of the state: a HandPitch's pitch ID, prepared generation and batter, or
+    // the pitch a hit, catch or throw comes from (zero for none).
+    [UdonSynced] private int _pitchPitcher;
+    [UdonSynced] private int _pitchNumber;
+    [UdonSynced] private int _pitchPrep;
+    [UdonSynced] private int _pitchBatter;
 
     private const int StageState = 1;
     private const int PitchState = 2;
@@ -75,6 +81,7 @@ public partial class BallBehaviour
     private float _acceptedHitStrength;
     private int _acceptedHold, _acceptedHolderId, _acceptedPublisherId;
     private WakeProfile _acceptedWake;
+    private PitchLineage _acceptedLineage;
 
     // Candidates: received snapshots that could not be accepted yet because their publisher
     // was not the owner (or the owner was unknown). One slot per publisher holds only that
@@ -93,6 +100,7 @@ public partial class BallBehaviour
     private readonly int[] _candidateHolderId = new int[CandidateSlots];
     private readonly int[] _candidatePublisherId = new int[CandidateSlots];
     private readonly WakeProfile[] _candidateWake = new WakeProfile[CandidateSlots];
+    private readonly PitchLineage[] _candidateLineage = new PitchLineage[CandidateSlots];
     private readonly int[] _candidateArrival = new int[CandidateSlots];
     private int _candidateClock;
     private bool _candidateCheckScheduled;
@@ -125,6 +133,7 @@ public partial class BallBehaviour
     private float _pendingHitStrength;
     private int _pendingHold, _pendingHolderId;
     private WakeProfile _pendingWake;
+    private PitchLineage _pendingLineage;
     private int _publishedSequence, _publishedKind;
     private int _serializationRetries;
     // Release time of a pitch this client already launched from the shared schedule, and the
@@ -192,6 +201,7 @@ public partial class BallBehaviour
         _localPitchTime = releaseTime;
         _hasLocalPitch = true;
         LaunchPitch(state.position, state.velocity, spin, wake, state.time);
+        _lineage = new PitchLineage();
         _localPitchFlight = flightSequence;
         return true;
     }
@@ -336,6 +346,7 @@ public partial class BallBehaviour
         _pendingHold = hold;
         _pendingHolderId = holderId;
         _pendingWake = IsPitchKind(kind) ? wake : new WakeProfile();
+        _pendingLineage = LineageFor(kind);
     }
 
     // Delayed check of an ownership request. Recovers a missed callback; a fielding action
@@ -520,6 +531,7 @@ public partial class BallBehaviour
         _acceptedHold = _pendingHold;
         _acceptedHolderId = _pendingHolderId;
         _acceptedWake = _pendingWake;
+        _acceptedLineage = _pendingLineage;
         _acceptedPublisherId = LocalId();
         _publishedSequence = _acceptedSequence;
         _publishedKind = _acceptedKind;
@@ -592,6 +604,25 @@ public partial class BallBehaviour
         _wakeDirection = _acceptedWake.direction;
         _wakeConeAngle = _acceptedWake.coneAngle;
         _wakePhase = _acceptedWake.initialPhase;
+        _pitchPitcher = _acceptedLineage.pitcher;
+        _pitchNumber = _acceptedLineage.number;
+        _pitchPrep = _acceptedLineage.prep;
+        _pitchBatter = _acceptedLineage.batter;
+    }
+
+    private PitchLineage SyncedLineage()
+    {
+        PitchLineage lineage = new PitchLineage();
+        lineage.pitcher = _pitchPitcher;
+        lineage.number = _pitchNumber;
+        lineage.prep = _pitchPrep;
+        lineage.batter = _pitchBatter;
+        return lineage;
+    }
+
+    private bool SameLineage(PitchLineage a, PitchLineage b)
+    {
+        return a.pitcher == b.pitcher && a.number == b.number && a.prep == b.prep && a.batter == b.batter;
     }
 
     private WakeProfile SyncedWake()
@@ -621,6 +652,7 @@ public partial class BallBehaviour
         _acceptedHolderId = _holderId;
         _acceptedPublisherId = _publisherId;
         _acceptedWake = SyncedWake();
+        _acceptedLineage = SyncedLineage();
         // The publisher's own older candidate can never be taken any more.
         int slot = FindCandidate(_acceptedPublisherId);
         if (slot >= 0 && !NewerThanAccepted(_candidateSequence[slot], _candidateKind[slot], _acceptedPublisherId))
@@ -689,6 +721,7 @@ public partial class BallBehaviour
         _candidateHolderId[slot] = _holderId;
         _candidatePublisherId[slot] = _publisherId;
         _candidateWake[slot] = SyncedWake();
+        _candidateLineage[slot] = SyncedLineage();
         _candidateArrival[slot] = ++_candidateClock;
     }
 
@@ -716,6 +749,7 @@ public partial class BallBehaviour
         _acceptedHold = _candidateHold[slot];
         _acceptedHolderId = _candidateHolderId[slot];
         _acceptedWake = _candidateWake[slot];
+        _acceptedLineage = _candidateLineage[slot];
         _acceptedPublisherId = publisher;
         return true;
     }
@@ -822,7 +856,8 @@ public partial class BallBehaviour
         return _acceptedSequence > 0 && _kind == _acceptedKind && _serverTime == _acceptedServerTime &&
             _position == _acceptedPosition && _velocity == _acceptedVelocity && _spin == _acceptedSpin &&
             _batterId == _acceptedBatterId && _hitStrength == _acceptedHitStrength &&
-            _hold == _acceptedHold && _holderId == _acceptedHolderId && SameWake(SyncedWake(), _acceptedWake);
+            _hold == _acceptedHold && _holderId == _acceptedHolderId && SameWake(SyncedWake(), _acceptedWake) &&
+            SameLineage(SyncedLineage(), _acceptedLineage);
     }
 
     private bool SameWake(WakeProfile a, WakeProfile b)
@@ -885,14 +920,32 @@ public partial class BallBehaviour
             NotifyPresentationListeners();
             return;
         }
+        _lineage = _acceptedLineage;
         if (_acceptedKind == PossessionState)
         {
             ApplyPossession();
+            NotifyPitchJudge();
+            NotifyPresentationListeners();
+            return;
+        }
+        // A pitch the batter declared invalid (or a hit on it) is never launched again, however
+        // late or often it arrives; the pitcher's recall replaces it.
+        if (VoidedMotion())
+        {
+            if (networkDiagnostics) Diag("apply kind=" + _acceptedKind + " voided pitch=" + _acceptedLineage.pitcher + "/" + _acceptedLineage.number);
+            NotifyPresentationListeners();
+            return;
+        }
+        // The judging batter launches a HandPitch from the release it sees, not from the
+        // server time (PitchJudgeBehaviour); everyone else catches up as before.
+        if (_acceptedKind == HandPitchState && GateHandPitch())
+        {
             NotifyPresentationListeners();
             return;
         }
         ExitHold();
         ApplyMotionSnapshot();
+        NotifyPitchJudge();
         NotifyPresentationListeners();
     }
 

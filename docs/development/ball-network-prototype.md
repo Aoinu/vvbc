@@ -16,6 +16,10 @@ notifications are settled against the current owner, not their arrival order,
 and a snapshot equal to the accepted one is applied again only when the local
 ball no longer shows it; see [fielding system](fielding-system.md). A manual pitch
 from a fielder's hand is the HandPitch kind; see [manual pitching](manual-pitching.md).
+Every snapshot also carries a pitch lineage (`_pitchPitcher`, `_pitchNumber`, `_pitchPrep`,
+`_pitchBatter`): the manual pitch a HandPitch starts, and that a hit, catch or throw comes
+from. On the batter's client a HandPitch is launched by the batter's judge, and a pitch judged
+invalid is never launched again; see [manual pitch sync](manual-pitch-sync.md).
 
 ## Scene setup
 

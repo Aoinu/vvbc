@@ -21,6 +21,9 @@ public partial class BallBehaviour
         StopBallAudio();
         SetPresentation(false);
         ClearWake();
+        ClearSpeculation();
+        EndVisualCorrection();
+        _lineage = new PitchLineage();
         _flightGrounded = false;
         flightSequence++;
         contactConsumed = false;
@@ -81,6 +84,8 @@ public partial class BallBehaviour
     private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
     {
         ClearWake();
+        ClearSpeculation();
+        EndVisualCorrection();
         _flightGrounded = false;
         if (body == null) return;
         ExitHold();
@@ -127,7 +132,7 @@ public partial class BallBehaviour
         UpdateFlightVisual();
         UpdateWind();
         // Only this client's glove is tested, before the new sample replaces the previous one.
-        if (_localHold == HoldFree)
+        if (_localHold == HoldFree && !_speculative)
         {
             GloveBehaviour glove = ReadyCatchGlove();
             if (glove != null) CheckLocalCatch(glove, body.position);

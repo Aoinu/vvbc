@@ -12,7 +12,7 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 | Code | Responsibility |
 |---|---|
 | `Ball/ManualPitchMath.cs` | Pure math: pitching frame, calibration range (distance and 45-90 deg angle), release trajectory (PCHIP Hermite, closest pass, early prediction, timing frames, penalty contributions), arm slot and 4-Seam axis, pose failure, axis transfer, spin, arm direction, control, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
-| `Ball/ManualPitchBehaviour.cs` | Mound component (local only, no sync): mound trigger, pitcher-mode state, throwing-controller sampling, cursor, glove-hand lock, solver, release resolution, debug. |
+| `Ball/ManualPitchBehaviour.cs` | Mound component (local, no sync of its own; its prepared pitch is published by `PitchPrepBehaviour`, see [manual pitch sync](manual-pitch-sync.md)): mound trigger, pitcher-mode state, throwing-controller sampling, cursor, glove-hand lock, solver, release resolution, debug. |
 | `Ball/ManualPitchBehaviour.Calibration.cs` | Calibration draft, commit, PlayerData persistence. |
 | `Ball/ManualPitchPanelBehaviour.cs` | World-space panel: buttons and status text only. |
 | `Ball/BallBehaviour.Fielding.cs` | Single release gate (Pickup Use / Drop), pitch-or-throw branch, launch (a pitch from the mound's `releasePosition`), release re-assertion. |
@@ -25,9 +25,11 @@ zone and the glove, and Tsukimi compiles a Behaviour with its own folder and the
 ## Responsibilities
 
 The Ball keeps possession, ownership, launch and network, as before. The mound decides,
-when the Ball reports a release, whether it is a pitch and with which flight. Nothing about
-the mound is synced: the releasing client decides the final flight, and receivers use it.
-Hand pose and calibration are never re-evaluated over the network.
+when the Ball reports a release, whether it is a pitch and with which flight. The releasing
+client decides the final flight, and receivers use it; hand pose and calibration are never
+re-evaluated over the network. Only the course a release would use is published ahead of it
+(prepared data, for the batter's release detection and verdict:
+[manual pitch sync](manual-pitch-sync.md)).
 
 ```text
 OnPickupUseUp (after Use down) --+
@@ -603,6 +605,12 @@ late-joiner behaviour are those of the [fielding system](fielding-system.md). On
 kind carries a wake; Throw, Possession, Hit and Stage are sent and read as None, and every
 later flight, hold, hit or Stage clears the wake (`ClearWake`), so no SSW is carried into a
 batted ball or a throw (tested).
+
+The HandPitch also carries its pitch ID, the prepared generation and the batter it was
+prepared for. The mound publishes the course a release would use before the release
+(`PitchPrep`), and the batter on the plate launches the pitch from the release they see and
+judges it valid or invalid by its sync delay; see [manual pitch sync](manual-pitch-sync.md).
+Nothing in recognition, speed, control, spin or SSW changes for it.
 
 ## Batting pitcher
 

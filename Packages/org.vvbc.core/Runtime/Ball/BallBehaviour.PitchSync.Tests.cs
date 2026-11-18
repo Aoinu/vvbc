@@ -1,0 +1,147 @@
+using Tsukimi;
+using UnityEngine;
+using VRC.SDKBase;
+
+// The Ball's side of manual-pitch sync: the PitchLineage in its snapshots, voiding an invalid
+// pitch, the pitcher taking the ball back, and the end of a speculation. A test run has no
+// Rigidbody, so flights are not flown here; the judge's decisions are PitchJudgeBehaviour.Tests.cs.
+public partial class BallBehaviour
+{
+    [TsukimiTest]
+    public void ThePitchIdTravelsFromTheHandPitchToItsHitAndEndsAtAStageOrRecall()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        PrepareReleaseLineage(3, 7, 9);
+        QueueSnapshot(HandPitchState, Vector3.up, Vector3.forward * 38f, Vector3.zero, 4.0, -1, 0f, HoldFree, 0, new WakeProfile());
+        Assert.AreEqual(me.playerId, _pitchPitcher);
+        Assert.AreEqual(3, _pitchNumber);
+        Assert.AreEqual(7, _pitchPrep);
+        Assert.AreEqual(9, _pitchBatter);
+        _lineage = _acceptedLineage;
+        QueueHit(Vector3.one, Vector3.right, Vector3.up, 5.0, 17, 0.5f);
+        Assert.AreEqual(3, _pitchNumber, "the hit keeps the pitch it was struck on");
+        QueueSnapshot(PossessionState, Vector3.one, Vector3.zero, Vector3.zero, 5.5, -1, 0f, HoldGlove, me.playerId);
+        Assert.AreEqual(3, _pitchNumber, "so does the catch");
+        Stage(Vector3.zero);
+        QueueSnapshot(StageState, Vector3.zero, Vector3.zero, Vector3.zero, 6.0, -1, 0f, HoldFree, 0);
+        Assert.AreEqual(0, _pitchNumber, "a Stage starts no pitch");
+        _lineage = _releaseLineage;
+        RecallToLocalGlove(7.0);
+        Assert.AreEqual(0, _pitchNumber, "a recall starts no pitch");
+    }
+
+    [TsukimiTest]
+    public void AVoidedPitchOrItsHitIsNeverLaunchedAgain()
+    {
+        Mimic.Join();
+        VoidPitch(4, 9, 10.0);
+        Assert.IsTrue(PitchVoided(4, 9));
+        _acceptedLineage = new PitchLineage();
+        _acceptedLineage.pitcher = 4;
+        _acceptedLineage.number = 9;
+        _acceptedKind = HandPitchState;
+        Assert.IsTrue(VoidedMotion(), "the invalid pitch arriving again");
+        _acceptedKind = HitState;
+        Assert.IsTrue(VoidedMotion(), "a hit on the invalid pitch");
+        _acceptedKind = ThrowState;
+        Assert.IsFalse(VoidedMotion(), "fielding after it is left to the pitcher's recall");
+        _acceptedKind = HandPitchState;
+        _acceptedLineage.number = 10;
+        Assert.IsFalse(VoidedMotion(), "the next pitch");
+        // Applying the voided pitch launches nothing and never asks the judge.
+        _acceptedLineage.number = 9;
+        _acceptedSequence = 3;
+        ApplyAccepted();
+        Assert.IsFalse(flying);
+    }
+
+    [TsukimiTest]
+    public void ThePitcherTakesBackTheBallOfItsInvalidPitch()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        PrepareReleaseLineage(1, 4, 2);
+        _lineage = _releaseLineage;
+        _acceptedLineage = _releaseLineage;
+        _acceptedKind = HandPitchState;
+        _acceptedPublisherId = pitcher.playerId;
+        _acceptedSequence = 3;
+        VoidPitch(pitcher.playerId, 1, 20.0);
+        Assert.AreEqual(HoldGlove, _localHold, "in the pitcher's glove again");
+        Assert.AreEqual(PossessionState, _acceptedKind, "published as an ordinary possession");
+        Assert.AreEqual(pitcher.playerId, _acceptedHolderId);
+        Assert.IsFalse(_acceptedLineage.IsPitch(), "the recalled ball comes from no pitch");
+        Assert.IsTrue(contactConsumed, "nothing of the invalid pitch can be hit any more");
+    }
+
+    [TsukimiTest]
+    public void AnOldInvalidVerdictDoesNotTakeTheNextPitchBack()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        PrepareReleaseLineage(2, 4, 3);
+        _lineage = _releaseLineage;
+        _acceptedLineage = _releaseLineage;
+        _acceptedKind = HandPitchState;
+        _acceptedPublisherId = pitcher.playerId;
+        VoidPitch(pitcher.playerId, 1, 20.0);
+        Assert.AreEqual(HandPitchState, _acceptedKind, "pitch 2 is not recalled for pitch 1");
+        Assert.IsTrue(_lineage.SamePitch(pitcher.playerId, 2));
+        Assert.IsTrue(PitchVoided(pitcher.playerId, 1));
+        Assert.IsFalse(PitchVoided(pitcher.playerId, 2));
+    }
+
+    [TsukimiTest]
+    public void AnotherPlayersInvalidPitchIsNotRecalledHere()
+    {
+        Mimic.Join();
+        _lineage.pitcher = 40;
+        _lineage.number = 1;
+        _acceptedLineage = _lineage;
+        _acceptedKind = HandPitchState;
+        VoidPitch(40, 1, 20.0);
+        Assert.AreEqual(HandPitchState, _acceptedKind, "only the pitcher recalls; others wait for it");
+        Assert.AreEqual(HoldFree, _localHold);
+    }
+
+    [TsukimiTest]
+    public void AnOlderPitchSnapshotNeverReplacesTheCatchOrHitAfterIt()
+    {
+        Mimic.Join();
+        _acceptedSequence = 10;
+        _acceptedKind = PossessionState;
+        _acceptedPublisherId = 3;
+        Assert.AreEqual(SnapshotIgnore, SnapshotDecision(9, HandPitchState, 3, 3), "the pitch before the catch");
+        _acceptedKind = HitState;
+        Assert.AreEqual(SnapshotIgnore, SnapshotDecision(10, HandPitchState, 3, 3), "the pitch the hit answered");
+    }
+
+    [TsukimiTest]
+    public void TheLineageIsPartOfTheSameStateComparison()
+    {
+        Mimic.Join();
+        _acceptedSequence = 4;
+        _acceptedKind = HandPitchState;
+        _acceptedLineage.pitcher = 5;
+        _acceptedLineage.number = 2;
+        _kind = HandPitchState;
+        _pitchPitcher = 5;
+        _pitchNumber = 2;
+        Assert.IsTrue(SameAsAccepted());
+        _pitchNumber = 3;
+        Assert.IsFalse(SameAsAccepted(), "another pitch with the same flight is not the same state");
+    }
+
+    [TsukimiTest]
+    public void AnyHoldStageOrNewFlightEndsASpeculation()
+    {
+        Mimic.Join();
+        _speculative = true;
+        EnterHold(HoldGlove, 1, Vector3.zero);
+        Assert.IsFalse(_speculative, "a hold");
+        _speculative = true;
+        Stage(Vector3.zero);
+        Assert.IsFalse(_speculative, "a Stage");
+        Assert.IsFalse(_lineage.IsPitch(), "a Stage ends the lineage");
+        Assert.IsFalse(BeginSpeculativePitch(1, Vector3.zero, Vector3.forward, Vector3.zero, 0, 0f, Vector3.zero, 0f),
+            "nothing to fly without the pitcher's hand holding the ball");
+    }
+}

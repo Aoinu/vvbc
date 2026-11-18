@@ -138,7 +138,7 @@ public partial class BallBehaviour
     // Slow balls and a glove moved onto a resting ball also arrive through the trigger.
     public void OnTriggerEnter(Collider other)
     {
-        if (!flying || _localHold != HoldFree || body == null || body.isKinematic || other == null) return;
+        if (!flying || _speculative || _localHold != HoldFree || body == null || body.isKinematic || other == null) return;
         if (Time.time < _catchBlockedUntil) return;
         GloveBehaviour glove = LocalGlove();
         if (glove == null || !glove.catchReady || !glove.IsCatchCollider(other)) return;
@@ -183,6 +183,8 @@ public partial class BallBehaviour
         // A ball in this player's own hand leaves the VRCPickup first; nothing is released.
         if (HeldLocally() && _localHold == HoldHand) ExitHold();
         EnterHold(HoldGlove, local, Vector3.zero);
+        // A recalled ball no longer comes from any pitch.
+        _lineage = new PitchLineage();
         QueueSnapshot(PossessionState, position, Vector3.zero, Vector3.zero, serverTime, -1, 0f, HoldGlove, local);
         return true;
     }
@@ -288,6 +290,8 @@ public partial class BallBehaviour
     private void StopFlightForHold()
     {
         ClearWake();
+        ClearSpeculation();
+        EndVisualCorrection();
         _flightGrounded = false;
         flying = false;
         flightSequence++;
@@ -334,7 +338,7 @@ public partial class BallBehaviour
     {
         if (pickup == null) return;
         bool presented = ballCollider != null ? ballCollider.enabled : flying;
-        bool value = _localHold == HoldFree ? presented : HeldLocally();
+        bool value = _localHold == HoldFree ? presented && !_speculative : HeldLocally();
         if (pickup.pickupable != value) pickup.pickupable = value;
     }
 
@@ -575,6 +579,8 @@ public partial class BallBehaviour
             wake.mode = manualPitcher.releaseWakeMode;
             wake.coefficient = manualPitcher.releaseWakeCoefficient;
             wake.direction = manualPitcher.releaseWakeDirection;
+            PrepareReleaseLineage(manualPitcher.releasePitchNumber, manualPitcher.releasePrepGeneration,
+                manualPitcher.releaseTargetBatter);
         }
         else if (aiming)
         {
@@ -604,7 +610,11 @@ public partial class BallBehaviour
     {
         ExitHold();
         _catchBlockedUntil = now + Mathf.Max(0f, selfCatchDelay);
-        if (pitched) LaunchPitch(position, velocity, spin, wake, 0f);
+        if (pitched)
+        {
+            LaunchPitch(position, velocity, spin, wake, 0f);
+            _lineage = _releaseLineage;
+        }
         else
         {
             StartFlight(position, velocity, spin, false);

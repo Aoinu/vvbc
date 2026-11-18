@@ -32,6 +32,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public MeshRenderer cursorRenderer;
     [Tooltip("Optional UI notified with OnManualPitchChanged when the state or calibration changes.")]
     public UdonBehaviour statusListener;
+    [Tooltip("The mound's prepared-pitch sync (docs/development/manual-pitch-sync.md). When empty, the PitchPrep child is used. Without one, pitches are never judged by the batter.")]
+    public PitchPrepBehaviour prepSync;
 
     [Header("Course (front-edge plane of home plate, metres)")]
     public float horizontalMin = -1.70f;
@@ -161,6 +163,11 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [HideInInspector] public int releaseWakeMode;
     [HideInInspector] public float releaseWakeCoefficient;
     [HideInInspector] public Vector3 releaseWakeDirection;
+    // The pitch ID of the last accepted release and the prepared data it was released against
+    // (0 / -1 when there was none); the Ball puts them in the HandPitch.
+    [HideInInspector] public int releasePitchNumber;
+    [HideInInspector] public int releasePrepGeneration;
+    [HideInInspector] public int releaseTargetBatter = -1;
 
     // Debug record of the last release.
     [HideInInspector] public int debugInput;
@@ -330,6 +337,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private void Start()
     {
         if (strikeZone != null) _ball = strikeZone.ball;
+        // Scene instances that override the mound's variables keep their own table, without
+        // this field: the mound's own PitchPrep child is the one.
+        if (prepSync == null) prepSync = GetComponentInChildren<PitchPrepBehaviour>(true);
         if (cursor != null) cursor.gameObject.SetActive(false);
         ApplyMarkerStyle();
         SetActive(idealMarker, false);
@@ -427,6 +437,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
                 state = StateTargeting;
                 _hasCursor = false;
                 _ball.SetManualPitcher(this);
+                if (prepSync != null) prepSync.TakeOwnership();
             }
         }
         else
@@ -645,6 +656,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (forward == Vector3.zero) return false;
         _lockTarget = CursorWorld(planePoint, planeNormal);
         _lockRelease = IdealReleaseAt(chest, forward, grip);
+        _lockIdealHand = ManualPitchMath.FromFrame(ManualPitchMath.Frame(forward), chest, _calPosition);
         // One solver speed for the whole solve, independent of the arm-speed curve; the release
         // never solves again for its own speed.
         _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
@@ -701,6 +713,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _defaultSolving = false;
         _defaultDirty = true;
         _nextDefaultCheck = 0f;
+        _defaultVersion++;
+        SyncPrep();
     }
 
     // Runs while no lock is being solved: advances an open default solve, otherwise checks a few
@@ -716,6 +730,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         }
         if (Time.time < _nextDefaultCheck) return;
         _nextDefaultCheck = Time.time + DefaultCourseCheckSeconds;
+        // The same few-times-a-second check keeps the prepared data on the current batter.
+        SyncPrep();
+        if (prepSync != null) prepSync.RefreshIfExpiring(Networking.GetServerTimeInSeconds());
         Vector3 target = strikeZone.AimPoint(1, 1);
         if (!_defaultDirty && (target - _defaultTarget).sqrMagnitude < DefaultCourseMoveMeters * DefaultCourseMoveMeters) return;
         VRCPlayerApi player = Networking.LocalPlayer;
@@ -740,6 +757,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _defaultDirty = false;
         _defaultTarget = target;
         _defaultRelease = IdealReleaseAt(chest, forward, grip);
+        _defaultIdealHand = ManualPitchMath.FromFrame(ManualPitchMath.Frame(forward), chest, _calPosition);
         _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
         _defaultWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
         _defaultWakeClock = wakeClockDegrees;
@@ -763,6 +781,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _defaultReady = (converged || (ManualPitchMath.Finite(error) && error <= solverAcceptMeters)) &&
             ManualPitchMath.FiniteVector(direction) && direction.sqrMagnitude > 0.5f;
         if (_defaultReady) _defaultDirection = direction.normalized;
+        _defaultVersion++;
+        SyncPrep();
     }
 
     private void AdvanceSolve()
@@ -1026,6 +1046,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     private bool EndRelease(bool pitched, Vector3 ballPosition, float now)
     {
+        if (pitched) WatchReleasedPitch(now);
         if (state != StateInactive) Unlock();
         ShowReleaseFeedback(pitched, pitched ? releasePosition : ballPosition, now);
         ShowReleaseDebug();
@@ -1159,6 +1180,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         float distance = Vector3.Dot(courseRelease - planePoint, planeNormal);
         Vector3 direction = ManualPitchMath.ControlDirection(courseDirection, _penaltyTotal.x, _penaltyTotal.y, 1f, 1f, distance);
         releasePosition = courseRelease;
+        TakePitchId(locked);
 
         // Pose: the whole 3D rotation error lowers quality; part of it turns the axis. The
         // diagnostic setting keeps the calibrated spin and wake the solver aimed with.
@@ -1230,6 +1252,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         releaseWakeMode = BallAerodynamics.WakeNone;
         releaseWakeCoefficient = 0f;
         releaseWakeDirection = Vector3.zero;
+        releasePitchNumber = 0;
+        releasePrepGeneration = 0;
+        releaseTargetBatter = -1;
         _releaseHasPoints = false;
         _releaseArmVelocity = Vector3.zero;
         _releaseErrorPoint = Vector3.zero;
@@ -1778,6 +1803,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     private void Notify()
     {
+        SyncPrep();
         if (statusListener != null) statusListener.SendCustomEvent("OnManualPitchChanged");
     }
 }
