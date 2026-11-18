@@ -66,7 +66,7 @@ public partial class ManualPitchBehaviour
     // The ID of a recognized pitch, and the published generation when the prepared data
     // describes this release's course (else none: the batter never takes it for prepared).
     // Field reads only: a call into another Behaviour here would make ResolveReleaseCore keep
-    // all its locals across it (WatchReleasedPitch runs after it, from EndRelease).
+    // all its locals across it (the Ball registers the verdict watch after resolution).
     private void TakePitchId(bool locked)
     {
         releasePitchNumber = _releaseHandSession;
@@ -80,9 +80,10 @@ public partial class ManualPitchBehaviour
     }
 
     // A pitch prepared for a batter is watched for its verdict by the prepared data's owner.
-    private void WatchReleasedPitch(float now)
+    public bool WatchReleasedPitch(float now)
     {
-        if (prepSync != null && releaseTargetBatter > 0) prepSync.WatchPitch(releasePitchNumber, releaseTargetBatter, now);
+        return prepSync == null || releaseTargetBatter <= 0 ||
+            prepSync.WatchPitch(releasePitchNumber, releaseTargetBatter, now);
     }
 
     // ---- Judgement display and the delay setting ----

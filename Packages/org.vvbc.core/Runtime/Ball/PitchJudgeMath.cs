@@ -1,5 +1,126 @@
 using UnityEngine;
 
+public struct PitchDecision
+{
+    public int author, sequence, pitcher, number, status, reason, revision;
+    public float delay, threshold;
+    public bool measured;
+    public double time;
+}
+
+// The wire arrays contain up to eight whole records. A local positive revision pins a
+// record until a serialization of that revision succeeds; received records are unpinned.
+public static class PitchDecisionHistory
+{
+    public const int Capacity = 8;
+    private const int KeysPerRecord = 5;
+
+    public static bool Store(PitchDecision[] records, PitchDecision decision)
+    {
+        int slot = -1;
+        for (int i = 0; i < records.Length; i++)
+        {
+            PitchDecision entry = records[i];
+            if (entry.author == decision.author && entry.sequence == decision.sequence) return false;
+            if (entry.sequence == 0) slot = i;
+            else if (entry.revision == 0 && (slot < 0 || (records[slot].sequence != 0 && Older(entry, records[slot]))))
+                slot = i;
+        }
+        if (slot < 0) return false;
+        if (decision.revision == 0 && records[slot].sequence != 0 && !Older(records[slot], decision)) return false;
+        records[slot] = decision;
+        return true;
+    }
+
+    private static bool Older(PitchDecision a, PitchDecision b)
+    {
+        if (a.time != b.time) return a.time < b.time;
+        if (a.author != b.author) return a.author < b.author;
+        return a.sequence < b.sequence;
+    }
+
+    public static void MarkSent(PitchDecision[] records, int revision)
+    {
+        for (int i = 0; i < records.Length; i++)
+        {
+            PitchDecision entry = records[i];
+            if (entry.revision == 0 || entry.revision > revision) continue;
+            entry.revision = 0;
+            records[i] = entry;
+        }
+    }
+
+    public static int[] Keys(PitchDecision[] records)
+    {
+        int[] keys = new int[Count(records) * KeysPerRecord];
+        int j = 0;
+        for (int i = 0; i < records.Length; i++)
+        {
+            PitchDecision entry = records[i];
+            if (entry.sequence == 0) continue;
+            keys[j++] = entry.author;
+            keys[j++] = entry.sequence;
+            keys[j++] = entry.pitcher;
+            keys[j++] = entry.number;
+            keys[j++] = entry.status | (entry.reason << 3);
+        }
+        return keys;
+    }
+
+    public static double[] Timing(PitchDecision[] records, bool verdict)
+    {
+        double[] timing = new double[Count(records) * (verdict ? 3 : 1)];
+        int j = 0;
+        for (int i = 0; i < records.Length; i++)
+        {
+            PitchDecision entry = records[i];
+            if (entry.sequence == 0) continue;
+            timing[j++] = entry.time;
+            if (!verdict) continue;
+            timing[j++] = entry.measured ? entry.delay : double.NaN;
+            timing[j++] = entry.threshold;
+        }
+        return timing;
+    }
+
+    private static int Count(PitchDecision[] records)
+    {
+        int count = 0;
+        for (int i = 0; i < records.Length; i++)
+            if (records[i].sequence > 0) count++;
+        return count;
+    }
+
+    public static int WireCount(int[] keys, double[] timing, bool verdict)
+    {
+        if (keys == null || timing == null) return 0;
+        int count = keys.Length / KeysPerRecord;
+        return count <= Capacity && keys.Length == count * KeysPerRecord &&
+            timing.Length == count * (verdict ? 3 : 1) ? count : 0;
+    }
+
+    public static PitchDecision Read(int[] keys, double[] timing, int index, bool verdict)
+    {
+        PitchDecision entry = new PitchDecision();
+        int j = index * KeysPerRecord;
+        entry.author = keys[j];
+        entry.sequence = keys[j + 1];
+        entry.pitcher = keys[j + 2];
+        entry.number = keys[j + 3];
+        entry.status = keys[j + 4] & 7;
+        entry.reason = keys[j + 4] >> 3;
+        j = index * (verdict ? 3 : 1);
+        entry.time = timing[j];
+        if (verdict)
+        {
+            entry.measured = !double.IsNaN(timing[j + 1]);
+            if (entry.measured) entry.delay = (float)timing[j + 1];
+            entry.threshold = (float)timing[j + 2];
+        }
+        return entry;
+    }
+}
+
 // Pure rules of the batter's pitch judgement (docs/development/manual-pitch-sync.md): the
 // delay verdict, the remote release detection on one hand segment, and the status texts.
 // Every time here is on one client's monotonic clock (Time.realtimeSinceStartup); server

@@ -260,11 +260,18 @@ public partial class PitchJudgeBehaviour
     [TsukimiTest]
     public void CancellationConvergesWhetherTheValidVerdictArrivesBeforeOrAfterIt()
     {
-        Mimic.Join();
+        VRCPlayerApi first = Mimic.Join();
+        VRCPlayerApi last = Mimic.Join();
+        Mimic.Become(first);
         ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusValid, 0, 10f, true, 100f, JudgeServer, JudgeServer);
         ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusCancelled, 4, 0f, false, 0f, JudgeServer + 3.0, JudgeServer + 3.0);
         Assert.AreEqual(PitchJudgeMath.StatusCancelled, KnownStatus());
         ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusValid, 0, 10f, true, 100f, JudgeServer + 4.0, JudgeServer + 4.0);
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, KnownStatus());
+        Mimic.Become(last);
+        ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusCancelled, 4, 0f, false, 0f, JudgeServer + 3.0, JudgeServer + 3.0);
+        ApplyOutcomeAt(8, 1, PitchJudgeMath.StatusValid, 0, 10f, true, 100f, JudgeServer, JudgeServer + 4.0);
+        Assert.AreEqual(PitchJudgeMath.StatusCancelled, OutcomeStatus(8, 1));
         Assert.AreEqual(PitchJudgeMath.StatusCancelled, KnownStatus());
     }
 
@@ -344,9 +351,32 @@ public partial class PitchJudgeBehaviour
         TickAt(10.2f, JudgeServer);
         Assert.AreEqual(PhaseTimedOut, phase, "past the threshold");
         Assert.AreEqual(PitchJudgeMath.StatusNone, _knownStatus, "a pass alone is never judged");
-        Arm(PreparedPitch.Read(TestPrep()), 1);
+        TickAt(13f, JudgeServer);
+        Assert.AreEqual(PhaseTimedOut, phase, "the observed pass remains known after the sample window");
         Assert.IsTrue(GateHandPitchAt(pitcher, 1, TestPrep().prepGeneration, batter, 13f, JudgeServer));
-        Assert.AreEqual(PhaseAwaitMotion, phase, "beyond candidateMatchSeconds the data waits for its own motion");
+        Assert.AreEqual(PitchJudgeMath.StatusInvalid, KnownStatus());
+        Assert.AreEqual(PitchJudgeMath.ReasonDelay, KnownReason());
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void ASecondPassAfterTimeoutCannotMakeLateDataValid()
+    {
+        VRCPlayerApi player = Mimic.Join();
+        int id = player.playerId;
+        PrepareForTest(id);
+        int generation = WatchForTest();
+        HandPassForTest(10f);
+        float first = _candidateTime;
+        TickAt(10.12f, JudgeServer);
+        Assert.AreEqual(PhaseTimedOut, phase);
+        // This is the same accepted hand hold; the old arming path could watch it again.
+        Arm(PreparedPitch.Read(TestPrep()), 1);
+        HandPassForTest(10.3f);
+        Assert.IsTrue(GateHandPitchAt(id, 1, generation, id, 10.35f, JudgeServer));
+        Assert.AreEqual(PitchJudgeMath.StatusInvalid, KnownStatus());
+        Assert.AreEqual(first, _candidateTime);
+        Assert.IsTrue(KnownDelayMs() > 300f);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, JudgeOnePitchForTest(id, id, 2, generation, 11f, 50f));
     }
 
     [TsukimiTest(maxSteps: 20000000)]
@@ -375,15 +405,15 @@ public partial class PitchJudgeBehaviour
         PrepareForTest(batter);
         int generation = WatchForTest();
         Assert.IsTrue(GateHandPitchAt(pitcher, 1, generation + 1, batter, 10f, JudgeServer));
-        TickAt(10.6f, JudgeServer);
+        TickAt(11.1f, JudgeServer);
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, _knownStatus);
         Assert.AreEqual(PitchJudgeMath.ReasonPrepMissing, _knownReason);
         Assert.IsTrue(GateHandPitchAt(pitcher + 50, 1, 3, batter, 11f, JudgeServer), "no data at all");
-        TickAt(11.6f, JudgeServer);
+        TickAt(12.1f, JudgeServer);
         Assert.AreEqual(PitchJudgeMath.ReasonPrepMissing, _knownReason);
         Assert.IsTrue(GateHandPitchAt(pitcher, 3, generation, batter, 12f, JudgeServer + 700.0),
             "expired data");
-        TickAt(12.6f, JudgeServer + 700.0);
+        TickAt(13.1f, JudgeServer + 700.0);
         Assert.AreEqual(3, _knownNumber);
         Assert.AreEqual(PitchJudgeMath.ReasonPrepMissing, _knownReason);
     }
@@ -399,7 +429,7 @@ public partial class PitchJudgeBehaviour
         Assert.IsTrue(GateHandPitchAt(pitcher, 1, generation, batter, 10f, JudgeServer));
         TickAt(10.4f, JudgeServer);
         Assert.AreEqual(PitchJudgeMath.StatusNone, _knownStatus, "still waiting");
-        TickAt(10.6f, JudgeServer);
+        TickAt(11.1f, JudgeServer);
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, _knownStatus);
         Assert.AreEqual(PitchJudgeMath.ReasonMotionNotDetected, _knownReason);
         Assert.IsFalse(_knownDelayMeasured, "no delay is claimed");
@@ -414,14 +444,14 @@ public partial class PitchJudgeBehaviour
         PrepareForTest(batter);
         int generation = WatchForTest();
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, JudgeOnePitchForTest(pitcher, batter, 1, generation, 10f, 200f));
-        int sequence = verdictSequence;
+        int sequence = _verdictSequence;
         Assert.IsTrue(GateHandPitchAt(pitcher, 1, generation, batter, 10.5f, JudgeServer),
             "an invalid pitch arriving again is still held back");
-        Assert.AreEqual(sequence, verdictSequence, "no second verdict");
+        Assert.AreEqual(sequence, _verdictSequence, "no second verdict");
         Assert.AreEqual(PitchJudgeMath.StatusValid, JudgeOnePitchForTest(pitcher, batter, 2, generation, 12f, 30f));
         Assert.IsTrue(GateHandPitchAt(pitcher, 2, generation, batter, 12.5f, JudgeServer),
             "a valid pitch arriving again does not fall through to launch");
-        Assert.AreEqual(sequence + 1, verdictSequence);
+        Assert.AreEqual(sequence + 1, _verdictSequence);
     }
 
     [TsukimiTest(maxSteps: 20000000)]
@@ -442,7 +472,7 @@ public partial class PitchJudgeBehaviour
         strikeZone.localOnly = true;
         Assert.IsFalse(GateHandPitchAt(pitcher, 1, generation, batter, 10f, JudgeServer),
             "a LocalRig plate never judges");
-        Assert.AreEqual(0, verdictSequence);
+        Assert.AreEqual(0, _verdictSequence);
     }
 
     [TsukimiTest(maxSteps: 20000000)]
@@ -481,7 +511,6 @@ public partial class PitchJudgeBehaviour
         PrepareForTest(batter);
         int generation = WatchForTest();
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, JudgeOnePitchForTest(pitcher, batter, 1, generation, 10f, 146f));
-        Assert.AreEqual(batter, verdictBatterId);
         Mimic.Deliver();
         Mimic.Become(fielder);
         Assert.AreEqual(PitchJudgeMath.StatusInvalid, _knownStatus, "the fielder follows the batter");
@@ -494,22 +523,101 @@ public partial class PitchJudgeBehaviour
     }
 
     [TsukimiTest(maxSteps: 20000000)]
-    public void AVerdictFromSomeoneOtherThanThePlatesOwnerIsIgnored()
+    public void OneSerializationRestoresBothVerdictsAndRetainedHistoryIsIdempotent()
+    {
+        VRCPlayerApi batter = Mimic.Join();
+        VRCPlayerApi receiver = Mimic.Join();
+        Mimic.Become(batter);
+        _serverNow = JudgeServer;
+        Assert.IsTrue(Decide(8, 1, 1, PitchJudgeMath.StatusInvalid, PitchJudgeMath.ReasonDelay, 150f, true, 100f));
+        Assert.IsTrue(Decide(8, 70, 1, PitchJudgeMath.StatusValid, PitchJudgeMath.ReasonNone, -50f, true, 100f));
+        Mimic.Deliver();
+        Mimic.Become(receiver);
+        Assert.AreEqual(PitchJudgeMath.StatusInvalid, OutcomeStatus(8, 1));
+        Assert.AreEqual(PitchJudgeMath.StatusValid, OutcomeStatus(8, 70));
+        int expiries = _messageExpiries;
+        OnDeserialization();
+        Assert.AreEqual(expiries, _messageExpiries);
+        VRCPlayerApi late = Mimic.Join();
+        Mimic.Become(late);
+        Assert.AreEqual(PitchJudgeMath.StatusInvalid, OutcomeStatus(8, 1));
+        Assert.AreEqual(PitchJudgeMath.StatusValid, OutcomeStatus(8, 70));
+        Assert.AreEqual("", MessageText());
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void FailedSendAndAnOlderCompletionKeepTheNewVerdictPending()
+    {
+        Mimic.Join();
+        VRCPlayerApi receiver = Mimic.Join();
+        _serverNow = JudgeServer;
+        Assert.IsTrue(Decide(8, 1, 1, PitchJudgeMath.StatusValid, 0, 50f, true, 100f));
+        OnPreSerialization();
+        FinishVerdictSend(false);
+        Assert.IsTrue(_publishRetryScheduled);
+        RetryPublishVerdict();
+        Assert.IsTrue(Decide(8, 2, 1, PitchJudgeMath.StatusInvalid, PitchJudgeMath.ReasonDelay, 125f, true, 100f));
+        FinishVerdictSend(true);
+        Assert.AreEqual(1, _sentRevision, "the old completion covers only the first verdict");
+        Assert.AreEqual(2, _verdictSequence);
+        Mimic.Deliver();
+        Assert.AreEqual(2, _sentRevision);
+        Mimic.Become(receiver);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, OutcomeStatus(8, 1));
+        Assert.AreEqual(PitchJudgeMath.StatusInvalid, OutcomeStatus(8, 2));
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void ANewOwnersFirstPublishIncludesReceivedHistoryAndItsPendingVerdict()
+    {
+        VRCPlayerApi previous = Mimic.Join();
+        VRCPlayerApi next = Mimic.Join();
+        VRCPlayerApi observer = Mimic.Join();
+        _serverNow = JudgeServer;
+        Assert.IsTrue(Decide(8, 1, 1, PitchJudgeMath.StatusValid, 0, 50f, true, 100f));
+        Mimic.Deliver(next);
+        Mimic.Become(next);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, OutcomeStatus(8, 1));
+        _serverNow = JudgeServer + 1;
+        Assert.IsTrue(Decide(8, 2, 1, PitchJudgeMath.StatusInvalid, PitchJudgeMath.ReasonDelay, 125f, true, 100f));
+        Assert.AreEqual(0, _sentRevision);
+        Assert.IsTrue(Networking.IsOwner(previous, gameObject));
+        Networking.SetOwner(next, gameObject);
+        Mimic.Deliver();
+        Mimic.Become(observer);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, OutcomeStatus(8, 1));
+        Assert.AreEqual(PitchJudgeMath.StatusInvalid, OutcomeStatus(8, 2));
+    }
+
+    [TsukimiTest]
+    public void FullHistoryDoesNotEvictUnsentVerdicts()
+    {
+        Mimic.Join();
+        _serverNow = JudgeServer;
+        for (int number = 1; number <= PitchDecisionHistory.Capacity; number++)
+            Assert.IsTrue(Decide(8, number, 1, PitchJudgeMath.StatusValid, 0, 30f, true, 100f));
+        int extra = PitchDecisionHistory.Capacity + 1;
+        Assert.IsFalse(Decide(8, extra, 1, PitchJudgeMath.StatusValid, 0, 30f, true, 100f));
+        Assert.IsFalse(HasVerdictFor(8, extra));
+        OnPreSerialization();
+        Assert.AreEqual(PitchDecisionHistory.Capacity, PitchDecisionHistory.WireCount(_verdictKeys, _verdictTiming, true));
+        Assert.IsTrue(PitchDecisionHistory.Read(_verdictKeys, _verdictTiming, PitchDecisionHistory.Capacity - 1, true).number == 1);
+    }
+
+    [TsukimiTest(maxSteps: 20000000)]
+    public void EarlierDataWaitsBeyondHalfASecondAndKeepsNegativeDelay()
     {
         VRCPlayerApi me = Mimic.Join();
-        int pitcher = me.playerId;
-        int batter = me.playerId;
-        PrepareForTest(batter);
+        int id = me.playerId;
+        PrepareForTest(id);
         int generation = WatchForTest();
-        JudgeOnePitchForTest(pitcher, batter, 1, generation, 10f, 146f);
-        // A record naming a batter who does not own the plate.
-        VRCPlayerApi other = Mimic.Join();
-        verdictBatterId = other.playerId;
-        verdictPitchNumber = 2;
-        RequestSerialization();
-        Mimic.Deliver();
-        Mimic.Become(other);
-        Assert.IsFalse(HasVerdictFor(pitcher, 2));
+        Assert.IsTrue(GateHandPitchAt(id, 1, generation, id, 9.4f, JudgeServer));
+        TickAt(9.95f, JudgeServer);
+        Assert.AreEqual(PhaseAwaitMotion, phase);
+        Assert.AreEqual(PitchJudgeMath.StatusNone, KnownStatus());
+        HandPassForTest(10f);
+        Assert.AreEqual(PitchJudgeMath.StatusValid, KnownStatus());
+        Assert.IsTrue(KnownDelayMs() < -500f);
     }
 
     [TsukimiTest]

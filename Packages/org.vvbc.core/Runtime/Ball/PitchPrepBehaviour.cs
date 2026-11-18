@@ -5,8 +5,9 @@ using VRC.Udon.Common;
 
 public struct PitchVerdictWatch
 {
-    public int number, batter;
+    public int number, batter, cancelReason;
     public float due;
+    public double cancelTime;
 }
 
 // The prepared pitch of one mound, published by its pitcher before the release so the batter
@@ -25,6 +26,7 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     public const int PitchTypeNone = 0;
     public const int PitchTypeFourSeam = 1;
     private const int MaximumRetries = 3;
+    private const int MaximumWatches = 16;
 
     [Tooltip("The mound this prepared data belongs to.")]
     public ManualPitchBehaviour mound;
@@ -60,16 +62,13 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     [UdonSynced] public float prepWakeCoefficient;
     [UdonSynced] public Vector3 prepWakeDirection;
     [UdonSynced] public double prepExpiresAt;
-    // A cancellation keeps its pitcher even when ownership of the mound changes.
-    [UdonSynced] public int cancelPitchNumber;
-    [UdonSynced] public int cancelPitcherId;
-    [UdonSynced] public int cancelReason;
-    [UdonSynced] public double cancelServerTime;
+    [UdonSynced] private int[] _cancelKeys = new int[0];
+    [UdonSynced] private double[] _cancelTiming = new double[0];
+    private readonly PitchDecision[] _cancelHistory = new PitchDecision[PitchDecisionHistory.Capacity];
+    private int _cancelSequence;
 
     private bool _awaitingOwnership;
     private PreparedPitch _queuedPreparation;
-    private int _queuedCancelPitcher, _queuedCancelNumber, _queuedCancelReason;
-    private double _queuedCancelTime;
     private int _localGeneration;
     private int _latestReceivedPitcher, _latestReceivedGeneration;
     private int _requestedRevision, _serializedRevision, _sentRevision;
@@ -77,12 +76,12 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     private int _ownershipEpoch, _serializedEpoch;
     private int _sendRetries;
     private bool _retryScheduled;
-    private int _lastCancelledPitch;
-    private PitchVerdictWatch[] _watches = new PitchVerdictWatch[2];
+    private readonly PitchVerdictWatch[] _watches = new PitchVerdictWatch[MaximumWatches];
 
     private void Start()
     {
         RegisterWithJudge();
+        ApplyStoredCancellations();
     }
 
     // The judge of the mound's HomePlate: it registers itself on that HomePlate's Ball at its
@@ -149,10 +148,6 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
         prepReady = data.ready;
         prepCourseLocked = data.locked;
         prepPitchType = data.ready ? PitchTypeFourSeam : PitchTypeNone;
-        cancelPitcherId = _queuedCancelPitcher;
-        cancelPitchNumber = _queuedCancelNumber;
-        cancelReason = _queuedCancelReason;
-        cancelServerTime = _queuedCancelTime;
     }
 
     // The pitcher's mode started: this client publishes from now on.
@@ -232,10 +227,6 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
         if (!OwnedLocally())
         {
             _queuedPreparation = PreparedPitch.Read(this);
-            _queuedCancelPitcher = cancelPitcherId;
-            _queuedCancelNumber = cancelPitchNumber;
-            _queuedCancelReason = cancelReason;
-            _queuedCancelTime = cancelServerTime;
             _awaitingOwnership = true;
             TakeOwnership();
             if (diagnostics) Diag("publish waits for ownership gen=" + prepGeneration);
@@ -259,6 +250,8 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
         _serializedRevision = _requestedRevision;
         _serializedGeneration = prepGeneration;
         _serializedEpoch = _ownershipEpoch;
+        _cancelKeys = PitchDecisionHistory.Keys(_cancelHistory);
+        _cancelTiming = PitchDecisionHistory.Timing(_cancelHistory, false);
     }
 
     public override void OnPostSerialization(SerializationResult result)
@@ -270,6 +263,11 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
     private void FinishSend(bool success)
     {
         if (!OwnedLocally() || _serializedEpoch != _ownershipEpoch || _serializedRevision == 0) return;
+        if (success)
+        {
+            PitchDecisionHistory.MarkSent(_cancelHistory, _serializedRevision);
+            if (FlushCancellations()) Send();
+        }
         if (_serializedRevision == _requestedRevision)
         {
             if (success) _sentRevision = _serializedRevision;
@@ -298,6 +296,7 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
         _ownershipEpoch++;
         _sentRevision = 0;
         if (!Utilities.IsValid(player) || !player.isLocal || !OwnedLocally()) return;
+        _sendRetries = 0;
         if (_awaitingOwnership)
         {
             _awaitingOwnership = false;
@@ -312,6 +311,7 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
             StampGeneration(false, prepExpiresAt);
             Send();
         }
+        else if (_requestedRevision > 0) RequestSerialization();
     }
 
     public override void OnDeserialization()
@@ -324,29 +324,55 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
         }
         if (diagnostics)
             Diag("received gen=" + prepGeneration + " ready=" + prepReady + " pitcher=" + prepPitcherId + " target=" + prepTargetBatterId +
-                " cancel=" + cancelPitchNumber + " rt=" + Time.realtimeSinceStartup);
+                " rt=" + Time.realtimeSinceStartup);
         PitchJudgeBehaviour found = Judge();
-        if (found == null) return;
+        int count = PitchDecisionHistory.WireCount(_cancelKeys, _cancelTiming, false);
+        for (int i = 0; i < count; i++)
+        {
+            PitchDecision entry = PitchDecisionHistory.Read(_cancelKeys, _cancelTiming, i, false);
+            if (entry.author != entry.pitcher || entry.pitcher <= 0 || entry.sequence <= 0 || entry.number <= 0 ||
+                entry.status != PitchJudgeMath.StatusCancelled) continue;
+            PitchDecisionHistory.Store(_cancelHistory, entry);
+            if (found != null)
+                found.ApplyOutcomeAt(entry.pitcher, entry.number, entry.status, entry.reason, 0f, false, 0f, entry.time, double.NaN);
+        }
+        if (found == null)
+        {
+            if (count > 0) SendCustomEventDelayedFrames(nameof(ApplyStoredCancellations), 1);
+            return;
+        }
         found.RegisterPrep(this);
         found.OnPrepChanged(this);
+    }
+
+    public void ApplyStoredCancellations()
+    {
+        PitchJudgeBehaviour found = Judge();
+        if (found == null) return;
+        for (int i = 0; i < _cancelHistory.Length; i++)
+        {
+            PitchDecision entry = _cancelHistory[i];
+            if (entry.sequence > 0)
+                found.ApplyOutcomeAt(entry.pitcher, entry.number, entry.status, entry.reason, 0f, false, 0f, entry.time, double.NaN);
+        }
     }
 
     // ---- The pitcher's check ----
 
     // A pitch released by this client for a batter is checked once after
     // verdictTimeoutSeconds. A pitch without a confirmed verdict is cancelled.
-    public void WatchPitch(int number, int targetBatter, float now)
+    public bool WatchPitch(int number, int targetBatter, float now)
     {
-        if (number <= 0 || targetBatter <= 0) return;
+        if (number <= 0 || targetBatter <= 0) return true;
         RegisterWithJudge();
         float wait = Mathf.Max(0.1f, verdictTimeoutSeconds);
         int slot = 0;
         while (slot < _watches.Length && _watches[slot].number != 0) slot++;
         if (slot == _watches.Length)
         {
-            PitchVerdictWatch[] next = new PitchVerdictWatch[slot + 1];
-            for (int i = 0; i < slot; i++) next[i] = _watches[i];
-            _watches = next;
+            if (SendFailed()) Send();
+            if (diagnostics) Diag("pitch held: all verdict watches are occupied");
+            return false;
         }
         PitchVerdictWatch watch = new PitchVerdictWatch();
         watch.number = number;
@@ -354,13 +380,14 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
         watch.due = now + wait;
         _watches[slot] = watch;
         SendCustomEventDelayedSeconds(nameof(CheckVerdict), wait);
+        return true;
     }
 
     public void ConfirmVerdict(int pitcher, int number)
     {
         if (pitcher != LocalId()) return;
         for (int i = 0; i < _watches.Length; i++)
-            if (_watches[i].number == number) _watches[i] = new PitchVerdictWatch();
+            if (_watches[i].number == number && _watches[i].cancelReason == 0) _watches[i] = new PitchVerdictWatch();
     }
 
     public void CheckVerdict()
@@ -376,35 +403,49 @@ public partial class PitchPrepBehaviour : TsukimiBehaviour
 
     private void CheckVerdictAt(float now, double serverNow, int occupant)
     {
+        PitchJudgeBehaviour found = Judge();
+        bool cancelled = false;
         for (int i = 0; i < _watches.Length; i++)
         {
             PitchVerdictWatch watch = _watches[i];
-            if (watch.number == 0 || now < watch.due - 0.01f) continue;
-            _watches[i] = new PitchVerdictWatch();
-            int reason = occupant == watch.batter ? PitchJudgeMath.ReasonVerdictMissing : PitchJudgeMath.ReasonBatterChanged;
-            CancelPitch(watch.number, reason, serverNow);
+            if (watch.number == 0 || watch.cancelReason != 0 || now < watch.due - 0.01f) continue;
+            watch.cancelReason = occupant == watch.batter ? PitchJudgeMath.ReasonVerdictMissing : PitchJudgeMath.ReasonBatterChanged;
+            watch.cancelTime = serverNow;
+            _watches[i] = watch;
+            cancelled = true;
+            if (found != null)
+                found.ApplyOutcomeAt(LocalId(), watch.number, PitchJudgeMath.StatusCancelled, watch.cancelReason,
+                    0f, false, 0f, serverNow, serverNow);
         }
+        if (FlushCancellations() || cancelled) Send();
     }
 
-    // Publishes the cancellation of this client's own pitch and applies it here at once.
-    private void CancelPitch(int number, int reason, double serverNow)
+    // A due cancellation stays with its watch if every history slot is still awaiting
+    // serialization. A successful send frees those slots and drains the remaining watches.
+    private bool FlushCancellations()
     {
-        PitchJudgeBehaviour found = Judge();
+        bool added = false;
         int pitcher = LocalId();
-        if (number <= _lastCancelledPitch)
+        for (int i = 0; i < _watches.Length; i++)
         {
-            if (found != null) found.ApplyOutcomeAt(pitcher, number, PitchJudgeMath.StatusCancelled, reason, 0f, false,
-                0f, serverNow, serverNow);
-            return;
+            PitchVerdictWatch watch = _watches[i];
+            if (watch.cancelReason == 0) continue;
+            PitchDecision entry = new PitchDecision();
+            entry.author = pitcher;
+            entry.sequence = _cancelSequence + 1;
+            entry.revision = _requestedRevision + 1;
+            entry.pitcher = pitcher;
+            entry.number = watch.number;
+            entry.status = PitchJudgeMath.StatusCancelled;
+            entry.reason = watch.cancelReason;
+            entry.time = watch.cancelTime;
+            if (!PitchDecisionHistory.Store(_cancelHistory, entry)) break;
+            _cancelSequence = entry.sequence;
+            _watches[i] = new PitchVerdictWatch();
+            added = true;
+            if (diagnostics) Diag("cancel pitch=" + pitcher + "/" + entry.number + " reason=" + entry.reason);
         }
-        _lastCancelledPitch = number;
-        cancelPitcherId = pitcher;
-        cancelPitchNumber = number;
-        cancelReason = reason;
-        cancelServerTime = serverNow;
-        Send();
-        if (diagnostics) Diag("cancel pitch=" + cancelPitcherId + "/" + number + " reason=" + reason);
-        if (found != null) found.OnPrepChangedAt(this, serverNow);
+        return added;
     }
 
     private void Diag(string message)

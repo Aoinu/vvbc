@@ -3,7 +3,7 @@ using VRC.SDKBase;
 
 public struct PitchProgress
 {
-    public int pitcher, applied, voided;
+    public int pitcher, applied;
 }
 
 // Manual-pitch synchronisation on the shared Ball (docs/development/manual-pitch-sync.md):
@@ -23,8 +23,10 @@ public partial class BallBehaviour
     private PitchLineage _lineage;
     // The lineage a HandPitch released here starts (from the mound at the release).
     private PitchLineage _releaseLineage;
-    // Release and void watermarks per pitcher. Older attempts cannot restart a play.
+    // Release watermark and recent exact voids per pitcher.
     private PitchProgress[] _pitchProgress = new PitchProgress[0];
+    private const int VoidsPerPitcher = 32;
+    private int[] _voidedAttempts = new int[0];
     private bool _voidPresentation;
     // A speculative pitch: flown locally from the prepared data, never published, no bat
     // contact, catch or pickup until it is merged into the formal flight or rolled back.
@@ -86,7 +88,11 @@ public partial class BallBehaviour
     public bool PitchVoided(int pitcher, int number)
     {
         int slot = PitchProgressSlot(pitcher);
-        return slot >= 0 && number > 0 && number <= _pitchProgress[slot].voided;
+        if (slot < 0 || number <= 0) return false;
+        int first = slot * VoidsPerPitcher;
+        for (int i = first; i < first + VoidsPerPitcher; i++)
+            if (_voidedAttempts[i] == number) return true;
+        return false;
     }
 
     private int PitchProgressSlot(int pitcher)
@@ -108,6 +114,9 @@ public partial class BallBehaviour
         entry.pitcher = pitcher;
         next[slot] = entry;
         _pitchProgress = next;
+        int[] voided = new int[(slot + 1) * VoidsPerPitcher];
+        for (int i = 0; i < _voidedAttempts.Length; i++) voided[i] = _voidedAttempts[i];
+        _voidedAttempts = voided;
         return slot;
     }
 
@@ -279,9 +288,14 @@ public partial class BallBehaviour
     {
         if (localOnly || pitcher <= 0 || number <= 0) return;
         int slot = EnsurePitchProgress(pitcher);
-        PitchProgress progress = _pitchProgress[slot];
-        progress.voided = Mathf.Max(progress.voided, number);
-        _pitchProgress[slot] = progress;
+        int first = slot * VoidsPerPitcher;
+        int oldest = first;
+        for (int i = first; i < first + VoidsPerPitcher; i++)
+        {
+            if (_voidedAttempts[i] == number) return;
+            if (_voidedAttempts[i] < _voidedAttempts[oldest]) oldest = i;
+        }
+        if (number > _voidedAttempts[oldest]) _voidedAttempts[oldest] = number;
 
         bool accepted = _acceptedLineage.SamePitch(pitcher, number) || AcceptedPitchAttempt(pitcher) == number;
         bool pending = _pending && (_pendingLineage.SamePitch(pitcher, number) ||

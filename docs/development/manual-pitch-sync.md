@@ -62,7 +62,7 @@ owner that is not the pitcher who published it withdraws it (the pitcher left).
 | `prepControllerRelease`, `prepCalibratedLocal`, `prepCalibratedRotation` | the ideal controller release in world space at the solve; the calibrated release `r` and pose in the pitching frame |
 | `prepTarget`, `prepDirection`, `prepSpeed` | the course target, the solved direction `D0`, the solver speed (m/s) |
 | `prepSpin`, `prepWakeMode`, `prepWakeCoefficient`, `prepWakeDirection` | the ideal spin (world, rad/s) and SSW, as the solver aimed them |
-| `cancel*` | the pitcher's cancellation of its own pitch (see below) |
+| `_cancelKeys`, `_cancelTiming` | the pitcher's retained cancellation history (see below) |
 
 These are **predictions**: the release's own arm speed and pose still decide the formal flight.
 
@@ -108,12 +108,15 @@ A pass is only a **candidate**. Nothing is judged from it alone:
 | Phase | Entered by | Left by |
 |---|---|---|
 | Candidate | a pass with no HandPitch yet; the prepared pitch flies speculatively | the HandPitch (judged), a non-pitch state (dropped, no verdict), the threshold passing (TimedOut) |
-| TimedOut | `threshold` after the pass with no HandPitch; the speculative flight is rolled back | a HandPitch within `candidateMatchSeconds` (1.5 s, judged invalid by its delay), a newer pass, a non-pitch state |
-| AwaitMotion | a HandPitch first; the judge waits for its preparation and the matching pass | the pass (judged) or `motionWaitSeconds` (0.5 s) expires (invalid: no usable preparation or motion) |
+| TimedOut | `threshold` after the pass with no HandPitch; the speculative flight is rolled back | that attempt's HandPitch (judged from the first pass), or a ball state unrelated to that attempt |
+| AwaitMotion | a HandPitch first; the judge holds the ball and waits for its preparation and matching pass | the pass (judged) or `motionWaitSeconds` expires (invalid: no usable preparation or motion) |
 
-A Throw or Possession after a pass (a pickoff, a throw, a recall, the pitcher keeping the ball)
-drops the candidate without any verdict. A pass never matches a HandPitch of another pitcher or
-another generation.
+The first candidate time belongs to one pitcher and hand hold. The timeout stops speculation
+and leaves this time and threshold intact. Motion in the same hold cannot start another
+candidate. A normal throw, pickoff or recall drops the candidate without a verdict. A new
+hold can be watched even if it uses the same preparation. `candidateMatchSeconds` (1.5 s)
+limits retrospective geometry checks of hand samples, and a later HandPitch still uses the
+first observed time for its delay.
 
 ## Batter: speculative flight and merge
 
@@ -146,27 +149,46 @@ delayMs <= threshold   valid (negative: the data was first; 100 ms exactly is va
 delayMs >  threshold   invalid (sync delay)
 ```
 
-The threshold is read once per pitch, at its first evidence (pass or HandPitch), so a change
-during a pitch never changes that pitch's verdict. Other reasons, all invalid:
+The threshold is read once per pitch, at its first evidence (pass or HandPitch). When the data
+arrives first, the separate Inspector setting `motionWaitSeconds` (default 1 s) bounds the
+wait for remote tracking. A pass seen during that wait is judged on the same local clock
+and can give a negative delay. If the wait expires, a missing pass has its own reason and no
+measured delay. Other reasons for invalidity:
 
-- motion not detected (data first, no pass within 0.5 s);
+- motion not detected (no matching pass during the wait);
 - pitch data not prepared (no usable prepared data of that generation).
 
 Nothing is judged valid by assumption.
 
 ## Verdict sync
 
-The judge sits on the HomePlate root next to the strike zone and so shares that GameObject's
-owner, the occupant (the strike zone accepts ownership requests only from the occupant). Only
-the batter can serialize a verdict, and a received record is followed only when its
-`verdictBatterId` is that owner. The record is synced state (`verdictSequence`, pitcher, number,
-generation, batter, status, reason, delay, whether measured, threshold, server time), not an
-event. A late joiner restores it: it follows the verdict and voids the pitch, but is not shown a
-message for a pitch it did not see.
+The judge shares the strike zone's HomePlate GameObject and owner. The confirmed batter
+creates Valid and Invalid verdicts. Each verdict keeps its original batter ID, an
+author-local sequence, the pitch ID, status, reason, measured delay, threshold and server
+time. The pitcher records cancellations on PitchPrep, with its own sequence and pitch ID.
+Each component synchronizes up to eight complete entries. Receivers merge them by
+author and sequence for relay and apply the outcome by exact pitch ID. A new owner can
+republish received history with the original authors intact. Late joiners restore the
+retained records from the synced state.
 
 For one pitch ID, cancellation takes precedence over Invalid, and Invalid takes precedence over
-Valid. A later receipt of lower priority leaves the outcome in place. Older outcomes can void
-their own pitch without replacing the message for a newer pitch. Pending is a local phase.
+Valid. Receivers remember the last 32 exact outcomes per pitcher, including IDs separated by
+ordinary throws. Duplicate records have no effect. An Invalid followed by a cancellation
+updates the reason without stopping the same flight again. Older outcomes affect their own
+ball lineage. Pending is a local phase.
+
+An entry stays pinned in the sender's history until a successful serialization includes
+it. `OnPreSerialization` snapshots the revision and ownership epoch. A stale completion
+can only unpin entries covered by its revision. A failed current send gets up to three
+retries at 0.5 s intervals. Pending verdicts survive a wait for HomePlate ownership; a former
+owner that cannot send before losing ownership leaves recovery to the pitcher's deadline.
+
+When all verdict slots are pinned, further judged releases wait for pitcher cancellation.
+Due cancellations queue in the existing verdict watches until space is available. If all
+16 watches are occupied, the next judged manual release returns to the pitcher's glove
+and the next send can free watches. A send success confirms local serialization. Clients
+can recover the retained history from a later snapshot or on join. A receiver absent through
+enough later successful publications to evict an entry can miss that older outcome.
 
 The Ball tracks which pitch IDs have already applied their formal flight. A late joiner can
 apply its first accepted HandPitch. Duplicate snapshots and ownership republishes preserve
@@ -224,12 +246,11 @@ formal flights at the merge) and `void`.
 
 ## Cost
 
-Idle, the judge's `Update` returns at its first test. While armed it reads two bones and does
-one segment test per frame, for one pitcher. Prepared data is sent only on change. The release
-adds field reads only inside `ResolveReleaseCore`. The verdict check is scheduled from
-`EndRelease`, because a call into another Behaviour inside that large method made it save all
-its locals: about 100k Udon steps per release, measured with the test runner. The Ball adds four
-synced ints and, per accepted state, one call into the judge.
+Idle or after a candidate timeout, the judge skips tracking. While armed it reads two bones
+and tests one segment per frame, for one pitcher. The verdict check is registered after the
+release solve, before the Ball publishes a HandPitch. The history arrays grow with the number
+of occupied entries, up to 352 bytes of primitive values for PitchJudge and 224 bytes for the
+cancellation part of PitchPrep. VRChat's actual byte count also depends on serialization.
 
 ## Not verified on clients (needs real VRChat clients)
 
@@ -237,7 +258,10 @@ synced ints and, per accepted state, one call into the judge.
   the 0.7 m / 2.5 m/s / 75° detection limits suit real deliveries and avatars. This sets how much
   of the delay is network and how much is avatar sync.
 - The order in which the prepared data, the HandPitch and the avatar motion arrive; how often a
-  100 ms limit invalidates real pitches.
+  100 ms limit invalidates real pitches, and whether the 1 s tracking wait covers data-first
+  releases on the target devices.
+- Recovery after coalesced and failed sends, ownership transfer across a batter change, and
+  the actual serialized size of the full histories.
 - The visual merge with real speed differences (arm-speed curve against the solver speed).
 - With thresholds above about 350 ms the speculative flight can reach the batter before its data;
   it cannot be hit (no contact before the merge). Use thresholds below the pitch's flight time.

@@ -579,6 +579,11 @@ public partial class BallBehaviour
         bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input, _handSession);
         if (pitched)
         {
+            if (!localOnly && !manualPitcher.WatchReleasedPitch(Time.time))
+            {
+                RecallToLocalGlove(Networking.GetServerTimeInSeconds());
+                return;
+            }
             position = manualPitcher.releasePosition;
             velocity = manualPitcher.releaseVelocity;
             spin = manualPitcher.releaseSpin;

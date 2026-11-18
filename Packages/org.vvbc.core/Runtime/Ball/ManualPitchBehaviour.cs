@@ -1047,7 +1047,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     private bool EndRelease(bool pitched, Vector3 ballPosition, float now)
     {
-        if (pitched) WatchReleasedPitch(now);
         if (state != StateInactive) Unlock();
         ShowReleaseFeedback(pitched, pitched ? releasePosition : ballPosition, now);
         ShowReleaseDebug();

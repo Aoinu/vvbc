@@ -42,7 +42,7 @@ public struct PreparedPitch
 
 public struct PitchOutcome
 {
-    public int pitcher, number, status;
+    public int pitcher, retiredThrough;
 }
 
 public struct PitchHandSample
@@ -95,24 +95,20 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
     public float maxHandAngleDegrees = 75f;
     [Tooltip("A longer gap between two hand samples starts the motion again, in seconds. Default 0.1.")]
     public float maxSampleGapSeconds = 0.1f;
-    [Tooltip("How long a HandPitch that arrived first waits for the release pass, in seconds; then it is invalid (motion not detected). Default 0.5.")]
-    public float motionWaitSeconds = 0.5f;
-    [Tooltip("How long after a pass a HandPitch can still be matched with it, in seconds. Default 1.5.")]
+    [Tooltip("How long a HandPitch waits for the release motion to arrive, independently of the delay limit. Default 1 second.")]
+    public float motionWaitSeconds = 1f;
+    [Tooltip("Maximum age of hand samples used to verify an earlier preparation geometry. Default 1.5 seconds.")]
     public float candidateMatchSeconds = 1.5f;
     [Tooltip("Logs detection, arrival, delay, speculation and every verdict with the prefix PitchJudge[diag]. rt= is this client's Time.realtimeSinceStartup, server= the server time. Off in normal play.")]
     public bool diagnostics;
 
-    [UdonSynced] public int verdictSequence;
-    [UdonSynced] public int verdictPitcherId;
-    [UdonSynced] public int verdictPitchNumber;
-    [UdonSynced] public int verdictPrepGeneration;
-    [UdonSynced] public int verdictBatterId = -1;
-    [UdonSynced] public int verdictStatus;
-    [UdonSynced] public int verdictReason;
-    [UdonSynced] public float verdictDelayMs;
-    [UdonSynced] public bool verdictDelayMeasured;
-    [UdonSynced] public float verdictThresholdMs;
-    [UdonSynced] public double verdictServerTime;
+    [UdonSynced] private int[] _verdictKeys = new int[0];
+    [UdonSynced] private double[] _verdictTiming = new double[0];
+    private readonly PitchDecision[] _verdictHistory = new PitchDecision[PitchDecisionHistory.Capacity];
+    private const int MaximumSendRetries = 3;
+    private int _verdictSequence, _sentRevision, _serializedRevision;
+    private int _ownershipEpoch, _serializedEpoch, _sendRetries;
+    private int _deferredPitcher, _deferredNumber;
 
     [HideInInspector] public int phase;
     [HideInInspector] public bool monitoring;
@@ -144,7 +140,10 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
     private float _awaitThreshold;
     // The verdict this client follows (its own or the synced one).
     private int _knownPitcher, _knownNumber, _knownStatus, _knownReason;
+    private const int OutcomesPerPitcher = 32;
     private PitchOutcome[] _outcomes = new PitchOutcome[0];
+    // (pitch number << 2) | (status - 1). Number gaps from ordinary throws cost no slots.
+    private long[] _outcomeRecords = new long[0];
     private float _knownDelayMs, _knownThresholdMs;
     private bool _knownDelayMeasured;
     private double _knownTime;
@@ -279,7 +278,7 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
                     if (candidate == null || candidate.prepTargetBatterId != local) continue;
                     if (!candidate.UsableFor(candidate.prepPitcherId, serverNow)) continue;
                     attempt = _ball.AcceptedPitchAttempt(candidate.prepPitcherId);
-                    if (attempt > 0 && !HasVerdictFor(candidate.prepPitcherId, attempt))
+                    if (attempt > 0 && !HasVerdictFor(candidate.prepPitcherId, attempt) && !RetiredOutcome(candidate.prepPitcherId, attempt))
                         prep = PreparedPitch.Read(candidate);
                 }
                 if (prep.source == null && _armedPrep.source != null && _armedPrep.batter == local &&
@@ -295,7 +294,7 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
 
     private void Arm(PreparedPitch prep, int attempt)
     {
-        if (prep.source == null)
+        if (prep.source == null || (phase != PhaseAwaitMotion && IsCandidate(prep.pitcher, attempt)))
         {
             if (monitoring && diagnostics) Diag("disarmed");
             monitoring = false;
@@ -326,9 +325,6 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
     {
         _serverNow = serverNow;
         RememberPreparation(prep);
-        if (prep != null && prep.cancelPitchNumber > 0)
-            ApplyOutcomeAt(prep.cancelPitcherId, prep.cancelPitchNumber, PitchJudgeMath.StatusCancelled, prep.cancelReason,
-                0f, false, 0f, prep.cancelServerTime, serverNow);
         UpdateArming();
     }
 
@@ -346,7 +342,8 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
         if (_ball != null)
         {
             if ((phase == PhaseCandidate || phase == PhaseTimedOut) &&
-                _ball.AcceptedPitchAttempt(_candidatePitcher) != _candidateAttempt)
+                _ball.AcceptedPitchAttempt(_candidatePitcher) != _candidateAttempt &&
+                !_ball.AcceptedPitchLineage(_candidatePitcher, _candidateAttempt))
                 DropCandidate();
             if (phase == PhaseAwaitMotion && !_ball.AcceptedPitchLineage(_awaitPitcher, _awaitNumber))
                 phase = PhaseIdle;
@@ -358,7 +355,7 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
 
     public void Update()
     {
-        if (!monitoring && phase == PhaseIdle) return;
+        if (!monitoring && phase != PhaseCandidate && phase != PhaseAwaitMotion) return;
         float now = Time.realtimeSinceStartup;
         TickAt(now, double.NaN);
         if (monitoring) SampleRemote(now, double.NaN);
@@ -368,12 +365,11 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
     {
         _serverNow = serverNow;
         if (phase == PhaseCandidate && now >= _candidateTime + _candidateThreshold * 0.001f) CandidateTimedOut();
-        if (phase == PhaseTimedOut && now - _candidateTime > candidateMatchSeconds) phase = PhaseIdle;
         if (phase == PhaseAwaitMotion && now >= _awaitReceivedAt + Mathf.Max(0f, motionWaitSeconds))
         {
             if (diagnostics) Diag("await timed out pitch=" + _awaitPitcher + "/" + _awaitNumber + " rt=" + now);
-            phase = PhaseIdle;
             PreparedPitch prep = FindPreparation(_awaitPitcher, _awaitGeneration, LocalId(), Now());
+            phase = PhaseIdle;
             if (JudgingLocally())
                 Decide(_awaitPitcher, _awaitNumber, _awaitGeneration, PitchJudgeMath.StatusInvalid,
                     prep.source == null ? PitchJudgeMath.ReasonPrepMissing : PitchJudgeMath.ReasonMotionNotDetected,
@@ -469,7 +465,6 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
     private float FindObservedRelease(PreparedPitch prep, int attempt, float now)
     {
         if (prep.pitcher != _handHistoryPitcher || attempt != _handHistoryAttempt || prep.hand != _handHistoryHand) return -1f;
-        float release = -1f;
         bool falling = false;
         Vector3 direction = PitchDirection(prep);
         PitchHandSample previous = new PitchHandSample();
@@ -486,7 +481,7 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
             {
                 float u = PitchJudgeMath.ReleaseCandidate(previous.hand, sample.hand, previousIdeal, ideal, dt, direction,
                     captureRadius, minHandSpeed, maxHandAngleDegrees, falling);
-                if (u >= 0f) release = previous.time + u * dt;
+                if (u >= 0f) return previous.time + u * dt;
                 falling = PitchJudgeMath.FallingThrough(previous.hand - previousIdeal, sample.hand - ideal);
             }
             else falling = false;
@@ -494,7 +489,7 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
             previousIdeal = ideal;
             hasPrevious = true;
         }
-        return release;
+        return -1f;
     }
 
     private Vector3 PitchDirection(PreparedPitch prep)
@@ -513,13 +508,14 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
             phase = PhaseIdle;
             float delay = PitchJudgeMath.DelayMs(_awaitReceivedAt, release);
             int status = PitchJudgeMath.Classify(delay, _awaitThreshold);
-            if (status == PitchJudgeMath.StatusValid && _ball.AcceptedHandPitch(_awaitPitcher, _awaitNumber))
-                _ball.LaunchAcceptedHandPitchAt(now - release);
-            Decide(_awaitPitcher, _awaitNumber, _awaitGeneration, status, status == PitchJudgeMath.StatusValid
+            bool decided = Decide(_awaitPitcher, _awaitNumber, _awaitGeneration, status, status == PitchJudgeMath.StatusValid
                 ? PitchJudgeMath.ReasonNone : PitchJudgeMath.ReasonDelay, delay, true, _awaitThreshold);
+            if (decided && status == PitchJudgeMath.StatusValid && _ball.AcceptedHandPitch(_awaitPitcher, _awaitNumber))
+                _ball.LaunchAcceptedHandPitchAt(now - release);
             UpdateArming();
             return;
         }
+        if (IsCandidate(_armedPitcher, _armedAttempt)) return;
         PreparedPitch prep = _armedPrep;
         phase = PhaseCandidate;
         _candidateTime = release;
@@ -544,6 +540,12 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
         UpdateArming();
     }
 
+    private bool IsCandidate(int pitcher, int attempt)
+    {
+        return (phase == PhaseCandidate || phase == PhaseTimedOut) &&
+            _candidatePitcher == pitcher && _candidateAttempt == attempt;
+    }
+
     // ---- The HandPitch arriving (called by the Ball before it would launch it) ----
 
     // True when this judge takes over the launch: the ball does not launch the HandPitch now.
@@ -557,29 +559,39 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
         _serverNow = serverNow;
         int local = LocalId();
         if (batter <= 0 || batter != local || !JudgingLocally() || pitcher <= 0 || number <= 0) return false;
-        if (HasVerdictFor(pitcher, number)) return true;
+        if (HasVerdictFor(pitcher, number) || RetiredOutcome(pitcher, number)) return true;
+        if (_deferredPitcher == pitcher && _deferredNumber == number) return true;
         if (phase == PhaseAwaitMotion && _awaitPitcher == pitcher && _awaitNumber == number) return true;
-        bool sameAttempt = (phase == PhaseCandidate || phase == PhaseTimedOut) && _candidatePitcher == pitcher &&
-            _candidateAttempt == number && now - _candidateTime <= candidateMatchSeconds;
-        bool matchable = sameAttempt && _candidateGeneration == generation;
+        bool sameAttempt = IsCandidate(pitcher, number);
         float threshold = sameAttempt ? _candidateThreshold : CurrentThresholdMs();
         if (diagnostics) Diag("handpitch arrived pitch=" + pitcher + "/" + number + " gen=" + generation + " rt=" + now + " phase=" + phase);
         PreparedPitch prep = FindPreparation(pitcher, generation, batter, Now());
         float pass = -1f;
-        if (prep.source != null)
+        if (sameAttempt)
         {
-            if (matchable) pass = _candidateTime;
-            else if (_armedGeneration != generation || sameAttempt) pass = FindObservedRelease(prep, number, now);
+            float delay = PitchJudgeMath.DelayMs(now, _candidateTime);
+            bool compatible = prep.source != null && (_candidateGeneration == generation ||
+                FindObservedRelease(prep, number, now) >= 0f);
+            if (compatible || delay > threshold) pass = _candidateTime;
+            else
+            {
+                DropCandidate();
+                Decide(pitcher, number, generation, PitchJudgeMath.StatusInvalid, prep.source == null
+                    ? PitchJudgeMath.ReasonPrepMissing : PitchJudgeMath.ReasonMotionNotDetected, 0f, false, threshold);
+                UpdateArming();
+                return true;
+            }
         }
+        else if (prep.source != null && _armedGeneration != generation) pass = FindObservedRelease(prep, number, now);
         if (pass >= 0f)
         {
             float delay = PitchJudgeMath.DelayMs(now, pass);
             int status = PitchJudgeMath.Classify(delay, threshold);
             phase = PhaseIdle;
-            if (status == PitchJudgeMath.StatusValid) _ball.LaunchAcceptedHandPitchAt(now - pass);
-            else if (_ball.SpeculationActive()) _ball.EndSpeculation();
-            Decide(pitcher, number, generation, status, status == PitchJudgeMath.StatusValid
+            bool decided = Decide(pitcher, number, generation, status, status == PitchJudgeMath.StatusValid
                 ? PitchJudgeMath.ReasonNone : PitchJudgeMath.ReasonDelay, delay, true, threshold);
+            if (decided && status == PitchJudgeMath.StatusValid) _ball.LaunchAcceptedHandPitchAt(now - pass);
+            else if (_ball.SpeculationActive()) _ball.EndSpeculation();
             UpdateArming();
             return true;
         }
@@ -605,80 +617,132 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
 
     // The batter's verdict: published (the batter owns this GameObject as the occupant) and
     // followed here at once.
-    private void Decide(int pitcher, int number, int generation, int status, int reason, float delayMs, bool measured, float thresholdMs)
+    private bool Decide(int pitcher, int number, int generation, int status, int reason, float delayMs, bool measured, float thresholdMs)
     {
-        if (HasVerdictFor(pitcher, number)) return;
-        double serverNow = Now();
-        verdictSequence++;
-        verdictPitcherId = pitcher;
-        verdictPitchNumber = number;
-        verdictPrepGeneration = generation;
-        verdictBatterId = LocalId();
-        verdictStatus = status;
-        verdictReason = reason;
-        verdictDelayMs = measured ? delayMs : 0f;
-        verdictDelayMeasured = measured;
-        verdictThresholdMs = thresholdMs;
-        verdictServerTime = serverNow;
+        if (HasVerdictFor(pitcher, number) || RetiredOutcome(pitcher, number)) return false;
+        PitchDecision entry = new PitchDecision();
+        entry.author = LocalId();
+        entry.sequence = _verdictSequence + 1;
+        entry.revision = entry.sequence;
+        entry.pitcher = pitcher;
+        entry.number = number;
+        entry.status = status;
+        entry.reason = reason;
+        entry.delay = delayMs;
+        entry.measured = measured;
+        entry.threshold = thresholdMs;
+        entry.time = Now();
+        if (!PitchDecisionHistory.Store(_verdictHistory, entry))
+        {
+            // All slots are awaiting a successful send. The held pitch is recovered by
+            // the pitcher's normal verdict deadline, without evicting a formal verdict.
+            _deferredPitcher = pitcher;
+            _deferredNumber = number;
+            if (OwnedLocally() && _sendRetries >= MaximumSendRetries)
+            {
+                _sendRetries = 0;
+                RequestSerialization();
+            }
+            if (diagnostics) Diag("verdict history full of unsent results");
+            return false;
+        }
+        _verdictSequence = entry.sequence;
+        _sendRetries = 0;
+        if (OwnedLocally()) RequestSerialization();
         if (diagnostics)
-            Diag("verdict pitch=" + pitcher + "/" + number + " gen=" + generation + " batter=" + verdictBatterId + " " +
+            Diag("verdict pitch=" + pitcher + "/" + number + " gen=" + generation + " batter=" + entry.author + " " +
                 PitchJudgeMath.StatusName(status) + " reason=" + PitchJudgeMath.ReasonName(reason) +
                 " delayMs=" + (measured ? delayMs.ToString() : "n/a") + " thresholdMs=" + thresholdMs + " speculative=" + _candidateSpeculated);
         _candidateSpeculated = false;
-        PublishVerdict();
-        ApplyOutcomeAt(pitcher, number, status, reason, delayMs, measured, thresholdMs, serverNow, serverNow);
+        ApplyOutcomeAt(pitcher, number, status, reason, delayMs, measured, thresholdMs, entry.time, entry.time);
+        return true;
     }
 
-    private void PublishVerdict()
+    private bool OwnedLocally()
     {
         VRCPlayerApi local = Networking.LocalPlayer;
-        if (Utilities.IsValid(local) && Networking.IsOwner(local, gameObject))
+        return Utilities.IsValid(local) && Networking.IsOwner(local, gameObject);
+    }
+
+    public override void OnOwnershipTransferred(VRCPlayerApi player)
+    {
+        _ownershipEpoch++;
+        if (!Utilities.IsValid(player) || !player.isLocal || !OwnedLocally()) return;
+        _sendRetries = 0;
+        if (_sentRevision != _verdictSequence) RequestSerialization();
+    }
+
+    public override void OnPreSerialization()
+    {
+        _serializedEpoch = _ownershipEpoch;
+        _serializedRevision = _verdictSequence;
+        _verdictKeys = PitchDecisionHistory.Keys(_verdictHistory);
+        _verdictTiming = PitchDecisionHistory.Timing(_verdictHistory, true);
+    }
+
+    public override void OnPostSerialization(VRC.Udon.Common.SerializationResult result)
+    {
+        FinishVerdictSend(result.success);
+        if (diagnostics) Diag("verdict sent seq=" + _serializedRevision + " success=" + result.success + " bytes=" + result.byteCount);
+    }
+
+    private void FinishVerdictSend(bool success)
+    {
+        if (!OwnedLocally() || _serializedEpoch != _ownershipEpoch || _serializedRevision == 0) return;
+        if (success)
         {
-            RequestSerialization();
-            return;
+            PitchDecisionHistory.MarkSent(_verdictHistory, _serializedRevision);
+            _sentRevision = Mathf.Max(_sentRevision, _serializedRevision);
         }
-        // Ownership is moving (the plate's claim): retry once while this player is still the batter.
-        if (diagnostics) Diag("verdict waits for the plate's ownership");
-        if (_publishRetryScheduled) return;
+        if (success || _serializedRevision != _verdictSequence || _sentRevision == _verdictSequence ||
+            _publishRetryScheduled || _sendRetries >= MaximumSendRetries) return;
+        _sendRetries++;
         _publishRetryScheduled = true;
         SendCustomEventDelayedSeconds(nameof(RetryPublishVerdict), 0.5f);
     }
 
     public void RetryPublishVerdict()
     {
+        if (!_publishRetryScheduled) return;
         _publishRetryScheduled = false;
-        VRCPlayerApi local = Networking.LocalPlayer;
-        if (Utilities.IsValid(local) && verdictBatterId == local.playerId && Networking.IsOwner(local, gameObject)) RequestSerialization();
-        else if (diagnostics) Diag("verdict not published: this player no longer owns the plate");
+        if (OwnedLocally() && _sentRevision != _verdictSequence) RequestSerialization();
     }
 
-    public override void OnPostSerialization(VRC.Udon.Common.SerializationResult result)
-    {
-        if (diagnostics) Diag("verdict sent seq=" + verdictSequence + " success=" + result.success);
-    }
-
-    // Only the plate's owner (the occupant batter) can have written the verdict; a record whose
-    // batter is not the owner is ignored.
     public override void OnDeserialization()
     {
-        VRCPlayerApi owner = Networking.GetOwner(gameObject);
-        if (diagnostics)
-            Diag("verdict received seq=" + verdictSequence + " pitch=" + verdictPitcherId + "/" + verdictPitchNumber + " " +
-                PitchJudgeMath.StatusName(verdictStatus) + " batter=" + verdictBatterId + " owner=" + (Utilities.IsValid(owner) ? owner.playerId : -1));
-        bool restoring = !_receivedAny;
+        // VRChat supplies the plate owner's serialized state. Records keep their original
+        // batter and sequence so a new owner can relay the history it already received.
+        _restoring = !_receivedAny;
         _receivedAny = true;
-        if (!Utilities.IsValid(owner) || owner.playerId != verdictBatterId) return;
-        BindBall();
-        _restoring = restoring;
-        ApplyOutcomeAt(verdictPitcherId, verdictPitchNumber, verdictStatus, verdictReason, verdictDelayMs, verdictDelayMeasured,
-            verdictThresholdMs, verdictServerTime, double.NaN);
+        int count = PitchDecisionHistory.WireCount(_verdictKeys, _verdictTiming, true);
+        for (int i = 0; i < count; i++)
+        {
+            PitchDecision entry = PitchDecisionHistory.Read(_verdictKeys, _verdictTiming, i, true);
+            if (entry.author <= 0 || entry.sequence <= 0 || entry.pitcher <= 0 || entry.number <= 0 ||
+                (entry.status != PitchJudgeMath.StatusValid && entry.status != PitchJudgeMath.StatusInvalid)) continue;
+            PitchDecisionHistory.Store(_verdictHistory, entry);
+            ApplyOutcomeAt(entry.pitcher, entry.number, entry.status, entry.reason, entry.delay, entry.measured,
+                entry.threshold, entry.time, double.NaN);
+        }
         _restoring = false;
     }
 
-    public bool HasVerdictFor(int pitcher, int number)
+    public bool HasVerdictFor(int pitcher, int number) { return OutcomeStatus(pitcher, number) != PitchJudgeMath.StatusNone; }
+
+    public int OutcomeStatus(int pitcher, int number)
     {
         int slot = OutcomeSlot(pitcher);
-        return slot >= 0 && number > 0 && number <= _outcomes[slot].number;
+        if (slot < 0 || number <= 0) return PitchJudgeMath.StatusNone;
+        int first = slot * OutcomesPerPitcher;
+        for (int i = first; i < first + OutcomesPerPitcher; i++)
+            if ((_outcomeRecords[i] >> 2) == number) return (int)(_outcomeRecords[i] & 3L) + 1;
+        return PitchJudgeMath.StatusNone;
+    }
+
+    private bool RetiredOutcome(int pitcher, int number)
+    {
+        int slot = OutcomeSlot(pitcher);
+        return slot >= 0 && number <= _outcomes[slot].retiredThrough;
     }
 
     private int OutcomeSlot(int pitcher)
@@ -697,12 +761,29 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
             PitchOutcome[] next = new PitchOutcome[slot + 1];
             for (int i = 0; i < slot; i++) next[i] = _outcomes[i];
             _outcomes = next;
+            PitchOutcome entry = new PitchOutcome();
+            entry.pitcher = pitcher;
+            _outcomes[slot] = entry;
+            long[] records = new long[(slot + 1) * OutcomesPerPitcher];
+            for (int i = 0; i < _outcomeRecords.Length; i++) records[i] = _outcomeRecords[i];
+            _outcomeRecords = records;
         }
+        int first = slot * OutcomesPerPitcher;
+        int oldest = first;
+        for (int i = first; i < first + OutcomesPerPitcher; i++)
+        {
+            if ((_outcomeRecords[i] >> 2) == number)
+            {
+                _outcomeRecords[i] = ((long)number << 2) | (status - 1);
+                return true;
+            }
+            if (_outcomeRecords[i] < _outcomeRecords[oldest]) oldest = i;
+        }
+        int retired = (int)(_outcomeRecords[oldest] >> 2);
+        if (number < retired) return false;
+        _outcomeRecords[oldest] = ((long)number << 2) | (status - 1);
         PitchOutcome outcome = _outcomes[slot];
-        if (number < outcome.number || (number == outcome.number && status <= outcome.status)) return false;
-        outcome.pitcher = pitcher;
-        outcome.number = number;
-        outcome.status = status;
+        outcome.retiredThrough = Mathf.Max(outcome.retiredThrough, retired);
         _outcomes[slot] = outcome;
         return true;
     }
@@ -720,12 +801,14 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
         double serverTime, double serverNow)
     {
         _serverNow = serverNow;
-        if (pitcher <= 0 || number <= 0 || status == PitchJudgeMath.StatusNone || status == PitchJudgeMath.StatusPending) return;
+        if (pitcher <= 0 || number <= 0 || status < PitchJudgeMath.StatusValid || status > PitchJudgeMath.StatusCancelled ||
+            RetiredOutcome(pitcher, number)) return;
+        int previous = OutcomeStatus(pitcher, number);
+        if (status <= previous || !RememberOutcome(pitcher, number, status)) return;
         for (int i = 0; i < _preps.Length; i++)
             if (_preps[i] != null) _preps[i].ConfirmVerdict(pitcher, number);
-        bool recorded = RememberOutcome(pitcher, number, status);
         bool voided = status == PitchJudgeMath.StatusInvalid || status == PitchJudgeMath.StatusCancelled;
-        if (voided)
+        if (voided && previous < PitchJudgeMath.StatusInvalid)
         {
             BindBall();
             if (_ball != null) _ball.VoidPitch(pitcher, number, _serverNow);
@@ -733,8 +816,8 @@ public partial class PitchJudgeBehaviour : TsukimiBehaviour
                 DropCandidate();
             if (phase == PhaseAwaitMotion && _awaitPitcher == pitcher && _awaitNumber == number) phase = PhaseIdle;
         }
-        if (!recorded) return;
-        if ((pitcher != _knownPitcher || number != _knownNumber) && _knownPitcher > 0 && serverTime < _knownTime) return;
+        if (pitcher == _knownPitcher ? number < _knownNumber
+            : _knownPitcher > 0 && (serverTime < _knownTime || (serverTime == _knownTime && pitcher < _knownPitcher))) return;
         _knownPitcher = pitcher;
         _knownNumber = number;
         _knownStatus = status;
