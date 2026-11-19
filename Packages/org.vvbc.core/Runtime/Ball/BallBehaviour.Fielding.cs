@@ -79,7 +79,7 @@ public partial class BallBehaviour
     // unconfirmed local hold and a pending possession.
     public bool IsHeld()
     {
-        return _localHold != HoldFree || (_acceptedKind == PossessionState && _acceptedHold != HoldFree && !VoidedMotion()) ||
+        return _localHold != HoldFree || (_acceptedKind == PossessionState && _acceptedHold != HoldFree) ||
             (_pending && _pendingHold != HoldFree);
     }
 
@@ -138,7 +138,7 @@ public partial class BallBehaviour
     // Slow balls and a glove moved onto a resting ball also arrive through the trigger.
     public void OnTriggerEnter(Collider other)
     {
-        if (!flying || _speculative || _localHold != HoldFree || body == null || body.isKinematic || other == null) return;
+        if (!flying || _localHold != HoldFree || body == null || body.isKinematic || other == null) return;
         if (Time.time < _catchBlockedUntil) return;
         GloveBehaviour glove = LocalGlove();
         if (glove == null || !glove.catchReady || !glove.IsCatchCollider(other)) return;
@@ -263,7 +263,6 @@ public partial class BallBehaviour
 
     private void EnterHold(int hold, int holderId, Vector3 offset)
     {
-        _voidPresentation = false;
         bool localHolder = holderId > 0 && holderId == LocalId();
         if (!localHolder && pickup != null && pickup.IsHeld) ForceDropPickup();
         _pickupResolving = false;
@@ -291,8 +290,7 @@ public partial class BallBehaviour
     private void StopFlightForHold()
     {
         ClearWake();
-        ClearSpeculation();
-        EndVisualCorrection();
+        CancelHandPitchWait();
         _flightGrounded = false;
         flying = false;
         flightSequence++;
@@ -339,7 +337,7 @@ public partial class BallBehaviour
     {
         if (pickup == null) return;
         bool presented = ballCollider != null ? ballCollider.enabled : flying;
-        bool value = !_voidPresentation && (_localHold == HoldFree ? presented && !_speculative : HeldLocally());
+        bool value = _localHold == HoldFree ? presented : HeldLocally();
         if (pickup.pickupable != value) pickup.pickupable = value;
     }
 
@@ -406,11 +404,6 @@ public partial class BallBehaviour
     public override void OnPickup()
     {
         if (pickup == null) return;
-        if (_voidPresentation || _speculative)
-        {
-            ForceDropPickup();
-            return;
-        }
         if (_localHold != HoldFree && !HeldLocally())
         {
             ForceDropPickup();
@@ -579,19 +572,13 @@ public partial class BallBehaviour
         bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input, _handSession);
         if (pitched)
         {
-            if (!localOnly && !manualPitcher.WatchReleasedPitch(Time.time))
-            {
-                RecallToLocalGlove(Networking.GetServerTimeInSeconds());
-                return;
-            }
             position = manualPitcher.releasePosition;
             velocity = manualPitcher.releaseVelocity;
             spin = manualPitcher.releaseSpin;
             wake.mode = manualPitcher.releaseWakeMode;
             wake.coefficient = manualPitcher.releaseWakeCoefficient;
             wake.direction = manualPitcher.releaseWakeDirection;
-            PrepareReleaseLineage(manualPitcher.releasePitchNumber, manualPitcher.releasePrepGeneration,
-                manualPitcher.releaseTargetBatter);
+            PrepareReleaseLineage(manualPitcher.releasePitchNumber);
         }
         else if (aiming)
         {
@@ -616,7 +603,7 @@ public partial class BallBehaviour
     }
 
     // position is where the flight starts, here and in the snapshot: the ball centre for a
-    // throw, the mound's release point for a pitch. now is Time.time.
+    // throw, the mound's fixed release point P0 for a pitch. now is Time.time.
     private void LaunchRelease(Vector3 position, Vector3 velocity, Vector3 spin, bool pitched, WakeProfile wake, double serverTime, float now)
     {
         ExitHold();
@@ -626,6 +613,7 @@ public partial class BallBehaviour
             LaunchPitch(position, velocity, spin, wake, 0f);
             _lineage = _releaseLineage;
             MarkHandPitchApplied(_lineage);
+            if (pitchSyncDiagnostics) PitchDiagRelease(position, velocity, spin, wake, serverTime);
         }
         else
         {

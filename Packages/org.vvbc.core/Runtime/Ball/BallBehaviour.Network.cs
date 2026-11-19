@@ -30,12 +30,10 @@ public partial class BallBehaviour
     [UdonSynced] private Vector3 _wakeDirection;
     [UdonSynced] private float _wakeConeAngle;
     [UdonSynced] private float _wakePhase;
-    // The PitchLineage of the state: a HandPitch's pitch ID, prepared generation and batter, or
-    // the pitch a hit, catch or throw comes from (zero for none).
+    // The PitchLineage of the state: a HandPitch's pitch ID (pitcher player ID and pitch
+    // number), or the pitch a hit, catch or throw comes from (zero for none).
     [UdonSynced] private int _pitchPitcher;
     [UdonSynced] private int _pitchNumber;
-    [UdonSynced] private int _pitchPrep;
-    [UdonSynced] private int _pitchBatter;
 
     private const int StageState = 1;
     private const int PitchState = 2;
@@ -55,7 +53,7 @@ public partial class BallBehaviour
     private const int SnapshotStash = 2;
 
     [Header("Network")]
-    [Tooltip("Maximum flight time simulated for a received flight snapshot, in seconds. An older pitch is stopped; an older hit or throw is shown from this time. Default 3.")]
+    [Tooltip("Maximum flight time simulated for a received flight snapshot, in seconds. An older automatic pitch is stopped; an older hit, throw or hand pitch is shown from this time (a hand pitch without bat contact). Default 3.")]
     public float maximumCatchupSeconds = 3f;
     [Tooltip("Smallest fixed timestep allowed for network catch-up, in seconds. Default 0.005.")]
     public float minimumCatchupStep = 0.005f;
@@ -391,11 +389,6 @@ public partial class BallBehaviour
         int owner = OwnerId();
         bool ownerState = owner > 0 &&
             (AcceptCandidateOf(owner) || (_acceptedSequence > 0 && _acceptedPublisherId == owner));
-        if (VoidedMotion())
-        {
-            StopVoidedPitch();
-            return;
-        }
         // The owner's state replaces a held speculation by itself; a released one is stopped
         // first, since not every accepted state restarts the flight.
         if (!ownerState || releasedLocally) DropLocalSpeculation(releasedLocally);
@@ -497,7 +490,7 @@ public partial class BallBehaviour
     {
         int local = LocalId();
         if (local > 0 && _acceptedKind == PossessionState && _acceptedHolderId == local &&
-            _acceptedPublisherId == local && !HeldLocally() && !VoidedMotion()) ApplyPossession();
+            _acceptedPublisherId == local && !HeldLocally()) ApplyPossession();
     }
 
     // Ownership arrived without a local action (automatic transfer or a pickup): the owner
@@ -506,7 +499,7 @@ public partial class BallBehaviour
     private void AdoptAcceptedState()
     {
         int local = LocalId();
-        if (_acceptedSequence <= 0 || local <= 0 || _acceptedPublisherId == local || VoidedMotion()) return;
+        if (_acceptedSequence <= 0 || local <= 0 || _acceptedPublisherId == local) return;
         _acceptedPublisherId = local;
         _acceptedSequence = Mathf.Max(_acceptedSequence, _maxSeenSequence) + 1;
         _publishedSequence = _acceptedSequence;
@@ -519,13 +512,6 @@ public partial class BallBehaviour
     private void PublishPending()
     {
         if (!_pending || !IsLocalOwner()) return;
-        if (PitchVoided(_pendingLineage.pitcher, _pendingLineage.number) ||
-            (_pendingKind == PossessionState && _pendingHold == HoldHand &&
-                PitchVoided(_pendingHolderId, DecodeHandSession(_networkPendingSpin))))
-        {
-            _pending = false;
-            return;
-        }
         if (PendingSuperseded())
         {
             _pending = false;
@@ -564,6 +550,8 @@ public partial class BallBehaviour
             if (!IsLocalPitch(_acceptedServerTime)) LaunchPitch(_acceptedPosition, _acceptedVelocity, _acceptedSpin, _acceptedWake, 0f);
         }
         if (networkDiagnostics) Diag("publish kind=" + _acceptedKind + " seq=" + _acceptedSequence + " time=" + _acceptedServerTime);
+        if (pitchSyncDiagnostics && _acceptedLineage.IsPitch())
+            PitchDiag(_acceptedLineage, "publish kind=" + _acceptedKind + " seq=" + _acceptedSequence);
         Send();
         NotifyPresentationListeners();
     }
@@ -616,8 +604,6 @@ public partial class BallBehaviour
         _wakePhase = _acceptedWake.initialPhase;
         _pitchPitcher = _acceptedLineage.pitcher;
         _pitchNumber = _acceptedLineage.number;
-        _pitchPrep = _acceptedLineage.prep;
-        _pitchBatter = _acceptedLineage.batter;
     }
 
     private PitchLineage SyncedLineage()
@@ -625,14 +611,12 @@ public partial class BallBehaviour
         PitchLineage lineage = new PitchLineage();
         lineage.pitcher = _pitchPitcher;
         lineage.number = _pitchNumber;
-        lineage.prep = _pitchPrep;
-        lineage.batter = _pitchBatter;
         return lineage;
     }
 
     private bool SameLineage(PitchLineage a, PitchLineage b)
     {
-        return a.pitcher == b.pitcher && a.number == b.number && a.prep == b.prep && a.batter == b.batter;
+        return a.pitcher == b.pitcher && a.number == b.number;
     }
 
     private WakeProfile SyncedWake()
@@ -803,11 +787,13 @@ public partial class BallBehaviour
         if (IsLocalOwner()) CopyAccepted();
         if (networkDiagnostics)
             Diag("send kind=" + _kind + " seq=" + _sequence + " time=" + _serverTime + " requestedAgo=" + (Time.realtimeSinceStartup - _sendRequestedAt));
+        if (pitchSyncDiagnostics && _kind == HandPitchState) PitchDiagSerialize();
     }
 
     public override void OnPostSerialization(SerializationResult result)
     {
         if (networkDiagnostics) Diag("sent success=" + result.success + " bytes=" + result.byteCount + " seq=" + _sequence);
+        if (pitchSyncDiagnostics && _kind == HandPitchState) PitchDiagSerialized(result.success, result.byteCount);
         if (result.success) { _serializationRetries = 0; return; }
         if (!IsLocalOwner() || _publishedSequence != _acceptedSequence || _publishedKind != _acceptedKind) return;
         if (_serializationRetries >= maximumSerializationRetries)
@@ -831,6 +817,7 @@ public partial class BallBehaviour
             Diag("receive kind=" + _kind + " seq=" + _sequence + " publisher=" + _publisherId + " time=" + _serverTime +
                 " age=" + Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _serverTime) +
                 " sendTime=" + result.sendTime + " receiveTime=" + result.receiveTime + " storage=" + result.isFromStorage);
+        if (pitchSyncDiagnostics) PitchDiagReceived(result.sendTime, result.receiveTime, result.isFromStorage);
         ReceiveSnapshot();
     }
 
@@ -840,7 +827,7 @@ public partial class BallBehaviour
         PitchLineage lineage = SyncedLineage();
         if (RejectPitchSnapshot(_kind, lineage, _hold, SyncedHolderId(), _spin, _serverTime))
         {
-            JudgeOlderHandPitch(lineage);
+            if (pitchSyncDiagnostics && lineage.IsPitch()) PitchDiag(lineage, "rejected kind=" + _kind + " seq=" + _sequence + " (applied or older)");
             return;
         }
         int owner = OwnerId();
@@ -942,26 +929,26 @@ public partial class BallBehaviour
             NotifyPresentationListeners();
             return;
         }
-        if (VoidedMotion() || (_acceptedKind == HandPitchState && HandPitchApplied(_acceptedLineage))) return;
+        if (_acceptedKind == HandPitchState)
+        {
+            // Planned once per pitch ID; a repeat, an ownership republish or a late duplicate
+            // never launches it again. Without a body (a test run) nothing can be flown.
+            if (body != null && !HandPitchApplied(_acceptedLineage)) PlanAcceptedHandPitch();
+            NotifyPresentationListeners();
+            return;
+        }
+        if (pitchSyncDiagnostics && _acceptedLineage.IsPitch())
+            PitchDiag(_acceptedLineage, "apply follow kind=" + _acceptedKind + " seq=" + _acceptedSequence + "/" + _acceptedPublisherId);
         if (_acceptedKind == PossessionState)
         {
             _lineage = _acceptedLineage;
             ApplyPossession();
-            NotifyPitchJudge();
-            NotifyPresentationListeners();
-            return;
-        }
-        // The judging batter launches a HandPitch from the release it sees, not from the
-        // server time (PitchJudgeBehaviour); everyone else catches up as before.
-        if (_acceptedKind == HandPitchState && GateHandPitch())
-        {
             NotifyPresentationListeners();
             return;
         }
         _lineage = _acceptedLineage;
         ExitHold();
         ApplyMotionSnapshot();
-        NotifyPitchJudge();
         NotifyPresentationListeners();
     }
 
@@ -990,7 +977,6 @@ public partial class BallBehaviour
     // Starts the accepted flight where it is after elapsed seconds, or stops a stale pitch.
     private void LaunchAccepted(double elapsed)
     {
-        if (_acceptedKind == HandPitchState) MarkHandPitchApplied(_acceptedLineage);
         float duration = CatchUpSeconds(_acceptedKind, elapsed, Time.fixedDeltaTime);
         if (duration < 0f)
         {
@@ -1082,7 +1068,7 @@ public partial class BallBehaviour
     public void ResolveOwnershipConflict()
     {
         _conflictCheckScheduled = false;
-        if (!HasCandidates() || _pending || !IsLocalOwner() || _acceptedPublisherId != LocalId() || VoidedMotion()) return;
+        if (!HasCandidates() || _pending || !IsLocalOwner() || _acceptedPublisherId != LocalId()) return;
         if (!CanRepublishConflict())
         {
             Debug.LogWarning("BallNetwork: ownership conflict persists after republishing");

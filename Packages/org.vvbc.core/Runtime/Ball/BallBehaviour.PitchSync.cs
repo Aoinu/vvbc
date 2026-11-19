@@ -6,47 +6,49 @@ public struct PitchProgress
     public int pitcher, applied;
 }
 
-// Manual-pitch synchronisation on the shared Ball (docs/development/manual-pitch-sync.md):
-// the PitchLineage of the state shown here, the judging batter's gate for an arriving
-// HandPitch, a speculative pitch flown from the prepared data before the HandPitch arrives,
-// its merge into the formal flight, and voiding a pitch the batter declared invalid. The
-// judgement itself is PitchJudgeBehaviour's; the Ball only presents what it decides.
+// Manual-pitch synchronisation on the shared Ball (docs/development/manual-pitch-sync.md).
+// The pitcher's client decides the formal pitch (release point P0, velocity, spin, wake and
+// the release's server time) and publishes it once as a HandPitch snapshot. Every receiver
+// plays that same snapshot, timed to the pitcher's avatar as this client shows it:
+//
+//   ageServer   = server now - release server time                 (shared server clock)
+//   avatarDelay = Time.realtimeSinceStartup - SimulationTime(pitcher) (this client's local clock)
+//   displayAge  = ageServer - avatarDelay
+//
+// The plan is made once per pitch ID, when the snapshot is first applied. A negative
+// displayAge waits for the release as shown here; otherwise the flight starts displayAge
+// into the shared flight model. Nothing re-times a flight after it started, and no delay ever
+// invalidates a pitch.
 public partial class BallBehaviour
 {
+    public const int AvatarDelayUsed = 0;
+    public const int AvatarDelayServerOnly = 1;
+    public const int AvatarDelayClamped = 2;
+
     [Header("Manual pitch sync")]
-    [Tooltip("Seconds over which the shown ball moves from the speculative flight onto the formal one when the HandPitch arrives. The physics body switches at once; only the model is offset meanwhile. Default 0.15.")]
-    public float speculationBlendSeconds = 0.15f;
-    // The HomePlate's judge; it registers itself (PitchJudgeBehaviour.Start).
-    [HideInInspector] public PitchJudgeBehaviour pitchJudge;
+    [Tooltip("Largest avatar display delay (Time.realtimeSinceStartup - Networking.SimulationTime(pitcher)) a receiver waits for, in seconds. A larger delay is clamped to it; a negative, non-finite or unavailable one falls back to the server time alone. Default 1.")]
+    public float maximumAvatarDelaySeconds = 1f;
+    [Tooltip("Logs every manual pitch with the prefix PitchSync[diag], keyed by pitch ID (pitcher/number), on the pitcher (release, serialization) and on receivers (reception, timing plan, launch, later states). For real-client verification only; leave off in normal play.")]
+    public bool pitchSyncDiagnostics;
 
     // The lineage of what this client shows: set from every applied state and every local action.
     private PitchLineage _lineage;
     // The lineage a HandPitch released here starts (from the mound at the release).
     private PitchLineage _releaseLineage;
-    // Release watermark and recent exact voids per pitcher.
+    // The highest pitch number per pitcher whose flight was planned or launched here.
     private PitchProgress[] _pitchProgress = new PitchProgress[0];
-    private const int VoidsPerPitcher = 32;
-    private int[] _voidedAttempts = new int[0];
-    private bool _voidPresentation;
-    // A speculative pitch: flown locally from the prepared data, never published, no bat
-    // contact, catch or pickup until it is merged into the formal flight or rolled back.
-    private bool _speculative;
-    private int _speculativePitcher, _speculativeNumber;
-    // Visual correction of the model (the physics body is already on the formal flight).
-    private Vector3 _visualOffset;
-    private float _visualBlendLeft, _visualBlendTotal;
-    private bool _visualCorrecting;
-    private Vector3 _modelRestLocal;
-    private bool _modelRestKnown;
-
-    public void SetPitchJudge(PitchJudgeBehaviour judge)
-    {
-        pitchJudge = judge;
-    }
-
-    // ---- What the judge reads ----
-
-    public bool SpeculationActive() { return _speculative; }
+    // A HandPitch planned ahead of its displayed release: launched when that time comes, if it
+    // is still the accepted state.
+    private bool _handPitchWaiting;
+    private PitchLineage _waitingLineage;
+    private float _waitingDue;
+    // Diagnostics: the timing plan of the last HandPitch and the last received snapshot.
+    [HideInInspector] public double lastPitchAgeServer;
+    [HideInInspector] public float lastPitchAvatarDelay;
+    [HideInInspector] public float lastPitchDisplayAge;
+    [HideInInspector] public int lastPitchDelaySource = -1;
+    private int _diagReceivedSequence = -1;
+    private int _diagReceivedPublisher = -1;
 
     // The accepted state is the given player's hand holding the ball (a pitch can follow).
     public bool AcceptedHandHeldBy(int playerId)
@@ -54,10 +56,12 @@ public partial class BallBehaviour
         return playerId > 0 && _acceptedKind == PossessionState && _acceptedHold == HoldHand && _acceptedHolderId == playerId;
     }
 
-    public int AcceptedPitchAttempt(int pitcher)
+    public bool ShowsPitch(int pitcher, int number)
     {
-        return AcceptedHandHeldBy(pitcher) ? DecodeHandSession(_acceptedSpin) : 0;
+        return _lineage.SamePitch(pitcher, number);
     }
+
+    public bool HandPitchWaiting() { return _handPitchWaiting; }
 
     private Vector3 EncodeHandSession(int session)
     {
@@ -68,31 +72,6 @@ public partial class BallBehaviour
     private int DecodeHandSession(Vector3 value)
     {
         return (int)value.x | ((int)value.y << 16);
-    }
-
-    public bool AcceptedHandPitch(int pitcher, int number)
-    {
-        return _acceptedKind == HandPitchState && _acceptedLineage.SamePitch(pitcher, number);
-    }
-
-    public bool AcceptedPitchLineage(int pitcher, int number)
-    {
-        return _acceptedLineage.SamePitch(pitcher, number);
-    }
-
-    public bool ShowsPitch(int pitcher, int number)
-    {
-        return _lineage.SamePitch(pitcher, number);
-    }
-
-    public bool PitchVoided(int pitcher, int number)
-    {
-        int slot = PitchProgressSlot(pitcher);
-        if (slot < 0 || number <= 0) return false;
-        int first = slot * VoidsPerPitcher;
-        for (int i = first; i < first + VoidsPerPitcher; i++)
-            if (_voidedAttempts[i] == number) return true;
-        return false;
     }
 
     private int PitchProgressSlot(int pitcher)
@@ -114,9 +93,6 @@ public partial class BallBehaviour
         entry.pitcher = pitcher;
         next[slot] = entry;
         _pitchProgress = next;
-        int[] voided = new int[(slot + 1) * VoidsPerPitcher];
-        for (int i = 0; i < _voidedAttempts.Length; i++) voided[i] = _voidedAttempts[i];
-        _voidedAttempts = voided;
         return slot;
     }
 
@@ -140,38 +116,22 @@ public partial class BallBehaviour
         _pitchProgress[slot] = entry;
     }
 
-    private bool VoidedMotion()
-    {
-        return PitchVoided(_acceptedLineage.pitcher, _acceptedLineage.number) ||
-            (_acceptedKind == PossessionState && _acceptedHold == HoldHand &&
-                PitchVoided(_acceptedHolderId, DecodeHandSession(_acceptedSpin)));
-    }
-
+    // A pitch that was already planned here, a hand hold it was pitched from, or a pitch state
+    // older than the accepted state is history: it never restores a flight, a hold, or a hit or
+    // catch that the pitch led to.
     private bool RejectPitchSnapshot(int kind, PitchLineage lineage, int hold, int holder, Vector3 spin, double time)
     {
-        if (PitchVoided(lineage.pitcher, lineage.number)) return true;
         if (lineage.IsPitch() && !_acceptedLineage.IsPitch() && _acceptedSequence > 0 && time < _acceptedServerTime)
             return true;
         if (kind == PossessionState && hold == HoldHand)
         {
             int attempt = DecodeHandSession(spin);
-            if (PitchVoided(holder, attempt) || HandPitchApplied(holder, attempt) ||
-                (attempt > 0 && _acceptedLineage.SamePitch(holder, attempt))) return true;
+            if (HandPitchApplied(holder, attempt) || (attempt > 0 && _acceptedLineage.SamePitch(holder, attempt))) return true;
         }
         if (kind != HandPitchState || !lineage.IsPitch()) return false;
         if (_acceptedLineage.SamePitch(lineage.pitcher, lineage.number))
             return _acceptedKind != HandPitchState;
         return HandPitchApplied(lineage) || (_acceptedSequence > 0 && time < _acceptedServerTime);
-    }
-
-    // A catch or a hit can arrive first from a new Ball owner. The original pitch still
-    // reaches its batter's judge, but none of its flight or possession state is restored.
-    private void JudgeOlderHandPitch(PitchLineage lineage)
-    {
-        if (_kind != HandPitchState || _sequence <= 0 || lineage.batter <= 0 || _publisherId != lineage.pitcher || localOnly ||
-            pitchJudge == null || _acceptedKind == HandPitchState || !AcceptedPitchLineage(lineage.pitcher, lineage.number) ||
-            PitchVoided(lineage.pitcher, lineage.number)) return;
-        pitchJudge.GateHandPitch(lineage.pitcher, lineage.number, lineage.prep, lineage.batter);
     }
 
     private PitchLineage LineageFor(int kind)
@@ -181,209 +141,206 @@ public partial class BallBehaviour
         return _lineage;
     }
 
-    // The mound's pitch ID for the HandPitch about to be launched by this client.
-    private void PrepareReleaseLineage(int pitchNumber, int prepGeneration, int targetBatter)
+    // The pitch ID of the HandPitch about to be launched by this client.
+    private void PrepareReleaseLineage(int pitchNumber)
     {
         _releaseLineage = new PitchLineage();
         _releaseLineage.pitcher = LocalId();
         _releaseLineage.number = pitchNumber;
-        _releaseLineage.prep = prepGeneration;
-        _releaseLineage.batter = targetBatter;
     }
 
-    private bool GateHandPitch()
+    // ---- Timing ----
+
+    // Which avatar delay is used: the measured one within 0..maxDelay, maxDelay for a larger
+    // one, and none (server time alone) for a negative, non-finite or unavailable one.
+    public static int AvatarDelaySource(float avatarDelay, float maxDelay)
     {
-        if (pitchJudge == null || localOnly || !_acceptedLineage.IsPitch() || _acceptedLineage.batter <= 0) return false;
-        return pitchJudge.GateHandPitch(_acceptedLineage.pitcher, _acceptedLineage.number, _acceptedLineage.prep,
-            _acceptedLineage.batter);
+        if (!(avatarDelay >= 0f) || avatarDelay > float.MaxValue) return AvatarDelayServerOnly;
+        return avatarDelay > Mathf.Max(0f, maxDelay) ? AvatarDelayClamped : AvatarDelayUsed;
     }
 
-    private void NotifyPitchJudge()
+    public static float UsedAvatarDelay(float avatarDelay, float maxDelay)
     {
-        if (pitchJudge != null && !localOnly) pitchJudge.OnBallStateApplied();
+        int source = AvatarDelaySource(avatarDelay, maxDelay);
+        if (source == AvatarDelayServerOnly) return 0f;
+        return source == AvatarDelayClamped ? Mathf.Max(0f, maxDelay) : avatarDelay;
     }
 
-    // ---- Speculation ----
-
-    // Flies the prepared pitch from its release point while the ball is shown, and accepted,
-    // in that pitcher's hand; elapsed is the flight time since the release the batter saw.
-    // Nothing is published; the formal HandPitch merges it, anything else rolls it back.
-    public bool BeginSpeculativePitch(int pitcher, int number, Vector3 position, Vector3 velocity, Vector3 spin,
-        int wakeMode, float wakeCoefficient, Vector3 wakeDirection, float elapsed)
+    // Flight time to show now, from the release's server age and this client's avatar delay.
+    // Negative: the release is still ahead on this client's view of the pitcher.
+    public static float DisplayAge(double ageServer, float avatarDelay, float maxDelay)
     {
-        if (body == null || localOnly || _pending || number <= 0 || number != AcceptedPitchAttempt(pitcher) ||
-            PitchVoided(pitcher, number) ||
-            _localHold != HoldHand || _localHolderId != pitcher) return false;
-        if (!FiniteVector(position) || !FiniteVector(velocity) || !FiniteVector(spin) || !Finite(elapsed)) return false;
-        WakeProfile wake = MakeWake(HandPitchState, wakeMode, wakeCoefficient, wakeDirection, 0f, 0f);
-        float duration = Mathf.Clamp(elapsed, 0f, Mathf.Max(0f, maximumCatchupSeconds));
-        BallFlightState state = AdvanceToGround(position, velocity, spin, BallAerodynamics.PrepareWake(wake, spin),
-            duration, Time.fixedDeltaTime, 0f);
-        LaunchPitch(state.position, state.velocity, spin, wake, state.time);
-        _speculative = true;
-        _speculativePitcher = pitcher;
-        _speculativeNumber = number;
-        // No bat contact, strike call, catch or pickup on a flight nobody has published.
-        contactConsumed = true;
-        UpdatePickupable();
-        if (networkDiagnostics) Diag("speculate pitcher=" + pitcher + " elapsed=" + elapsed);
-        return true;
+        // NaN fails both comparisons; infinities fail one.
+        double age = ageServer > -1e9 && ageServer < 1e9 ? ageServer : 0.0;
+        return (float)(age - UsedAvatarDelay(avatarDelay, maxDelay));
     }
 
-    // Rolls a speculative pitch back: to the pitcher's hand when that is still the accepted
-    // state, otherwise hidden until the next state (the pitcher's recall) arrives.
-    public void EndSpeculation()
+    // Reads the clocks once and plans the accepted HandPitch. SimulationTime is read only when
+    // the pitcher is a valid remote player; otherwise the server time alone decides.
+    private void PlanAcceptedHandPitch()
     {
-        if (!_speculative) return;
-        _speculative = false;
-        if (motionObserver != null) motionObserver.CancelPitch();
-        if (feedbackListener != null) feedbackListener.SendCustomEvent("OnBallReset");
-        // Not a catch: the speculative flight never was the network state.
-        _catchEffectFlight = flightSequence;
-        if (_acceptedKind == PossessionState) ApplyPossession();
-        else
+        double age = Networking.CalculateServerDeltaTime(Networking.GetServerTimeInSeconds(), _acceptedServerTime);
+        float now = Time.realtimeSinceStartup;
+        float avatarDelay = float.NaN;
+        float simulation = float.NaN;
+        VRCPlayerApi pitcher = VRCPlayerApi.GetPlayerById(_acceptedLineage.pitcher);
+        if (Utilities.IsValid(pitcher))
         {
-            StopFlightForHold();
-            SetPresentation(false);
+            if (pitcher.isLocal) avatarDelay = 0f;
+            else
+            {
+                simulation = Networking.SimulationTime(pitcher);
+                avatarDelay = now - simulation;
+            }
         }
-        if (networkDiagnostics) Diag("speculation rolled back pitcher=" + _speculativePitcher);
-        NotifyPresentationListeners();
+        if (pitchSyncDiagnostics)
+            PitchDiag(_acceptedLineage, "simulationTime=" + simulation + " (local rt s) pitcherPresent=" + Utilities.IsValid(pitcher));
+        PlanHandPitchAt(age, avatarDelay, now);
     }
 
-    private void ClearSpeculation()
+    // The plan from given clocks (tested directly). ageServer is server seconds since the
+    // release; avatarDelay and now are this client's Time.realtimeSinceStartup seconds.
+    public void PlanHandPitchAt(double ageServer, float avatarDelay, float now)
     {
-        _speculative = false;
+        if (_acceptedKind != HandPitchState || !_acceptedLineage.IsPitch() || HandPitchApplied(_acceptedLineage)) return;
+        MarkHandPitchApplied(_acceptedLineage);
+        lastPitchAgeServer = ageServer;
+        lastPitchDelaySource = AvatarDelaySource(avatarDelay, maximumAvatarDelaySeconds);
+        lastPitchAvatarDelay = UsedAvatarDelay(avatarDelay, maximumAvatarDelaySeconds);
+        lastPitchDisplayAge = DisplayAge(ageServer, avatarDelay, maximumAvatarDelaySeconds);
+        if (pitchSyncDiagnostics)
+            PitchDiag(_acceptedLineage, "plan ageServer=" + ageServer + " (server s) avatarDelay=" + avatarDelay +
+                " used=" + lastPitchAvatarDelay + " source=" + DelaySourceName(lastPitchDelaySource) + " (local rt s) displayAge=" +
+                lastPitchDisplayAge + " rt=" + now);
+        if (lastPitchDisplayAge >= 0f)
+        {
+            LaunchHandPitchAt(lastPitchDisplayAge);
+            return;
+        }
+        // The release is still ahead on this client's view of the pitcher: the ball stays as
+        // shown (in the pitcher's hand) until then. The wait never exceeds the delay bound.
+        float wait = Mathf.Min(-lastPitchDisplayAge, Mathf.Max(0f, maximumAvatarDelaySeconds));
+        _handPitchWaiting = true;
+        _waitingLineage = _acceptedLineage;
+        _waitingDue = now + wait;
+        SendCustomEventDelayedSeconds(nameof(LaunchWaitingHandPitch), wait);
     }
 
-    // Launches the accepted HandPitch at flight time `elapsed` from its release, counted from
-    // the release the batter saw (never from the server time). A speculative flight in progress
-    // is replaced: the body takes the formal state at once and the model eases over.
-    public bool LaunchAcceptedHandPitchAt(float elapsed)
+    // The displayed release has come. Only the same accepted HandPitch is launched; anything
+    // accepted since (a recall, a Stage) has replaced it.
+    public void LaunchWaitingHandPitch()
     {
-        if (body == null || _acceptedKind != HandPitchState || !Finite(elapsed) ||
-            VoidedMotion() || HandPitchApplied(_acceptedLineage)) return false;
-        bool blend = _speculative && flying && _acceptedLineage.SamePitch(_speculativePitcher, _speculativeNumber);
-        Vector3 shown = blend ? ShownBallPosition() : Vector3.zero;
-        float duration = Mathf.Clamp(elapsed, 0f, Mathf.Max(0f, maximumCatchupSeconds));
+        LaunchWaitingHandPitchAt(Time.realtimeSinceStartup);
+    }
+
+    public void LaunchWaitingHandPitchAt(float now)
+    {
+        if (!_handPitchWaiting || now < _waitingDue - 0.002f) return;
+        _handPitchWaiting = false;
+        if (_acceptedKind != HandPitchState || !_acceptedLineage.SamePitch(_waitingLineage.pitcher, _waitingLineage.number) ||
+            SpeculationUnresolved())
+        {
+            if (pitchSyncDiagnostics) PitchDiag(_waitingLineage, "wait dropped: accepted kind=" + _acceptedKind);
+            return;
+        }
+        LaunchHandPitchAt(Mathf.Max(0f, now - _waitingDue));
+    }
+
+    private void CancelHandPitchWait()
+    {
+        _handPitchWaiting = false;
+    }
+
+    // Starts the accepted HandPitch `elapsed` seconds into its flight, from its own P0, velocity,
+    // spin and wake. Older than the catch-up window, it is shown from the window (or where it
+    // first met the ground), never hidden or invalidated, and it can no longer meet a bat.
+    private void LaunchHandPitchAt(float elapsed)
+    {
+        _lineage = _acceptedLineage;
+        if (body == null) return;
+        float window = Mathf.Max(0f, maximumCatchupSeconds);
+        bool stale = elapsed > window;
+        float duration = Mathf.Clamp(elapsed, 0f, window);
         ExitHold();
         BallFlightState state = AdvanceToGround(_acceptedPosition, _acceptedVelocity, _acceptedSpin,
             BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin), duration, Time.fixedDeltaTime, 0f);
         LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
+        if (stale)
+        {
+            contactConsumed = true;
+            if (motionObserver != null) motionObserver.CancelPitch();
+        }
         _lineage = _acceptedLineage;
-        MarkHandPitchApplied(_acceptedLineage);
-        if (blend) BeginVisualCorrection(shown - state.position);
-        if (networkDiagnostics)
-            Diag("launch handpitch pitch=" + _acceptedLineage.pitcher + "/" + _acceptedLineage.number + " elapsed=" + elapsed +
-                " merged=" + blend + " offset=" + (blend ? (shown - state.position).magnitude : 0f));
+        if (pitchSyncDiagnostics)
+            PitchDiag(_acceptedLineage, "launch elapsed=" + elapsed + " simulated=" + state.time + " stale=" + stale +
+                " start=" + state.position.ToString("F4") + " p0=" + _acceptedPosition.ToString("F4"));
         NotifyPresentationListeners();
-        return true;
     }
 
-    // ---- Void ----
+    // ---- Diagnostics (pitchSyncDiagnostics) ----
 
-    // serverNow may be NaN: it is read only for the pitcher's recall.
-    // Stop only this pitch and states derived from it. Its pitcher publishes an ordinary
-    // glove possession with no lineage, so that every client can resume from the same state.
-    public void VoidPitch(int pitcher, int number, double serverNow)
+    private static string DelaySourceName(int source)
     {
-        if (localOnly || pitcher <= 0 || number <= 0) return;
-        int slot = EnsurePitchProgress(pitcher);
-        int first = slot * VoidsPerPitcher;
-        int oldest = first;
-        for (int i = first; i < first + VoidsPerPitcher; i++)
-        {
-            if (_voidedAttempts[i] == number) return;
-            if (_voidedAttempts[i] < _voidedAttempts[oldest]) oldest = i;
-        }
-        if (number > _voidedAttempts[oldest]) _voidedAttempts[oldest] = number;
-
-        bool accepted = _acceptedLineage.SamePitch(pitcher, number) || AcceptedPitchAttempt(pitcher) == number;
-        bool pending = _pending && (_pendingLineage.SamePitch(pitcher, number) ||
-            (_pendingKind == PossessionState && _pendingHold == HoldHand && _pendingHolderId == pitcher &&
-                DecodeHandSession(_networkPendingSpin) == number));
-        bool shown = _lineage.SamePitch(pitcher, number) ||
-            (_speculative && _speculativePitcher == pitcher && _speculativeNumber == number) ||
-            (accepted && _localHold == HoldHand && _localHolderId == pitcher);
-        if (pending)
-        {
-            _pending = false;
-            _lossSuspected = false;
-            _ownershipRequested = false;
-        }
-        if (_pending || (!shown && !pending && !accepted)) return;
-        bool newerAccepted = pending && !accepted && _acceptedSequence > 0 && _acceptedServerTime >= _pendingServerTime;
-        if (shown || pending || (accepted && !_lineage.IsPitch() && _localHold == HoldFree && !flying))
-            StopVoidedPitch();
-        if (networkDiagnostics) Diag("void pitch=" + pitcher + "/" + number + " shown=" + shown);
-        if (pitcher == LocalId() && (accepted || (pending && !newerAccepted) || (shown && _acceptedSequence <= 0)))
-            RecallToLocalGlove(double.IsNaN(serverNow) ? Networking.GetServerTimeInSeconds() : serverNow);
-        else if (newerAccepted) ApplyAccepted();
+        if (source == AvatarDelayUsed) return "avatar";
+        if (source == AvatarDelayClamped) return "avatar-clamped";
+        return "server-only";
     }
 
-    private void StopVoidedPitch()
+    // One number that changes with any field of the formal pitch, to match a sender's and a
+    // receiver's lines at a glance.
+    private static float PitchDigest(Vector3 position, Vector3 velocity, Vector3 spin, double time)
     {
-        _voidPresentation = true;
-        ExitHold();
-        if (pickup != null && pickup.IsHeld) ForceDropPickup();
-        _pickupResolving = false;
-        _releaseReassert = false;
-        StopFlightForHold();
-        _lineage = new PitchLineage();
-        if (motionObserver != null) motionObserver.CancelPitch();
-        if (feedbackListener != null) feedbackListener.SendCustomEvent("OnBallReset");
-        SetPresentation(false);
+        return Vector3.Dot(position, new Vector3(1f, 3f, 7f)) + Vector3.Dot(velocity, new Vector3(11f, 13f, 17f)) +
+            Vector3.Dot(spin, new Vector3(19f, 23f, 29f)) + (float)(time % 1000.0);
     }
 
-    // ---- Visual correction ----
-
-    private Vector3 ShownBallPosition()
+    private string PitchValues(Vector3 position, Vector3 velocity, Vector3 spin, double time)
     {
-        if (_visualCorrecting && ballRenderer != null) return ballRenderer.transform.position;
-        return body != null ? body.position : transform.position;
+        return "p0=" + position.ToString("F4") + " v=" + velocity.ToString("F4") + " speedKmh=" + (velocity.magnitude * 3.6f).ToString("F2") +
+            " spin=" + spin.ToString("F3") + " release=" + time + " (server s) digest=" + PitchDigest(position, velocity, spin, time).ToString("F4");
     }
 
-    private void BeginVisualCorrection(Vector3 offset)
+    private void PitchDiag(PitchLineage lineage, string message)
     {
-        if (ballRenderer == null || !FiniteVector(offset) || !(speculationBlendSeconds > 0f) || offset.sqrMagnitude < 0.000001f)
-        {
-            EndVisualCorrection();
-            return;
-        }
-        Transform model = ballRenderer.transform;
-        if (!_modelRestKnown)
-        {
-            _modelRestLocal = model.localPosition;
-            _modelRestKnown = true;
-        }
-        _visualOffset = offset;
-        _visualBlendTotal = speculationBlendSeconds;
-        _visualBlendLeft = speculationBlendSeconds;
-        if (_visualCorrecting) return;
-        _visualCorrecting = true;
-        StepVisualCorrection();
+        Debug.Log("PitchSync[diag] pitch=" + lineage.pitcher + "/" + lineage.number + " local=" + LocalId() +
+            " rt=" + Time.realtimeSinceStartup + " server=" + Networking.GetServerTimeInSeconds() + " " + message);
     }
 
-    // Once per rendered frame while correcting: the model sits at the body plus the remaining
-    // offset in world space (the body spins, so a local offset would orbit).
-    public void StepVisualCorrection()
+    // Pitcher: the formal pitch as decided at the release (P0 is the mound's fixed release point).
+    private void PitchDiagRelease(Vector3 position, Vector3 velocity, Vector3 spin, WakeProfile wake, double serverTime)
     {
-        if (!_visualCorrecting) return;
-        _visualBlendLeft -= Time.deltaTime;
-        if (_visualBlendLeft <= 0f || body == null || !flying || ballRenderer == null)
-        {
-            EndVisualCorrection();
-            return;
-        }
-        float k = _visualBlendLeft / _visualBlendTotal;
-        // Smooth ease-out: the remaining offset shrinks faster than linearly at the start.
-        ballRenderer.transform.position = body.position + _visualOffset * (k * k);
-        SendCustomEventDelayedFrames(nameof(StepVisualCorrection), 1);
+        string mound = manualPitcher != null
+            ? " hand=" + (manualPitcher.ThrowingHand() == GloveBehaviour.HandLeft ? "L" : "R") + " anchor=" +
+                manualPitcher.ReleaseAnchorPosition().ToString("F4")
+            : "";
+        PitchDiag(_releaseLineage, "release pitcher=" + LocalId() + mound + " " + PitchValues(position, velocity, spin, serverTime) +
+            " wake=" + wake.mode + "/" + wake.coefficient + " sendRequested rt=" + Time.realtimeSinceStartup);
     }
 
-    private void EndVisualCorrection()
+    private void PitchDiagSerialize()
     {
-        if (_visualCorrecting && _modelRestKnown && ballRenderer != null) ballRenderer.transform.localPosition = _modelRestLocal;
-        _visualCorrecting = false;
-        _visualBlendLeft = 0f;
+        PitchDiag(SyncedLineage(), "serialize seq=" + _sequence + " publisher=" + _publisherId + " " +
+            PitchValues(_position, _velocity, _spin, _serverTime));
+    }
+
+    private void PitchDiagSerialized(bool success, int bytes)
+    {
+        PitchDiag(SyncedLineage(), "serialized success=" + success + " bytes=" + bytes + " seq=" + _sequence);
+    }
+
+    // Receiver: what arrived, and whether the deserialization brought anything new. A repeated
+    // sequence from the same publisher is reported, so that a send that succeeded but left the
+    // synced fields unchanged on this client can be told apart from a missing send.
+    private void PitchDiagReceived(float sendTime, float receiveTime, bool storage)
+    {
+        bool unchanged = _sequence == _diagReceivedSequence && _publisherId == _diagReceivedPublisher;
+        _diagReceivedSequence = _sequence;
+        _diagReceivedPublisher = _publisherId;
+        PitchLineage lineage = SyncedLineage();
+        if (!lineage.IsPitch() && !unchanged) return;
+        PitchDiag(lineage, "received kind=" + _kind + " seq=" + _sequence + " publisher=" + _publisherId +
+            (_kind == HandPitchState ? " " + PitchValues(_position, _velocity, _spin, _serverTime) : "") +
+            " sendTime=" + sendTime + " receiveTime=" + receiveTime + " (local rt s) storage=" + storage +
+            (unchanged ? " UNCHANGED (no new sequence)" : ""));
     }
 }

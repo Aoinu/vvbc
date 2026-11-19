@@ -16,16 +16,16 @@ notifications are settled against the current owner, not their arrival order,
 and a snapshot equal to the accepted one is applied again only when the local
 ball no longer shows it; see [fielding system](fielding-system.md). A manual pitch
 from a fielder's hand is the HandPitch kind; see [manual pitching](manual-pitching.md).
-Every snapshot also carries a pitch lineage (`_pitchPitcher`, `_pitchNumber`, `_pitchPrep`,
-`_pitchBatter`): the manual pitch a HandPitch starts, and that a hit, catch or throw comes
-from. On the batter's client a HandPitch is launched by the batter's judge, and a pitch judged
-invalid is never launched again; see [manual pitch sync](manual-pitch-sync.md).
+Every snapshot also carries a pitch lineage (`_pitchPitcher`, `_pitchNumber`): the manual
+pitch a HandPitch starts, and that a hit, catch or throw comes from. Every receiver plays a
+HandPitch once per pitch ID, timed to the pitcher's avatar as it shows it; see
+[manual pitch sync](manual-pitch-sync.md).
 
 The synced kind, hold and wake mode are bytes. One synced int carries the batter
 ID for Hit or the holder ID for Possession. One synced float carries hit strength
 for Hit or the wake coefficient for Pitch and HandPitch. The Ball decodes these
-before comparing, accepting or keeping a snapshot as a candidate. All 18 synced
-fields total 99 bytes by type size.
+before comparing, accepting or keeping a snapshot as a candidate. All 16 synced
+fields total 91 bytes by type size.
 
 ## Scene setup
 
@@ -132,8 +132,10 @@ of sight. A negative age (server clock estimates of two clients differ, or the
 contact was stamped slightly ahead of the frame) starts at the snapshot. A Hit or
 Throw older than the window is shown from the window and logs a warning: it is
 never hidden, so it can still be seen and fielded, and the next state corrects
-it. A Pitch or HandPitch older than the window stops the current flight and logs
-a warning, so a stale pitch never crosses the zone again.
+it. A Pitch older than the window stops the current flight and logs a warning, so a
+stale pitch never crosses the zone again. A HandPitch is never stopped or invalidated
+for its age: older than the window it is shown from the window (or its first ground
+contact) with bat contact off; see [manual pitch sync](manual-pitch-sync.md).
 
 A Hit that was struck on the pitch this client launched from the shared schedule
 is not superseded when that pitch's own Pitch snapshot (same release time), or a

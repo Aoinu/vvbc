@@ -91,14 +91,12 @@ public partial class ManualPitchBehaviour
             return false;
         }
         Quaternion frame = ManualPitchMath.Frame(forward);
+        // Any finite position is recorded: no distance or angle limit (the release point of the
+        // pitch is the mound's fixed P0; the calibration gives the arm slot and the pose only).
         Vector3 relative = ManualPitchMath.ToFrame(frame, chest, handPosition);
-        // Range: 0.05..1.5 m from the chest and 45..90 deg from the plate direction. Outside it
-        // nothing is recorded, the saved calibration stays, and calibration goes on (red marker).
-        int range = ManualPitchMath.CalibrationRange(relative);
-        if (range != ManualPitchMath.CalibrationInRange)
+        if (!ManualPitchMath.ValidRelativePosition(relative))
         {
-            statusText = "Not saved: " + ManualPitchMath.CalibrationRangeText(range, relative) +
-                ". Move the hand until the marker turns blue, then pull the trigger again.";
+            statusText = "Tracking or chest bone is not available; nothing recorded.";
             return false;
         }
         _draftPosition = relative;
@@ -188,16 +186,17 @@ public partial class ManualPitchBehaviour
             PlayerData.TryGetQuaternion(player, KeyRotation, out Quaternion rotation) &&
             !RestoreCalibration(version, hand, position, rotation))
         {
-            // Includes a version 1 calibration taken before the 45..90 deg range: it is not used
-            // (never silently accepted) and stays stored until a new calibration overwrites it.
+            // Only an unreadable value (wrong version or hand, a non-finite position, an invalid
+            // quaternion) is refused; it stays stored until a new calibration overwrites it.
             Debug.LogWarning("ManualPitch: ignored an invalid stored calibration");
-            statusText = "The saved calibration is outside the allowed range; calibrate again.";
+            statusText = "The saved calibration could not be read; calibrate again.";
         }
         Notify();
     }
 
     // Accepts stored values only when every one is valid; anything else keeps no calibration.
-    // The stored format is unchanged (version 1); the position must also be inside today's range.
+    // The stored format is unchanged (version 1): every stored calibration with a finite position
+    // and a unit quaternion is used, including ones taken under the former range limits.
     public bool RestoreCalibration(int version, int hand, Vector3 position, Quaternion rotation)
     {
         if (version != CalibrationVersion || (hand != GloveBehaviour.HandLeft && hand != GloveBehaviour.HandRight) ||
