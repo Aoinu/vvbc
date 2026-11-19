@@ -233,9 +233,19 @@ public partial class BallBehaviour
         LaunchWaitingHandPitchAt(Time.realtimeSinceStartup);
     }
 
+    // The delayed event runs on the frame clock, the due time on Time.realtimeSinceStartup read
+    // mid-frame, so the event can come a little early: it is then scheduled again for the rest
+    // of the wait (never dropped). A late event launches that much into the flight.
     public void LaunchWaitingHandPitchAt(float now)
     {
-        if (!_handPitchWaiting || now < _waitingDue - 0.002f) return;
+        if (!_handPitchWaiting) return;
+        float remaining = _waitingDue - now;
+        if (remaining > 0.002f)
+        {
+            if (remaining > 0.05f) SendCustomEventDelayedSeconds(nameof(LaunchWaitingHandPitch), remaining);
+            else SendCustomEventDelayedFrames(nameof(LaunchWaitingHandPitch), 1);
+            return;
+        }
         _handPitchWaiting = false;
         if (_acceptedKind != HandPitchState || !_acceptedLineage.SamePitch(_waitingLineage.pitcher, _waitingLineage.number) ||
             SpeculationUnresolved())

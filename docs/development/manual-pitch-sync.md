@@ -29,15 +29,21 @@ the mound panel's sync text and ±10 ms buttons, `HomePlate/PitchDelaySetting`,
 ```text
 F     = horizontal unit direction from MoundCenter to the plate
 R     = normalize(cross(up, F))           pitcher's right = batter's left
-Pbase = MoundCenter + F * dot(ReleaseAnchor - MoundCenter, F),  y = ReleaseAnchor.y
+A     = ReleaseAnchor + F * d + up * h    (d, h) = the calibrated release offset; (0, 0) without one
+Pbase = MoundCenter + F * dot(A - MoundCenter, F),  y = A.y
 P0    = Pbase + releaseSideOffset * R     right-hander
 P0    = Pbase - releaseSideOffset * R     left-hander         releaseSideOffset = 0.7 m
 ```
 
 `MoundCenter` and `ReleaseAnchor` are static children of the mound (`ManualPitchMound.prefab`;
-`ReleaseAnchor` at local (0, 1.8, 1.5), toward the plate). The anchor gives only the distance
-toward the plate and the height; its lateral position is ignored. The player's position, head,
-chest, controllers and held ball never enter `P0`. Each mound uses its own transforms and its own
+`ReleaseAnchor` at local (0, 1.8, 1.5), toward the plate). **Depth and height come from the
+calibration**: when the release pose is recorded, the controller's position is stored relative to
+`ReleaseAnchor` as `d` (toward the plate along `F`) and `h` (up)
+(`vvbc.pitching.calib.releaseSet/releaseForward/releaseUp` in PlayerData). Without a calibrated
+release for the current hand (none yet, the other hand, or one saved before these keys existed)
+`P0` stays on `ReleaseAnchor`. The anchor's and the controller's lateral positions are ignored:
+the side is fixed by the hand. The player's position, head, chest, controllers and held ball at
+the lock and at the release never enter `P0`. Each mound uses its own transforms and its own
 plate, so several lanes, turned mounds and nested prefabs each get their own axes. Scene
 instances that override the mound's variable table without these fields find the children by
 name (`MoundCenter`, `ReleaseAnchor`) at `Start`.
@@ -81,8 +87,12 @@ that player is shown on this client; the two clocks are never subtracted directl
 
 - `displayAge < 0` (data first): the ball stays as shown (the pitcher's hand) and the pitch is
   launched after `-displayAge` seconds (at most `maximumAvatarDelaySeconds`), from flight time
-  0 plus the frame's lateness. If anything else becomes the accepted state meanwhile (a recall,
-  a Stage), the wait is dropped.
+  0 plus the frame's lateness. The delayed event runs on the frame clock while the due time is
+  `Time.realtimeSinceStartup` read mid-frame, so an event that comes early schedules itself
+  again for the rest of the wait. If anything else becomes the accepted state meanwhile (a
+  recall, a Stage), the wait is dropped.
+  Found in the first real-client test: an early event returned without rescheduling, so on
+  receivers the ball stayed in the pitcher's hand and the pitch was never shown.
 - `displayAge >= 0` (data after the shown release): the pitch starts `displayAge` into its
   flight, advanced with the shared `BallFlightModel` (and stopped at the first ground contact).
 - Older than `maximumCatchupSeconds` (3 s): shown from the window, with bat contact off. It is
@@ -135,7 +145,8 @@ matching `received`, or as `UNCHANGED`.
 - The real `byteCount` of a HandPitch and whether Manual sync ever reports success without
   updating a receiver (the issue linked in the phase-1 brief).
 - Late joiners and ownership transfer during a pitch on real clients.
-- The default `ReleaseAnchor` placement (1.5 m in front of the mound centre, 1.8 m high).
+- The default `ReleaseAnchor` placement (1.5 m in front of the mound centre, 1.8 m high), used
+  until a release is calibrated.
 
 Real-client check (pitcher, batter, preferably a fielder):
 

@@ -1695,4 +1695,69 @@ public partial class ManualPitchBehaviour
             Assert.AreEqual(p0, _resultSolverRelease, "the solver's point " + i);
         }
     }
+
+    // The calibration sets P0's depth (toward the plate) and height relative to ReleaseAnchor;
+    // the side stays fixed by the hand. Overhand at TestChest is world (-0.25, 1.85, 17.30): 0.54 m
+    // toward the plate and 0.05 m above the anchor.
+    [TsukimiTest]
+    public void TheCalibratedReleaseSetsTheDepthAndHeightOfP0()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.7f, 1.80f, 17.84f)) < 0.0001f, "no calibration: the anchor");
+        BeginCalibration();
+        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate,
+            true, TestCentre, TestAnchor));
+        Assert.IsTrue(CommitCalibration());
+        Assert.IsTrue(HasCalibratedRelease());
+        Vector2 offset = CalibratedReleaseOffset();
+        Assert.IsTrue(Mathf.Abs(offset.x - 0.54f) < 0.0001f && Mathf.Abs(offset.y - 0.05f) < 0.0001f, "offset " + offset);
+        Vector3 p0 = TestP0();
+        Assert.IsTrue(Vector3.Distance(p0, new Vector3(-0.7f, 1.85f, 17.30f)) < 0.0001f, "calibrated P0 " + p0);
+        // Relative to the anchor: another lane or a moved anchor keeps the same offset.
+        Vector3 moved = FixedReleaseAt(TestCentre, TestAnchor + Vector3.up * 0.2f, TestPlate);
+        Assert.IsTrue(Vector3.Distance(moved, new Vector3(-0.7f, 2.05f, 17.30f)) < 0.0001f, "moved anchor " + moved);
+        // The other hand has no usable calibration: back to the anchor, mirrored.
+        ActiveForTest(GloveBehaviour.HandLeft);
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(0.7f, 1.80f, 17.84f)) < 0.0001f, "left hand: the anchor");
+    }
+
+    // The player moving after the calibration does not move P0, and releases leave from it.
+    [TsukimiTest]
+    public void TheCalibratedP0DoesNotFollowThePlayer()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        BeginCalibration();
+        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate,
+            true, TestCentre, TestAnchor));
+        Assert.IsTrue(CommitCalibration());
+        Vector3 p0 = TestP0();
+        _lockTarget = new Vector3(0f, 0.75f, 0f);
+        _lockRelease = p0;
+        _lockDirection = (_lockTarget - p0).normalized;
+        _lockConverged = true;
+        state = StateLockedReady;
+        Vector3 elsewhere = HandAt(TestChest + new Vector3(0.8f, 0.3f, -0.6f), Overhand);
+        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(elsewhere, IdealHand(TestChest), elsewhere, TowardPlate(), TestPlate, TestNormal,
+            InputTrigger, solverSpeedRatio), debugReason);
+        Assert.AreEqual(p0, releasePosition);
+        Assert.AreEqual(p0, TestP0(), "nothing of the release moves it");
+    }
+
+    // A calibration saved before the release offset existed uses the anchor until recalibrated.
+    [TsukimiTest]
+    public void AnOldStoredCalibrationKeepsTheAnchorUntilItsOffsetIsRestored()
+    {
+        Mimic.Join();
+        ActiveForTest(GloveBehaviour.HandRight);
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, TestPose));
+        Assert.IsFalse(HasCalibratedRelease());
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.7f, 1.80f, 17.84f)) < 0.0001f);
+        Assert.IsFalse(RestoreReleaseOffset(float.NaN, 0f), "a non-finite offset is ignored");
+        Assert.IsTrue(RestoreReleaseOffset(0.54f, 0.05f));
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.7f, 1.85f, 17.30f)) < 0.0001f);
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, TestPose));
+        Assert.IsFalse(HasCalibratedRelease(), "restoring a calibration starts without an offset");
+    }
 }

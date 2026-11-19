@@ -4,8 +4,10 @@ using VRC.SDKBase;
 
 // The 4-Seam release calibration: the throwing controller's position relative to the chest
 // and its rotation, both in the pitching frame (chest position, horizontal direction to the
-// plate, world up). The chest rotation is never read. Persisted in PlayerData for the local
-// player; derived values (arm slot, spin axis) are recomputed, never stored.
+// plate, world up), and the controller's release point relative to the mound's ReleaseAnchor
+// (toward the plate and up), which sets the depth and height of the fixed release point P0.
+// The chest rotation is never read. Persisted in PlayerData for the local player; derived
+// values (arm slot, spin axis) are recomputed, never stored.
 public partial class ManualPitchBehaviour
 {
     public const int CalibrationVersion = 1;
@@ -13,6 +15,11 @@ public partial class ManualPitchBehaviour
     private const string KeyHand = "vvbc.pitching.calib.hand";
     private const string KeyPosition = "vvbc.pitching.calib.position";
     private const string KeyRotation = "vvbc.pitching.calib.rotation";
+    // Added after version 1 without changing it: a calibration saved before has no release
+    // offset and uses the ReleaseAnchor itself until it is calibrated again.
+    private const string KeyReleaseSet = "vvbc.pitching.calib.releaseSet";
+    private const string KeyReleaseForward = "vvbc.pitching.calib.releaseForward";
+    private const string KeyReleaseUp = "vvbc.pitching.calib.releaseUp";
 
     [HideInInspector] public string statusText = "";
 
@@ -20,12 +27,17 @@ public partial class ManualPitchBehaviour
     private int _calHand;
     private Vector3 _calPosition;
     private Quaternion _calRotation = Quaternion.identity;
+    // The calibrated release relative to ReleaseAnchor: x toward the plate, y up (metres).
+    private bool _calHasRelease;
+    private Vector2 _calReleaseOffset;
     private bool _restored;
 
     private bool _calibrating;
     private bool _draftHasPosition, _draftHasRotation;
     private Vector3 _draftPosition;
     private Quaternion _draftRotation = Quaternion.identity;
+    private bool _draftHasRelease;
+    private Vector2 _draftReleaseOffset;
     private Vector3 _triggerHandPosition;
 
     public bool Calibrating() { return _calibrating; }
@@ -33,6 +45,8 @@ public partial class ManualPitchBehaviour
     public int CalibratedHand() { return _calHand; }
     public Vector3 CalibratedPosition() { return _calPosition; }
     public Quaternion CalibratedRotation() { return _calRotation; }
+    public bool HasCalibratedRelease() { return _calHasRelease; }
+    public Vector2 CalibratedReleaseOffset() { return _calReleaseOffset; }
 
     // Only a calibration of the current throwing hand is used; the other hand's is never mirrored.
     public bool CalibrationUsable()
@@ -53,6 +67,7 @@ public partial class ManualPitchBehaviour
         _calibrating = true;
         _draftHasPosition = false;
         _draftHasRotation = false;
+        _draftHasRelease = false;
         statusText = "Put the ball down. Take your 4-Seam release pose with the empty throwing hand, then pull and release its trigger to record and save.";
         Notify();
     }
@@ -78,9 +93,19 @@ public partial class ManualPitchBehaviour
         return SaveCalibration();
     }
 
-    // Records the draft (position and rotation) from explicit tracking data. An invalid chest,
-    // hand or plate records nothing.
+    // Records the draft (position, rotation and the release offset from this mound's anchor)
+    // from explicit tracking data. An invalid chest, hand or plate records nothing. Without a
+    // ReleaseAnchor no release offset is recorded (P0 stays on the anchor).
     public bool RecordCalibrationAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 platePoint)
+    {
+        bool anchored = releaseAnchor != null;
+        Transform centre = moundCenter != null ? moundCenter : transform;
+        return RecordCalibrationWithAnchorAt(chest, handPosition, handRotation, platePoint, anchored,
+            centre.position, anchored ? releaseAnchor.position : Vector3.zero);
+    }
+
+    public bool RecordCalibrationWithAnchorAt(Vector3 chest, Vector3 handPosition, Quaternion handRotation, Vector3 platePoint,
+        bool anchored, Vector3 centre, Vector3 anchor)
     {
         if (!_calibrating) return false;
         Vector3 forward = ManualPitchMath.HorizontalDirection(chest, platePoint);
@@ -91,8 +116,9 @@ public partial class ManualPitchBehaviour
             return false;
         }
         Quaternion frame = ManualPitchMath.Frame(forward);
-        // Any finite position is recorded: no distance or angle limit (the release point of the
-        // pitch is the mound's fixed P0; the calibration gives the arm slot and the pose only).
+        // Any finite position is recorded: no distance or angle limit. The pitch leaves from the
+        // fixed P0: its depth and height come from this release (relative to the anchor), its
+        // side from the throwing hand.
         Vector3 relative = ManualPitchMath.ToFrame(frame, chest, handPosition);
         if (!ManualPitchMath.ValidRelativePosition(relative))
         {
@@ -103,6 +129,8 @@ public partial class ManualPitchBehaviour
         _draftHasPosition = true;
         _draftRotation = Normalized(ManualPitchMath.Multiply(ManualPitchMath.Inverse(frame), handRotation));
         _draftHasRotation = true;
+        _draftHasRelease = anchored && ManualPitchMath.HorizontalDirection(centre, platePoint) != Vector3.zero;
+        _draftReleaseOffset = _draftHasRelease ? ManualPitchMath.AnchorOffset(centre, anchor, platePoint, handPosition) : Vector2.zero;
         statusText = PreviewText();
         return true;
     }
@@ -118,7 +146,14 @@ public partial class ManualPitchBehaviour
         Vector3 magnus = Vector3.Cross(axis, Vector3.forward);
         return "Release " + _draftPosition.ToString("F2") + "  slot " + slotAngle.ToString("F0") + " deg (" + form + ")" +
             "\nSpin axis " + axis.ToString("F2") + "  break dir " + magnus.ToString("F2") +
+            (_draftHasRelease ? "\nRelease point: " + ReleaseOffsetText(_draftReleaseOffset) : "\nRelease point: ReleaseAnchor") +
             (_draftHasRotation ? "" : "\nRotation not recorded yet.");
+    }
+
+    public static string ReleaseOffsetText(Vector2 offset)
+    {
+        return (offset.x >= 0f ? "+" : "") + offset.x.ToString("F2") + " m toward the plate, " +
+            (offset.y >= 0f ? "+" : "") + offset.y.ToString("F2") + " m up from ReleaseAnchor";
     }
 
     public bool SaveCalibration()
@@ -128,6 +163,9 @@ public partial class ManualPitchBehaviour
         PlayerData.SetInt(KeyHand, _calHand);
         PlayerData.SetVector3(KeyPosition, _calPosition);
         PlayerData.SetQuaternion(KeyRotation, _calRotation);
+        PlayerData.SetBool(KeyReleaseSet, _calHasRelease);
+        PlayerData.SetFloat(KeyReleaseForward, _calReleaseOffset.x);
+        PlayerData.SetFloat(KeyReleaseUp, _calReleaseOffset.y);
         return true;
     }
 
@@ -151,11 +189,15 @@ public partial class ManualPitchBehaviour
         _calHand = _activeHand;
         _calPosition = _draftPosition;
         _calRotation = _draftRotation;
+        _calHasRelease = _draftHasRelease;
+        _calReleaseOffset = _draftReleaseOffset;
         _calibrating = false;
+        _markerPlaced = false;
         InvalidateDefaultCourse();
         statusText = "Calibration saved.\n" + PreviewText();
         if (showDebug) Debug.Log("ManualPitch: calibration saved, hand " + _calHand + ", release " + _calPosition.ToString("F2") +
-            " (right, up, forward from the chest), rotation " + _calRotation.ToString("F3"));
+            " (right, up, forward from the chest), rotation " + _calRotation.ToString("F3") +
+            ", release point " + (_calHasRelease ? ReleaseOffsetText(_calReleaseOffset) : "ReleaseAnchor"));
         Notify();
         return true;
     }
@@ -173,6 +215,7 @@ public partial class ManualPitchBehaviour
         _calibrating = false;
         _draftHasPosition = false;
         _draftHasRotation = false;
+        _draftHasRelease = false;
     }
 
     // Read once for the local player; Save is refused until this has run.
@@ -191,6 +234,10 @@ public partial class ManualPitchBehaviour
             Debug.LogWarning("ManualPitch: ignored an invalid stored calibration");
             statusText = "The saved calibration could not be read; calibrate again.";
         }
+        else if (_hasCalibration && PlayerData.TryGetBool(player, KeyReleaseSet, out bool releaseSet) && releaseSet &&
+            PlayerData.TryGetFloat(player, KeyReleaseForward, out float forward) &&
+            PlayerData.TryGetFloat(player, KeyReleaseUp, out float up))
+            RestoreReleaseOffset(forward, up);
         Notify();
     }
 
@@ -205,6 +252,21 @@ public partial class ManualPitchBehaviour
         _calHand = hand;
         _calPosition = position;
         _calRotation = Normalized(rotation);
+        // A calibration saved before the release offset existed keeps P0 on the ReleaseAnchor.
+        _calHasRelease = false;
+        _calReleaseOffset = Vector2.zero;
+        _markerPlaced = false;
+        InvalidateDefaultCourse();
+        return true;
+    }
+
+    // The stored release offset of the restored calibration; a non-finite one is ignored.
+    public bool RestoreReleaseOffset(float forward, float up)
+    {
+        if (!_hasCalibration || !ManualPitchMath.Finite(forward) || !ManualPitchMath.Finite(up)) return false;
+        _calHasRelease = true;
+        _calReleaseOffset = new Vector2(forward, up);
+        _markerPlaced = false;
         InvalidateDefaultCourse();
         return true;
     }

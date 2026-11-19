@@ -71,8 +71,10 @@ ball. Every release (pitch or throw) returns to `Targeting` while the mode holds
 ## Calibration
 
 The calibration is taken in the player's real 4-Seam release pose. It gives the **arm slot**
-(the spin axis) and the **reference pose** (pose quality); it never gives the release point,
-which is the mound's fixed `P0` (see [Launch point and direction](#launch-point-and-direction)).
+(the spin axis), the **reference pose** (pose quality) and the **depth and height of the fixed
+release point `P0`**: the controller's position relative to the mound's `ReleaseAnchor`, toward
+the plate and up, stored once (see [Launch point and direction](#launch-point-and-direction)).
+The side of `P0` is fixed by the throwing hand, never by the calibration.
 The calibration frame is built from the **chest position** `C` (never the chest rotation), the
 horizontal direction `F` from the chest to the front edge of the plate, and world up `U`;
 `R = cross(U, F)`. For the throwing-hand controller position `H` and rotation `Q`:
@@ -82,8 +84,10 @@ r      = inverse(Qframe) * (H - C)          stored: vvbc.pitching.calib.position
 Q4Scal = inverse(Qframe) * Q                stored: vvbc.pitching.calib.rotation
 ```
 
-plus `vvbc.pitching.calib.version` (1) and `vvbc.pitching.calib.hand`. Derived values are
-recomputed.
+plus `vvbc.pitching.calib.version` (1), `vvbc.pitching.calib.hand` and the release offset
+`vvbc.pitching.calib.releaseSet` / `releaseForward` / `releaseUp` (metres from `ReleaseAnchor`).
+Derived values are recomputed. A calibration saved before the release offset existed has no
+offset: `P0` stays on `ReleaseAnchor` until the player calibrates again.
 
 Flow (panel `ManualPitchPanel` beside the mound): **Start Calibration** (only in pitcher
 mode; course locking is off meanwhile) → put the ball down and take the 4-Seam release pose
@@ -333,8 +337,9 @@ v   = D x Vraw;  spin and wake turned by D (PitchSpin.ToWorld)
 ```
 
 `P0` is computed by `ManualPitchMath.FixedReleasePoint` from the mound's `MoundCenter`, its
-`ReleaseAnchor` and its plate: the anchor's distance toward the plate and height, the centre's
-lateral position, and `releaseSideOffset` (0.7 m) to the pitcher's right for a right-hander, to
+`ReleaseAnchor` moved by the calibrated release offset (none without a calibrated release) and
+its plate: that point's distance toward the plate and height, the centre's lateral position, and
+`releaseSideOffset` (0.7 m) to the pitcher's right for a right-hander, to
 the left for a left-hander (see [manual pitch sync](manual-pitch-sync.md#fixed-release-point)).
 The solver aims from it, the release leaves from it (`ManualPitchBehaviour.releasePosition`), and
 the Ball launches, publishes and re-asserts it. The player's position, HMD, chest, controllers

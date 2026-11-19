@@ -132,6 +132,26 @@ public static class ManualPitchMath
     // distance along F and height; a right-hander releases sideOffset along +R, a left-hander
     // along -R. Nothing of the player (position, head, chest, controllers or held ball) enters.
     // Zero when the centre and the plate are vertically aligned or an input is not finite.
+    // The calibrated release relative to the release anchor: x = toward the plate along F (the
+    // horizontal direction from the mound centre to the plate), y = up. The lateral part is not
+    // kept (the release side is fixed by the hand). Zero when F is undefined or an input is not finite.
+    public static Vector2 AnchorOffset(Vector3 centre, Vector3 anchor, Vector3 plate, Vector3 point)
+    {
+        if (!FiniteVector(anchor) || !FiniteVector(point)) return Vector2.zero;
+        Vector3 forward = HorizontalDirection(centre, plate);
+        if (forward == Vector3.zero) return Vector2.zero;
+        Vector3 d = point - anchor;
+        return new Vector2(Vector3.Dot(d, forward), d.y);
+    }
+
+    // The anchor moved by a calibrated offset (AnchorOffset): forward along F and up.
+    public static Vector3 OffsetAnchor(Vector3 centre, Vector3 anchor, Vector3 plate, Vector2 offset)
+    {
+        Vector3 forward = HorizontalDirection(centre, plate);
+        if (forward == Vector3.zero || !Finite(offset.x) || !Finite(offset.y)) return anchor;
+        return anchor + forward * offset.x + Vector3.up * offset.y;
+    }
+
     public static Vector3 FixedReleasePoint(Vector3 centre, Vector3 anchor, Vector3 plate, bool leftHanded, float sideOffset)
     {
         if (!FiniteVector(centre) || !FiniteVector(anchor) || !Finite(sideOffset)) return Vector3.zero;

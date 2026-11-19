@@ -613,9 +613,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return FixedReleaseAt(centre.position, releaseAnchor.position, strikeZone.PlateTransform().position);
     }
 
+    // The calibration of the current hand moves the anchor toward the plate and in height by
+    // its recorded offset (CalibratedReleaseOffset); without one the anchor itself is used.
     public Vector3 FixedReleaseAt(Vector3 centre, Vector3 anchor, Vector3 plate)
     {
-        return ManualPitchMath.FixedReleasePoint(centre, anchor, plate, _activeHand == GloveBehaviour.HandLeft,
+        Vector3 point = CalibrationUsable() && _calHasRelease
+            ? ManualPitchMath.OffsetAnchor(centre, anchor, plate, _calReleaseOffset) : anchor;
+        return ManualPitchMath.FixedReleasePoint(centre, point, plate, _activeHand == GloveBehaviour.HandLeft,
             ManualPitchMath.Finite(releaseSideOffset) ? releaseSideOffset : 0f);
     }
 
@@ -1405,7 +1409,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (_resultPitched)
         {
             text += "  (pitch: from the fixed release point, " + (_activeHand == GloveBehaviour.HandLeft ? "left" : "right") +
-                "-handed)\n  P0  " + _resultSolverRelease.ToString("F2");
+                "-handed)\n  P0  " + _resultSolverRelease.ToString("F2") + "   depth/height: " +
+                (CalibrationUsable() && _calHasRelease ? ReleaseOffsetText(_calReleaseOffset) : "ReleaseAnchor (no calibrated release)");
             if (_resultLaunched)
                 text += "   applied " + _resultLaunchPoint.ToString("F2") + "   diff " + AbsCm((_resultLaunchPoint - _resultSolverRelease).magnitude);
             else text += "   applied -";
