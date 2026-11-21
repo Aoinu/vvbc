@@ -91,18 +91,52 @@ public partial class ManualPitchBehaviour
     private bool ReleaseForTest(Vector3 chest, Vector3 handOffset, Quaternion rotation, Vector3 armVelocity)
     {
         Vector3 hand = HandAt(chest, _calPosition) + ManualPitchMath.Rotate(TestFrame(chest), handOffset);
-        return ResolveReleaseAt(hand, rotation, hand, armVelocity, TestPlate, TestNormal, InputTrigger);
+        return CrossedReleaseAt(hand, rotation, hand, armVelocity, TestPlate, TestNormal, InputTrigger);
     }
 
     private Vector3 TowardPlate() { return Vector3.back * 20f; }
+
+    // The test release plate: centred on the right- or left-hander's P0 of the test mound.
+    private void PlateForTest()
+    {
+        SetReleasePlate(ReleasePlateMath.Build(TestP0(), TestCentre, TestPlate, releasePlateWidth, releasePlateHeight));
+    }
+
+    // An actual crossing of the current hold at `offset` on the plate (right, up) with this arm
+    // velocity and controller rotation, as the per-frame plate check records it.
+    private void CrossForTest(Vector2 offset, Vector3 armVelocity, Quaternion rotation)
+    {
+        PlateForTest();
+        _crossed = true;
+        _crossSession = _releaseHandSession;
+        _crossFrame = _releaseFrame;
+        _crossOffset = offset;
+        _crossPoint = _plate.centre + _plate.right * offset.x + Vector3.up * offset.y;
+        _crossArm = FieldingMath.GivenArmMotion(armVelocity);
+        _crossRotation = rotation;
+        _autoPending = true;
+    }
+
+    // A release after a centre crossing made with the same arm velocity and rotation.
+    private bool CrossedReleaseAt(Vector3 hand, Quaternion rotation, Vector3 ball, Vector3 armVelocity,
+        Vector3 planePoint, Vector3 planeNormal, int input)
+    {
+        CrossForTest(Vector2.zero, armVelocity, rotation);
+        return ResolveReleaseAt(hand, rotation, ball, armVelocity, planePoint, planeNormal, input);
+    }
+
+    private bool CrossedCurveReleaseAt(Vector3 hand, Quaternion rotation, Vector3 ball, Vector3 armVelocity,
+        Vector3 planePoint, Vector3 planeNormal, int input, float curveOutput)
+    {
+        CrossForTest(Vector2.zero, armVelocity, rotation);
+        return ResolveReleaseWithCurveOutputAt(hand, rotation, ball, armVelocity, planePoint, planeNormal, input, curveOutput);
+    }
 
     // The earlier tuning (before the zero defaults for real-client verification): tests of the
     // penalty mechanics set it, so they show the penalties still work once configured.
     private void EarlierPenaltiesForTest()
     {
         spinLossAtBadPose = 0.5f;
-        gyroAtBadPose = 0.5f;
-        axisTransferGain = 0.5f;
         wakeLossAtBadPose = 1f;
     }
 
@@ -187,9 +221,9 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(CalibrateForTest(Overhand));
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Vector3 hand = new Vector3(float.NaN, 1f, 17f);
-        Assert.IsFalse(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputGrip));
+        Assert.IsFalse(CrossedReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputGrip));
         Assert.AreEqual("invalid tracking", debugReason);
-        Assert.IsFalse(ResolveReleaseAt(HandAt(TestChest, Overhand), new Quaternion(0f, 0f, 0f, 0f), hand, TowardPlate(), TestPlate,
+        Assert.IsFalse(CrossedReleaseAt(HandAt(TestChest, Overhand), new Quaternion(0f, 0f, 0f, 0f), hand, TowardPlate(), TestPlate,
             TestNormal, InputGrip));
         Assert.AreEqual("invalid tracking", debugReason);
         state = StateTargeting;
@@ -212,40 +246,78 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandLeft, Overhand, good));
     }
 
-    // ---- 4-Seam axis ----
+    // ---- 4-Seam axis (fixed per hand) ----
 
-    private Vector3 MagnusOf(Vector3 relative)
+    // World Magnus force of the 4-Seam of a hand thrown at the plate (-Z).
+    private static Vector3 MagnusOfHand(bool leftHanded)
     {
-        // World Magnus force of the ideal 4-Seam thrown at the plate (-Z).
         Vector3 direction = Vector3.back;
-        Vector3 spin = PitchSpin.ToWorld(ManualPitchMath.FourSeamSpin(ManualPitchMath.FourSeamAxis(relative), 2500f, 2800f, 0f, 0.5f, 0.5f), direction);
+        Vector3 spin = PitchSpin.ToWorld(ManualPitchMath.FourSeamSpin(ManualPitchMath.FixedFourSeamAxis(leftHanded), 2500f, 2800f, 0f, 0.5f), direction);
         return BallAerodynamics.Acceleration(direction * 38f, spin, 0f, 0.00063f);
     }
 
     [TsukimiTest]
-    public void OverhandSidearmAndUnderhandBreakUpArmSideAndDown()
+    public void TheFourSeamAxisIsFixedPerHand()
     {
-        Vector3 over = MagnusOf(Overhand);
-        Vector3 side = MagnusOf(new Vector3(0.6f, 0f, 0.2f));
-        Vector3 under = MagnusOf(new Vector3(0.3f, -0.5f, 0.3f));
-        Assert.IsTrue(over.y > 3f && over.x < 0f, "overhand: lift (and some arm-side run, world -X)");
-        Assert.IsTrue(side.y * side.y < 0.0001f && side.x < -3f, "sidearm: toward the arm side (world -X)");
-        Assert.IsTrue(under.y < -3f, "underhand: drop");
-        Vector3 overSpin = ManualPitchMath.FourSeamAxis(Overhand);
-        Assert.IsTrue(overSpin.x < -0.8f, "overhand axis is mostly backspin (-x)");
+        Vector3 right = ManualPitchMath.FixedFourSeamAxis(false);
+        Vector3 left = ManualPitchMath.FixedFourSeamAxis(true);
+        Assert.IsTrue(Vector3.Distance(right, new Vector3(-0.8660254f, 0.5f, 0f)) < 0.000001f, "right-hander " + right);
+        Assert.IsTrue(Vector3.Distance(left, new Vector3(-0.8660254f, -0.5f, 0f)) < 0.000001f, "left-hander " + left);
+        Assert.IsTrue(Mathf.Abs(right.magnitude - 1f) < 0.00001f);
+        // Lift with arm-side run: a right-hander's arm side is the pitcher's right (world -X
+        // here), a left-hander's the pitcher's left (+X); both rise the same.
+        Vector3 r = MagnusOfHand(false);
+        Vector3 l = MagnusOfHand(true);
+        Assert.IsTrue(r.y > 3f && r.x < -1f, "right-hander: rise and run to the arm side " + r);
+        Assert.IsTrue(l.y > 3f && l.x > 1f, "left-hander: rise and run to the arm side " + l);
+        Assert.IsTrue(Mathf.Abs(r.x + l.x) < 0.0001f && Mathf.Abs(r.y - l.y) < 0.0001f, "mirror images");
+        Assert.IsTrue(Vector3.Distance(ManualPitchMath.WakeDirection(90f, 1f), -ManualPitchMath.WakeDirection(90f, -1f)) < 0.0001f);
+    }
+
+    // Overhand, sidearm and underhand calibrations and releases, any controller rotation: the
+    // released spin is the fixed axis of the hand, the solver's spin too.
+    [TsukimiTest]
+    public void NoFormOrPoseChangesTheAxis()
+    {
+        Mimic.Join();
+        Vector3[] forms = { Overhand, new Vector3(0.6f, 0f, 0.2f), new Vector3(0.3f, -0.5f, 0.3f) };
+        int[] hands = { GloveBehaviour.HandRight, GloveBehaviour.HandLeft };
+        for (int h = 0; h < hands.Length; h++)
+        {
+            for (int f = 0; f < forms.Length; f++)
+            {
+                ActiveForTest(hands[h]);
+                Vector3 form = hands[h] == GloveBehaviour.HandLeft ? new Vector3(-forms[f].x, forms[f].y, forms[f].z) : forms[f];
+                Assert.IsTrue(CalibrateForTest(form), "form " + f);
+                EarlierPenaltiesForTest();
+                Vector3 expected = ManualPitchMath.FixedFourSeamAxis(hands[h] == GloveBehaviour.HandLeft);
+                Assert.IsTrue(Vector3.Distance(IdealSpinLocal().normalized, expected) < 0.00001f, "the solver's axis " + h + "/" + f);
+                Quaternion[] poses = { IdealHand(TestChest), ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 70f)) };
+                for (int p = 0; p < poses.Length; p++)
+                {
+                    LockForTest(new Vector3(0.2f, 0.75f, 0f));
+                    Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, poses[p], TowardPlate()), debugReason);
+                    Assert.IsTrue(Vector3.Distance(debugSpinAxis, expected) < 0.00001f, "released axis " + h + "/" + f + "/" + p + ": " + debugSpinAxis);
+                    Assert.IsTrue(Vector3.Distance(releaseSpin.normalized, PitchSpin.ToWorld(expected, releaseVelocity).normalized) < 0.00001f,
+                        "world spin along the launch direction's frame");
+                }
+            }
+        }
     }
 
     [TsukimiTest]
-    public void LeftAndRightHandersMirror()
+    public void ZeroSpinGivesNoNaNOrJump()
     {
-        Vector3[] forms = { Overhand, new Vector3(0.6f, 0f, 0.2f), new Vector3(0.3f, -0.5f, 0.3f) };
-        for (int i = 0; i < forms.Length; i++)
-        {
-            Vector3 right = MagnusOf(forms[i]);
-            Vector3 left = MagnusOf(new Vector3(-forms[i].x, forms[i].y, forms[i].z));
-            Assert.IsTrue(Mathf.Abs(right.x + left.x) < 0.0001f && Mathf.Abs(right.y - left.y) < 0.0001f, "form " + i);
-        }
-        Assert.IsTrue(Vector3.Distance(ManualPitchMath.WakeDirection(90f, 1f), -ManualPitchMath.WakeDirection(90f, -1f)) < 0.0001f);
+        Vector3 axis = ManualPitchMath.FixedFourSeamAxis(false);
+        Assert.AreEqual(Vector3.zero, ManualPitchMath.FourSeamSpin(axis, 0f, 2800f, 0.5f, 0.5f));
+        Vector3 tiny = ManualPitchMath.FourSeamSpin(axis, 0.001f, 2800f, 0f, 0.5f);
+        Assert.IsTrue(ManualPitchMath.FiniteVector(tiny) && tiny.magnitude < 0.001f);
+        Assert.IsTrue(ManualPitchMath.FiniteVector(ManualPitchMath.FourSeamSpin(axis, float.NaN, 2800f, float.NaN, 0.5f)));
+        Assert.AreEqual(Vector3.zero, ManualPitchMath.FourSeamSpin(Vector3.zero, 2500f, 2800f, 0f, 0.5f));
+        Vector3 capped = ManualPitchMath.FourSeamSpin(axis, 5000f, 2800f, 0f, 0.5f);
+        Assert.IsTrue(Mathf.Abs(capped.magnitude * 60f / (2f * Mathf.PI) - 2800f) < 0.5f, "capped at the maximum");
+        Vector3 lost = ManualPitchMath.FourSeamSpin(axis, 2500f, 2800f, 1f, 0.5f);
+        Assert.IsTrue(Vector3.Distance(lost.normalized, axis) < 0.00001f, "a failed pose lowers the rpm, never the axis");
     }
 
     // ---- Pose quality ----
@@ -279,20 +351,6 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(Mathf.Abs(debugSpinRpm - 1250f) < 1f);
         Assert.AreEqual(0f, debugWake, "the wake is lost with the pose");
         Assert.AreEqual(BallAerodynamics.WakeNone, releaseWakeMode);
-    }
-
-    [TsukimiTest]
-    public void ZeroSpinGivesNoNaNOrJump()
-    {
-        Vector3 axis = ManualPitchMath.FourSeamAxis(Overhand);
-        Assert.AreEqual(Vector3.zero, ManualPitchMath.FourSeamSpin(axis, 0f, 2800f, 0.5f, 0.5f, 0.5f));
-        Vector3 tiny = ManualPitchMath.FourSeamSpin(axis, 0.001f, 2800f, 0f, 0.5f, 0.5f);
-        Assert.IsTrue(ManualPitchMath.FiniteVector(tiny) && tiny.magnitude < 0.001f);
-        Assert.IsTrue(ManualPitchMath.FiniteVector(ManualPitchMath.FourSeamSpin(axis, float.NaN, 2800f, float.NaN, 0.5f, 0.5f)));
-        Assert.IsTrue(Vector3.Distance(ManualPitchMath.FourSeamAxis(Vector3.zero), Vector3.left) < 0.0001f, "no slot reads as overhand");
-        Assert.IsTrue(Vector3.Distance(ManualPitchMath.TransferAxis(axis, new Quaternion(float.NaN, 0f, 0f, 1f), 0.5f), axis) < 0.0001f);
-        Vector3 capped = ManualPitchMath.FourSeamSpin(axis, 5000f, 2800f, 0f, 0.5f, 0.5f);
-        Assert.IsTrue(Mathf.Abs(capped.magnitude * 60f / (2f * Mathf.PI) - 2800f) < 0.5f, "capped at the maximum");
     }
 
     // ---- Course ----
@@ -476,11 +534,11 @@ public partial class ManualPitchBehaviour
 
     // ---- Recognition (throwing controller) ----
 
-    // Recognition reads the throwing controller's speed and direction (with the calibration,
-    // the course and valid tracking). Neither the release position nor the pose refuses a
-    // pitch; the position error is still measured.
+    // Recognition reads the release plate and the throwing controller's speed (with the
+    // calibration, the course and valid tracking). Neither the release position, the arm's
+    // direction (sidearm and underhand swings) nor the pose refuses a crossed pitch.
     [TsukimiTest]
-    public void RecognitionNeedsArmSpeedAndDirectionButNotPositionOrPose()
+    public void RecognitionNeedsTheCrossingAndArmSpeedButNotDirectionPositionOrPose()
     {
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
@@ -498,11 +556,16 @@ public partial class ManualPitchBehaviour
         Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, ideal, Vector3.back * 0.5f));
         Assert.AreEqual("arm speed", debugReason);
         LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, ideal, Vector3.left * 20f));
-        Assert.AreEqual("arm direction", debugReason);
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ideal, Vector3.left * 20f), "a sideways arm: " + debugReason);
+        Assert.IsTrue(debugDirectionError > 80f, "measured and shown only: " + debugDirectionError);
         LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsFalse(ReleaseForTest(TestChest, new Vector3(1.5f, 0f, 0f), ideal, Vector3.left * 20f), "far and sideways");
-        Assert.AreEqual("arm direction", debugReason);
+        Assert.IsTrue(ReleaseForTest(TestChest, new Vector3(1.5f, 0f, 0f), ideal, Vector3.up * 20f), "far and upward (underhand)");
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        // Without a crossing (and no plate ahead) the same release is a throw.
+        PlateForTest();
+        ClearCrossing();
+        Assert.IsFalse(ResolveReleaseAt(HandAt(TestChest, Overhand), ideal, HandAt(TestChest, Overhand), TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.IsTrue(debugReason.StartsWith("plate: "), debugReason);
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(Vector3.right, 80f)), TowardPlate()), "a bad pose is still a pitch");
         Assert.AreEqual(0f, debugPoseQuality);
@@ -510,10 +573,20 @@ public partial class ManualPitchBehaviour
 
     // Feeds the controller samples of a straight motion of `speed` m/s along `direction`
     // ending at `end` at endTime, 0.02 s apart (the release samples `end` itself).
+    // The release plate is placed halfway along the last segment (before `end`), so a motion
+    // toward the batter crosses it at the release and one along the plate does not.
     private void ControllerMotionForTest(Vector3 end, Vector3 direction, float speed, float endTime)
     {
         ResetArmSamples();
-        for (int i = 4; i >= 1; i--) SampleArmAt(endTime - i * 0.02f, end - direction.normalized * (speed * i * 0.02f));
+        Vector3 d = direction.normalized;
+        SetReleasePlate(ReleasePlateMath.Build(end - d * (speed * 0.01f), TestCentre, TestPlate, releasePlateWidth, releasePlateHeight));
+        for (int i = 4; i >= 1; i--)
+        {
+            Vector3 p = end - d * (speed * i * 0.02f);
+            SampleArmAt(endTime - i * 0.02f, p);
+            TrackPlateAt(endTime - i * 0.02f, FrameAt(endTime - i * 0.02f), p, Quaternion.identity, _releaseHandSession);
+        }
+        _releaseFrame = FrameAt(endTime);
     }
 
     // The arm velocity is the throwing controller's own, from its samples: a ball centre that
@@ -561,8 +634,9 @@ public partial class ManualPitchBehaviour
         return (int)(time * 50f + 0.5f);
     }
 
-    // Right- and left-handers: the motion toward the target is a pitch with the controller's
-    // speed, read in the pitching frame as forward; a sideways motion is a throw.
+    // Right- and left-handers: the motion toward the target crosses the plate and is a pitch
+    // with the controller's speed, read in the pitching frame as forward; a motion along the
+    // plate never crosses it and is a throw.
     [TsukimiTest]
     public void BothHandsReadTheControllerMotionTheSameWay()
     {
@@ -588,7 +662,7 @@ public partial class ManualPitchBehaviour
             LockForTest(target);
             ControllerMotionForTest(hand, armSide, 5f, 20f + h);
             Assert.IsFalse(ResolveTrackedReleaseAt(20f + h, hand, IdealHand(TestChest), hand, TestPlate, TestNormal, InputTrigger));
-            Assert.AreEqual("arm direction", debugReason);
+            Assert.IsTrue(debugReason.StartsWith("plate: "), debugReason);
             Assert.IsTrue(_releaseArmVelocity.x * ArmSide() > 4.8f, "arm side in the pitching frame " + h + ": " + _releaseArmVelocity);
         }
     }
@@ -623,7 +697,7 @@ public partial class ManualPitchBehaviour
         Vector3 hand = HandAt(TestChest, Overhand);
         Quaternion turned = ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(Vector3.right, 40f));
         Vector3 ball = hand + ManualPitchMath.Rotate(turned, new Vector3(0f, 0.02f, 0.09f));
-        Assert.IsTrue(ResolveReleaseAt(hand, turned, ball, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.IsTrue(CrossedReleaseAt(hand, turned, ball, TowardPlate(), TestPlate, TestNormal, InputTrigger));
         Assert.AreEqual(_lockRelease, releasePosition);
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, _lockDirection) < 0.000001f, "the ball centre never turns it");
         Assert.IsTrue(_releaseBallOffset.magnitude > 0.05f, "the ball centre is still shown: " + _releaseBallOffset);
@@ -670,7 +744,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
         Assert.AreNotEqual(Vector3.zero, releasePosition);
         LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), Vector3.left * 20f));
+        Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), Vector3.back * 0.5f), "too slow");
         Assert.AreEqual(Vector3.zero, releasePosition, "no earlier pitch point is left behind");
         Assert.AreEqual(Vector3.zero, releaseVelocity);
         Vector3 ballCentre = new Vector3(-0.3f, 1.7f, 17.5f);
@@ -748,7 +822,7 @@ public partial class ManualPitchBehaviour
         {
             Assert.IsTrue(SolveLock(targets[t]), "solved " + t);
             Vector3 hand = HandAt(TestChest, Overhand);
-            Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+            Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
             Assert.AreEqual(BallAerodynamics.WakeFixed, releaseWakeMode, "the 4-Seam has its wake");
             Vector3 crossing = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
             Assert.IsTrue(Vector3.Distance(crossing, LockedTarget()) <= aimSolver.tolerance + 0.005f, "target " + t);
@@ -782,7 +856,7 @@ public partial class ManualPitchBehaviour
             Vector3 hand = HandAt(chests[i], Overhand) + ManualPitchMath.Rotate(TestFrame(chests[i]), offsets[i]);
             // The ball centre where the grip puts it for that wrist.
             Vector3 ball = hand + ManualPitchMath.Rotate(poses[i], new Vector3(0f, 0.02f, 0.09f));
-            Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, poses[i], ball, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio), "release " + i);
+            Assert.IsTrue(CrossedCurveReleaseAt(hand, poses[i], ball, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio), "release " + i);
             Assert.AreEqual(_lockRelease, releasePosition, "release " + i);
             Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, _lockSolverSpeedKmh, 0.001f), "solver speed " + i);
             Vector3 crossing = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
@@ -796,7 +870,7 @@ public partial class ManualPitchBehaviour
     [TsukimiTest]
     public void IdleUpdateOutsideTheMoundCost()
     {
-        Update();
+        PostLateUpdate();
     }
 
     // The successful recall (and its publication) is tested on the Ball; the runner cannot run
@@ -1166,12 +1240,9 @@ public partial class ManualPitchBehaviour
         Assert.AreEqual(0f, armDirectionPenaltyPerDegree);
         Assert.AreEqual(0.7f, releaseSideOffset);
         Assert.AreEqual(0f, spinLossAtBadPose);
-        Assert.AreEqual(0f, gyroAtBadPose);
-        Assert.AreEqual(0f, axisTransferGain);
         Assert.AreEqual(0f, wakeLossAtBadPose);
         Assert.IsFalse(diagnosticIdealSpin, "the diagnostic stays off");
         Assert.AreEqual(1f, minArmSpeed);
-        Assert.AreEqual(60f, maxDirectionErrorDegrees);
     }
 
     // With the zero defaults a bad pose is still measured (quality, pose error) but leaves the
@@ -1193,7 +1264,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
         Assert.IsTrue(debugPoseQuality < 0.7f, "quality still measured: " + debugPoseQuality);
         Assert.IsTrue(debugPoseAngle > 30f, "pose error still measured: " + debugPoseAngle);
-        Assert.IsTrue(Vector3.Distance(idealSpin, releaseSpin) < 0.001f, "no spin loss, gyro or axis change");
+        Assert.IsTrue(Vector3.Distance(idealSpin, releaseSpin) < 0.001f, "no spin loss or axis change");
         Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude * 60f / (2f * Mathf.PI) - 2500f) < 0.5f, "2500 rpm");
         Assert.AreEqual(idealWake, releaseWakeCoefficient, "no SSW loss");
         Assert.IsTrue(Vector3.Distance(idealWakeDirection, releaseWakeDirection) < 0.00001f);
@@ -1203,7 +1274,7 @@ public partial class ManualPitchBehaviour
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
         Assert.IsTrue(releaseSpin.magnitude < idealSpin.magnitude - 1f, "spin loss returns");
-        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) > 1f, "axis change and gyro return");
+        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) < 0.01f, "the 4-Seam axis stays fixed");
         Assert.IsTrue(releaseWakeCoefficient < idealWake, "SSW loss returns");
     }
 
@@ -1229,20 +1300,6 @@ public partial class ManualPitchBehaviour
         Assert.AreEqual(idealWake, releaseWakeCoefficient);
         spinLossAtBadPose = 0f;
 
-        gyroAtBadPose = 0.5f;
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
-        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) > 1f, "gyro turns the axis");
-        Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude - idealSpin.magnitude) < 0.01f, "same rpm");
-        gyroAtBadPose = 0f;
-
-        axisTransferGain = 0.5f;
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
-        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) > 1f, "the pose turns the axis");
-        Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude - idealSpin.magnitude) < 0.01f, "same rpm");
-        axisTransferGain = 0f;
-
         wakeLossAtBadPose = 1f;
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
@@ -1264,15 +1321,15 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
         Vector3 hand = HandAt(TestChest, Overhand);
         Quaternion bad = ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Vector3 ideal = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         state = StateLockedReady;
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Assert.IsTrue(debugPoseQuality < 0.7f);
         Vector3 posed = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         diagnosticIdealSpin = true;
         state = StateLockedReady;
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Assert.AreEqual(1f, debugPoseQuality);
         Vector3 diagnosed = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Assert.IsTrue(Vector3.Distance(diagnosed, ideal) < 0.001f, "the pose no longer moves the pitch");
@@ -1294,7 +1351,7 @@ public partial class ManualPitchBehaviour
             wakeClockDegrees = clocks[c];
             Assert.IsTrue(SolveLock(new Vector3(0.2f, 0.8f, 0f)), "solved " + c);
             Vector3 hand = HandAt(TestChest, Overhand);
-            Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+            Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
             Assert.IsTrue(releaseWakeDirection.y > 0.8f, "mostly upward " + c);
             Vector3 crossing = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
             Assert.IsTrue(Vector3.Distance(crossing, LockedTarget()) <= aimSolver.tolerance + 0.005f, "clock " + clocks[c]);
@@ -1306,7 +1363,7 @@ public partial class ManualPitchBehaviour
     private bool CurveReleaseForTest(Vector3 handOffset, Quaternion rotation, Vector3 armVelocity, float curveOutput)
     {
         Vector3 hand = HandAt(TestChest, _calPosition) + ManualPitchMath.Rotate(TestFrame(TestChest), handOffset);
-        return ResolveReleaseWithCurveOutputAt(hand, rotation, hand, armVelocity, TestPlate, TestNormal, InputTrigger, curveOutput);
+        return CrossedCurveReleaseAt(hand, rotation, hand, armVelocity, TestPlate, TestNormal, InputTrigger, curveOutput);
     }
 
     private bool Near(float a, float b, float tolerance) { return Mathf.Abs(a - b) <= tolerance; }
@@ -1429,7 +1486,7 @@ public partial class ManualPitchBehaviour
         Vector3 lockDirection = _lockDirection;
         int iterations = aimSolver.iterations;
         Vector3 hand = HandAt(TestChest, Overhand);
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 0.5f));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 0.5f));
         Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 45f, 0.01f), "the release reads the maximum at the release");
         Assert.IsFalse(aimSolver.solving, "the release does not solve again");
         Assert.AreEqual(iterations, aimSolver.iterations);
@@ -1451,7 +1508,7 @@ public partial class ManualPitchBehaviour
         diagnosticIdealSpin = true;
         Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
         Vector3 hand = HandAt(TestChest, Overhand);
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Vector3 matched = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Vector3 direction = releaseVelocity.normalized;
         Assert.IsTrue(Vector3.Distance(matched, debugPredictedTarget) < 0.001f, "the flight follows the solver's prediction: " + Vector3.Distance(matched, debugPredictedTarget));
@@ -1460,13 +1517,13 @@ public partial class ManualPitchBehaviour
             "the same initial state flies the same way (as a receiver's catch-up does)");
 
         state = StateLockedReady;
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 1f));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 1f));
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, direction) < 0.000001f, "faster: same direction");
         Vector3 fast = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Assert.IsTrue(fast.y > matched.y + 0.02f, "faster arrives higher: " + (fast.y - matched.y));
 
         state = StateLockedReady;
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 95f / 140f));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 95f / 140f));
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, direction) < 0.000001f, "slower: same direction");
         Vector3 slow = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Assert.IsTrue(slow.y < matched.y - 0.3f, "a 95 km/h pitch drops well below the course: " + (slow.y - matched.y));
@@ -1501,7 +1558,7 @@ public partial class ManualPitchBehaviour
 
         // A throw after a pitch shows none of the pitch's speed model.
         LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsFalse(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.left * 20f, 1f));
+        Assert.IsFalse(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.back * 0.5f, 1f));
         text = ReleaseDetailText();
         Assert.IsTrue(text.Contains("SPEED  not a pitch") && !text.Contains("delta") && !text.Contains("solver 135.8"), text);
     }
@@ -1689,7 +1746,7 @@ public partial class ManualPitchBehaviour
         {
             _lockRelease = p0;
             state = StateLockedReady;
-            Assert.IsTrue(ResolveReleaseWithCurveOutputAt(hands[i], IdealHand(TestChest), hands[i] + Vector3.up * 0.1f, TowardPlate(),
+            Assert.IsTrue(CrossedCurveReleaseAt(hands[i], IdealHand(TestChest), hands[i] + Vector3.up * 0.1f, TowardPlate(),
                 TestPlate, TestNormal, InputTrigger, solverSpeedRatio), "hand " + i + ": " + debugReason);
             Assert.AreEqual(p0, releasePosition, "hand " + i);
             Assert.AreEqual(p0, _resultSolverRelease, "the solver's point " + i);
@@ -1739,7 +1796,7 @@ public partial class ManualPitchBehaviour
         _lockConverged = true;
         state = StateLockedReady;
         Vector3 elsewhere = HandAt(TestChest + new Vector3(0.8f, 0.3f, -0.6f), Overhand);
-        Assert.IsTrue(ResolveReleaseWithCurveOutputAt(elsewhere, IdealHand(TestChest), elsewhere, TowardPlate(), TestPlate, TestNormal,
+        Assert.IsTrue(CrossedCurveReleaseAt(elsewhere, IdealHand(TestChest), elsewhere, TowardPlate(), TestPlate, TestNormal,
             InputTrigger, solverSpeedRatio), debugReason);
         Assert.AreEqual(p0, releasePosition);
         Assert.AreEqual(p0, TestP0(), "nothing of the release moves it");

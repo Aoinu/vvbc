@@ -2,7 +2,8 @@ using UnityEngine;
 using VRC.SDK3.Persistence;
 using VRC.SDKBase;
 
-// The 4-Seam release calibration: the throwing controller's position relative to the chest
+// The 4-Seam release calibration (pose quality and the depth and height of P0; the 4-Seam spin
+// axis is fixed by the hand, not calibrated): the throwing controller's position relative to the chest
 // and its rotation, both in the pitching frame (chest position, horizontal direction to the
 // plate, world up), and the controller's release point relative to the mound's ReleaseAnchor
 // (toward the plate and up), which sets the depth and height of the fixed release point P0.
@@ -64,6 +65,9 @@ public partial class ManualPitchBehaviour
             return;
         }
         Unlock();
+        // No crossing or auto release survives into calibration, and the plate is hidden.
+        ClearCrossing();
+        ClearReleaseFeedback();
         _calibrating = true;
         _draftHasPosition = false;
         _draftHasRotation = false;
@@ -142,10 +146,12 @@ public partial class ManualPitchBehaviour
         Vector3 slot = ManualPitchMath.ArmSlot(_draftPosition);
         float slotAngle = Mathf.Atan2(slot.y, Mathf.Abs(slot.x)) * Mathf.Rad2Deg;
         string form = slotAngle >= 45f ? "overhand" : slotAngle >= -20f ? "sidearm" : "underhand";
-        Vector3 axis = ManualPitchMath.FourSeamAxis(_draftPosition);
+        // The 4-Seam axis is fixed by the throwing hand; the slot is shown for the form only.
+        bool left = _activeHand == GloveBehaviour.HandLeft;
+        Vector3 axis = ManualPitchMath.FixedFourSeamAxis(left);
         Vector3 magnus = Vector3.Cross(axis, Vector3.forward);
         return "Release " + _draftPosition.ToString("F2") + "  slot " + slotAngle.ToString("F0") + " deg (" + form + ")" +
-            "\nSpin axis " + axis.ToString("F2") + "  break dir " + magnus.ToString("F2") +
+            "\nSpin axis " + axis.ToString("F2") + " (fixed, " + (left ? "11-5" : "1-7") + " o'clock)  break dir " + magnus.ToString("F2") +
             (_draftHasRelease ? "\nRelease point: " + ReleaseOffsetText(_draftReleaseOffset) : "\nRelease point: ReleaseAnchor") +
             (_draftHasRotation ? "" : "\nRotation not recorded yet.");
     }

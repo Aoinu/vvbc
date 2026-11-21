@@ -54,6 +54,41 @@ public partial class BallBehaviour
         Assert.AreEqual(2, releaseCount);
     }
 
+    // The mound's auto release goes through the same gate: once per hold, never for an old
+    // hold, and the Drop it causes or a late Use up of that hold launches nothing more.
+    [TsukimiTest]
+    public void TheAutoReleaseUsesTheSingleGateOfItsHold()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        Assert.IsNotNull(manualPitcher, "the runner wires the mound of this folder");
+        HoldInHandForTest(me);
+        releaseCount = 0;
+        int session = HandSession();
+        Assert.IsFalse(AutoReleaseHand(session - 1), "a reservation of an earlier hold");
+        Assert.AreEqual(0, releaseCount);
+        Assert.IsTrue(AutoReleaseHand(session));
+        Assert.AreEqual(1, releaseCount);
+        OnDrop();
+        OnPickupUseDown();
+        OnPickupUseUp();
+        Assert.IsFalse(AutoReleaseHand(session), "never twice");
+        Assert.AreEqual(1, releaseCount, "the auto release's Drop and a later Use up launch nothing");
+        // A manual release first: the auto release that comes after finds the gate closed.
+        HoldInHandForTest(me);
+        OnPickupUseDown();
+        OnPickupUseUp();
+        Assert.IsFalse(AutoReleaseHand(HandSession()));
+        Assert.AreEqual(2, releaseCount);
+        // Not in the hand any more (lost ownership, recalled to the glove): nothing.
+        HoldInHandForTest(me);
+        EnterHold(HoldGlove, me.playerId, Vector3.zero);
+        Assert.IsFalse(AutoReleaseHand(HandSession()));
+        Assert.AreEqual(2, releaseCount);
+        manualPitcher = null;
+        HoldInHandForTest(me);
+        Assert.IsFalse(AutoReleaseHand(HandSession()), "without a mound in pitcher mode");
+    }
+
     [TsukimiTest]
     public void UseUpWithoutUseDownOrWithoutAHandHoldDoesNothing()
     {

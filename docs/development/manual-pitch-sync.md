@@ -64,6 +64,14 @@ At the pitcher's release the Ball publishes a HandPitch with (bytes by type):
 | `_wakeMode`, `_hitStrengthOrWakeCoefficient`, `_wakeDirection`, `_wakeConeAngle`, `_wakePhase` | SSW (25) |
 | `_batterOrHolderId`, `_hold` | unused by a HandPitch (5) |
 
+The velocity and spin are the **final** ones: the release plate, the control score, the timing
+cap, the random control error (drawn only on the pitcher's client, from the control settings
+read at the release) and the fixed 4-Seam axis are all applied before the snapshot. No crossing
+point, score, random number or hand trail is published, and receivers never recognize, score,
+draw, penalize or re-aim a pitch: they fly the received state. The control settings themselves
+are shared by their own Manual-sync object (`ManualPitchControlSettingsBehaviour`), never by the
+Ball ([manual pitching](manual-pitching.md#control-settings)).
+
 All 16 synced fields of the Ball total 91 bytes by type size (was 18 / 99). No array, no
 Quaternion; the one double is the release time. The snapshot is one atomic Manual-sync
 serialization of the Ball, like every other Ball state; nothing was split into extra objects.

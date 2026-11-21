@@ -1,9 +1,9 @@
 # Manual pitching (Phase 1: 4-Seam)
 
 A VR player standing on a mound pitches a 4-Seam Fastball with a real throwing motion. The
-throwing controller's motion decides whether a release is a pitch and how fast it is, its 3D
-pose decides quality, the calibrated form decides the spin axis, and the HMD forward picks the
-course. Every pitch leaves from the mound's fixed release point `P0`, the point the solver
+throwing controller passing the **release plate** decides whether a release is a pitch and
+where on the plate gives the control score, its speed decides how fast, its 3D pose decides
+quality, the throwing hand fixes the spin axis, and the HMD forward picks the course. Every pitch leaves from the mound's fixed release point `P0`, the point the solver
 aimed from, never from the held ball or the player's body. Phase 1 has
 only the 4-Seam: no other types, pitch builder, abilities, form switching or type-switching UI.
 
@@ -11,11 +11,13 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 
 | Code | Responsibility |
 |---|---|
-| `Ball/ManualPitchMath.cs` | Pure math: pitching frame, the fixed release point `P0` (`FixedReleasePoint`), arm slot and 4-Seam axis, pose failure, axis transfer, spin, arm direction, control, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
-| `Ball/ManualPitchBehaviour.cs` | Mound component (local, no sync of its own; see [manual pitch sync](manual-pitch-sync.md)): mound trigger, pitcher-mode state, fixed release point, throwing-controller sampling, cursor, glove-hand lock, solver, release resolution, debug. |
+| `Ball/ManualPitchMath.cs` | Pure math: pitching frame, the fixed release point `P0` (`FixedReleasePoint`), arm slot (form display), the fixed 4-Seam axis, pose failure, spin, arm direction, control direction, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
+| `Ball/ReleasePlateMath.cs` | Pure math of the release plate: plate frame, segment crossing, early-release prediction, position score, binary timing cap, maximum and random control error. |
+| `Ball/ManualPitchBehaviour.cs` | Mound component (local, no sync of its own; see [manual pitch sync](manual-pitch-sync.md)): mound trigger, pitcher-mode state, fixed release point and release plate, throwing-controller sampling and crossing, auto release, cursor, glove-hand lock, solver, release resolution, control, feedback, debug. |
+| `Ball/ManualPitchControlSettingsBehaviour.cs` | The mound's control balance (penalty strength, early cap, maximum error), Manual-synced on its own object, with its three panel sliders. |
 | `Ball/ManualPitchBehaviour.Calibration.cs` | Calibration draft, commit, PlayerData persistence. |
 | `Ball/ManualPitchPanelBehaviour.cs` | World-space panel: buttons and status text only. |
-| `Ball/BallBehaviour.Fielding.cs` | Single release gate (Pickup Use / Drop), pitch-or-throw branch, launch (a pitch from the mound's `releasePosition`, `P0`), release re-assertion. |
+| `Ball/BallBehaviour.Fielding.cs` | Single release gate (Pickup Use / Drop / the mound's auto release, `AutoReleaseHand`), pitch-or-throw branch, launch (a pitch from the mound's `releasePosition`, `P0`), release re-assertion. |
 | `Ball/BallBehaviour.Network.cs` | `HandPitch` snapshot kind. |
 | `Ball/Fielding/FieldingMath.cs` | `SampleMotion` / `EstimateArmMotion`: the arm sampler (no speed rejection, gap restart; weighted speed and direction of the newest three segments) shared by ThrowAim (throws) and the mound (pitches), both from the throwing controller. |
 
@@ -32,7 +34,8 @@ re-evaluated over the network. Nothing is published before the release
 
 ```text
 OnPickupUseUp (after Use down) --+
-OnDrop --------------------------+--> TryReleaseBall (once per hand hold)
+OnDrop --------------------------+
+mound auto release (AutoReleaseHand, plate crossed + N frames) --+--> TryReleaseBall (once per hand hold)
                                         |
                                         v
                        manualPitcher.ResolveRelease(...)
@@ -70,9 +73,9 @@ ball. Every release (pitch or throw) returns to `Targeting` while the mode holds
 
 ## Calibration
 
-The calibration is taken in the player's real 4-Seam release pose. It gives the **arm slot**
-(the spin axis), the **reference pose** (pose quality) and the **depth and height of the fixed
-release point `P0`**: the controller's position relative to the mound's `ReleaseAnchor`, toward
+The calibration is taken in the player's real 4-Seam release pose. It gives the **reference
+pose** (pose quality), the **arm slot** (shown as the form only) and the **depth and height of
+the fixed release point `P0`** (and so of the release plate centred on it): the controller's position relative to the mound's `ReleaseAnchor`, toward
 the plate and up, stored once (see [Launch point and direction](#launch-point-and-direction)).
 The side of `P0` is fixed by the throwing hand, never by the calibration.
 The calibration frame is built from the **chest position** `C` (never the chest rotation), the
@@ -110,8 +113,10 @@ texts were removed. A release straight in front of the chest has no arm slot and
 overhand.
 
 **Marker while calibrating.** `Feedback/IdealMarker` follows the throwing controller every
-frame while calibrating (local only, whatever `showReleaseFeedback`), in one colour. Otherwise
-it marks the fixed release point `P0` of the current throwing hand.
+frame while calibrating (local only, whatever `showReleaseFeedback`), in one colour; the release
+plate is hidden meanwhile. Outside calibration the marker is hidden and the release plate
+marks `P0` (see [Release plate](#release-plate)). Starting calibration forgets any crossing and
+its auto release, and a release while calibrating is a throw (`calibrating`).
 
 **Stored data.** The PlayerData format is unchanged (version 1, same keys); no migration is
 needed. Every stored calibration with a valid hand, a finite position and a finite unit
@@ -122,47 +127,40 @@ glove's throwing hand makes it unusable instead of mirroring it.
 
 ## 4-Seam spin and wake
 
-Arm slot `A` = `r` projected onto the plane perpendicular to `F`, normalized (a release
-straight in front reads as overhand). In frame coordinates (x arm-side for a right-hander,
-y up, z toward the plate):
+The 4-Seam spin axis is **fixed per throwing hand**, in pitch-local coordinates (x the
+pitcher's right, y up, z toward the plate; `ManualPitchMath.FixedFourSeamAxis`):
 
 ```text
-axis4S = cross(F, A) = (-Ay, Ax, 0)
+right-hander  axis = (-0.8660254, +0.5, 0)     spin direction 1-7 o'clock (pitcher's view)
+left-hander   axis = (-0.8660254, -0.5, 0)     spin direction 11-5 o'clock
 ```
 
-Overhand gives backspin (lift), sidearm a vertical axis (arm-side run), underhand topspin
-(drop); a left-hander is the mirror image (tested for all three). Frame coordinates are used
-directly as `PitchSpin` pitch-local coordinates, so the solver, the release and the flight
-all turn them by the launch direction the same way. The calibrated axis is fixed after
-calibration; the arm position of a single pitch never creates another normal form.
+Overhand, sidearm and underhand forms, the release position, the arm angle and the controller
+pose never change it (`NoFormOrPoseChangesTheAxis`); the solver (`IdealSpinLocal`) and the
+release use the same `FourSeamAxis()`, turned by the launch direction with `PitchSpin.ToWorld`.
+Difference from the earlier specification (changed on purpose): the axis was `cross(F, A)` of
+the calibrated arm slot `A` and was turned by `axisTransferGain` x the pose error and by
+`gyroAtBadPose`; both coefficients were removed. The calibration preview and the panel show
+the fixed axis.
 
 Pose quality uses the whole 3D rotation error `angle = Angle(Q, Qframe * Q4Scal)`:
 
 ```text
 t = clamp01((angle - goodPoseAngle) / (badPoseAngle - goodPoseAngle))   12 / 50 deg
 h = t^2 (3 - 2t)                                                          failure
-axis   = axis4S turned by axisTransferGain x the pose error (frame coordinates)
 rpm    = min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800) x (1 - spinLossAtBadPose x h)
-spin   = normalize(axis x (1 - g) + F x g) x rpm,   g = gyroAtBadPose x h
+spin   = axis x rpm                                    the fixed axis, never turned
 wake   = Fixed, wakeCoefficient 0.006 x (1 - wakeLossAtBadPose x h),
          direction at wakeClockDegrees 90 (arm side, mirrored for a left-hander)
 ```
 
-**Current defaults: no pose penalty.** For real-client verification `axisTransferGain`,
-`spinLossAtBadPose`, `gyroAtBadPose` and `wakeLossAtBadPose` default to **0** (source,
-`ManualPitchMound.prefab` and the PracticeSpace mound), so every recognized pitch keeps the
-calibrated 2500 rpm, axis and SSW whatever the pose. This is a provisional balance setting,
-not the removal of the penalty: the pose error and quality are still computed and shown, the
-formulas above are unchanged, and setting the earlier tuning (0.5, 0.5, 0.5, 1) on the mound
-brings the pose-made changes back (`ABadPoseIsMeasuredButChangesNothingUntilPenaltiesAreSet`,
-`EachPoseCoefficientActsAlone`). A low quality with no change in the ball is therefore expected
-at these settings. `diagnosticIdealSpin` stays off; it differs from the zero coefficients in also
-reporting quality 1. The text below describes the mechanics with the earlier tuning.
-
-A bad pose moves spin into gyro and lowers rpm and wake continuously; it never flips the
-axis to another form and never divides by the spin (0 rpm is the zero vector). Pose never
-decides recognition. The wake uses the shared model of [Ball flight model](ball-flight-model.md):
-its component along the velocity is removed, so a wake can never add net thrust.
+`spinLossAtBadPose` and `wakeLossAtBadPose` default to **0** (no pose penalty, a provisional
+balance setting); the pose error and quality are still computed and shown, and setting the
+earlier tuning (0.5, 1) brings the rpm and SSW losses back (`EachPoseCoefficientActsAlone`).
+`diagnosticIdealSpin` stays off; it differs from the zero coefficients in also reporting quality
+1. Pose never decides recognition and never divides by the spin (0 rpm is the zero vector). The
+wake uses the shared model of [Ball flight model](ball-flight-model.md): its component along
+the velocity is removed, so a wake can never add net thrust.
 
 ## Course
 
@@ -264,75 +262,138 @@ Recognition, release speed, the trajectory and the form read the **throwing cont
 (VRChat tracking data of the glove's `throwHand`), never the ball's Transform or rotation; the
 ball's Transform is still used for holding, launching, flight, collision and sync. ThrowAim
 reads the same controller for throws (see [Fielding: release](fielding-system.md#release)).
-Difference from the earlier specification (changed on purpose): ThrowAim sampled the held ball.
 
-In pitcher mode the mound samples, every frame in `Update` and once more at the release with the
-tracking read there (`ResolveTrackedReleaseAt`), the controller position with its time. The
-ring holds 32 samples. `FieldingMath.SampleMotion` never discards a sample for its
-speed; it ignores non-finite and older samples, replaces the newest at the same time, and starts
-again after a gap longer than `armSampleMaxGapSeconds` (0.1 s), so an old motion is never joined
-to a new one. The ring is cleared after every release, when pitcher mode starts and when the
-throwing hand changes (`SwitchThrowingHand`). Difference from the earlier specification (changed
-on purpose): a sample faster than `maxTrackingSpeed` (40 m/s) was discarded and the velocity was
-the 0.08 s window average; a real fast arm was then read slow or still.
+In pitcher mode the mound samples the controller position with its time every frame in
+`PostLateUpdate` (after VRChat has updated the tracking for the frame), and once more at the
+release with the tracking read there (`ResolveTrackedReleaseAt`). The ring holds 32 samples.
+`FieldingMath.SampleMotion` never discards a sample for its speed; it ignores non-finite and
+older samples, replaces the newest at the same time, and starts again after a gap longer than
+`armSampleMaxGapSeconds` (0.1 s). The ring is cleared after every release, when pitcher mode
+starts and when the throwing hand changes (`SwitchThrowingHand`).
 
 **Arm speed and direction** (`FieldingMath.EstimateArmMotion`), from the newest four samples
 (three segments, fewer when fewer exist), with the real sample times:
 
 ```text
 v_i     = (p_i - p_{i-1}) / (t_i - t_{i-1})
-v_arm   = sum(w_i |v_i|) / sum(w_i)            speed: recognition and the speed curve
-d_arm   = normalize(sum(w_i v_i))              direction: recognition and form
+v_arm   = sum(w_i |v_i|) / sum(w_i)            speed: the speed curve
+d_arm   = normalize(sum(w_i v_i))              velocity: the early-release prediction
 w       = 1, 2, 3 from the oldest segment to the newest (provisional)
 ```
 
-Averaging the vectors before taking the length would read a turning arm as slower, so it is used
-only for the direction. Fewer than two samples is **not measured** (`segments == 0`, the release
-is a throw with reason `arm not measured`), which is different from a measured 0 m/s. A wrist
-turn moves the ball centre but not the controller (`TheArmVelocityIsTheThrowingControllersOwn`).
+Fewer than two samples is **not measured** (`segments == 0`, a throw with reason `arm not
+measured`), which is different from a measured 0 m/s. A wrist turn moves the ball centre but
+not the controller (`TheArmVelocityIsTheThrowingControllersOwn`).
 
-### Control
+### Release plate
 
-Neither the release position nor the release timing is a control penalty any more: the
-trajectory evaluation (closest pass, early prediction, grace frames), `controlGainX/Y` and the
-early/late penalties were removed with the fixed release point (phase 1). The only control
-penalty left is the arm direction, a crossing offset kept as before:
+The fixed release point is a **plate**, not a point (`ReleasePlateMath`):
 
 ```text
-direction  = n x armDirectionPenaltyPerDegree x angle(d_arm, T - P0)
-             n = the (right, up) direction from the ideal direction to the arm's
+centre  = P0 of the throwing hand          the pitch always leaves from P0 itself
+normal  = F, the horizontal direction from MoundCenter to the plate
+right   = cross(up, F),  up = world up     a vertical plane, perpendicular to the plate direction
+size    = releasePlateWidth x releasePlateHeight   0.50 x 0.50 m (Inspector)
 ```
 
-Its coefficient defaults to **0**, so the direction is `D0` bit for bit
-(`ManualPitchMath.Contribution`). The controller rotation is not a control penalty: it only
-scores the pose (below). The pitching frame of a release is the yaw toward the plate (against
-the plate's front-edge normal); the player's position and chest are not read at the release.
+It is placed when pitcher mode starts, the throwing hand changes or a calibration is saved or
+restored (never per frame), and has no collider: drawing (`Feedback/ReleasePlate`: a
+semi-transparent board and a centre reticle, `PitchReticle.png`) and the test are separate.
+
+**Crossing.** Each `PostLateUpdate` sample is checked against the previous one
+(`TrackPlateAt`): the segment must go from the pitcher's side (strictly) to the batter's side
+(the plane included) and meet the plane inside the rectangle (edges included), so a fast arm
+that passes the plate between two frames is found and interpolated. A backward move, a segment
+outside the rectangle, a sample after a gap longer than `armSampleMaxGapSeconds`, two samples of
+different holds, and any sample while the throwing hand does not hold the mound's ball (or while
+calibrating) never count. Only the **first** valid crossing of a hand hold (`BallBehaviour`'s
+`_handSession`) is recorded, with its frame, the arm motion just sampled and the controller
+rotation; the release reads those, so the follow-through after the plate never slows the pitch.
+The release's own tracking read is checked too, so a crossing in the release frame counts.
+
+**Auto release.** `autoReleaseFrames` (6) frames after the crossing frame the mound calls
+`BallBehaviour.AutoReleaseHand(session)` once. It goes through the single release gate with
+input `Auto`; a session other than the current hold, a hold already released, a ball no longer
+in the hand or no registered mound do nothing. The auto release drops the pickup with the
+Drop suppressed, and any later Use up or Drop of that hold finds the gate closed, so each hold
+launches at most once. Every release, a hand change, calibration and the end of pitcher mode
+clear the crossing and its reservation. **Same-frame rule:** release events (Use up, Drop) run
+before `PostLateUpdate`, so a manual release in the frame the auto release is due reaches the
+gate first and is a manual (Ideal) pitch; an auto release that fired first wins over any later
+manual event (`AManualReleaseOnTheAutoFrameWinsAndCancelsTheAutoRelease`,
+`TheAutoReleaseUsesTheSingleGateOfItsHold`).
 
 ### Recognition
 
 All needed; otherwise the existing throw (including pickoffs) from the ball centre:
 
 1. a usable calibration and a course: the `LockedReady` lock, or else the solved
-   [default course](#default-course-no-course-locked);
+   [default course](#default-course-no-course-locked); not calibrating;
 2. a finite controller position, a valid controller rotation and a finite arm velocity;
-3. a measured arm motion and arm speed `v_arm >= minArmSpeed` (1 m/s);
-4. angle between `d_arm` and the direction from the course's release point `P0` to its target
-   `T` `<= maxDirectionErrorDegrees` (60).
+3. a measured arm motion and arm speed `v_arm >= minArmSpeed` (1 m/s) (the crossing's motion
+   for a crossed hold);
+4. the plate: an **actual crossing** of this hold (a manual release after it is **Ideal**, the
+   auto release **Auto**), or, for a release before the plate, a **predicted crossing**
+   (**Early**): from the hand at the release straight along its current velocity, the path
+   meets the plate inside the rectangle within `maxPredictionDistance` (0.30 m, measured along
+   the path, not the normal). A hand already past the plane, moving away, moving along the
+   plate (|cos| < 0.01), farther than 0.30 m or meeting the plane outside is a throw
+   (`plate: <reason>`). The prediction is decided at the release from the samples it has; it
+   never waits for later tracking.
 
-The **release position is not a condition**: however far the controller is from the
-calibrated release, that alone never turns a pitch into a throw (tested up to 2 m on every
-axis), and it is no longer measured. Pose never decides recognition either.
+The arm's direction against the course is measured and shown but **never refuses a pitch**:
+sidearm and underhand swings pitch like overhand ones. Difference from the earlier
+specification (changed on purpose): a pitch needed the angle between `d_arm` and the course
+`<= maxDirectionErrorDegrees` (60); that field and condition were removed, and no plate
+crossing (with no prediction) was needed. The release position still never moves `P0`.
 
-Difference from the earlier specification (changed on purpose): a pitch also needed the
-controller inside the ellipsoid `(dx/0.60)^2 + (dy/0.55)^2 + (dz/0.80)^2 <= 1` around the
-calibrated release (`recognitionRadii`, shown by `showRecognitionRange`), and the arm velocity
-was the held ball's (ThrowAim's samples). Both were removed with the ellipsoid display.
+### Control
+
+The plate crossing (actual or predicted) gives the control score (`ReleasePlateMath`):
+
+```text
+positionScore = 100 x (1 - clamp01(|offset| / halfDiagonal))     linear, provisional
+timingCap     = earlyTimingCap (60) for Early, else 100            binary, never graded
+score         = min(positionScore, timingCap)
+maxError      = maxErrorAtScore0 (0.40 m) x (1 - score / 100)      linear, provisional
+limit         = maxError x strength (0..1, default 0)
+distance      = limit x |u1 + u2 + u3 + u4 - 2| / 2               four uniforms: a bell near 0
+angle         = 2 pi u0                                           uniform, independent of the offset
+error (right, up) = distance x (cos angle, sin angle)             at the plate's front edge
+direction     = ControlDirection(D0, error + armDirectionPenalty, distance to the plane)
+```
+
+The offset's sign never matters, the drawn distance never exceeds the limit and is most often
+near zero, so a low score can still hit the target. At strength 0 no uniform is drawn and the
+pitch leaves along `D0` (the arm-direction penalty, default 0, is unchanged). The five uniforms
+are drawn only on the pitcher's client, once per release; the error turns only the launch
+direction (no new solve): `P0`, speed, spin, axis and SSW are untouched. The drawn error is an
+aimed offset at the front-edge plane; the measured arrival (below) is shown separately. The
+three settings come from the mound's `ManualPitchControlSettingsBehaviour` (synced; see
+[Control settings](#control-settings)), read once at the release, so a change never reaches a
+pitch in flight; without one the mound's Inspector fallbacks are used.
+
+### Control settings
+
+`Panel/ControlSettings` (`ManualPitchControlSettingsBehaviour`, Manual sync, its own object; the
+Ball's pitch sync is unchanged) holds three synced floats with sliders and value labels:
+
+| Slider | Range, step | Default |
+|---|---|---|
+| Control penalty (strength) | 0-100 %, 5 % | 0 % |
+| Early release cap | 0-100, 5 | 60 |
+| Max error at score 0 | 0-100 cm, 1 cm | 40 cm (provisional) |
+
+An edit takes Ownership, snaps and clamps the values and requests a serialization; others and
+late joiners receive the owner's values in `OnDeserialization` (clamped again). Shown values
+are set with `SetValueWithoutNotify`, so they never call back. Plate size, auto-release frames
+and prediction distance stay Inspector settings of the mound.
 
 ### Launch point and direction
 
 ```text
 P   = P0                                  the mound's fixed release point of the throwing hand
-D   = D0                                  the solved direction (arm-direction penalty 0)
+D   = ControlDirection(D0, control error) D0 itself at strength 0
 v   = D x Vraw;  spin and wake turned by D (PitchSpin.ToWorld)
 ```
 
@@ -342,15 +403,8 @@ its plate: that point's distance toward the plate and height, the centre's later
 `releaseSideOffset` (0.7 m) to the pitcher's right for a right-hander, to
 the left for a left-hander (see [manual pitch sync](manual-pitch-sync.md#fixed-release-point)).
 The solver aims from it, the release leaves from it (`ManualPitchBehaviour.releasePosition`), and
-the Ball launches, publishes and re-asserts it. The player's position, HMD, chest, controllers
-and held ball never move it (`TheSolverAndThePitchShareTheFixedReleasePoint`,
-`TheFixedReleasePointDependsOnlyOnTheMoundAndTheHand`). A throw keeps launching from the ball
-centre.
-
-Difference from the earlier specification (changed on purpose, phase 1): `P0` was the
-calibrated controller release placed at the chest at the lock (`C + Qframe r + Qideal grip`),
-so it depended on the avatar, the stance and the grip, and receivers could see the ball appear
-elsewhere than the pitcher did.
+the Ball launches, publishes and re-asserts it. The player's position, HMD, chest, controllers,
+the plate crossing and the held ball never move it. A throw keeps launching from the ball centre.
 
 ### Release speed
 
@@ -362,8 +416,8 @@ Vraw    = maxPitchSpeedKmh x Clamp01(armSpeedCurve(|v_arm|))      km/h, 140 by d
 Vsolver = maxPitchSpeedKmh x Clamp01(solverSpeedRatio)            km/h, at the lock, 0.97 by default
 ```
 
-`|v_arm|` is the same controller velocity that recognition tested, so recognition and speed never
-read different samples. `minArmSpeed` stays the only speed condition of recognition: a slow pitch
+`|v_arm|` is the same controller motion that recognition tested (the crossing's for a crossed
+hold, the release's for an early one), so recognition and speed never read different samples. `minArmSpeed` stays the only speed condition of recognition: a slow pitch
 is still a pitch, only slower. Pose and release position never change the speed.
 
 `armSpeedCurve` (x arm speed in m/s, y normalized speed) is edited in the Inspector. Before it is
@@ -414,34 +468,45 @@ crossing measurement (`ArrivalStep` interpolates between frames).
 aimed with, whatever the pose, so that (1) the solver's own error, (2) the speed difference and
 (3) the pose-made ball change can be separated. The SSW at 90 deg (arm side) or at 0 deg (up) is
 aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`). The default stays 90 deg:
-which wake a VR release gives is not modelled, and the spin axis still comes from the calibrated
-arm slot (the calibrated rotation only scores the pose); a different axis model is an open design
-question.
+which wake a VR release gives is not modelled; the spin axis is the fixed 4-Seam axis of the
+hand (the calibrated rotation only scores the pose). With the control penalty strength above 0
+the drawn control error also separates the flight from the solver's crossing, by design.
 
 ## Release feedback
 
-With `showReleaseFeedback` (on by default), local to the pitcher. `Feedback/IdealMarker` (a
-plain sphere, `MT_ManualPitchMarker`, `idealMarkerColor`, `idealMarkerDiameter` 0.09, no
-collider) marks the fixed release point `P0` of the current throwing hand; it is placed when
-pitcher mode starts, the hand changes or calibration ends, never per frame. Nothing is synced.
-The release markers (ideal, actual, error line) were removed with the release-position error.
+With `showReleaseFeedback` (on by default), local to the pitcher, nothing synced, no colliders,
+nothing created per frame:
+
+- `Feedback/ReleasePlate` (board scaled to the plate size, `MT_ReleasePlate`, and a centre
+  `Reticle`, `MT_PitchReticle`) on `P0`, hidden while calibrating and outside pitcher mode.
+- `Feedback/CrossingMarker` (sphere, `crossingMarkerDiameter` 0.01 m): the actual crossing in
+  `actualCrossingColor` (green) or the predicted one in `predictedCrossingColor` (orange).
+- `Feedback/HandTrail` (LineRenderer, world space): the controller samples of the last
+  `handTrailSeconds` (0.2 s, at most 32) before the release, from the existing ring.
+- `Feedback/PredictionLine` (LineRenderer): for an early release, the extrapolated stretch from
+  the hand to the predicted crossing.
+
+They are set when the release is decided and kept after the pitch; the next hand hold, the
+end of pitcher mode and calibration clear them. Scene instances find these children by name.
 
 Each release takes a **result snapshot** that later lock, cursor, setting or ball changes never
-rewrite: locked target, solver prediction and error, plate plane, SSW clock, diagnostic flag,
-the speed model, `P0` and the launched point and speed. `ClearResult` forgets the previous
-release's outputs first. The Ball reports the point and velocity it launches, pitch or throw
-(`RecordLaunch(position, velocity)`); the speed shown is `|v| x 3.6` km/h.
+rewrite. `ClearResult` forgets the previous release's outputs first. The Ball reports the point
+and velocity it launches, pitch or throw (`RecordLaunch(position, velocity)`).
 
-The panel's `Result` text (summary): pitch or throw with the reason, release speed, and the
-**course miss**: where the pitch crossed the front-edge plane (`ArrivalStep`) against the
-snapshotted target, total / right / up in the pitcher's view. The mound follows a pitched ball in
-its `Update` only until that crossing; a hold or catch, a hit, a ground touch (`FlightGrounded`),
-another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving the mound ends it as
-**not measured** with that reason, never as 0 cm. The `Detail` text (analysis): `ARM` (input,
-segment speeds, weighted speed and direction), `FORM` (arm-direction and controller-rotation
-errors, quality), `CONTROL` (the arm-direction penalty and the rotation's quality penalty),
-`LAUNCH` (`P0` with the hand, the applied point and their distance, the ball centre's offset
-from `P0`), `SPEED`, spin and SSW, and the aim (target, solver crossing, actual crossing).
+The panel's `Result` text (summary): `PITCH` / `AUTO PITCH` / `THROW` with the crossing kind and
+timing or the reason, the control score (position, cap), release speed, and the **course
+miss** where the pitch crossed the front-edge plane (`ArrivalStep`) against the snapshotted
+target. The mound follows a pitched ball in its loop only until that crossing; a hold or catch,
+a hit, a ground touch, another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving
+the mound ends it as **not measured** with that reason. The `Detail` text (analysis): `ARM`,
+`FORM` (arm-direction error, shown only, and controller-rotation error, quality), `PLATE`
+(Actual / Predicted / None or the miss reason, crossing right/up and distance from the centre in
+cm, frames from the crossing to the release with the auto frame, or the predicted path against
+its maximum, position score, cap, final score), `CONTROL` (arm-direction penalty, pose losses
+with the fixed axis, strength, the error limit at this score and after the strength, the drawn
+distance, angle and right/up components, labelled as an aimed offset, and the launch direction),
+`LAUNCH`, `SPEED`, spin and SSW (rpm, fixed axis, SSW), and the aim (target, solver crossing,
+actual crossing and its error).
 
 ## Recalling the ball
 
@@ -503,11 +568,16 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 ├── Cursor (inactive until used)
 │   └── Reticle (Quad, MT_ThrowAimReticle)
 ├── Feedback (no colliders)
-│   └── IdealMarker (fixed release point; follows the controller while calibrating)
+│   ├── IdealMarker (calibration preview: follows the controller while calibrating)
+│   ├── ReleasePlate (Board: MT_ReleasePlate quad; Reticle: MT_PitchReticle quad)
+│   ├── CrossingMarker (0.01 m sphere)
+│   ├── HandTrail (LineRenderer)
+│   └── PredictionLine (LineRenderer)
 ├── Panel (world-space Canvas, VRC_UiShape, ManualPitchPanelBehaviour)
 │   ├── Title, Status (Text), Result (Text, summary), Detail (Text, analysis; detailLabel)
 │   ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
-│   └── Buttons: Start Calibration, Cancel, Ball → Glove
+│   ├── Buttons: Start Calibration, Cancel, Ball → Glove
+│   └── ControlSettings (ManualPitchControlSettingsBehaviour; three sliders with labels)
 ├── MoundCenter (local origin; the lateral origin of P0)
 └── ReleaseAnchor (local 0, 1.8, 1.5: distance toward the plate and height of P0)
 ```
@@ -522,16 +592,18 @@ tune the release; its X is ignored. Several mounds may target different plates.
 `Bullpen.unity` has three. Stop that lane's batting pitcher before pitching by hand (see
 [Batting pitcher](#batting-pitcher)). The instances override the mound's Udon variables, and a
 prefab instance stores them as one table, so references added to the prefab later do not reach
-it by themselves: `moundCenter` and `releaseAnchor` are therefore also found by child name at
-`Start`. Value fields not in an instance table take the program's defaults (`releaseSideOffset`
+it by themselves: `moundCenter`, `releaseAnchor`, the feedback objects (`Feedback/ReleasePlate`,
+`CrossingMarker`, `HandTrail`, `PredictionLine`) and the child `ManualPitchControlSettingsBehaviour`
+are therefore also found at `Start`. Value fields not in an instance table take the program's defaults (`releaseSideOffset`
 0.7). `armSpeedCurve` has no program default and is set in the prefab's table **and** in every
 instance's table.
 
 ## Debug
 
 `diagnosticIdealSpin` is described under [Release](#release). `showDebug` (off by default) writes, after every release, `PitcherMode`, `PitchState`,
-release input (Trigger/Grip), recognition and reason, the control offset, controller speed and
-direction error, the launch point (the fixed `P0`, or the ball centre for a throw), curve output, maximum, solver and release speed, pose error and quality, spin rpm and axis, SSW, solver error and
+release input (Trigger/Grip/Auto), recognition and reason, the plate (kind, timing, offset,
+frames, predicted path), the score, strength, error limit and drawn error, the control offset and
+launch direction, controller speed and direction error (shown only), the launch point (the fixed `P0`, or the ball centre for a throw), curve output, maximum, solver and release speed, pose error and quality, spin rpm and axis, SSW, solver error and
 predicted target to `debugLabel` for `debugSeconds` (6) and to the log. With it off nothing
 is shown or logged.
 

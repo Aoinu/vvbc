@@ -531,6 +531,22 @@ public partial class BallBehaviour
         ReleaseThrow(input);
     }
 
+    // The current hand hold (incremented when the ball is taken into the hand). The mound ties
+    // its release-plate crossing and its auto release to it.
+    public int HandSession() { return _handSession; }
+
+    // The mound's auto release after a release-plate crossing: the same single release gate as
+    // Use up and Drop, so it launches at most once per hold. A session other than the current
+    // hold (a stale reservation after a new hold, a lost ownership or the end of pitcher mode)
+    // or a hold already released does nothing. The pickup Drop it causes is suppressed, and a
+    // later Use up or Drop of the same hold finds the gate closed.
+    public bool AutoReleaseHand(int session)
+    {
+        if (manualPitcher == null || session != _handSession || _releasedHandSession == _handSession) return false;
+        TryReleaseBall(ManualPitchBehaviour.InputAuto);
+        return _releasedHandSession == session;
+    }
+
     public void SetManualPitcher(ManualPitchBehaviour pitcher)
     {
         manualPitcher = pitcher;

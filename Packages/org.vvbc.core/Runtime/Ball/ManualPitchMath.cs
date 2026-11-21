@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Pure math of the manual 4-Seam pitch: the pitching frame (a yaw toward the home plate), the
-// mound's fixed release point, the calibrated release, the 4-Seam axis from the arm slot, pose
+// mound's fixed release point, the calibrated release, the fixed 4-Seam axis, pose
 // quality, the arm direction check, control and the HMD course cursor.
 //
 // Frame coordinates are (x right, y up, z toward the plate), the same convention as PitchSpin,
@@ -173,12 +173,16 @@ public static class ManualPitchMath
         return a.normalized;
     }
 
-    // axis4S = cross(F, A) with F = frame z: (-Ay, Ax, 0). Overhand gives -x (backspin, lift),
-    // sidearm the vertical axis (arm-side force), underhand +x (topspin, drop). Unit length.
-    public static Vector3 FourSeamAxis(Vector3 relative)
+    // The fixed 4-Seam spin axis in pitch-local coordinates (x pitcher's right, y up, z toward
+    // the plate): a right-hander's 1-7 o'clock and a left-hander's 11-5 o'clock spin direction
+    // as the pitcher sees it. It never follows the arm slot, the release position, the arm
+    // angle or the controller pose; the solver and the release both use it. Unit length.
+    public const float FourSeamAxisX = -0.8660254f;
+    public const float FourSeamAxisY = 0.5f;
+
+    public static Vector3 FixedFourSeamAxis(bool leftHanded)
     {
-        Vector3 a = ArmSlot(relative);
-        return new Vector3(-a.y, a.x, 0f);
+        return new Vector3(FourSeamAxisX, leftHanded ? -FourSeamAxisY : FourSeamAxisY, 0f);
     }
 
     // 0 at or below goodAngle, 1 at or above badAngle, smoothstep in between.
@@ -190,42 +194,16 @@ public static class ManualPitchMath
         return t * t * (3f - 2f * t);
     }
 
-    // Rotation from the ideal to the actual controller pose, in frame coordinates.
-    public static Quaternion PoseDelta(Quaternion frame, Quaternion actualWorld, Quaternion idealRelative)
-    {
-        return Multiply(Multiply(Inverse(frame), actualWorld), Inverse(idealRelative));
-    }
-
-    // The calibrated axis turned by gain x the pose error (gain 0: unchanged, 1: the full error).
-    // The partial rotation is gain x the delta's angle about the delta's own axis (the slerp
-    // from identity), applied with Rodrigues' formula.
-    public static Vector3 TransferAxis(Vector3 axis, Quaternion delta, float gain)
-    {
-        if (!ValidRotation(delta)) return axis;
-        float w = delta.w;
-        Vector3 v = new Vector3(delta.x, delta.y, delta.z);
-        if (w < 0f) { w = -w; v = -v; }
-        float sinHalf = v.magnitude;
-        if (sinHalf < 0.000001f) return axis;
-        Vector3 k = v / sinHalf;
-        Vector3 turned = RotateAbout(axis, k, 2f * Mathf.Atan2(sinHalf, w) * Mathf.Clamp01(gain));
-        if (!FiniteVector(turned) || turned.sqrMagnitude < 0.000001f) return axis;
-        return turned.normalized;
-    }
-
-    // Pitch-local spin in rad/s. Pose failure h lowers the rpm by spinLoss and moves up to
-    // gyroAtBad of the axis into gyro spin (along +z), which carries no Magnus force. No
-    // division by the spin, so 0 rpm gives the zero vector.
-    public static Vector3 FourSeamSpin(Vector3 axis, float rpm, float maxRpm, float failure,
-        float spinLoss, float gyroAtBad)
+    // Pitch-local spin in rad/s along the (fixed) axis. Pose failure h lowers the rpm by
+    // spinLoss; it never turns the axis (no gyro, no axis transfer). No division by the spin,
+    // so 0 rpm gives the zero vector.
+    public static Vector3 FourSeamSpin(Vector3 axis, float rpm, float maxRpm, float failure, float spinLoss)
     {
         float h = Mathf.Clamp01(Finite(failure) ? failure : 1f);
         float baseRpm = Mathf.Clamp(Finite(rpm) ? rpm : 0f, 0f, Mathf.Max(0f, maxRpm));
         float actualRpm = baseRpm * (1f - Mathf.Clamp01(spinLoss) * h);
-        float gyro = Mathf.Clamp01(gyroAtBad) * h;
-        Vector3 direction = axis * (1f - gyro) + Vector3.forward * gyro;
-        if (direction.sqrMagnitude < 0.000001f) direction = axis;
-        return direction.normalized * (actualRpm * 2f * Mathf.PI / 60f);
+        if (axis.sqrMagnitude < 0.000001f) return Vector3.zero;
+        return axis.normalized * (actualRpm * 2f * Mathf.PI / 60f);
     }
 
     // Pitch-local fixed wake direction at a clock angle (0 up, 90 arm side). armSide is +1 for
@@ -342,6 +320,7 @@ public static class ManualPitchMath
     {
         if (value == ManualPitchBehaviour.InputTrigger) return "Trigger";
         if (value == ManualPitchBehaviour.InputGrip) return "Grip";
+        if (value == ManualPitchBehaviour.InputAuto) return "Auto";
         return "None";
     }
 }
