@@ -300,7 +300,7 @@ size    = releasePlateWidth x releasePlateHeight   0.50 x 0.50 m (Inspector)
 
 It is placed when pitcher mode starts, the throwing hand changes or a calibration is saved or
 restored (never per frame), and has no collider: drawing (`Feedback/ReleasePlate`: a
-semi-transparent board and a centre reticle, `PitchReticle.png`) and the test are separate.
+centre reticle only, `PitchReticle.png`) and the test are separate.
 
 **Crossing.** Each `PostLateUpdate` sample is checked against the previous one
 (`TrackPlateAt`): the segment must go from the pitcher's side (strictly) to the batter's side
@@ -493,8 +493,8 @@ the drawn control error also separates the flight from the solver's crossing, by
 With `showReleaseFeedback` (on by default), local to the pitcher, nothing synced, no colliders,
 nothing created per frame:
 
-- `Feedback/ReleasePlate` (board scaled to the plate size, `MT_ReleasePlate`, and a centre
-  `Reticle`, `MT_PitchReticle`) on `P0`, hidden while calibrating and outside pitcher mode.
+- `Feedback/ReleasePlate`: only a centre `Reticle` (`MT_PitchReticle`, `PitchReticle.png`); the
+  plate's extent is not drawn on `P0`, hidden while calibrating and outside pitcher mode.
 - `Feedback/CrossingMarker` (sphere, `crossingMarkerDiameter` 0.01 m): the actual crossing in
   `actualCrossingColor` (green) or the predicted one in `predictedCrossingColor` (orange).
 - `Feedback/HandTrail` (LineRenderer, world space): the controller samples of the last
@@ -585,7 +585,7 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 │   └── Reticle (Quad, MT_ThrowAimReticle)
 ├── Feedback (no colliders)
 │   ├── IdealMarker (calibration preview: follows the controller while calibrating)
-│   ├── ReleasePlate (Board: MT_ReleasePlate quad; Reticle: MT_PitchReticle quad)
+│   ├── ReleasePlate (Reticle: MT_PitchReticle quad)
 │   ├── CrossingMarker (0.01 m sphere)
 │   ├── HandTrail (LineRenderer)
 │   └── PredictionLine (LineRenderer)

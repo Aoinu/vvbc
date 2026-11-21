@@ -136,10 +136,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float idealMarkerDiameter = 0.09f;
     [Tooltip("Calibration preview: follows the throwing controller while calibrating; hidden otherwise.")]
     public Transform idealMarker;
-    [Tooltip("Release plate display, centred on P0 and facing the plate (no collider). When empty, the child Feedback/ReleasePlate is used.")]
+    [Tooltip("Release plate display: a reticle only, on P0 and facing the plate (no board, no collider). When empty, the child Feedback/ReleasePlate is used.")]
     public Transform releasePlate;
-    [Tooltip("Board under the release plate, scaled to the plate size. When empty, the child Board of releasePlate is used.")]
-    public Transform releasePlateBoard;
     [Tooltip("Small sphere (0.01 m, no collider) on the actual or predicted crossing of the last release. When empty, the child Feedback/CrossingMarker is used.")]
     public Transform crossingMarker;
     [Tooltip("Throwing-controller path of the last release. When empty, the child Feedback/HandTrail is used.")]
@@ -389,7 +387,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private void FindFeedbackChildren()
     {
         if (releasePlate == null) releasePlate = transform.Find("Feedback/ReleasePlate");
-        if (releasePlateBoard == null && releasePlate != null) releasePlateBoard = releasePlate.Find("Board");
         if (crossingMarker == null) crossingMarker = transform.Find("Feedback/CrossingMarker");
         if (handTrail == null)
         {
@@ -483,11 +480,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     {
         bool shown = showReleaseFeedback && !_calibrating && state != StateInactive && _plate.valid;
         if (shown && releasePlate != null)
-        {
             releasePlate.SetPositionAndRotation(_plate.centre, Quaternion.LookRotation(_plate.normal, Vector3.up));
-            if (releasePlateBoard != null)
-                releasePlateBoard.localScale = new Vector3(Mathf.Max(0.01f, _plate.halfWidth * 2f), Mathf.Max(0.01f, _plate.halfHeight * 2f), 1f);
-        }
         SetActive(releasePlate, shown);
         if (!_calibrating) SetActive(idealMarker, false);
     }
