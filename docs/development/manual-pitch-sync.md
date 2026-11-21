@@ -79,9 +79,14 @@ At the pitcher's release the Ball publishes a HandPitch with (bytes by type):
 
 The velocity and spin are the **final** ones: the release plate, the control score, the timing
 cap, the random control error (a normal draw whose 1 sigma comes from the score) (drawn only on the pitcher's client, from the control settings
-read at the release) and the fixed 4-Seam axis are all applied before the snapshot. No crossing
-point, score, random number or hand trail is published, and receivers never recognize, score,
-draw, penalize or re-aim a pitch: they fly the received state. The control settings themselves
+read at the release), the pitch type, its pose and timing quality and the blend toward the
+common failure mode are all applied before the snapshot, so the velocity, spin and SSW sent
+are the type's final ones (a Knuckle's Rotating wake with the cone its quality left and the
+phase the pitcher drew; the Ball now copies the mound's `releaseWakeConeAngle` and
+`releaseWakePhase` into the snapshot, which already carried both fields). No pitch type,
+crossing point, score, palm, random number or hand trail is published, and receivers never
+recognize, score, re-evaluate a pose, blend, draw, penalize or re-aim a pitch: they fly the
+received state. No synced field was added (still 16 fields, 91 bytes by type). The control settings themselves
 are shared by their own Manual-sync object (`ManualPitchControlSettingsBehaviour`), never by the
 Ball ([manual pitching](manual-pitching.md#control-settings)).
 

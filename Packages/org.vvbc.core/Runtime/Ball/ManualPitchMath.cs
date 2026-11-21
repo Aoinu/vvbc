@@ -223,12 +223,11 @@ public static class ManualPitchMath
     // the plate): a right-hander's 1-7 o'clock and a left-hander's 11-5 o'clock spin direction
     // as the pitcher sees it. It never follows the arm slot, the release position, the arm
     // angle or the controller pose; the solver and the release both use it. Unit length.
-    public const float FourSeamAxisX = -0.8660254f;
-    public const float FourSeamAxisY = 0.5f;
-
+    // It is PitchPropertiesCalculator's 4-Seam axis, mirrored for a left-hander.
     public static Vector3 FixedFourSeamAxis(bool leftHanded)
     {
-        return new Vector3(FourSeamAxisX, leftHanded ? -FourSeamAxisY : FourSeamAxisY, 0f);
+        return new Vector3(PitchPropertiesCalculator.FourSeamAxisX,
+            leftHanded ? -PitchPropertiesCalculator.FourSeamAxisY : PitchPropertiesCalculator.FourSeamAxisY, 0f);
     }
 
     // 0 at or below goodAngle, 1 at or above badAngle, smoothstep in between.

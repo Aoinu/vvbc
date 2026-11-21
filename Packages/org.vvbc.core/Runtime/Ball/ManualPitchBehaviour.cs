@@ -5,7 +5,7 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common;
 
-// Local-only manual 4-Seam pitching from one mound toward its home plate. Nothing here is
+// Local-only manual pitching (every pitch type) from one mound toward its home plate. Nothing here is
 // synced: the releasing client decides the final flight and the Ball publishes it. The Ball
 // keeps possession, ownership, launch and network; this component only decides, at the
 // release the Ball reports, whether that release is a pitch and with which flight. Every pitch
@@ -69,8 +69,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public Color cursorColor = new Color(1f, 1f, 1f, 0.9f);
     public Color lockedCursorColor = new Color(1f, 0.85f, 0.2f, 1f);
 
-    [Header("4-Seam")]
-    [Tooltip("Highest release speed, in km/h: a pitch leaves at this times the arm-speed curve's output. Default 140.")]
+    [Header("4-Seam (the base of every type: speed, and the common failure mode's spin and SSW)")]
+    [Tooltip("Highest 4-Seam release speed, in km/h: a 4-Seam leaves at this times the arm-speed curve's output, any other type at that times its speed multiplier. Default 140.")]
     public float maxPitchSpeedKmh = 140f;
     [Tooltip("Arm speed (x, m/s, the recognition's averaged sample) to normalized release speed (y, 0..1). The output is clamped to 0..1 and held at the end keys outside them. Without keys every pitch leaves at maxPitchSpeedKmh.")]
     public AnimationCurve armSpeedCurve;
@@ -80,20 +80,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float fourSeamSpinRpm = 2500f;
     [Tooltip("Upper limit of the 4-Seam spin, in rpm. Default 2800.")]
     public float maxFourSeamSpinRpm = 2800f;
-    [Range(0f, 1f), Tooltip("Fraction of the spin lost at a fully failed pose. Default 0 (no pose penalty, for real-client verification); 0.5 was the earlier tuning.")]
-    public float spinLossAtBadPose = 0f;
     [Tooltip("Fixed seam-shifted wake coefficient, in 1/s (capped at 0.055). Default 0.006.")]
     public float wakeCoefficient = 0.006f;
     [Tooltip("Wake direction as a clock angle seen from behind the pitcher: 0 up, 90 arm side. Default 90.")]
     public float wakeClockDegrees = 90f;
-    [Range(0f, 1f), Tooltip("Fraction of the wake lost at a fully failed pose. Default 0 (no pose penalty); 1 was the earlier tuning.")]
-    public float wakeLossAtBadPose = 0f;
-
-    [Header("Pose quality")]
-    [Tooltip("Controller rotation error with full quality, in degrees. Default 12.")]
-    public float goodPoseAngle = 12f;
-    [Tooltip("Controller rotation error with no quality left, in degrees. Default 50.")]
-    public float badPoseAngle = 50f;
 
     [Header("Recognition (throwing controller)")]
     [Tooltip("Minimum throwing-controller speed, in m/s. Default 1.")]
@@ -157,7 +147,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [HideInInspector] public string releaseDetailText = "";
 
     [Header("Diagnostics (local)")]
-    [Tooltip("Diagnostics only, off for play: every pitch keeps the calibrated 4-Seam spin, axis and SSW the solver aimed with, whatever the release pose. Separates aim and release-position misses from pose-made ball changes.")]
+    [Tooltip("Diagnostics only, off for play: every pitch keeps its type's ideal spin, axis and SSW the solver aimed with (quality 1), whatever the pose and timing. Separates aim and release-position misses from quality-made ball changes.")]
     public bool diagnosticIdealSpin;
 
     [Header("Debug (local)")]
@@ -175,6 +165,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [HideInInspector] public int releaseWakeMode;
     [HideInInspector] public float releaseWakeCoefficient;
     [HideInInspector] public Vector3 releaseWakeDirection;
+    [HideInInspector] public float releaseWakeConeAngle;
+    [HideInInspector] public float releaseWakePhase;
+    // The type of the last accepted release (PitchType id).
+    [HideInInspector] public int releasePitchType;
     // The pitch number of the last accepted release (the Ball's hand hold); with the pitcher's
     // player ID it is the pitch ID the Ball puts in the HandPitch. 0 when there was none.
     [HideInInspector] public int releasePitchNumber;
@@ -187,6 +181,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [HideInInspector] public float debugDirectionError;
     [HideInInspector] public float debugPoseAngle;
     [HideInInspector] public float debugPoseQuality;
+    // Final quality of the last pitch: min(pose quality, timing cap), 1 with the diagnostic.
+    [HideInInspector] public float debugQuality;
     [HideInInspector] public float debugSpinRpm;
     [HideInInspector] public Vector3 debugSpinAxis;
     [HideInInspector] public float debugWake;
@@ -223,7 +219,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // Changes whenever a lock starts or ends, so an undo never restores a lock something else ended.
     private int _lockEpoch;
     private Vector3 _triggerChest, _triggerPlate;
-    private Quaternion _triggerHandRotation = Quaternion.identity;
     private bool _inMound;
     private bool _vr;
     private GloveBehaviour _glove;
@@ -300,20 +295,28 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private MaterialPropertyBlock _cursorBlock;
 
     // Snapshot taken when the course is locked; _lockRelease is the fixed release point P0.
-    private Vector3 _lockTarget, _lockRelease, _lockDirection;
-    private Vector3 _lockSpinLocal, _lockWakeLocal;
-    // The single speed the solver aims with (maxPitchSpeedKmh x solverSpeedRatio at the lock), in km/h.
+    private Vector3 _lockTarget, _lockRelease, _lockDirection, _lockPlaneNormal;
+    // The type the lock was solved for, its build, speed multiplier and ideal flight (pitch-local).
+    private int _lockType;
+    private PitchBuild _lockBuild;
+    private float _lockSpeedMultiplier = 1f;
+    private PitchProperties _lockIdeal;
+    // The single speed the solver aims with (maxPitchSpeedKmh x solverSpeedRatio x the type's
+    // multiplier at the lock), in km/h.
     private float _lockSolverSpeedKmh;
     private bool _lockConverged;
-    private float _lockWakeClock;
     // Default course (the strike zone's centre), used by a release with no locked course
     // (Targeting or Solving). Solved in the background with the same solver while no lock is
     // being solved, and solved again when the centre moves, the calibration or throwing hand
     // changes, or pitcher mode starts. It aims from the same fixed release point as a lock.
     private const float DefaultCourseCheckSeconds = 0.25f;
     private const float DefaultCourseMoveMeters = 0.01f;
-    private Vector3 _defaultTarget, _defaultRelease, _defaultDirection, _defaultWakeLocal, _defaultPredicted;
-    private float _defaultSolverSpeedKmh, _defaultSolverError = -1f, _defaultWakeClock;
+    private Vector3 _defaultTarget, _defaultRelease, _defaultDirection, _defaultPredicted;
+    private float _defaultSolverSpeedKmh, _defaultSolverError = -1f;
+    private int _defaultType;
+    private PitchBuild _defaultBuild;
+    private float _defaultSpeedMultiplier = 1f;
+    private PitchProperties _defaultIdeal;
     private bool _defaultReady, _defaultSolving, _defaultConverged;
     private bool _defaultDirty = true;
     private float _nextDefaultCheck;
@@ -331,8 +334,12 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // The arm-direction penalty as a crossing offset (right, up, metres) and its coefficient.
     private Vector2 _penaltyDirection;
     private float _resultDirectionK;
-    // Spin and SSW the pose (controller rotation) changed, against the calibrated ones.
-    private float _resultIdealRpm;
+    // The released type, its build, the course's ideal flight, the quality and the final flight.
+    private int _resultType;
+    private PitchBuild _resultBuild;
+    private PitchProperties _resultIdeal, _resultFinal;
+    private PitchQuality _resultQuality;
+    private float _resultSpeedMultiplier = 1f;
     // The held ball's centre offset from the release point P0 (pitching frame) at the release;
     // shown only, never used to recognize or launch.
     private Vector3 _releaseBallOffset;
@@ -354,7 +361,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private float _resultMaxSpeedKmh = -1f;
     private float _resultSolverSpeedKmh = -1f;
     private bool _resultConverged;
-    private float _resultWakeClock;
     private bool _resultIdealSpin;
     private bool _trackingArrival;
     private bool _arrivalHasPrevious;
@@ -376,6 +382,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (moundCenter == null) moundCenter = transform;
         if (releaseAnchor == null) releaseAnchor = transform.Find("ReleaseAnchor");
         FindFeedbackChildren();
+        FindPitchTypeLabel();
+        _phaseSeed = Random.Range(1, int.MaxValue);
         if (cursor != null) cursor.gameObject.SetActive(false);
         ApplyMarkerStyle();
         SetActive(idealMarker, false);
@@ -486,6 +494,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             releasePlate.SetPositionAndRotation(_plate.centre, Quaternion.LookRotation(_plate.normal, Vector3.up));
         SetActive(releasePlate, shown);
         if (!_calibrating) SetActive(idealMarker, false);
+        ShowPitchTypeLabel();
     }
 
     // One controller sample against the plate. session is the hold of the ball in the local
@@ -518,6 +527,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _crossOffset = hit.offset;
         _crossArm = ControllerMotion();
         _crossRotation = rotation;
+        // The type is fixed for this hold now, with the course ready for it; a later switch of
+        // the selection never reaches this release.
+        _crossType = _selectedType;
+        _crossCourse = CourseFor(_crossType);
         _autoPending = true;
         return true;
     }
@@ -589,6 +602,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             if (cursor != null) cursor.gameObject.SetActive(false);
             SetActive(idealMarker, false);
             SetActive(releasePlate, false);
+            ShowPitchTypeLabel();
             _markerPlaced = false;
             ClearCrossing();
             ClearReleaseFeedback();
@@ -761,7 +775,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         bool captured = _pressCaptured[i];
         _pressCaptured[i] = false;
         if (_pressCancelled[i] || state == StateInactive || hand != _activeHand || !_calibrating) return;
-        if (captured) FinishCalibrationAt(_triggerChest, _triggerHandPosition, _triggerHandRotation, _triggerPlate);
+        if (captured) FinishCalibrationAt(_triggerChest, _triggerHandPosition, _triggerPlate);
         else statusText = "Put the ball down: calibrate with an empty throwing hand.";
         Notify();
     }
@@ -790,35 +804,44 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Notify();
     }
 
-    // Snapshots the smoothed cursor, the 4-Seam settings and the fixed release point P0, then
-    // starts the solver once. Refused without a valid ray this frame, a usable calibration (the
-    // spin axis) or a release point.
+    // Snapshots the smoothed cursor and the fixed release point P0, then solves the selected
+    // type's ideal flight once. Refused without a valid ray this frame, a usable calibration or
+    // a release point.
     public bool BeginLockAt(Vector3 release, Vector3 planePoint, Vector3 planeNormal, Vector3 gravity, float fixedStep)
     {
         if (state != StateTargeting || _calibrating || !_rayValid || !_hasCursor || !CalibrationUsable()) return false;
         if (!ManualPitchMath.ValidPoint(release) || aimSolver == null) return false;
         _lockTarget = CursorWorld(planePoint, planeNormal);
         _lockRelease = release;
-        // One solver speed for the whole solve, independent of the arm-speed curve; the release
-        // never solves again for its own speed.
-        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
-        _lockConverged = false;
-        _lockSpinLocal = IdealSpinLocal();
-        _lockWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
-        _lockWakeClock = wakeClockDegrees;
+        _lockPlaneNormal = planeNormal;
         state = StateSolving;
         _lockEpoch++;
+        StartLockSolve(gravity, fixedStep);
+        return true;
+    }
+
+    // Solves the lock's target for the selected type: its ideal speed (one solver speed for the
+    // whole solve, independent of the arm-speed curve), spin and SSW. The release never solves
+    // again. Also used when the type changes while locked (the target is kept).
+    private void StartLockSolve(Vector3 gravity, float fixedStep)
+    {
+        _lockType = _selectedType;
+        _lockBuild = BuildFor(_lockType);
+        _lockSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_lockBuild);
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
+        _lockConverged = false;
+        _lockIdeal = IdealFor(_lockType);
         // The lock takes the shared solver; an unfinished default-course solve starts again later.
         if (_defaultSolving)
         {
             _defaultSolving = false;
             _defaultDirty = true;
         }
-        aimSolver.BeginSolveRelativeSpin(_lockRelease, _lockTarget, -planeNormal, _lockSolverSpeedKmh / 3.6f, _lockSpinLocal,
-            WakeMode(wakeCoefficient), wakeCoefficient, _lockWakeLocal, 0f, 0f, gravity,
-            _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
+        WakeProfile wake = _lockIdeal.wakeLocal;
+        aimSolver.BeginSolveRelativeSpin(_lockRelease, _lockTarget, -_lockPlaneNormal, _lockSolverSpeedKmh / 3.6f,
+            PitchPropertiesCalculator.LocalSpin(_lockIdeal), wake.mode, wake.coefficient, wake.direction, wake.coneAngle, wake.initialPhase,
+            gravity, _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
         if (!aimSolver.solving) CompleteSolve(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
-        return true;
     }
 
     // ---- Fixed release point ----
@@ -853,12 +876,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     }
 
     public int ThrowingHand() { return _activeHand; }
-
-    // The 4-Seam spin with no pose failure, as the solver aims it.
-    private Vector3 IdealSpinLocal()
-    {
-        return ManualPitchMath.FourSeamSpin(FourSeamAxis(), fourSeamSpinRpm, maxFourSeamSpinRpm, 0f, spinLossAtBadPose);
-    }
 
     // The fixed 4-Seam axis of the current throwing hand (pitch-local), shared by the solver
     // and the release.
@@ -910,13 +927,16 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _defaultDirty = false;
         _defaultTarget = target;
         _defaultRelease = release;
-        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
-        _defaultWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
-        _defaultWakeClock = wakeClockDegrees;
+        _defaultType = _selectedType;
+        _defaultBuild = BuildFor(_defaultType);
+        _defaultSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_defaultBuild);
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
+        _defaultIdeal = IdealFor(_defaultType);
         _defaultSolving = true;
+        WakeProfile wake = _defaultIdeal.wakeLocal;
         aimSolver.BeginSolveRelativeSpin(_defaultRelease, _defaultTarget, -planeNormal, _defaultSolverSpeedKmh / 3.6f,
-            IdealSpinLocal(), WakeMode(wakeCoefficient), wakeCoefficient, _defaultWakeLocal, 0f, 0f, gravity,
-            _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
+            PitchPropertiesCalculator.LocalSpin(_defaultIdeal), wake.mode, wake.coefficient, wake.direction, wake.coneAngle, wake.initialPhase,
+            gravity, _ball.dragCoefficient, _ball.magnusCoefficient, fixedStep);
         if (!aimSolver.solving) CompleteDefaultCourse(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
         return true;
     }
@@ -1247,33 +1267,35 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         ArmMotion arm, Vector3 planePoint, Vector3 planeNormal, int input, bool curveGiven, float givenCurveOutput)
     {
         ClearResult();
-        // The course: the locked one, or with no lock ready (Targeting or Solving) the default
-        // course at the strike zone's centre once it has been solved.
-        bool locked = state == StateLockedReady;
-        bool centre = !locked && _defaultReady && (state == StateTargeting || state == StateSolving);
-        Vector3 courseTarget = centre ? _defaultTarget : _lockTarget;
-        Vector3 courseRelease = centre ? _defaultRelease : _lockRelease;
-        Vector3 courseDirection = centre ? _defaultDirection : _lockDirection;
-        Vector3 courseWakeLocal = centre ? _defaultWakeLocal : _lockWakeLocal;
+        // An actual crossing of this hold: its own arm motion and rotation (taken at the
+        // crossing), so the follow-through before the release never slows the pitch.
+        bool actual = HasCrossing(_releaseHandSession);
+        // The type and course: an actual crossing fixed both for this hold (the course ready
+        // then, else the one ready now for that same type); an early release takes the selected
+        // type now. The course is the type's own: the locked one, or with no lock ready
+        // (Targeting or Solving) the default course at the strike zone's centre once solved.
+        int type = actual ? _crossType : _selectedType;
+        ManualPitchCourse course = actual && _crossCourse.ready && _crossCourse.pitchType == type ? _crossCourse : CourseFor(type);
+        Vector3 courseTarget = course.target;
+        Vector3 courseRelease = course.release;
+        Vector3 courseDirection = course.direction;
         // The target, the solver's prediction and the settings as they are at this release.
-        _resultHasTarget = locked || centre;
-        _resultDefaultCourse = centre;
+        _resultType = type;
+        _resultBuild = BuildFor(type);
+        _resultHasTarget = course.ready;
+        _resultDefaultCourse = course.isDefault;
         _resultTarget = courseTarget;
-        _resultPredicted = centre ? _defaultPredicted : debugPredictedTarget;
-        _resultSolverError = centre ? _defaultSolverError : debugSolverError;
-        _resultSolverSpeedKmh = locked ? _lockSolverSpeedKmh : centre ? _defaultSolverSpeedKmh : -1f;
-        _resultConverged = centre ? _defaultConverged : _lockConverged;
+        _resultPredicted = course.predicted;
+        _resultSolverError = course.ready ? course.solverError : -1f;
+        _resultSolverSpeedKmh = course.ready ? course.solverSpeedKmh : -1f;
+        _resultConverged = course.converged;
         _resultPlanePoint = planePoint;
         _resultPitcherRight = Vector3.Cross(Vector3.up, -planeNormal);
-        _resultWakeClock = centre ? _defaultWakeClock : _lockWakeClock;
         _resultIdealSpin = diagnosticIdealSpin;
         _resultSolverRelease = courseRelease;
         _resultReleaseLimited = _releaseLimited;
         _resultHand = handPosition;
         debugInput = input;
-        // An actual crossing of this hold: its own arm motion and rotation (taken at the
-        // crossing), so the follow-through before the release never slows the pitch.
-        bool actual = HasCrossing(_releaseHandSession);
         if (actual)
         {
             arm = _crossArm;
@@ -1302,10 +1324,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (forward == Vector3.zero) return Reject("invalid course");
         Quaternion frame = ManualPitchMath.Frame(forward);
         Quaternion toFrame = ManualPitchMath.Inverse(frame);
-        Quaternion idealRotation = ManualPitchMath.Multiply(frame, _calRotation);
         debugArmSpeed = arm.speed;
         debugDirectionError = ManualPitchMath.DirectionError(arm.velocity, courseTarget - courseRelease);
-        debugPoseAngle = ManualPitchMath.AngleBetween(handRotation, idealRotation);
         _releaseHasPoints = true;
         _releaseArmVelocity = ManualPitchMath.Rotate(toFrame, arm.velocity);
         // The held ball's centre, for diagnosis only: it moves with the wrist and the grip.
@@ -1354,33 +1374,45 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         releasePosition = courseRelease;
         releasePitchNumber = _releaseHandSession;
 
-        // Pose: the whole 3D rotation error lowers quality and the spin and SSW (their losses,
-        // 0 by default); the 4-Seam axis is fixed by the hand and never turned by it. The
-        // diagnostic setting keeps the ideal spin and wake the solver aimed with.
-        float failure = diagnosticIdealSpin ? 0f : ManualPitchMath.PoseFailure(debugPoseAngle, goodPoseAngle, badPoseAngle);
-        Vector3 axis = FourSeamAxis();
-        Vector3 spinLocal = ManualPitchMath.FourSeamSpin(axis, fourSeamSpinRpm, maxFourSeamSpinRpm, failure, spinLossAtBadPose);
-        float wake = Mathf.Max(0f, wakeCoefficient) * (1f - Mathf.Clamp01(wakeLossAtBadPose) * failure);
-        // What the rotation (pose) changed against the ideal 4-Seam: shown as its penalty.
-        _resultIdealRpm = Mathf.Clamp(ManualPitchMath.Finite(fourSeamSpinRpm) ? fourSeamSpinRpm : 0f, 0f, Mathf.Max(0f, maxFourSeamSpinRpm));
+        // Quality: the palm (from the rotation the release is judged by) against the type's
+        // ideal palm turned by the arm slot, capped outside the ideal timing. It blends the
+        // type's ideal flight (the one the solver aimed with) toward the common failure mode;
+        // it never changes the speed or the control, and nothing is aimed again for it. The
+        // diagnostic setting keeps the ideal flight.
+        _resultQuality = EvaluateQuality(type, handRotation, frame, _resultTiming);
+        float quality = diagnosticIdealSpin ? 1f : _resultQuality.finalQuality;
+        _resultIdeal = course.ideal;
+        _resultFinal = ManualPitchQuality.Blend(course.ideal, FailureFlight(), quality);
+        Vector3 spinLocal = PitchPropertiesCalculator.LocalSpin(_resultFinal);
+        WakeProfile wake = _resultFinal.wakeLocal;
+        bool wakeOn = wake.mode != BallAerodynamics.WakeNone && wake.coefficient > 0f;
+        // A Knuckle's phase was drawn for this default course: the next one gets a new one.
+        if (course.isDefault && course.ideal.wakeLocal.mode == BallAerodynamics.WakeRotating) InvalidateDefaultCourse();
 
-        // Raw speed (before any pitcher ability): Vmax x Clamp01(C(|arm velocity|)), from the
-        // same averaged sample the recognition used. Pose and release position never change it,
-        // and no aim correction follows from its difference to the solver's speed.
+        // Raw speed (before any pitcher ability): Vmax x Clamp01(C(|arm velocity|)) x the type's
+        // multiplier, from the same averaged sample the recognition used. Quality, pose and
+        // release position never change it, and no aim correction follows from its difference
+        // to the solver's speed.
         _resultCurveSet = curveGiven || ArmSpeedCurveUsable();
         _resultCurveOutput = ManualPitchMath.SpeedRatio(curveGiven ? givenCurveOutput
             : _resultCurveSet ? EvaluateArmSpeedCurve(debugArmSpeed) : 1f);
         _resultMaxSpeedKmh = ManualPitchMath.SpeedSetting(maxPitchSpeedKmh);
-        releaseVelocity = direction.normalized * (_resultMaxSpeedKmh * _resultCurveOutput / 3.6f);
+        _resultSpeedMultiplier = course.speedMultiplier;
+        releaseVelocity = direction.normalized * (_resultMaxSpeedKmh * _resultCurveOutput * course.speedMultiplier / 3.6f);
         releaseSpin = PitchSpin.ToWorld(spinLocal, direction);
-        releaseWakeMode = WakeMode(wake);
-        releaseWakeCoefficient = releaseWakeMode == BallAerodynamics.WakeNone ? 0f : wake;
-        releaseWakeDirection = releaseWakeMode == BallAerodynamics.WakeNone ? Vector3.zero : PitchSpin.ToWorld(courseWakeLocal, direction);
+        releaseWakeMode = wakeOn ? wake.mode : BallAerodynamics.WakeNone;
+        releaseWakeCoefficient = wakeOn ? wake.coefficient : 0f;
+        releaseWakeDirection = wakeOn ? PitchSpin.ToWorld(wake.direction, direction) : Vector3.zero;
+        releaseWakeConeAngle = wakeOn && wake.mode == BallAerodynamics.WakeRotating ? wake.coneAngle : 0f;
+        releaseWakePhase = wakeOn && wake.mode == BallAerodynamics.WakeRotating ? wake.initialPhase : 0f;
+        releasePitchType = type;
         debugRecognized = true;
         debugReason = input == InputAuto ? "auto pitch" : "pitch";
-        debugPoseQuality = 1f - failure;
+        debugPoseAngle = _resultQuality.poseAngle;
+        debugPoseQuality = _resultQuality.poseQuality;
+        debugQuality = quality;
         debugSpinRpm = spinLocal.magnitude * 60f / (2f * Mathf.PI);
-        debugSpinAxis = spinLocal.sqrMagnitude > 0f ? spinLocal.normalized : axis;
+        debugSpinAxis = _resultFinal.spinAxisLocal;
         debugWake = releaseWakeCoefficient;
         _resultPitched = true;
         _resultSpeedKmh = releaseVelocity.magnitude * 3.6f;
@@ -1405,6 +1437,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         debugRecognized = false;
         debugReason = reason;
         debugPoseQuality = 0f;
+        debugQuality = 0f;
         debugSpinRpm = 0f;
         debugSpinAxis = Vector3.zero;
         debugWake = 0f;
@@ -1421,13 +1454,21 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         releaseWakeMode = BallAerodynamics.WakeNone;
         releaseWakeCoefficient = 0f;
         releaseWakeDirection = Vector3.zero;
+        releaseWakeConeAngle = 0f;
+        releaseWakePhase = 0f;
+        releasePitchType = PitchType.FourSeam;
         releasePitchNumber = 0;
         _releaseHasPoints = false;
         _releaseArmVelocity = Vector3.zero;
         _resultArm = new ArmMotion();
         _penaltyDirection = Vector2.zero;
         _resultDirectionK = 0f;
-        _resultIdealRpm = 0f;
+        _resultType = PitchType.FourSeam;
+        _resultBuild = new PitchBuild();
+        _resultIdeal = new PitchProperties();
+        _resultFinal = new PitchProperties();
+        _resultQuality = new PitchQuality();
+        _resultSpeedMultiplier = 1f;
         _resultCross = ReleasePlateMath.CrossNone;
         _resultTiming = ReleasePlateMath.TimingNone;
         _resultMiss = ReleasePlateMath.MissNone;
@@ -1551,6 +1592,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     {
         _markerPlaced = false;
         SetActive(releasePlate, false);
+        ShowPitchTypeLabel();
         bool tracked = _frameValid && ManualPitchMath.FiniteVector(_frameController);
         if (tracked && idealMarker != null) idealMarker.position = _frameController;
         SetActive(idealMarker, tracked);
@@ -1700,11 +1742,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // Summary: pitch or throw, the release speed and where the pitch crossed the plate plane.
     public string ReleaseResultText(bool pitched)
     {
-        string text = pitched ? (debugInput == InputAuto ? "AUTO PITCH  4-Seam" : "PITCH  4-Seam") +
+        string text = pitched ? (debugInput == InputAuto ? "AUTO PITCH  " : "PITCH  ") + PitchType.Name(_resultType) +
                 "  (" + ReleasePlateMath.CrossName(_resultCross) + ", " + ReleasePlateMath.TimingName(_resultTiming) + ")"
             : "THROW - not a pitch: " + debugReason;
         if (pitched) text += "\nControl score  " + _resultScore.ToString("F0") + "  (position " + _resultPositionScore.ToString("F0") +
             (_resultTiming != ReleasePlateMath.TimingIdeal ? ", timing cap " + _resultTimingCap.ToString("F0") : ", no cap") + ")";
+        if (pitched) text += "\nQuality  " + Percent(debugQuality) + "  (pose " +
+            (_resultQuality.poseEvaluated ? Percent(_resultQuality.poseQuality) : "not evaluated") +
+            (_resultQuality.timingIdeal ? ", ideal timing" : ", timing cap " + Percent(_resultQuality.timingCap)) + ")";
         text += "\nRelease speed  " + (_resultSpeedKmh >= 0f ? _resultSpeedKmh.ToString("F1") + " km/h" : "-");
         if (arrivalStatus == ArrivalMeasured)
             text += "\nCourse miss  " + AbsCm(arrivalError.magnitude) + "   right " + Cm(arrivalError.x) + " cm   up " + Cm(arrivalError.y) + " cm";
@@ -1749,11 +1794,47 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return speed >= 0f ? speed.ToString("F1") : "-";
     }
 
-    // Form: arm-motion direction and controller rotation, separately, and the pose quality.
+    private static string Percent(float value)
+    {
+        return (value * 100f).ToString("F0") + "%";
+    }
+
+    // Form: the arm-motion direction (shown only) and, for a pitch, the palm against the type's
+    // ideal palm turned by the arm slot, the angles and the quality made from it.
     public string FormText()
     {
-        return "\nFORM  arm direction error " + debugDirectionError.ToString("F0") + " deg   rotation error " +
-            debugPoseAngle.ToString("F0") + " deg" + (_resultPitched ? "   quality " + (debugPoseQuality * 100f).ToString("F0") + "%" : "");
+        string text = "\nFORM  arm direction error " + debugDirectionError.ToString("F0") + " deg";
+        if (!_resultPitched) return text;
+        PitchQuality q = _resultQuality;
+        text += "\n  pose evaluation " + (q.poseEvaluated ? "on" : "off (quality 100%)") +
+            "   arm slot " + q.slotAngle.ToString("F0") + " deg (turn " + q.slotRotation.ToString("F0") + " from " +
+            (ManualPitchMath.Finite(referenceSlotAngle) ? referenceSlotAngle : 0f).ToString("F0") + ")" +
+            "\n  palm ideal " + q.idealPalm.ToString("F2") + "  for this slot and hand " + q.correctedPalm.ToString("F2") +
+            "\n  palm actual " + q.actualPalm.ToString("F2") + "   error " + q.poseAngle.ToString("F0") + " deg (good " +
+            q.goodAngle.ToString("F0") + ", bad " + q.badAngle.ToString("F0") + ")   pose " + Percent(q.poseQuality) +
+            "\n  timing " + (q.timingIdeal ? "ideal" : "outside the ideal: cap " + Percent(q.timingCap)) +
+            "   final quality " + Percent(debugQuality) + (_resultIdealSpin ? " (diagnostic: ideal flight)" : "");
+        return text;
+    }
+
+    // The selected type now and the type, build and speed multiplier of this release.
+    public string PitchTypeText()
+    {
+        string text = "\nTYPE  selected " + SelectedPitchTypeName();
+        if (!_resultPitched) return text;
+        text += "   pitched " + PitchType.Name(_resultType) + "   build " + BuildText(_resultType, _resultBuild) +
+            "   speed x" + _resultSpeedMultiplier.ToString("F3");
+        return text;
+    }
+
+    private static string BuildText(int type, PitchBuild build)
+    {
+        int count = PitchType.ParameterCount(type);
+        if (count == 0) return "(no parameters)";
+        string text = "A " + build.parameterA.ToString("F2");
+        if (count > 1) text += " B " + build.parameterB.ToString("F2");
+        if (count > 2) text += " C " + build.parameterC.ToString("F2");
+        return text + " (default)";
     }
 
     // Control: the arm-direction penalty's crossing offset (the only control penalty).
@@ -1762,10 +1843,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         string text = "\nCONTROL  (crossing offset)";
         if (!_resultPitched) return text + "\n  not a pitch: nothing applied";
         text += "\n  arm direction " + Offset(_penaltyDirection) + "   (" + _resultDirectionK.ToString("F3") + " m/deg)" +
-            "   rotation: quality only, no control";
-        float rpmLoss = _resultIdealRpm - debugSpinRpm;
-        text += "\n  rotation quality penalty: spin " + (rpmLoss > 0.5f ? "-" + rpmLoss.ToString("F0") : "0") + " rpm   axis fixed" +
-            "   SSW " + debugWake.ToString("F4") + " of " + Mathf.Max(0f, wakeCoefficient).ToString("F4");
+            "   palm: quality only, no control";
         text += "\n  random  strength " + (_resultStrength * 100f).ToString("F0") + "%   sigma " + AbsCm(_resultDrawSigma) +
             " (score " + _resultScore.ToString("F0") + ": " + AbsCm(_resultSigma) + " at full strength)" +
             "\n  drawn " + AbsCm(_resultDrawError.magnitude) + " at " + _resultDrawAngle.ToString("F0") + " deg   " + Offset(_resultDrawError) +
@@ -1799,14 +1877,15 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public string ReleaseDetailText()
     {
         string text = "RELEASE  (throwing controller)";
+        text += PitchTypeText();
         if (!_releaseHasPoints) text += "\n  no tracking";
         else text += ArmText() + FormText() + PlateText() + ControlText();
         text += LaunchText();
         text += SpeedText();
         if (_resultPitched)
-            text += "\nSPIN / SSW" + (_resultIdealSpin ? "  (diagnostic: ideal spin)" : "") +
-                "\n  " + debugSpinRpm.ToString("F0") + " rpm   axis " + debugSpinAxis.ToString("F2") +
-                "\n  SSW " + debugWake.ToString("F4") + " at " + _resultWakeClock.ToString("F0") + " deg";
+            text += "\nSPIN / SSW  ideal -> final (quality " + Percent(debugQuality) + ")" +
+                "\n  ideal " + _resultIdeal.spinRpm.ToString("F0") + " rpm   axis " + _resultIdeal.spinAxisLocal.ToString("F2") + "   " + WakeText(_resultIdeal.wakeLocal) +
+                "\n  final " + debugSpinRpm.ToString("F0") + " rpm   axis " + debugSpinAxis.ToString("F2") + "   " + WakeText(_resultFinal.wakeLocal);
         text += "\nAIM  (pitcher view, from the plate's front-edge centre)";
         if (!_resultHasTarget) return text + "\n  no locked target";
         text += "\n  target   " + PlaneText(_resultTarget) + (_resultDefaultCourse ? "   (centre: no course locked)" : "");
@@ -1885,14 +1964,15 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Reject(reason);
     }
 
-    private int WakeMode(float coefficient)
+    // A pitch-local wake for the analysis text.
+    private static string WakeText(WakeProfile wake)
     {
-        return coefficient > 0f ? BallAerodynamics.WakeFixed : BallAerodynamics.WakeNone;
-    }
-
-    private float ArmSide()
-    {
-        return _activeHand == GloveBehaviour.HandLeft ? -1f : 1f;
+        if (wake.mode == BallAerodynamics.WakeNone || !(wake.coefficient > 0f)) return "SSW none";
+        string text = "SSW " + (wake.mode == BallAerodynamics.WakeRotating ? "rotating " : "fixed ") + wake.coefficient.ToString("F4") +
+            " dir " + wake.direction.ToString("F2");
+        if (wake.mode == BallAerodynamics.WakeRotating)
+            text += " cone " + (wake.coneAngle * Mathf.Rad2Deg).ToString("F0") + " deg phase " + (wake.initialPhase * Mathf.Rad2Deg).ToString("F0") + " deg";
+        return text;
     }
 
     private VRCPlayerApi.TrackingDataType HandTracking()
@@ -1905,6 +1985,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public string DebugText()
     {
         return "PitcherMode: " + (state != StateInactive) + "  PitchState: " + ManualPitchMath.StateName(state) +
+            "\nType: selected " + SelectedPitchTypeName() + "  pitched " + PitchType.Name(_resultType) + "  Quality: " +
+            (debugQuality * 100f).ToString("F0") + "% (pose " + (debugPoseQuality * 100f).ToString("F0") + "%, palm error " +
+            debugPoseAngle.ToString("F1") + " deg)" +
             "\nReleaseInput: " + ManualPitchMath.InputName(debugInput) + "  Recognized: " + debugRecognized + " (" + debugReason + ")" +
             "\nPlate: " + ReleasePlateMath.CrossName(_resultCross) + "  Timing: " + ReleasePlateMath.TimingName(_resultTiming) +
             "  Offset: " + _resultCrossOffset.ToString("F3") + "  Frames: " + _resultCrossFrames + "  Predict: " + _resultPredictDistance.ToString("F3") +
@@ -1915,7 +1998,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             "\nLaunch: " + (debugRecognized ? releasePosition.ToString("F2") + " (fixed P0)" : "ball centre") +
             "\nCurve: " + (_resultCurveOutput * 100f).ToString("F1") + "%  Max: " + Kmh(_resultMaxSpeedKmh) +
             "  Solver: " + Kmh(_resultSolverSpeedKmh) + "  Release: " + Kmh(_resultSpeedKmh) +
-            "\nPoseError: " + debugPoseAngle.ToString("F1") + " deg  Quality: " + (debugPoseQuality * 100f).ToString("F0") + "%" +
             "\nSpin: " + debugSpinRpm.ToString("F0") + " rpm  Axis: " + debugSpinAxis.ToString("F2") + "  SSW: " + debugWake.ToString("F4") +
             "\nSolverError: " + debugSolverError.ToString("F3") + " m  Predicted: " + debugPredictedTarget.ToString("F2");
     }

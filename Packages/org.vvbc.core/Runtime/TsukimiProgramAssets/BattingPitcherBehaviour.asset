@@ -1669,51 +1669,50 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_72:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_73:
     %SystemSingle, 0\n    __const_195: %SystemSingle, 0.017453292\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_74:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75:
-    %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_77:
-    %SystemBoolean, null\n    __const_196: %SystemSingle, 12.5\n    __const_197:
-    %SystemSingle, 87.5\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_78:
+    %SystemSingle, 0\n    __const_196: %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76:
+    %SystemBoolean, null\n    __const_197: %SystemSingle, 12.5\n    __const_198:
+    %SystemSingle, 87.5\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_77:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_78:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_79:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_80:
-    %SystemBoolean, null\n    __const_198: %SystemSingle, 2800\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_81:
+    %SystemBoolean, null\n    __const_199: %SystemSingle, 2800\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_80:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_81:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_82:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_83:
-    %SystemSingle, 0\n    __const_199: %SystemSingle, 0.055\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_84:
-    %SystemSingle, 0\n    __const_200: %SystemSingle, 0.10471976\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0:
+    %SystemSingle, 0\n    __const_200: %SystemSingle, 0.055\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_83:
+    %SystemSingle, 0\n    __const_201: %SystemSingle, 0.10471976\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_1:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_0:
     %SystemInt32, 0\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_1:
     %SystemInt32, 0\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2:
-    %SystemSingle, 0\n    __const_201: %SystemSingle, 0.0000958738\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3:
-    %SystemSingle, 0\n    __retaddr_295: %SystemUInt32, 0x0009041C\n    __X9zPitchType__m__Safe_intnl_0:
+    %SystemSingle, 0\n    __const_202: %SystemSingle, 0.0000958738\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3:
+    %SystemSingle, 0\n    __retaddr_295: %SystemUInt32, 0x0009040C\n    __X9zPitchType__m__Safe_intnl_0:
     %SystemBoolean, null\n    __X13zPitchPlaylist__m__Exchange_intnl_0: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__Exchange_intnl_1: %SystemInt32, 0\n    __X13zPitchPlaylist__m__Exchange_intnl_2:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Exchange_intnl_3: %SystemInt32,
-    0\n    __retaddr_296: %SystemUInt32, 0x000907D4\n    __X13zPitchPlaylist__m__PackBuild_intnl_0:
+    0\n    __retaddr_296: %SystemUInt32, 0x000907C4\n    __X13zPitchPlaylist__m__PackBuild_intnl_0:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_1: %SystemBoolean,
-    null\n    __retaddr_297: %SystemUInt32, 0x0009088C\n    __X13zPitchPlaylist__m__PackBuild_intnl_2:
+    null\n    __retaddr_297: %SystemUInt32, 0x0009087C\n    __X13zPitchPlaylist__m__PackBuild_intnl_2:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_3: %SystemBoolean,
     null\n    __X13zPitchPlaylist__m__PackBuild_intnl_4: %SystemInt32, 0\n    __retaddr_298:
-    %SystemUInt32, 0x00090958\n    __X13zPitchPlaylist__m__PackBuild_intnl_5: %SystemInt32,
+    %SystemUInt32, 0x00090948\n    __X13zPitchPlaylist__m__PackBuild_intnl_5: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__PackBuild_intnl_6: %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_7:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_8: %SystemBoolean,
     null\n    __X13zPitchPlaylist__m__PackBuild_intnl_9: %SystemInt32, 0\n    __retaddr_299:
-    %SystemUInt32, 0x00090A64\n    __X13zPitchPlaylist__m__PackBuild_intnl_10: %SystemInt32,
-    0\n    __const_202: %SystemInt32, 20\n    __X13zPitchPlaylist__m__PackBuild_intnl_11:
+    %SystemUInt32, 0x00090A54\n    __X13zPitchPlaylist__m__PackBuild_intnl_10: %SystemInt32,
+    0\n    __const_203: %SystemInt32, 20\n    __X13zPitchPlaylist__m__PackBuild_intnl_11:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_12: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__Parameter_intnl_0: %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_1:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_2: %SystemInt32,
-    0\n    __const_203: %SystemInt32, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_3:
+    0\n    __const_204: %SystemInt32, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_3:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_4: %SystemSingle,
-    0\n    __const_204: %SystemSingle, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_5:
-    %SystemSingle, 0\n    __const_205: %SystemInt32, -16384\n    __X13zPitchPlaylist__m__With_intnl_0:
+    0\n    __const_205: %SystemSingle, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_5:
+    %SystemSingle, 0\n    __const_206: %SystemInt32, -16384\n    __X13zPitchPlaylist__m__With_intnl_0:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_1: %SystemInt32, 0\n   
     __X13zPitchPlaylist__m__With_intnl_2: %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_3:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_4: %SystemInt32, 0\n   
     __X13zPitchPlaylist__m__With_intnl_5: %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_6:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_7: %SystemInt32, 0\n   
-    __retaddr_300: %SystemUInt32, 0x00090DDC\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_0:
+    __retaddr_300: %SystemUInt32, 0x00090DCC\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_0:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_1:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_2: %SystemSingle,
     0\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_3: %SystemSingle, 0\n   
@@ -1727,19 +1726,19 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Clock_intnl_3: %UnityEngineVector3,
     null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_0: %SystemBoolean,
     null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_1: %SystemBoolean,
-    null\n    __const_206: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_2:
-    %SystemBoolean, null\n    __const_207: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_3:
-    %SystemBoolean, null\n    __retaddr_301: %SystemUInt32, 0x00091334\n    __X25zPitchPropertiesCalculator__m__Fixed_intnl_0:
-    %UnityEngineVector3, null\n    __retaddr_302: %SystemUInt32, 0x00091414\n   
+    null\n    __const_207: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_2:
+    %SystemBoolean, null\n    __const_208: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_3:
+    %SystemBoolean, null\n    __retaddr_301: %SystemUInt32, 0x00091324\n    __X25zPitchPropertiesCalculator__m__Fixed_intnl_0:
+    %UnityEngineVector3, null\n    __retaddr_302: %SystemUInt32, 0x00091404\n   
     __X25zPitchPropertiesCalculator__m__Parameter_intnl_0: %SystemBoolean, null\n   
     __X25zPitchPropertiesCalculator__m__Parameter_intnl_1: %SystemSingle, 0\n   
     __X9zPitchType__m__IsValid_intnl_0: %SystemBoolean, null\n    __X9zPitchType__m__IsValid_intnl_1:
-    %SystemBoolean, null\n    __retaddr_303: %SystemUInt32, 0x00091584\n    __X13zPitchPlaylist__m__Step_intnl_0:
+    %SystemBoolean, null\n    __retaddr_303: %SystemUInt32, 0x00091574\n    __X13zPitchPlaylist__m__Step_intnl_0:
     %SystemSingle, 0\n    __X13zPitchPlaylist__m__Step_intnl_1: %SystemSingle, 0\n   
     __X13zPitchPlaylist__m__Step_intnl_2: %SystemSingle, 0\n    __X13zPitchPlaylist__m__Step_intnl_3:
     %SystemDouble, 0\n    __X13zPitchPlaylist__m__Step_intnl_4: %SystemDouble, 0\n   
     __X13zPitchPlaylist__m__Step_intnl_5: %SystemInt32, 0\n    __X9zPitchType__m__ParameterCount_intnl_0:
-    %SystemInt32Array, null\n    __retaddr_304: %SystemUInt32, 0x00091688\n    __X9zPitchType__m__ParameterCount_intnl_1:
+    %SystemInt32Array, null\n    __retaddr_304: %SystemUInt32, 0x00091678\n    __X9zPitchType__m__ParameterCount_intnl_1:
     %SystemInt32, 0\n    __X9zPitchType__m__ParameterCount_intnl_2: %SystemInt32,
     0\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH, __const_0\n       
     PUSH, __Start___t0\n        COPY\n        PUSH, __const_0\n        PUSH, __Start___t1\n       
@@ -34693,45 +34692,43 @@ MonoBehaviour:
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_74\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coneAngle\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L21\n    __X25zPitchPropertiesCalculator__m__Calculate_L20:\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        EXTERN,
-    \"UnityEngineVector3.__get_left__UnityEngineVector3\"\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinAxisLocal\n       
+    PUSH, __const_196\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinAxisLocal\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Calculate_L21:\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_speed\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_speedScale\n        PUSH,
-    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
+    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_type\n       
-    PUSH, __const_147\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
+    PUSH, __const_147\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n        JUMP_IF_FALSE,
-    __X25zPitchPropertiesCalculator__m__Calculate_L22\n        PUSH, __const_197\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_a\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        JUMP_IF_FALSE,
+    __X25zPitchPropertiesCalculator__m__Calculate_L22\n        PUSH, __const_198\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_a\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __const_196\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        EXTERN,
+    PUSH, __const_197\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n        EXTERN,
     \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L25\n    __X25zPitchPropertiesCalculator__m__Calculate_L22:\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_type\n        PUSH, __const_15\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        EXTERN,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        EXTERN,
     \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        JUMP_IF_FALSE,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        JUMP_IF_FALSE,
     __X25zPitchPropertiesCalculator__m__Calculate_L24\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spin\n       
-    PUSH, __const_198\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n       
+    PUSH, __const_199\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n       
     EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L25\n    __X25zPitchPropertiesCalculator__m__Calculate_L24:\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spin\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spinScale\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        EXTERN,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        EXTERN,
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        PUSH, __const_26\n       
-    PUSH, __const_143\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        PUSH, __const_26\n       
+    PUSH, __const_143\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n       
     EXTERN, \"UnityEngineMathf.__Clamp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Calculate_L25:\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
-    PUSH, __const_199\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_84\n       
+    PUSH, __const_200\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n       
     EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_84\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
     PUSH, __ret__X25zPitchPropertiesCalculator__m__Calculate__speedMps\n        COPY\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n        PUSH,
@@ -34750,7 +34747,7 @@ MonoBehaviour:
     PUSH, __ret__X25zPitchPropertiesCalculator__m__Calculate__wakeLocal__initialPhase\n       
     COPY\n        JUMP_INDIRECT, __X25zPitchPropertiesCalculator__m__Calculate_retjump\n       
     JUMP_INDIRECT, __X25zPitchPropertiesCalculator__m__Calculate_retjump\n    X25zPitchPropertiesCalculator__m__LocalSpin:\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_1\n        PUSH, __const_200\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_1\n        PUSH, __const_201\n       
     PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0\n        EXTERN,
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_2\n        PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0\n       
@@ -34768,7 +34765,7 @@ MonoBehaviour:
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_1\n        PUSH,
     __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2\n        EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2\n        PUSH,
-    __const_201\n        PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n       
+    __const_202\n        PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n        PUSH,
     __X25zPitchPropertiesCalculator__m__PhaseFromSeed_ret\n        COPY\n       
@@ -34874,7 +34871,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_299\n        PUSH, __X13zPitchPlaylist__m__Step_retjump\n       
     COPY\n        JUMP, X13zPitchPlaylist__m__Step\n        PUSH, __X13zPitchPlaylist__m__Step_ret\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_10\n        COPY\n        PUSH,
-    __X13zPitchPlaylist__m__PackBuild_intnl_10\n        PUSH, __const_202\n       
+    __X13zPitchPlaylist__m__PackBuild_intnl_10\n        PUSH, __const_203\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_11\n        EXTERN, \"SystemInt32.__op_LeftShift__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_9\n        PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_11\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_12\n        EXTERN, \"SystemInt32.__op_LogicalOr__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -34889,18 +34886,18 @@ MonoBehaviour:
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_1\n        PUSH, __const_148\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_2\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_2\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n       
-    COPY\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n        PUSH, __const_203\n       
+    COPY\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n        PUSH, __const_204\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_3\n        EXTERN, \"UnityEngineMathf.__Min__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_3\n        PUSH, __X13zPitchPlaylist__m__Parameter_intnl_4\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
-    __X13zPitchPlaylist__m__Parameter_intnl_4\n        PUSH, __const_204\n       
+    __X13zPitchPlaylist__m__Parameter_intnl_4\n        PUSH, __const_205\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_5\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_5\n        PUSH, __X13zPitchPlaylist__m__Parameter_ret\n       
     COPY\n        JUMP_INDIRECT, __X13zPitchPlaylist__m__Parameter_retjump\n       
     JUMP_INDIRECT, __X13zPitchPlaylist__m__Parameter_retjump\n    X13zPitchPlaylist__m__With:\n       
     PUSH, __const_15\n        PUSH, __X13zPitchPlaylist__m__With_flags\n        COPY\n       
     PUSH, __const_15\n        PUSH, __X13zPitchPlaylist__m__With___t0\n        COPY\n       
-    PUSH, __X13zPitchPlaylist__m__With_p_0\n        PUSH, __const_205\n        PUSH,
+    PUSH, __X13zPitchPlaylist__m__With_p_0\n        PUSH, __const_206\n        PUSH,
     __X13zPitchPlaylist__m__With_intnl_0\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__With_intnl_0\n        PUSH, __X13zPitchPlaylist__m__With_flags\n       
     COPY\n        PUSH, __X13zPitchPlaylist__m__With_p_1\n        PUSH, __const_15\n       
@@ -34981,14 +34978,14 @@ MonoBehaviour:
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_1\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     JUMP_IF_FALSE, __X25zPitchPropertiesCalculator__m__Finite_L1\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_p_0\n       
-    PUSH, __const_206\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n       
+    PUSH, __const_207\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n       
     EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Finite_L1:\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n        COPY\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n        JUMP_IF_FALSE,
     __X25zPitchPropertiesCalculator__m__Finite_L3\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_p_0\n       
-    PUSH, __const_207\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n       
+    PUSH, __const_208\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n       
     EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Finite_L3:\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n       
@@ -35067,7 +35064,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_303\n        PUSH, __X25zPitchPropertiesCalculator__m__Parameter_retjump\n       
     COPY\n        JUMP, X25zPitchPropertiesCalculator__m__Parameter\n        PUSH,
     __X25zPitchPropertiesCalculator__m__Parameter_ret\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n       
-    COPY\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n        PUSH, __const_204\n       
+    COPY\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n        PUSH, __const_205\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_1\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_1\n        PUSH, __const_20\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_2\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -35093,7 +35090,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 6fd286d2a131ec749b6ef65fd7571a42, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 8fdcc12d0c3351f83cb37c887e7a9b3b6e0505513975b16daf4c178f6e613f68
+  sourceFingerprint: 1c7fec9ec232c23ccf15109f29674f7173993788a2d7a789539c9206b77ba00a
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -36889,51 +36886,50 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_72:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_73:
     %SystemSingle, 0\n    __const_195: %SystemSingle, 0.017453292\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_74:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75:
-    %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_77:
-    %SystemBoolean, null\n    __const_196: %SystemSingle, 12.5\n    __const_197:
-    %SystemSingle, 87.5\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_78:
+    %SystemSingle, 0\n    __const_196: %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76:
+    %SystemBoolean, null\n    __const_197: %SystemSingle, 12.5\n    __const_198:
+    %SystemSingle, 87.5\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_77:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_78:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_79:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_80:
-    %SystemBoolean, null\n    __const_198: %SystemSingle, 2800\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_81:
+    %SystemBoolean, null\n    __const_199: %SystemSingle, 2800\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_80:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_81:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_82:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_83:
-    %SystemSingle, 0\n    __const_199: %SystemSingle, 0.055\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_84:
-    %SystemSingle, 0\n    __const_200: %SystemSingle, 0.10471976\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0:
+    %SystemSingle, 0\n    __const_200: %SystemSingle, 0.055\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_83:
+    %SystemSingle, 0\n    __const_201: %SystemSingle, 0.10471976\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_1:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_0:
     %SystemInt32, 0\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_1:
     %SystemInt32, 0\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2:
-    %SystemSingle, 0\n    __const_201: %SystemSingle, 0.0000958738\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3:
-    %SystemSingle, 0\n    __retaddr_295: %SystemUInt32, 0x0009041C\n    __X9zPitchType__m__Safe_intnl_0:
+    %SystemSingle, 0\n    __const_202: %SystemSingle, 0.0000958738\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3:
+    %SystemSingle, 0\n    __retaddr_295: %SystemUInt32, 0x0009040C\n    __X9zPitchType__m__Safe_intnl_0:
     %SystemBoolean, null\n    __X13zPitchPlaylist__m__Exchange_intnl_0: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__Exchange_intnl_1: %SystemInt32, 0\n    __X13zPitchPlaylist__m__Exchange_intnl_2:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Exchange_intnl_3: %SystemInt32,
-    0\n    __retaddr_296: %SystemUInt32, 0x000907D4\n    __X13zPitchPlaylist__m__PackBuild_intnl_0:
+    0\n    __retaddr_296: %SystemUInt32, 0x000907C4\n    __X13zPitchPlaylist__m__PackBuild_intnl_0:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_1: %SystemBoolean,
-    null\n    __retaddr_297: %SystemUInt32, 0x0009088C\n    __X13zPitchPlaylist__m__PackBuild_intnl_2:
+    null\n    __retaddr_297: %SystemUInt32, 0x0009087C\n    __X13zPitchPlaylist__m__PackBuild_intnl_2:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_3: %SystemBoolean,
     null\n    __X13zPitchPlaylist__m__PackBuild_intnl_4: %SystemInt32, 0\n    __retaddr_298:
-    %SystemUInt32, 0x00090958\n    __X13zPitchPlaylist__m__PackBuild_intnl_5: %SystemInt32,
+    %SystemUInt32, 0x00090948\n    __X13zPitchPlaylist__m__PackBuild_intnl_5: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__PackBuild_intnl_6: %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_7:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_8: %SystemBoolean,
     null\n    __X13zPitchPlaylist__m__PackBuild_intnl_9: %SystemInt32, 0\n    __retaddr_299:
-    %SystemUInt32, 0x00090A64\n    __X13zPitchPlaylist__m__PackBuild_intnl_10: %SystemInt32,
-    0\n    __const_202: %SystemInt32, 20\n    __X13zPitchPlaylist__m__PackBuild_intnl_11:
+    %SystemUInt32, 0x00090A54\n    __X13zPitchPlaylist__m__PackBuild_intnl_10: %SystemInt32,
+    0\n    __const_203: %SystemInt32, 20\n    __X13zPitchPlaylist__m__PackBuild_intnl_11:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_12: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__Parameter_intnl_0: %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_1:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_2: %SystemInt32,
-    0\n    __const_203: %SystemInt32, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_3:
+    0\n    __const_204: %SystemInt32, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_3:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_4: %SystemSingle,
-    0\n    __const_204: %SystemSingle, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_5:
-    %SystemSingle, 0\n    __const_205: %SystemInt32, -16384\n    __X13zPitchPlaylist__m__With_intnl_0:
+    0\n    __const_205: %SystemSingle, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_5:
+    %SystemSingle, 0\n    __const_206: %SystemInt32, -16384\n    __X13zPitchPlaylist__m__With_intnl_0:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_1: %SystemInt32, 0\n   
     __X13zPitchPlaylist__m__With_intnl_2: %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_3:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_4: %SystemInt32, 0\n   
     __X13zPitchPlaylist__m__With_intnl_5: %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_6:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_7: %SystemInt32, 0\n   
-    __retaddr_300: %SystemUInt32, 0x00090DDC\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_0:
+    __retaddr_300: %SystemUInt32, 0x00090DCC\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_0:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_1:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_2: %SystemSingle,
     0\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_3: %SystemSingle, 0\n   
@@ -36947,19 +36943,19 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Clock_intnl_3: %UnityEngineVector3,
     null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_0: %SystemBoolean,
     null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_1: %SystemBoolean,
-    null\n    __const_206: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_2:
-    %SystemBoolean, null\n    __const_207: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_3:
-    %SystemBoolean, null\n    __retaddr_301: %SystemUInt32, 0x00091334\n    __X25zPitchPropertiesCalculator__m__Fixed_intnl_0:
-    %UnityEngineVector3, null\n    __retaddr_302: %SystemUInt32, 0x00091414\n   
+    null\n    __const_207: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_2:
+    %SystemBoolean, null\n    __const_208: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_3:
+    %SystemBoolean, null\n    __retaddr_301: %SystemUInt32, 0x00091324\n    __X25zPitchPropertiesCalculator__m__Fixed_intnl_0:
+    %UnityEngineVector3, null\n    __retaddr_302: %SystemUInt32, 0x00091404\n   
     __X25zPitchPropertiesCalculator__m__Parameter_intnl_0: %SystemBoolean, null\n   
     __X25zPitchPropertiesCalculator__m__Parameter_intnl_1: %SystemSingle, 0\n   
     __X9zPitchType__m__IsValid_intnl_0: %SystemBoolean, null\n    __X9zPitchType__m__IsValid_intnl_1:
-    %SystemBoolean, null\n    __retaddr_303: %SystemUInt32, 0x00091584\n    __X13zPitchPlaylist__m__Step_intnl_0:
+    %SystemBoolean, null\n    __retaddr_303: %SystemUInt32, 0x00091574\n    __X13zPitchPlaylist__m__Step_intnl_0:
     %SystemSingle, 0\n    __X13zPitchPlaylist__m__Step_intnl_1: %SystemSingle, 0\n   
     __X13zPitchPlaylist__m__Step_intnl_2: %SystemSingle, 0\n    __X13zPitchPlaylist__m__Step_intnl_3:
     %SystemDouble, 0\n    __X13zPitchPlaylist__m__Step_intnl_4: %SystemDouble, 0\n   
     __X13zPitchPlaylist__m__Step_intnl_5: %SystemInt32, 0\n    __X9zPitchType__m__ParameterCount_intnl_0:
-    %SystemInt32Array, null\n    __retaddr_304: %SystemUInt32, 0x00091688\n    __X9zPitchType__m__ParameterCount_intnl_1:
+    %SystemInt32Array, null\n    __retaddr_304: %SystemUInt32, 0x00091678\n    __X9zPitchType__m__ParameterCount_intnl_1:
     %SystemInt32, 0\n    __X9zPitchType__m__ParameterCount_intnl_2: %SystemInt32,
     0\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH, __const_0\n       
     PUSH, __Start___t0\n        COPY\n        PUSH, __const_0\n        PUSH, __Start___t1\n       
@@ -69913,45 +69909,43 @@ MonoBehaviour:
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_74\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coneAngle\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L21\n    __X25zPitchPropertiesCalculator__m__Calculate_L20:\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        EXTERN,
-    \"UnityEngineVector3.__get_left__UnityEngineVector3\"\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinAxisLocal\n       
+    PUSH, __const_196\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinAxisLocal\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Calculate_L21:\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_speed\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_speedScale\n        PUSH,
-    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
+    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_type\n       
-    PUSH, __const_147\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
+    PUSH, __const_147\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n        JUMP_IF_FALSE,
-    __X25zPitchPropertiesCalculator__m__Calculate_L22\n        PUSH, __const_197\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_a\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        JUMP_IF_FALSE,
+    __X25zPitchPropertiesCalculator__m__Calculate_L22\n        PUSH, __const_198\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_a\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __const_196\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        EXTERN,
+    PUSH, __const_197\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n        EXTERN,
     \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L25\n    __X25zPitchPropertiesCalculator__m__Calculate_L22:\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_type\n        PUSH, __const_15\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        EXTERN,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        EXTERN,
     \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        JUMP_IF_FALSE,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        JUMP_IF_FALSE,
     __X25zPitchPropertiesCalculator__m__Calculate_L24\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spin\n       
-    PUSH, __const_198\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n       
+    PUSH, __const_199\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n       
     EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L25\n    __X25zPitchPropertiesCalculator__m__Calculate_L24:\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spin\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spinScale\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        EXTERN,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        EXTERN,
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        PUSH, __const_26\n       
-    PUSH, __const_143\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        PUSH, __const_26\n       
+    PUSH, __const_143\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n       
     EXTERN, \"UnityEngineMathf.__Clamp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Calculate_L25:\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
-    PUSH, __const_199\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_84\n       
+    PUSH, __const_200\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n       
     EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_84\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
     PUSH, __ret__X25zPitchPropertiesCalculator__m__Calculate__speedMps\n        COPY\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n        PUSH,
@@ -69970,7 +69964,7 @@ MonoBehaviour:
     PUSH, __ret__X25zPitchPropertiesCalculator__m__Calculate__wakeLocal__initialPhase\n       
     COPY\n        JUMP_INDIRECT, __X25zPitchPropertiesCalculator__m__Calculate_retjump\n       
     JUMP_INDIRECT, __X25zPitchPropertiesCalculator__m__Calculate_retjump\n    X25zPitchPropertiesCalculator__m__LocalSpin:\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_1\n        PUSH, __const_200\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_1\n        PUSH, __const_201\n       
     PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0\n        EXTERN,
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_2\n        PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0\n       
@@ -69988,7 +69982,7 @@ MonoBehaviour:
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_1\n        PUSH,
     __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2\n        EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2\n        PUSH,
-    __const_201\n        PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n       
+    __const_202\n        PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n        PUSH,
     __X25zPitchPropertiesCalculator__m__PhaseFromSeed_ret\n        COPY\n       
@@ -70094,7 +70088,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_299\n        PUSH, __X13zPitchPlaylist__m__Step_retjump\n       
     COPY\n        JUMP, X13zPitchPlaylist__m__Step\n        PUSH, __X13zPitchPlaylist__m__Step_ret\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_10\n        COPY\n        PUSH,
-    __X13zPitchPlaylist__m__PackBuild_intnl_10\n        PUSH, __const_202\n       
+    __X13zPitchPlaylist__m__PackBuild_intnl_10\n        PUSH, __const_203\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_11\n        EXTERN, \"SystemInt32.__op_LeftShift__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_9\n        PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_11\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_12\n        EXTERN, \"SystemInt32.__op_LogicalOr__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -70109,18 +70103,18 @@ MonoBehaviour:
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_1\n        PUSH, __const_148\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_2\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_2\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n       
-    COPY\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n        PUSH, __const_203\n       
+    COPY\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n        PUSH, __const_204\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_3\n        EXTERN, \"UnityEngineMathf.__Min__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_3\n        PUSH, __X13zPitchPlaylist__m__Parameter_intnl_4\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
-    __X13zPitchPlaylist__m__Parameter_intnl_4\n        PUSH, __const_204\n       
+    __X13zPitchPlaylist__m__Parameter_intnl_4\n        PUSH, __const_205\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_5\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_5\n        PUSH, __X13zPitchPlaylist__m__Parameter_ret\n       
     COPY\n        JUMP_INDIRECT, __X13zPitchPlaylist__m__Parameter_retjump\n       
     JUMP_INDIRECT, __X13zPitchPlaylist__m__Parameter_retjump\n    X13zPitchPlaylist__m__With:\n       
     PUSH, __const_15\n        PUSH, __X13zPitchPlaylist__m__With_flags\n        COPY\n       
     PUSH, __const_15\n        PUSH, __X13zPitchPlaylist__m__With___t0\n        COPY\n       
-    PUSH, __X13zPitchPlaylist__m__With_p_0\n        PUSH, __const_205\n        PUSH,
+    PUSH, __X13zPitchPlaylist__m__With_p_0\n        PUSH, __const_206\n        PUSH,
     __X13zPitchPlaylist__m__With_intnl_0\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__With_intnl_0\n        PUSH, __X13zPitchPlaylist__m__With_flags\n       
     COPY\n        PUSH, __X13zPitchPlaylist__m__With_p_1\n        PUSH, __const_15\n       
@@ -70201,14 +70195,14 @@ MonoBehaviour:
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_1\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     JUMP_IF_FALSE, __X25zPitchPropertiesCalculator__m__Finite_L1\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_p_0\n       
-    PUSH, __const_206\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n       
+    PUSH, __const_207\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n       
     EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Finite_L1:\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n        COPY\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n        JUMP_IF_FALSE,
     __X25zPitchPropertiesCalculator__m__Finite_L3\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_p_0\n       
-    PUSH, __const_207\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n       
+    PUSH, __const_208\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n       
     EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Finite_L3:\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n       
@@ -70287,7 +70281,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_303\n        PUSH, __X25zPitchPropertiesCalculator__m__Parameter_retjump\n       
     COPY\n        JUMP, X25zPitchPropertiesCalculator__m__Parameter\n        PUSH,
     __X25zPitchPropertiesCalculator__m__Parameter_ret\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n       
-    COPY\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n        PUSH, __const_204\n       
+    COPY\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n        PUSH, __const_205\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_1\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_1\n        PUSH, __const_20\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_2\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -71965,51 +71959,50 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_72:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_73:
     %SystemSingle, 0\n    __const_195: %SystemSingle, 0.017453292\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_74:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75:
-    %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_77:
-    %SystemBoolean, null\n    __const_196: %SystemSingle, 12.5\n    __const_197:
-    %SystemSingle, 87.5\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_78:
+    %SystemSingle, 0\n    __const_196: %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76:
+    %SystemBoolean, null\n    __const_197: %SystemSingle, 12.5\n    __const_198:
+    %SystemSingle, 87.5\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_77:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_78:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_79:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_80:
-    %SystemBoolean, null\n    __const_198: %SystemSingle, 2800\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_81:
+    %SystemBoolean, null\n    __const_199: %SystemSingle, 2800\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_80:
+    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_81:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_82:
-    %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_83:
-    %SystemSingle, 0\n    __const_199: %SystemSingle, 0.055\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_84:
-    %SystemSingle, 0\n    __const_200: %SystemSingle, 0.10471976\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0:
+    %SystemSingle, 0\n    __const_200: %SystemSingle, 0.055\n    __X25zPitchPropertiesCalculator__m__Calculate_intnl_83:
+    %SystemSingle, 0\n    __const_201: %SystemSingle, 0.10471976\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_1:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_0:
     %SystemInt32, 0\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_1:
     %SystemInt32, 0\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2:
-    %SystemSingle, 0\n    __const_201: %SystemSingle, 0.0000958738\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3:
-    %SystemSingle, 0\n    __retaddr_295: %SystemUInt32, 0x0009041C\n    __X9zPitchType__m__Safe_intnl_0:
+    %SystemSingle, 0\n    __const_202: %SystemSingle, 0.0000958738\n    __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3:
+    %SystemSingle, 0\n    __retaddr_295: %SystemUInt32, 0x0009040C\n    __X9zPitchType__m__Safe_intnl_0:
     %SystemBoolean, null\n    __X13zPitchPlaylist__m__Exchange_intnl_0: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__Exchange_intnl_1: %SystemInt32, 0\n    __X13zPitchPlaylist__m__Exchange_intnl_2:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Exchange_intnl_3: %SystemInt32,
-    0\n    __retaddr_296: %SystemUInt32, 0x000907D4\n    __X13zPitchPlaylist__m__PackBuild_intnl_0:
+    0\n    __retaddr_296: %SystemUInt32, 0x000907C4\n    __X13zPitchPlaylist__m__PackBuild_intnl_0:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_1: %SystemBoolean,
-    null\n    __retaddr_297: %SystemUInt32, 0x0009088C\n    __X13zPitchPlaylist__m__PackBuild_intnl_2:
+    null\n    __retaddr_297: %SystemUInt32, 0x0009087C\n    __X13zPitchPlaylist__m__PackBuild_intnl_2:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_3: %SystemBoolean,
     null\n    __X13zPitchPlaylist__m__PackBuild_intnl_4: %SystemInt32, 0\n    __retaddr_298:
-    %SystemUInt32, 0x00090958\n    __X13zPitchPlaylist__m__PackBuild_intnl_5: %SystemInt32,
+    %SystemUInt32, 0x00090948\n    __X13zPitchPlaylist__m__PackBuild_intnl_5: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__PackBuild_intnl_6: %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_7:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_8: %SystemBoolean,
     null\n    __X13zPitchPlaylist__m__PackBuild_intnl_9: %SystemInt32, 0\n    __retaddr_299:
-    %SystemUInt32, 0x00090A64\n    __X13zPitchPlaylist__m__PackBuild_intnl_10: %SystemInt32,
-    0\n    __const_202: %SystemInt32, 20\n    __X13zPitchPlaylist__m__PackBuild_intnl_11:
+    %SystemUInt32, 0x00090A54\n    __X13zPitchPlaylist__m__PackBuild_intnl_10: %SystemInt32,
+    0\n    __const_203: %SystemInt32, 20\n    __X13zPitchPlaylist__m__PackBuild_intnl_11:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__PackBuild_intnl_12: %SystemInt32,
     0\n    __X13zPitchPlaylist__m__Parameter_intnl_0: %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_1:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_2: %SystemInt32,
-    0\n    __const_203: %SystemInt32, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_3:
+    0\n    __const_204: %SystemInt32, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_3:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__Parameter_intnl_4: %SystemSingle,
-    0\n    __const_204: %SystemSingle, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_5:
-    %SystemSingle, 0\n    __const_205: %SystemInt32, -16384\n    __X13zPitchPlaylist__m__With_intnl_0:
+    0\n    __const_205: %SystemSingle, 1022\n    __X13zPitchPlaylist__m__Parameter_intnl_5:
+    %SystemSingle, 0\n    __const_206: %SystemInt32, -16384\n    __X13zPitchPlaylist__m__With_intnl_0:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_1: %SystemInt32, 0\n   
     __X13zPitchPlaylist__m__With_intnl_2: %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_3:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_4: %SystemInt32, 0\n   
     __X13zPitchPlaylist__m__With_intnl_5: %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_6:
     %SystemInt32, 0\n    __X13zPitchPlaylist__m__With_intnl_7: %SystemInt32, 0\n   
-    __retaddr_300: %SystemUInt32, 0x00090DDC\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_0:
+    __retaddr_300: %SystemUInt32, 0x00090DCC\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_0:
     %UnityEngineVector3, null\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_1:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_2: %SystemSingle,
     0\n    __X25zPitchPropertiesCalculator__m__Axis_intnl_3: %SystemSingle, 0\n   
@@ -72023,19 +72016,19 @@ MonoBehaviour:
     %SystemSingle, 0\n    __X25zPitchPropertiesCalculator__m__Clock_intnl_3: %UnityEngineVector3,
     null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_0: %SystemBoolean,
     null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_1: %SystemBoolean,
-    null\n    __const_206: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_2:
-    %SystemBoolean, null\n    __const_207: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_3:
-    %SystemBoolean, null\n    __retaddr_301: %SystemUInt32, 0x00091334\n    __X25zPitchPropertiesCalculator__m__Fixed_intnl_0:
-    %UnityEngineVector3, null\n    __retaddr_302: %SystemUInt32, 0x00091414\n   
+    null\n    __const_207: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_2:
+    %SystemBoolean, null\n    __const_208: %SystemSingle, null\n    __X25zPitchPropertiesCalculator__m__Finite_intnl_3:
+    %SystemBoolean, null\n    __retaddr_301: %SystemUInt32, 0x00091324\n    __X25zPitchPropertiesCalculator__m__Fixed_intnl_0:
+    %UnityEngineVector3, null\n    __retaddr_302: %SystemUInt32, 0x00091404\n   
     __X25zPitchPropertiesCalculator__m__Parameter_intnl_0: %SystemBoolean, null\n   
     __X25zPitchPropertiesCalculator__m__Parameter_intnl_1: %SystemSingle, 0\n   
     __X9zPitchType__m__IsValid_intnl_0: %SystemBoolean, null\n    __X9zPitchType__m__IsValid_intnl_1:
-    %SystemBoolean, null\n    __retaddr_303: %SystemUInt32, 0x00091584\n    __X13zPitchPlaylist__m__Step_intnl_0:
+    %SystemBoolean, null\n    __retaddr_303: %SystemUInt32, 0x00091574\n    __X13zPitchPlaylist__m__Step_intnl_0:
     %SystemSingle, 0\n    __X13zPitchPlaylist__m__Step_intnl_1: %SystemSingle, 0\n   
     __X13zPitchPlaylist__m__Step_intnl_2: %SystemSingle, 0\n    __X13zPitchPlaylist__m__Step_intnl_3:
     %SystemDouble, 0\n    __X13zPitchPlaylist__m__Step_intnl_4: %SystemDouble, 0\n   
     __X13zPitchPlaylist__m__Step_intnl_5: %SystemInt32, 0\n    __X9zPitchType__m__ParameterCount_intnl_0:
-    %SystemInt32Array, null\n    __retaddr_304: %SystemUInt32, 0x00091688\n    __X9zPitchType__m__ParameterCount_intnl_1:
+    %SystemInt32Array, null\n    __retaddr_304: %SystemUInt32, 0x00091678\n    __X9zPitchType__m__ParameterCount_intnl_1:
     %SystemInt32, 0\n    __X9zPitchType__m__ParameterCount_intnl_2: %SystemInt32,
     0\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH, __const_0\n       
     PUSH, __Start___t0\n        COPY\n        PUSH, __const_0\n        PUSH, __Start___t1\n       
@@ -104989,45 +104982,43 @@ MonoBehaviour:
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_74\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coneAngle\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L21\n    __X25zPitchPropertiesCalculator__m__Calculate_L20:\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        EXTERN,
-    \"UnityEngineVector3.__get_left__UnityEngineVector3\"\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinAxisLocal\n       
+    PUSH, __const_196\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinAxisLocal\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Calculate_L21:\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_speed\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_speedScale\n        PUSH,
-    __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
+    __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_75\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_type\n       
-    PUSH, __const_147\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
+    PUSH, __const_147\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n       
     EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n        JUMP_IF_FALSE,
-    __X25zPitchPropertiesCalculator__m__Calculate_L22\n        PUSH, __const_197\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_a\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_76\n        JUMP_IF_FALSE,
+    __X25zPitchPropertiesCalculator__m__Calculate_L22\n        PUSH, __const_198\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_a\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __const_196\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        EXTERN,
+    PUSH, __const_197\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_77\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n        EXTERN,
     \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_78\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L25\n    __X25zPitchPropertiesCalculator__m__Calculate_L22:\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_type\n        PUSH, __const_15\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        EXTERN,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        EXTERN,
     \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        JUMP_IF_FALSE,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_79\n        JUMP_IF_FALSE,
     __X25zPitchPropertiesCalculator__m__Calculate_L24\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spin\n       
-    PUSH, __const_198\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n       
+    PUSH, __const_199\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n       
     EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_80\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n        JUMP, __X25zPitchPropertiesCalculator__m__Calculate_L25\n    __X25zPitchPropertiesCalculator__m__Calculate_L24:\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spin\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_spinScale\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        EXTERN,
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        EXTERN,
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        PUSH, __const_26\n       
-    PUSH, __const_143\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_81\n        PUSH, __const_26\n       
+    PUSH, __const_143\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n       
     EXTERN, \"UnityEngineMathf.__Clamp__SystemSingle_SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_82\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Calculate_L25:\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
-    PUSH, __const_199\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_84\n       
+    PUSH, __const_200\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n       
     EXTERN, \"UnityEngineMathf.__Min__SystemSingle_SystemSingle__SystemSingle\"\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_84\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__Calculate_intnl_83\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__wakeLocal__coefficient\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__speedMps\n       
     PUSH, __ret__X25zPitchPropertiesCalculator__m__Calculate__speedMps\n        COPY\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Calculate_p__spinRpm\n        PUSH,
@@ -105046,7 +105037,7 @@ MonoBehaviour:
     PUSH, __ret__X25zPitchPropertiesCalculator__m__Calculate__wakeLocal__initialPhase\n       
     COPY\n        JUMP_INDIRECT, __X25zPitchPropertiesCalculator__m__Calculate_retjump\n       
     JUMP_INDIRECT, __X25zPitchPropertiesCalculator__m__Calculate_retjump\n    X25zPitchPropertiesCalculator__m__LocalSpin:\n       
-    PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_1\n        PUSH, __const_200\n       
+    PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_1\n        PUSH, __const_201\n       
     PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0\n        EXTERN,
     \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_p_2\n        PUSH, __X25zPitchPropertiesCalculator__m__LocalSpin_intnl_0\n       
@@ -105064,7 +105055,7 @@ MonoBehaviour:
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_1\n        PUSH,
     __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2\n        EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_2\n        PUSH,
-    __const_201\n        PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n       
+    __const_202\n        PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__PhaseFromSeed_intnl_3\n        PUSH,
     __X25zPitchPropertiesCalculator__m__PhaseFromSeed_ret\n        COPY\n       
@@ -105170,7 +105161,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_299\n        PUSH, __X13zPitchPlaylist__m__Step_retjump\n       
     COPY\n        JUMP, X13zPitchPlaylist__m__Step\n        PUSH, __X13zPitchPlaylist__m__Step_ret\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_10\n        COPY\n        PUSH,
-    __X13zPitchPlaylist__m__PackBuild_intnl_10\n        PUSH, __const_202\n       
+    __X13zPitchPlaylist__m__PackBuild_intnl_10\n        PUSH, __const_203\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_11\n        EXTERN, \"SystemInt32.__op_LeftShift__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_9\n        PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_11\n       
     PUSH, __X13zPitchPlaylist__m__PackBuild_intnl_12\n        EXTERN, \"SystemInt32.__op_LogicalOr__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -105185,18 +105176,18 @@ MonoBehaviour:
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_1\n        PUSH, __const_148\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_2\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_2\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n       
-    COPY\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n        PUSH, __const_203\n       
+    COPY\n        PUSH, __X13zPitchPlaylist__m__Parameter_step\n        PUSH, __const_204\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_3\n        EXTERN, \"UnityEngineMathf.__Min__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_3\n        PUSH, __X13zPitchPlaylist__m__Parameter_intnl_4\n       
     EXTERN, \"SystemConvert.__ToSingle__SystemInt32__SystemSingle\"\n        PUSH,
-    __X13zPitchPlaylist__m__Parameter_intnl_4\n        PUSH, __const_204\n       
+    __X13zPitchPlaylist__m__Parameter_intnl_4\n        PUSH, __const_205\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_5\n        EXTERN, \"SystemSingle.__op_Division__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X13zPitchPlaylist__m__Parameter_intnl_5\n        PUSH, __X13zPitchPlaylist__m__Parameter_ret\n       
     COPY\n        JUMP_INDIRECT, __X13zPitchPlaylist__m__Parameter_retjump\n       
     JUMP_INDIRECT, __X13zPitchPlaylist__m__Parameter_retjump\n    X13zPitchPlaylist__m__With:\n       
     PUSH, __const_15\n        PUSH, __X13zPitchPlaylist__m__With_flags\n        COPY\n       
     PUSH, __const_15\n        PUSH, __X13zPitchPlaylist__m__With___t0\n        COPY\n       
-    PUSH, __X13zPitchPlaylist__m__With_p_0\n        PUSH, __const_205\n        PUSH,
+    PUSH, __X13zPitchPlaylist__m__With_p_0\n        PUSH, __const_206\n        PUSH,
     __X13zPitchPlaylist__m__With_intnl_0\n        EXTERN, \"SystemInt32.__op_LogicalAnd__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __X13zPitchPlaylist__m__With_intnl_0\n        PUSH, __X13zPitchPlaylist__m__With_flags\n       
     COPY\n        PUSH, __X13zPitchPlaylist__m__With_p_1\n        PUSH, __const_15\n       
@@ -105277,14 +105268,14 @@ MonoBehaviour:
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_1\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     COPY\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     JUMP_IF_FALSE, __X25zPitchPropertiesCalculator__m__Finite_L1\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_p_0\n       
-    PUSH, __const_206\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n       
+    PUSH, __const_207\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n       
     EXTERN, \"SystemSingle.__op_LessThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_2\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Finite_L1:\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t1\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n        COPY\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n        JUMP_IF_FALSE,
     __X25zPitchPropertiesCalculator__m__Finite_L3\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_p_0\n       
-    PUSH, __const_207\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n       
+    PUSH, __const_208\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n       
     EXTERN, \"SystemSingle.__op_GreaterThanOrEqual__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __X25zPitchPropertiesCalculator__m__Finite_intnl_3\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n       
     COPY\n    __X25zPitchPropertiesCalculator__m__Finite_L3:\n        PUSH, __X25zPitchPropertiesCalculator__m__Finite___t0\n       
@@ -105363,7 +105354,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_303\n        PUSH, __X25zPitchPropertiesCalculator__m__Parameter_retjump\n       
     COPY\n        JUMP, X25zPitchPropertiesCalculator__m__Parameter\n        PUSH,
     __X25zPitchPropertiesCalculator__m__Parameter_ret\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n       
-    COPY\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n        PUSH, __const_204\n       
+    COPY\n        PUSH, __X13zPitchPlaylist__m__Step_intnl_0\n        PUSH, __const_205\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_1\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_1\n        PUSH, __const_20\n       
     PUSH, __X13zPitchPlaylist__m__Step_intnl_2\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
@@ -105420,8 +105411,9 @@ MonoBehaviour:
   - "=__const_37\tPrimConst\t=SystemDouble\t0\tDouble:=4294967.296\t\t\t\t"
   - "=__const_38\tPrimConst\t=SystemDouble\t0\tDouble:=-2147483.648\t\t\t\t"
   - "=__const_137\tEnumConst\t=VRCUdonCommonInterfacesNetworkEventTarget\t0\t\tInt32:=1\t\t\t"
-  - "=__const_206\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
-  - "=__const_207\tPrimConst\t=SystemSingle\t0\tSingle:=-3.4028235E+38\t\t\t\t"
+  - "=__const_196\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=-0.8660254\x01Single:=0.5\x01Single:=0\t"
+  - "=__const_207\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
+  - "=__const_208\tPrimConst\t=SystemSingle\t0\tSingle:=-3.4028235E+38\t\t\t\t"
   optAfterInject:
   - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
   - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
@@ -105456,13 +105448,14 @@ MonoBehaviour:
   - "=__const_37\tPrimConst\t=SystemDouble\t0\tDouble:=4294967.296\t\t\t\t"
   - "=__const_38\tPrimConst\t=SystemDouble\t0\tDouble:=-2147483.648\t\t\t\t"
   - "=__const_137\tEnumConst\t=VRCUdonCommonInterfacesNetworkEventTarget\t0\t\tInt32:=1\t\t\t"
-  - "=__const_206\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
-  - "=__const_207\tPrimConst\t=SystemSingle\t0\tSingle:=-3.4028235E+38\t\t\t\t"
+  - "=__const_196\tCtorConst\t\t0\t\t\t=UnityEngineVector3.__ctor__SystemSingle_SystemSingle_SystemSingle__UnityEngineVector3\t=Single:=-0.8660254\x01Single:=0.5\x01Single:=0\t"
+  - "=__const_207\tPrimConst\t=SystemSingle\t0\tSingle:=3.4028235E+38\t\t\t\t"
+  - "=__const_208\tPrimConst\t=SystemSingle\t0\tSingle:=-3.4028235E+38\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 16699
-  optExternAfter: 16699
-  optInsnBefore: 75742
-  optInsnAfter: 75742
-  optBytesBefore: 595680
-  optBytesAfter: 595680
+  optExternBefore: 16698
+  optExternAfter: 16698
+  optInsnBefore: 75740
+  optInsnAfter: 75740
+  optBytesBefore: 595664
+  optBytesAfter: 595664
   optStage: ran

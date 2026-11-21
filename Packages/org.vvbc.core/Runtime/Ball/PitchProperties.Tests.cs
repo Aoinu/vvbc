@@ -113,12 +113,15 @@ public partial struct PitchProperties
     }
 
     [TsukimiTest]
-    public void FourSeamIsTheBaseWithPureBackspin()
+    public void FourSeamIsTheBaseWithTheFixedOneOClockAxis()
     {
         PitchProperties p = Build(PitchType.FourSeam, 0.5f, 0.5f, 0.5f);
         Assert.AreEqual(BaseSpeed, p.speedMps);
         Assert.AreEqual(BaseSpin, p.spinRpm);
-        Assert.AreEqual(Vector3.left, p.spinAxisLocal, "backspin");
+        // All active spin, its Magnus break 30 deg from up toward the arm side (1-7 o'clock spin).
+        Assert.AreEqual(new Vector3(PitchPropertiesCalculator.FourSeamAxisX, PitchPropertiesCalculator.FourSeamAxisY, 0f), p.spinAxisLocal);
+        Vector3 brk = MagnusBreak(p);
+        Assert.IsTrue(Mathf.Abs(Mathf.Atan2(brk.x, brk.y) * Mathf.Rad2Deg - 30f) < 0.01f, "break toward 30 deg " + brk);
         Assert.AreEqual(BallAerodynamics.WakeNone, p.wakeLocal.mode);
         PitchBuild build = new PitchBuild();
         Assert.AreEqual(PitchPropertiesCalculator.FourSeamMaxSpinRpm, PitchPropertiesCalculator.Calculate(build, BaseSpeed, 3000f).spinRpm, "4-Seam spin is capped");

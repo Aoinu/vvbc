@@ -159,6 +159,30 @@ public partial class BallBehaviour
         Assert.IsFalse(IsHeld());
     }
 
+    // A manual Knuckle's Rotating wake (its cone and the phase the pitcher drew) is published
+    // with the hand pitch and flown by the receiver as sent: nothing is drawn or recomputed there.
+    [TsukimiTest]
+    public void AHandPitchedKnuckleKeepsItsConeAndPhaseOnTheReceiver()
+    {
+        VRCPlayerApi pitcher = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        Mimic.Become(other);
+        Mimic.Become(pitcher);
+        HoldInHandForTest(pitcher);
+        Vector3 axis = new Vector3(0.3f, -0.4f, 0.866f).normalized;
+        WakeProfile wake = TestWake(BallAerodynamics.WakeRotating, 0.031f, axis, 0.42f, 2.2f);
+        LaunchRelease(new Vector3(-0.25f, 1.85f, 17.9f), Vector3.back * 26f, axis * 6f, true, wake, 4.0, 3.5f);
+        Assert.AreEqual(BallAerodynamics.WakeRotating, _acceptedWake.mode, "published as the pitcher fixed it");
+        Mimic.Deliver(other);
+        Mimic.Become(other);
+        Assert.AreEqual(HandPitchState, _acceptedKind);
+        Assert.AreEqual(BallAerodynamics.WakeRotating, _acceptedWake.mode);
+        Assert.AreEqual(0.031f, _acceptedWake.coefficient);
+        Assert.AreEqual(axis, _acceptedWake.direction);
+        Assert.AreEqual(0.42f, _acceptedWake.coneAngle, "the cone the quality left");
+        Assert.AreEqual(2.2f, _acceptedWake.initialPhase, "the pitcher's phase");
+    }
+
     // A hand pitch leaves from the mound's release point (the solver's), away from the hand
     // that held the ball: the launch, the snapshot other clients receive and the release
     // re-assertion all use that one point.

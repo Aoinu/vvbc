@@ -50,7 +50,7 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
         string calibration = pitcher.HasCalibration()
             ? (pitcher.CalibratedHand() == GloveBehaviour.HandLeft ? "saved (left hand)" : "saved (right hand)")
             : "none";
-        string text = "4-Seam  |  " + ManualPitchMath.StateName(pitcher.state) + "  |  Calibration: " + calibration;
+        string text = pitcher.SelectedPitchTypeName() + "  |  " + ManualPitchMath.StateName(pitcher.state) + "  |  Calibration: " + calibration;
         if (pitcher.Calibrating()) text += "\nCALIBRATING";
         if (pitcher.statusText.Length > 0) text += "\n" + pitcher.statusText;
         return text;

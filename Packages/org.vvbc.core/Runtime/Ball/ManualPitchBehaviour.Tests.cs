@@ -52,7 +52,7 @@ public partial class ManualPitchBehaviour
     private bool CalibrateForTest(Vector3 relative)
     {
         BeginCalibration();
-        if (!RecordCalibrationAt(TestChest, HandAt(TestChest, relative), IdealHand(TestChest), TestPlate)) return false;
+        if (!RecordCalibrationAt(TestChest, HandAt(TestChest, relative), TestPlate)) return false;
         return CommitCalibration();
     }
 
@@ -63,10 +63,12 @@ public partial class ManualPitchBehaviour
         _lockTarget = target;
         _lockRelease = ManualPitchMath.FromFrame(frame, TestChest, _calPosition);
         _lockDirection = (target - _lockRelease).normalized;
-        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
+        _lockType = _selectedType;
+        _lockBuild = BuildFor(_lockType);
+        _lockSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_lockBuild);
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
         _lockConverged = true;
-        _lockWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
-        _lockWakeClock = wakeClockDegrees;
+        _lockIdeal = IdealFor(_lockType);
         state = StateLockedReady;
     }
 
@@ -77,12 +79,14 @@ public partial class ManualPitchBehaviour
         _defaultTarget = target;
         _defaultRelease = ManualPitchMath.FromFrame(frame, TestChest, _calPosition);
         _defaultDirection = (target - _defaultRelease).normalized;
-        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
+        _defaultType = _selectedType;
+        _defaultBuild = BuildFor(_defaultType);
+        _defaultSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_defaultBuild);
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
         _defaultConverged = true;
         _defaultSolverError = 0f;
         _defaultPredicted = target;
-        _defaultWakeLocal = ManualPitchMath.WakeDirection(wakeClockDegrees, ArmSide());
-        _defaultWakeClock = wakeClockDegrees;
+        _defaultIdeal = IdealFor(_defaultType);
         _defaultReady = true;
         _defaultSolving = false;
         _defaultDirty = false;
@@ -114,6 +118,8 @@ public partial class ManualPitchBehaviour
         _crossPoint = _plate.centre + _plate.right * offset.x + Vector3.up * offset.y;
         _crossArm = FieldingMath.GivenArmMotion(armVelocity);
         _crossRotation = rotation;
+        _crossType = _selectedType;
+        _crossCourse = CourseFor(_crossType);
         _autoPending = true;
     }
 
@@ -132,13 +138,6 @@ public partial class ManualPitchBehaviour
         return ResolveReleaseWithCurveOutputAt(hand, rotation, ball, armVelocity, planePoint, planeNormal, input, curveOutput);
     }
 
-    // The earlier tuning (before the zero defaults for real-client verification): tests of the
-    // penalty mechanics set it, so they show the penalties still work once configured.
-    private void EarlierPenaltiesForTest()
-    {
-        spinLossAtBadPose = 0.5f;
-        wakeLossAtBadPose = 1f;
-    }
 
     // ---- Calibration ----
 
@@ -151,11 +150,10 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(CalibrationUsable());
         Assert.AreEqual(GloveBehaviour.HandRight, CalibratedHand());
         Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f);
-        Quaternion stored = CalibratedRotation();
         _hasCalibration = false;
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, stored));
-        Assert.IsTrue(ManualPitchMath.AngleBetween(stored, CalibratedRotation()) < 0.01f);
-        Assert.IsTrue(ManualPitchMath.AngleBetween(TestPose, stored) < 0.01f, "rotation relative to the pitching frame");
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand), "positions only: no rotation is stored");
+        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f);
+        Assert.IsTrue(CalibrationUsable());
     }
 
     [TsukimiTest]
@@ -215,8 +213,8 @@ public partial class ManualPitchBehaviour
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
         BeginCalibration();
-        Assert.IsFalse(RecordCalibrationAt(Vector3.zero, HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate));
-        Assert.IsFalse(RecordCalibrationAt(new Vector3(float.NaN, 1f, 1f), HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate));
+        Assert.IsFalse(RecordCalibrationAt(Vector3.zero, HandAt(TestChest, Overhand), TestPlate));
+        Assert.IsFalse(RecordCalibrationAt(new Vector3(float.NaN, 1f, 1f), HandAt(TestChest, Overhand), TestPlate));
         CancelCalibration();
         Assert.IsTrue(CalibrateForTest(Overhand));
         LockForTest(new Vector3(0f, 0.75f, 0f));
@@ -235,15 +233,11 @@ public partial class ManualPitchBehaviour
     [TsukimiTest]
     public void InvalidStoredCalibrationsAreNotRestored()
     {
-        Quaternion good = TestPose;
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, new Quaternion(0f, 0f, 0f, 0f)));
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, new Quaternion(float.NaN, 0f, 0f, 1f)));
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, new Quaternion(0f, 0f, 0f, 2f)));
-        Assert.IsFalse(RestoreCalibration(2, GloveBehaviour.HandRight, Overhand, good), "unknown version");
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, 3, Overhand, good), "unknown hand");
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(0f, float.NaN, 0f), good), "not finite");
+        Assert.IsFalse(RestoreCalibration(2, GloveBehaviour.HandRight, Overhand), "unknown version");
+        Assert.IsFalse(RestoreCalibration(CalibrationVersion, 3, Overhand), "unknown hand");
+        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(0f, float.NaN, 0f)), "not finite");
         Assert.IsFalse(HasCalibration());
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandLeft, Overhand, good));
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandLeft, Overhand));
     }
 
     // ---- 4-Seam axis (fixed per hand) ----
@@ -252,7 +246,7 @@ public partial class ManualPitchBehaviour
     private static Vector3 MagnusOfHand(bool leftHanded)
     {
         Vector3 direction = Vector3.back;
-        Vector3 spin = PitchSpin.ToWorld(ManualPitchMath.FourSeamSpin(ManualPitchMath.FixedFourSeamAxis(leftHanded), 2500f, 2800f, 0f, 0.5f), direction);
+        Vector3 spin = PitchSpin.ToWorld(ManualPitchMath.FixedFourSeamAxis(leftHanded) * (2500f * 2f * Mathf.PI / 60f), direction);
         return BallAerodynamics.Acceleration(direction * 38f, spin, 0f, 0.00063f);
     }
 
@@ -289,9 +283,8 @@ public partial class ManualPitchBehaviour
                 ActiveForTest(hands[h]);
                 Vector3 form = hands[h] == GloveBehaviour.HandLeft ? new Vector3(-forms[f].x, forms[f].y, forms[f].z) : forms[f];
                 Assert.IsTrue(CalibrateForTest(form), "form " + f);
-                EarlierPenaltiesForTest();
                 Vector3 expected = ManualPitchMath.FixedFourSeamAxis(hands[h] == GloveBehaviour.HandLeft);
-                Assert.IsTrue(Vector3.Distance(IdealSpinLocal().normalized, expected) < 0.00001f, "the solver's axis " + h + "/" + f);
+                Assert.IsTrue(Vector3.Distance(IdealFor(PitchType.FourSeam).spinAxisLocal, expected) < 0.00001f, "the solver's axis " + h + "/" + f);
                 Quaternion[] poses = { IdealHand(TestChest), ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 70f)) };
                 for (int p = 0; p < poses.Length; p++)
                 {
@@ -305,53 +298,9 @@ public partial class ManualPitchBehaviour
         }
     }
 
-    [TsukimiTest]
-    public void ZeroSpinGivesNoNaNOrJump()
-    {
-        Vector3 axis = ManualPitchMath.FixedFourSeamAxis(false);
-        Assert.AreEqual(Vector3.zero, ManualPitchMath.FourSeamSpin(axis, 0f, 2800f, 0.5f, 0.5f));
-        Vector3 tiny = ManualPitchMath.FourSeamSpin(axis, 0.001f, 2800f, 0f, 0.5f);
-        Assert.IsTrue(ManualPitchMath.FiniteVector(tiny) && tiny.magnitude < 0.001f);
-        Assert.IsTrue(ManualPitchMath.FiniteVector(ManualPitchMath.FourSeamSpin(axis, float.NaN, 2800f, float.NaN, 0.5f)));
-        Assert.AreEqual(Vector3.zero, ManualPitchMath.FourSeamSpin(Vector3.zero, 2500f, 2800f, 0f, 0.5f));
-        Vector3 capped = ManualPitchMath.FourSeamSpin(axis, 5000f, 2800f, 0f, 0.5f);
-        Assert.IsTrue(Mathf.Abs(capped.magnitude * 60f / (2f * Mathf.PI) - 2800f) < 0.5f, "capped at the maximum");
-        Vector3 lost = ManualPitchMath.FourSeamSpin(axis, 2500f, 2800f, 1f, 0.5f);
-        Assert.IsTrue(Vector3.Distance(lost.normalized, axis) < 0.00001f, "a failed pose lowers the rpm, never the axis");
-    }
 
     // ---- Pose quality ----
 
-    [TsukimiTest]
-    public void TheCalibratedPoseHasFullQualityAndErrorsDegradeItContinuously()
-    {
-        Mimic.Join();
-        ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(CalibrateForTest(Overhand));
-        EarlierPenaltiesForTest();
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
-        Assert.AreEqual(1f, debugPoseQuality);
-        Assert.IsTrue(Mathf.Abs(debugSpinRpm - 2500f) < 0.5f);
-        Assert.AreEqual(wakeCoefficient, debugWake);
-        float previousQuality = 1f;
-        float previousRpm = debugSpinRpm;
-        for (int angle = 2; angle <= 60; angle += 2)
-        {
-            LockForTest(new Vector3(0f, 0.75f, 0f));
-            // A 3D error mixing all three axes, never a single Euler angle.
-            Quaternion error = ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), angle);
-            Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ManualPitchMath.Multiply(IdealHand(TestChest), error), TowardPlate()), "pose never fails recognition");
-            Assert.IsTrue(debugPoseQuality <= previousQuality + 0.00001f && previousQuality - debugPoseQuality < 0.12f, "continuous at " + angle);
-            Assert.IsTrue(debugSpinRpm <= previousRpm + 0.01f, "rpm never rises");
-            previousQuality = debugPoseQuality;
-            previousRpm = debugSpinRpm;
-        }
-        Assert.AreEqual(0f, debugPoseQuality, "past 50 degrees");
-        Assert.IsTrue(Mathf.Abs(debugSpinRpm - 1250f) < 1f);
-        Assert.AreEqual(0f, debugWake, "the wake is lost with the pose");
-        Assert.AreEqual(BallAerodynamics.WakeNone, releaseWakeMode);
-    }
 
     // ---- Course ----
 
@@ -568,6 +517,10 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(debugReason.StartsWith("plate: "), debugReason);
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(Vector3.right, 80f)), TowardPlate()), "a bad pose is still a pitch");
+        Assert.AreEqual(1f, debugPoseQuality, "the 4-Seam's pose is not evaluated");
+        SelectPitchTypeAt(PitchType.Slider, TestGravity, 0.02f);
+        LockForTest(new Vector3(0f, 0.75f, 0f));
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, PalmHand(new Vector3(0f, -1f, 0f)), TowardPlate()), "a failed Slider is still a pitch");
         Assert.AreEqual(0f, debugPoseQuality);
     }
 
@@ -658,12 +611,12 @@ public partial class ManualPitchBehaviour
             Assert.IsTrue(_releaseArmVelocity.z > 4.8f, "forward in the pitching frame " + h + ": " + _releaseArmVelocity);
             Assert.AreEqual(_lockRelease, releasePosition, "launch point " + h);
             // Toward the pitcher's own arm side: not toward the target.
-            Vector3 armSide = ManualPitchMath.Rotate(TestFrame(TestChest), Vector3.right * ArmSide());
+            Vector3 armSide = ManualPitchMath.Rotate(TestFrame(TestChest), Vector3.right * (_activeHand == GloveBehaviour.HandLeft ? -1f : 1f));
             LockForTest(target);
             ControllerMotionForTest(hand, armSide, 5f, 20f + h);
             Assert.IsFalse(ResolveTrackedReleaseAt(20f + h, hand, IdealHand(TestChest), hand, TestPlate, TestNormal, InputTrigger));
             Assert.IsTrue(debugReason.StartsWith("plate: "), debugReason);
-            Assert.IsTrue(_releaseArmVelocity.x * ArmSide() > 4.8f, "arm side in the pitching frame " + h + ": " + _releaseArmVelocity);
+            Assert.IsTrue(_releaseArmVelocity.x * (_activeHand == GloveBehaviour.HandLeft ? -1f : 1f) > 4.8f, "arm side in the pitching frame " + h + ": " + _releaseArmVelocity);
         }
     }
 
@@ -897,7 +850,6 @@ public partial class ManualPitchBehaviour
         _pressCaptured[i] = hand == _activeHand && _calibrating;
         _triggerChest = TestChest;
         _triggerHandPosition = HandAt(TestChest, relative);
-        _triggerHandRotation = TestFrame(TestChest);
         _triggerPlate = TestPlate;
     }
 
@@ -1082,11 +1034,10 @@ public partial class ManualPitchBehaviour
         Assert.AreEqual("Put the ball down: calibrate with an empty throwing hand.", statusText);
         Assert.IsTrue(Vector3.Distance(CalibratedPosition(), Overhand) < 0.0001f);
         // Recording itself (PlayerData is written by SaveCalibration and is not modelled here).
-        Assert.IsTrue(RecordCalibrationAt(TestChest, HandAt(TestChest, new Vector3(0.6f, 0f, 0.2f)), TestFrame(TestChest), TestPlate));
+        Assert.IsTrue(RecordCalibrationAt(TestChest, HandAt(TestChest, new Vector3(0.6f, 0f, 0.2f)), TestPlate));
         Assert.IsTrue(CommitCalibration());
         Assert.IsFalse(Calibrating(), "one press records and ends calibration");
-        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), new Vector3(0.6f, 0f, 0.2f)) < 0.0001f, "position and rotation replaced together");
-        Assert.IsTrue(ManualPitchMath.AngleBetween(CalibratedRotation(), Quaternion.identity) < 0.01f);
+        Assert.IsTrue(Vector3.Distance(CalibratedPosition(), new Vector3(0.6f, 0f, 0.2f)) < 0.0001f, "the position is replaced");
     }
 
     [TsukimiTest]
@@ -1194,7 +1145,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(Vector3.up, 30f)), TowardPlate()));
         debugPredictedTarget = Vector3.zero;
         string detail = ReleaseDetailText();
-        Assert.IsTrue(detail.Contains("rotation error 30 deg") && detail.Contains("rpm") && detail.Contains("SSW 0.00"), detail);
+        Assert.IsTrue(detail.Contains("pose evaluation off") && detail.Contains("TYPE  selected 4-Seam   pitched 4-Seam") && detail.Contains("rpm") && detail.Contains("SSW fixed 0.00"), detail);
         Assert.IsTrue(detail.Contains("solver   x +0.02  y 0.76 m   miss 2.2 cm (at lock, converged)"), detail);
         Assert.IsTrue(detail.Contains("actual   measuring...") || detail.Contains("actual   not measured"), detail);
     }
@@ -1238,103 +1189,13 @@ public partial class ManualPitchBehaviour
     public void ByDefaultThereIsNoPositionOrPosePenalty()
     {
         Assert.AreEqual(0f, armDirectionPenaltyPerDegree);
-        Assert.AreEqual(0f, spinLossAtBadPose);
-        Assert.AreEqual(0f, wakeLossAtBadPose);
+        Assert.IsFalse(PoseEvaluated(PitchType.FourSeam), "the 4-Seam's pose is not evaluated");
         Assert.IsFalse(diagnosticIdealSpin, "the diagnostic stays off");
         Assert.AreEqual(1f, minArmSpeed);
     }
 
-    // With the zero defaults a bad pose is still measured (quality, pose error) but leaves the
-    // spin, its axis and the SSW as calibrated; the earlier tuning brings the changes back.
-    [TsukimiTest]
-    public void ABadPoseIsMeasuredButChangesNothingUntilPenaltiesAreSet()
-    {
-        Mimic.Join();
-        ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(CalibrateForTest(Overhand));
-        Quaternion ideal = IdealHand(TestChest);
-        Quaternion bad = ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ideal, TowardPlate()));
-        Vector3 idealSpin = releaseSpin;
-        float idealWake = releaseWakeCoefficient;
-        Vector3 idealWakeDirection = releaseWakeDirection;
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
-        Assert.IsTrue(debugPoseQuality < 0.7f, "quality still measured: " + debugPoseQuality);
-        Assert.IsTrue(debugPoseAngle > 30f, "pose error still measured: " + debugPoseAngle);
-        Assert.IsTrue(Vector3.Distance(idealSpin, releaseSpin) < 0.001f, "no spin loss or axis change");
-        Assert.IsTrue(Mathf.Abs(releaseSpin.magnitude * 60f / (2f * Mathf.PI) - 2500f) < 0.5f, "2500 rpm");
-        Assert.AreEqual(idealWake, releaseWakeCoefficient, "no SSW loss");
-        Assert.IsTrue(Vector3.Distance(idealWakeDirection, releaseWakeDirection) < 0.00001f);
-        Assert.IsTrue(ReleaseDetailText().Contains("rotation error"), "the panel still shows it");
 
-        EarlierPenaltiesForTest();
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
-        Assert.IsTrue(releaseSpin.magnitude < idealSpin.magnitude - 1f, "spin loss returns");
-        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) < 0.01f, "the 4-Seam axis stays fixed");
-        Assert.IsTrue(releaseWakeCoefficient < idealWake, "SSW loss returns");
-    }
 
-    // Each coefficient alone brings back only its own change.
-    [TsukimiTest]
-    public void EachPoseCoefficientActsAlone()
-    {
-        Mimic.Join();
-        ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(CalibrateForTest(Overhand));
-        Quaternion ideal = IdealHand(TestChest);
-        Quaternion bad = ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ideal, TowardPlate()));
-        Vector3 idealSpin = releaseSpin;
-        float idealWake = releaseWakeCoefficient;
-
-        spinLossAtBadPose = 0.5f;
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
-        Assert.IsTrue(releaseSpin.magnitude < idealSpin.magnitude - 1f, "spin loss");
-        Assert.IsTrue(Vector3.Angle(idealSpin, releaseSpin) < 0.01f, "same axis");
-        Assert.AreEqual(idealWake, releaseWakeCoefficient);
-        spinLossAtBadPose = 0f;
-
-        wakeLossAtBadPose = 1f;
-        LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, bad, TowardPlate()));
-        Assert.IsTrue(releaseWakeCoefficient < idealWake, "SSW loss");
-        Assert.IsTrue(Vector3.Distance(idealSpin, releaseSpin) < 0.001f, "spin unchanged");
-    }
-
-    // The pose changes spin, axis and SSW and so moves the crossing; the diagnostic setting
-    // removes exactly that part.
-    [TsukimiTest(maxSteps: 60000000)]
-    public void TheDiagnosticIdealSpinRemovesThePoseMadeMiss()
-    {
-        Mimic.Join();
-        _ball = strikeZone != null ? strikeZone.ball : null;
-        ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(CalibrateForTest(Overhand));
-        Assert.IsFalse(diagnosticIdealSpin, "off by default");
-        EarlierPenaltiesForTest();
-        Assert.IsTrue(SolveLock(new Vector3(0f, 0.72f, 0f)));
-        Vector3 hand = HandAt(TestChest, Overhand);
-        Quaternion bad = ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(new Vector3(0.6f, 0.5f, 0.62f), 35f));
-        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
-        Vector3 ideal = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
-        state = StateLockedReady;
-        Assert.IsTrue(CrossedCurveReleaseAt(hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
-        Assert.IsTrue(debugPoseQuality < 0.7f);
-        Vector3 posed = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
-        diagnosticIdealSpin = true;
-        state = StateLockedReady;
-        Assert.IsTrue(CrossedCurveReleaseAt(hand, bad, hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
-        Assert.AreEqual(1f, debugPoseQuality);
-        Vector3 diagnosed = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
-        Assert.IsTrue(Vector3.Distance(diagnosed, ideal) < 0.001f, "the pose no longer moves the pitch");
-        Vector2 poseMiss = ViewOffset(posed, ideal);
-        Assert.IsTrue(poseMiss.magnitude > 0.05f, "a 35 deg pose error moves the crossing: " + poseMiss.ToString("F3"));
-    }
 
     // A 4-Seam wake turned toward the top (more lift): the solver and the flight share it.
     [TsukimiTest(maxSteps: 60000000)]
@@ -1423,7 +1284,7 @@ public partial class ManualPitchBehaviour
         LockForTest(target);
         Assert.IsTrue(CurveReleaseForTest(new Vector3(0.3f, -0.2f, 0.2f),
             ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(Vector3.right, 40f)), TowardPlate(), 0.97f));
-        Assert.IsTrue(debugPoseQuality < 1f && Vector3.Distance(releaseVelocity.normalized, first.normalized) < 0.000001f);
+        Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, first.normalized) < 0.000001f);
         Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 135.8f, 0.01f), "speed " + releaseVelocity.magnitude * 3.6f);
         // An invalid maximum gives no speed rather than NaN.
         maxPitchSpeedKmh = float.NaN;
@@ -1651,18 +1512,16 @@ public partial class ManualPitchBehaviour
     {
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(0.05f, 0.1f, 0.6f), TestPose),
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(0.05f, 0.1f, 0.6f)),
             "in front of the body (formerly refused)");
         Assert.IsTrue(CalibrationUsable());
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(0f, 0f, -2.5f), TestPose),
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(0f, 0f, -2.5f)),
             "far behind the chest");
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Vector3.zero, TestPose), "at the chest");
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(float.NaN, 0f, 0f), TestPose), "NaN");
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(float.PositiveInfinity, 0f, 0f), TestPose),
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Vector3.zero), "at the chest");
+        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(float.NaN, 0f, 0f)), "NaN");
+        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, new Vector3(float.PositiveInfinity, 0f, 0f)),
             "infinity");
-        Assert.IsFalse(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, new Quaternion(0f, 0f, 0f, 0f)),
-            "not a rotation");
-        Assert.IsFalse(RestoreCalibration(2, GloveBehaviour.HandRight, Overhand, TestPose), "unknown version");
+        Assert.IsFalse(RestoreCalibration(2, GloveBehaviour.HandRight, Overhand), "unknown version");
     }
 
     // Any finite position is recorded and saved: no distance or angle limit.
@@ -1692,7 +1551,7 @@ public partial class ManualPitchBehaviour
     private bool CalibratedOffsetForTest(int hand, Vector3 offset)
     {
         ActiveForTest(hand);
-        if (!RestoreCalibration(CalibrationVersion, hand, Overhand, TestPose)) return false;
+        if (!RestoreCalibration(CalibrationVersion, hand, Overhand)) return false;
         return RestoreReleaseOffset(offset.x, offset.y, offset.z);
     }
 
@@ -1836,7 +1695,7 @@ public partial class ManualPitchBehaviour
         ActiveForTest(GloveBehaviour.HandRight);
         Assert.IsTrue(Vector3.Distance(TestP0(), RightUncalibrated) < 0.0001f, "no calibration");
         BeginCalibration();
-        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate,
+        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), TestPlate,
             true, TestCentre, TestAnchor));
         Assert.IsFalse(_draftReleaseLimited, "inside the range");
         Assert.IsTrue(CommitCalibration());
@@ -1855,7 +1714,7 @@ public partial class ManualPitchBehaviour
         ActiveForTest(GloveBehaviour.HandRight);
         BeginCalibration();
         Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand) + new Vector3(0f, 0f, 1.0f),
-            IdealHand(TestChest), TestPlate, true, TestCentre, TestAnchor));
+            TestPlate, true, TestCentre, TestAnchor));
         Assert.IsTrue(_draftReleaseLimited, "0.14 m extension");
         Assert.IsTrue(PreviewText().Contains("outside the release range"), PreviewText());
         Assert.IsTrue(CommitCalibration());
@@ -1870,7 +1729,7 @@ public partial class ManualPitchBehaviour
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
         BeginCalibration();
-        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate,
+        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), TestPlate,
             true, TestCentre, TestAnchor));
         Assert.IsTrue(CommitCalibration());
         Vector3 p0 = TestP0();
@@ -1893,7 +1752,7 @@ public partial class ManualPitchBehaviour
     {
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, TestPose));
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand));
         Assert.IsFalse(HasCalibratedRelease());
         Assert.IsTrue(Vector3.Distance(TestP0(), RightUncalibrated) < 0.0001f);
         Assert.IsFalse(RestoreReleaseOffset(float.NaN, 0f, 0f), "a non-finite offset is ignored");
@@ -1902,7 +1761,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(0.2f, 1.85f, 17.30f)) < 0.0001f, "no stored side " + TestP0());
         Assert.IsTrue(RestoreReleaseOffset(0.54f, 0.05f, 0.55f));
         Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.25f, 1.85f, 17.30f)) < 0.0001f);
-        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, TestPose));
+        Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand));
         Assert.IsFalse(HasCalibratedRelease(), "restoring a calibration starts without an offset");
     }
 }

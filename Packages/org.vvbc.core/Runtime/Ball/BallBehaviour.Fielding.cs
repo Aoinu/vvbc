@@ -594,6 +594,8 @@ public partial class BallBehaviour
             wake.mode = manualPitcher.releaseWakeMode;
             wake.coefficient = manualPitcher.releaseWakeCoefficient;
             wake.direction = manualPitcher.releaseWakeDirection;
+            wake.coneAngle = manualPitcher.releaseWakeConeAngle;
+            wake.initialPhase = manualPitcher.releaseWakePhase;
             PrepareReleaseLineage(manualPitcher.releasePitchNumber);
         }
         else if (aiming)

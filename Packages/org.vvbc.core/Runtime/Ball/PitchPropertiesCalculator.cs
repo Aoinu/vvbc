@@ -31,6 +31,10 @@ public static class PitchPropertiesCalculator
     private const float KnuckleAxisTilt = 30f;
     private const float KnuckleMinCone = 15f;
     private const float KnuckleMaxCone = 80f;
+    // The 4-Seam spin axis of a right-hander (Magnus break 30 deg toward the arm side, all active
+    // spin); a left-hander's is its mirror image (MirrorForLeftHand).
+    public const float FourSeamAxisX = -0.8660254f;
+    public const float FourSeamAxisY = 0.5f;
 
     public static PitchProperties Calculate(PitchBuild build, float baseSpeedMps, float baseSpinRpm)
     {
@@ -116,7 +120,8 @@ public static class PitchPropertiesCalculator
         }
         else
         {
-            p.spinAxisLocal = Vector3.left;
+            // The fixed 4-Seam axis shared with the manual pitch: a right-hander's 1-7 o'clock spin.
+            p.spinAxisLocal = new Vector3(FourSeamAxisX, FourSeamAxisY, 0f);
         }
 
         p.speedMps = speed * speedScale;
@@ -124,6 +129,30 @@ public static class PitchPropertiesCalculator
         else if (type == PitchType.FourSeam) p.spinRpm = Mathf.Min(spin, FourSeamMaxSpinRpm);
         else p.spinRpm = Mathf.Clamp(spin * spinScale, 0f, MaxSpinRpm);
         p.wakeLocal.coefficient = Mathf.Min(p.wakeLocal.coefficient, BallAerodynamics.MaxWakeCoefficient);
+        return p;
+    }
+
+    // The type's release speed as a multiple of the base (4-Seam) speed, independent of any base:
+    // the release speed is exactly base x multiplier for every base inside the base range.
+    public static float SpeedMultiplier(PitchBuild build)
+    {
+        return Calculate(build, DefaultBaseSpeedMps, DefaultBaseSpinRpm).speedMps / DefaultBaseSpeedMps;
+    }
+
+    // The same pitch thrown by a left-hander: the mirror image across the pitch-local y-z plane.
+    // The spin is an axial vector (x kept, y and z negated); a wake direction or a Rotating wake
+    // axis is an ordinary direction (x negated). A Rotating wake's force then turns the other way
+    // about the mirrored axis, so its initial phase becomes pi - phase (wrapped to 0..2 pi).
+    public static PitchProperties MirrorForLeftHand(PitchProperties p)
+    {
+        p.spinAxisLocal = new Vector3(p.spinAxisLocal.x, -p.spinAxisLocal.y, -p.spinAxisLocal.z);
+        p.wakeLocal.direction = new Vector3(-p.wakeLocal.direction.x, p.wakeLocal.direction.y, p.wakeLocal.direction.z);
+        if (p.wakeLocal.mode == BallAerodynamics.WakeRotating)
+        {
+            float phase = Mathf.PI - p.wakeLocal.initialPhase;
+            if (phase < 0f) phase += 2f * Mathf.PI;
+            p.wakeLocal.initialPhase = phase;
+        }
         return p;
     }
 

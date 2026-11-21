@@ -205,6 +205,14 @@ public static class ReleasePlateMath
         return ManualPitchMath.Finite(cap) ? Mathf.Clamp(cap, 0f, 100f) : 100f;
     }
 
+    // The ideal timing of the pitch quality (not of the control score): an actual crossing
+    // released by hand up to the auto-release frame, or by the auto release itself. An early
+    // (predicted) release and a later manual release are outside it. Binary, never graded.
+    public static bool QualityTimingIdeal(int timing)
+    {
+        return timing == TimingIdeal || timing == TimingAuto;
+    }
+
     public static float FinalScore(float positionScore, float timingCap)
     {
         return Mathf.Min(positionScore, timingCap);

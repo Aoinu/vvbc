@@ -153,7 +153,7 @@ names the slider ends (0 <-> 1).
 
 | Type | A | B | C | Speed x base | Spin | Magnus angle t, efficiency e | Wake |
 |---|---|---|---|---|---|---|---|
-| 4-Seam | - | - | - | 1 | base, at most 2800 rpm | t = 0, e = 1 | None |
+| 4-Seam | - | - | - | 1 | base, at most 2800 rpm | t = 30, e = 1 (the manual pitch's fixed axis) | None |
 | 2-Seam | run: small <-> large | - | - | 0.99 - 0.04A | 0.92 x base | t = 30 + 20A, e = 0.95 | Fixed 0.008 + 0.025A, t = 90 |
 | Sinker | break: small <-> large | run <-> sink | - | 0.95 | 0.82 x base | t = 65, e = 0.9 | Fixed 0.010 + 0.040A, t = 90 + 90B |
 | Cutter | cut: small <-> large | - | - | 0.98 - 0.07A | 0.90 x base | t = -(10 + 25A), e = 0.7 | Fixed 0.005 + 0.020A, t = -90 |

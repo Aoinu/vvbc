@@ -1,17 +1,22 @@
-# Manual pitching (Phase 1: 4-Seam)
+# Manual pitching (Phase 2: every pitch type)
 
-A VR player standing on a mound pitches a 4-Seam Fastball with a real throwing motion. The
-throwing controller passing the **release plate** decides whether a release is a pitch and
-where on the plate gives the control score, its speed decides how fast, its 3D pose decides
-quality, the throwing hand fixes the spin axis, and the HMD forward picks the course. Every pitch leaves from the mound's fixed release point `P0`, the point the solver
-aimed from, never from the held ball or the player's body. Phase 1 has
-only the 4-Seam: no other types, pitch builder, abilities, form switching or type-switching UI.
+A VR player standing on a mound pitches any of the ten pitch types with a real throwing motion.
+The right stick picks the type, the throwing controller passing the **release plate** decides
+whether a release is a pitch and where on the plate gives the control score, its speed decides
+how fast (times the type's multiplier), its palm direction against the type's ideal palm and
+the release timing decide the quality, and the HMD forward picks the course. Every pitch leaves
+from the mound's fixed release point `P0`, the point the solver aimed from, never from the held
+ball or the player's body. Phase 2 pitches every type with its default build: no pitch builder,
+abilities or choice of 3-4 registered types yet.
 
 T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 
 | Code | Responsibility |
 |---|---|
-| `Ball/ManualPitchMath.cs` | Pure math: pitching frame, the fixed release point `P0` (`FixedReleasePoint`), arm slot (form display), the fixed 4-Seam axis, pose failure, spin, arm direction, control direction, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
+| `Ball/ManualPitchMath.cs` | Pure math: pitching frame, the fixed release point `P0` (`FixedReleasePoint`), the fixed 4-Seam axis, the smoothstep, arm direction, control direction, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
+| `Ball/ManualPitchQuality.cs` | Pure functions of the types: ideal flight per hand, common failure mode, arm slot, ideal palm, pose and final quality, blend (Knuckle wake included); `PitchQuality` (one release's quality) and `ManualPitchCourse` (a solved course with its type). |
+| `Ball/ManualPitchBehaviour.PitchTypes.cs` | The mound's type selection (right stick), label above the plate, per-type builds and quality settings, courses per type. |
+| `Ball/PitchPropertiesCalculator.cs` | The physical definition of every type (shared with the batting pitcher): also `SpeedMultiplier` and `MirrorForLeftHand`. |
 | `Ball/ReleasePlateMath.cs` | Pure math of the release plate: plate frame, segment crossing, early-release prediction, position score, binary timing cap, maximum and random control error. |
 | `Ball/ManualPitchBehaviour.cs` | Mound component (local, no sync of its own; see [manual pitch sync](manual-pitch-sync.md)): mound trigger, pitcher-mode state, fixed release point and release plate, throwing-controller sampling and crossing, auto release, cursor, glove-hand lock, solver, release resolution, control, feedback, debug. |
 | `Ball/ManualPitchControlSettingsBehaviour.cs` | The mound's control balance (penalty strength, timing cap, error sigma), Manual-synced on its own object, with its three panel sliders. |
@@ -73,19 +78,18 @@ ball. Every release (pitch or throw) returns to `Targeting` while the mode holds
 
 ## Calibration
 
-The calibration is taken in the player's real 4-Seam release pose. It gives the **reference
-pose** (pose quality), the **arm slot** (shown as the form only) and the **depth and height of
-the fixed release point `P0`** (and so of the release plate centred on it): the controller's
-position relative to the mound's `ReleaseAnchor`, toward the plate, up and toward the throwing
-arm's side, stored as measured and limited to the [release range](#release-range) when `P0` is
-placed (see [Launch point and direction](#launch-point-and-direction)).
+The calibration records **positions only**: where the throwing hand releases the ball. It
+gives the **arm slot** (the rotation of every type's ideal palm, see [Pose quality](#pose-quality))
+and the **depth, height and side of the fixed release point `P0`** (and so of the release plate
+centred on it): the controller's position relative to the mound's `ReleaseAnchor`, toward the
+plate, up and toward the throwing arm's side, stored as measured and limited to the
+[release range](#release-range) when `P0` is placed (see [Launch point and direction](#launch-point-and-direction)).
 The calibration frame is built from the **chest position** `C` (never the chest rotation), the
 horizontal direction `F` from the chest to the front edge of the plate, and world up `U`;
-`R = cross(U, F)`. For the throwing-hand controller position `H` and rotation `Q`:
+`R = cross(U, F)`. For the throwing-hand controller position `H`:
 
 ```text
 r      = inverse(Qframe) * (H - C)          stored: vvbc.pitching.calib.position
-Q4Scal = inverse(Qframe) * Q                stored: vvbc.pitching.calib.rotation
 ```
 
 plus `vvbc.pitching.calib.version` (1), `vvbc.pitching.calib.hand` and the release offset
@@ -94,75 +98,186 @@ plus `vvbc.pitching.calib.version` (1), `vvbc.pitching.calib.hand` and the relea
 existed has no offset (`P0` is the anchor limited to the range) until the player calibrates
 again; one saved before `releaseSide` existed reads its side as 0 (limited to 0.1 m).
 
+**No rotation (Phase 2).** No controller or chest rotation is recorded, stored or read; the
+throwing hand is the glove's current `throwHand`. Difference from Phase 1 (changed on purpose):
+the 4-Seam rotation `Q4Scal = inverse(Qframe) * Q` was stored in `vvbc.pitching.calib.rotation`
+and pose quality was the whole 3D angle to it. **Migration:** a calibration saved earlier keeps
+that key; it is never read nor deleted, and the rest of the data (version 1, same keys) is used
+as it is, so no player has to calibrate again (`ARightHandedCalibrationIsSavedAndRestored`,
+`AnyFiniteStoredCalibrationIsRestored`). A calibration saved now simply has no rotation key.
+
 Flow (panel `ManualPitchPanel` beside the mound): **Start Calibration** (only in pitcher
-mode; course locking is off meanwhile) → put the ball down and take the 4-Seam release pose
-with the **empty throwing hand** → pull and release the **throwing-hand trigger**. That one
-press records position and rotation together (taken when the trigger goes down), saves them
-to PlayerData and ends calibration; the panel then shows what was saved (release offset,
-arm-slot angle and form, spin axis, break direction). **Cancel** leaves without recording.
-While the throwing hand holds the ball, its trigger is the ball's release and records nothing
-(the panel asks to put the ball down). The glove-hand trigger does nothing while calibrating.
+mode; course locking is off meanwhile) → put the ball down and hold the **empty throwing
+hand** where it releases the ball → pull and release the **throwing-hand trigger**. That one
+press records the position (taken when the trigger goes down), saves it to PlayerData and ends
+calibration; the panel then shows what was saved (release offset, arm-slot angle and form, spin
+axis, break direction). **Cancel** leaves without recording. While the throwing hand holds the
+ball, its trigger is the ball's release and records nothing (the panel asks to put the ball
+down). The glove-hand trigger does nothing while calibrating.
 
 The calibration lives on the mound and in PlayerData only. Staging, recalling, releasing or
 resetting the ball never touches it (`BallResetsKeepTheCalibration`).
 
 **No range limit.** Any finite position is recorded (`EveryFiniteReleasePoseIsRecorded`); a
-zero or non-finite chest, a non-finite hand position or an invalid rotation records nothing.
+zero or non-finite chest or a non-finite hand position records nothing.
 Difference from the earlier specification (changed on purpose, phase 1 of the fixed-release
 redesign): a release had to be 0.05-1.5 m from the chest and 45-90 deg from the plate
 direction, with a blue/red marker and "Not saved" reasons. That limit, its colours and its
-texts were removed. A release straight in front of the chest has no arm slot and reads as
-overhand.
+texts were removed. A release straight above or in front of the chest has slot 0 (overhand).
 
 **Marker while calibrating.** `Feedback/IdealMarker` follows the throwing controller every
 frame while calibrating (local only, whatever `showReleaseFeedback`), in one colour; the release
-plate is hidden meanwhile. Outside calibration the marker is hidden and the release plate
-marks `P0` (see [Release plate](#release-plate)). Starting calibration forgets any crossing and
-its auto release, and a release while calibrating is a throw (`calibrating`).
+plate and the type label are hidden meanwhile. Outside calibration the marker is hidden and the
+release plate marks `P0` (see [Release plate](#release-plate)). Starting calibration forgets any
+crossing and its auto release, and a release while calibrating is a throw (`calibrating`).
 
-**Stored data.** The PlayerData format is unchanged (version 1, same keys); no migration is
-needed. Every stored calibration with a valid hand, a finite position and a finite unit
-quaternion (norm within 1 %) is used again, including ones taken outside the former range
-(`AnyFiniteStoredCalibrationIsRestored`). Saving is refused until `OnPlayerRestored` has run for
-the local player. A calibration is used only for the hand it was taken with; changing the
-glove's throwing hand makes it unusable instead of mirroring it.
+**Stored data.** Every stored calibration with a valid hand and a finite position is used
+again, including ones taken outside the former range. Saving is refused until
+`OnPlayerRestored` has run for the local player. A calibration is used only for the hand it was
+taken with; changing the glove's throwing hand makes it unusable instead of mirroring it.
 
-## 4-Seam spin and wake
+## Pitch types (Phase 2)
 
-The 4-Seam spin axis is **fixed per throwing hand**, in pitch-local coordinates (x the
-pitcher's right, y up, z toward the plate; `ManualPitchMath.FixedFourSeamAxis`):
+All ten types of [Ball flight model: pitch types](ball-flight-model.md#pitch-types) are pitched
+by hand, each with its **default build** (A, B, C = 0.5; `ManualPitchBehaviour.BuildFor`, kept
+per type in the playlist's packed form so a later ability builder can replace a build without
+touching the selection). Choosing 3-4 registered types is not implemented yet.
+
+| ID | Type | Default build | Speed x 4-Seam |
+|---|---|---|---|
+| 0 | 4-Seam | - | 1 |
+| 1 | 2-Seam | A 0.5 | 0.97 |
+| 2 | Sinker | A 0.5, B 0.5 | 0.95 |
+| 3 | Cutter | A 0.5 | 0.945 |
+| 4 | Slider | A, B, C 0.5 | 0.855 |
+| 5 | Sweeper | A 0.5 | 0.84 |
+| 6 | Curve | A 0.5, B 0.5 | 0.735 |
+| 7 | Split | A 0.5 | 0.89 |
+| 8 | Change | A 0.5, B 0.5 | 0.805 |
+| 9 | Knuckle | A, B, C 0.5 | 0.65 |
+
+### Selection and label
+
+The **right stick up and down** (`InputLookVertical`, whichever the throwing hand) selects the
+type: up the previous, down the next, wrapping between the 4-Seam and the Knuckle
+(`invertPitchSelect` swaps them if a client reports the stick the other way; not yet checked on
+real controllers). A deflection past `pitchSelectDeadZone` (0.5) switches once; the next switch
+needs the stick back within `pitchSelectNeutral` (0.2). Only in pitcher mode (so on the mound, in
+VR, glove worn) and not while calibrating; the ball need not be held. The input is only read:
+the mound never changes VRChat's locomotion, jump or camera settings. The selection is local,
+starts at the 4-Seam, is kept across pitches and is never synced.
+
+The selected name is shown above the release plate (`Feedback/PitchTypeLabel`, TextMeshPro, no
+collider): centred, `pitchTypeLabelOffset` (0.06 m) above the plate's top edge, facing the
+pitcher like the plate, `pitchTypeLabelFontSize` (1). It is placed with the plate (pitcher mode,
+hand change, calibration) and rewritten at each switch, hidden while calibrating or outside
+pitcher mode (`showPitchTypeLabel`). The type of the last pitch is shown separately, in the panel's
+result (`PITCH  <type>`), `TYPE` line and debug label.
+
+### Type of a release
+
+The release's type is fixed **at the hold's actual plate crossing** (`_crossType`), with the course
+ready for it then; a switch after the crossing (before the auto release) changes nothing of that
+release (`TheCrossingFixesTheTypeOfTheHold`). An **early** (predicted) release takes the type
+selected at the release. Either way a release uses only a course solved for that same type
+(`CourseFor`): a lock or default course of another type is never mixed in; without one the
+release is a throw (`not locked`).
+
+### Ideal flight of a type
+
+`ManualPitchQuality.IdealProperties`: every type but the 4-Seam is `PitchPropertiesCalculator`'s
+(spin rpm, unit axis, pitch-local wake), with the base spin the mound's 4-Seam rpm
+(`min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800)`). The 4-Seam keeps the mound's own rpm and
+Fixed SSW (`wakeCoefficient` 0.006 at `wakeClockDegrees` 90, the arm side) and the calculator's
+axis. A Rotating wake (Knuckle) gets its initial phase when the course is solved, from the mound's
+own seed (`PitchPropertiesCalculator.PhaseFromSeed`, as the batting pitcher), so the solver aims
+with the phase the pitch is released with; a default course used by a Knuckle is solved again
+after that release, for a new phase.
+
+**The 4-Seam axis is the calculator's.** `PitchPropertiesCalculator`'s 4-Seam axis is the fixed
+manual axis (right-hander `(-0.8660254, 0.5, 0)`, a 1-7 o'clock spin; `FourSeamAxisX`/`Y`), no
+longer `Vector3.left` (pure backspin). This also changes the **batting pitcher's** 4-Seam: its
+Magnus break now leans 30 deg toward the arm side (as a right-hander's), its solver aims with it,
+and its speed, rpm and wake (None) are unchanged; the other types are unchanged.
+
+**Left-handers** are the mirror image across the pitch-local y-z plane
+(`PitchPropertiesCalculator.MirrorForLeftHand`): the spin, an axial vector, keeps x and negates
+y and z; a wake direction or Rotating wake axis, an ordinary direction, negates x; a Rotating
+phase becomes `pi - phase`, because the force turns the other way about the mirrored axis. Then
+the whole force (Magnus and SSW, Knuckle included) is the mirror image at every moment
+(`ALeftHandersFlightIsTheMirrorImageForEveryType`). The 4-Seam axis gives the left-hander's
+`(-0.8660254, -0.5, 0)`, 11-5 o'clock.
+
+### Pose quality
+
+Each type has an **ideal palm normal** for a right-hander throwing straight overhand, in the
+pitching frame (x the pitcher's right, y up, z toward the plate). Inspector arrays on the mound,
+indexed by `PitchType` id (their header lists the ids): `poseEvaluation`, `idealPalmDirections`,
+`poseGoodAngles`, `poseBadAngles` (Udon-serializable plain arrays; a missing entry evaluates
+nothing, a missing or zero palm uses `ManualPitchQuality.DefaultIdealPalm`).
 
 ```text
-right-hander  axis = (-0.8660254, +0.5, 0)     spin direction 1-7 o'clock (pitcher's view)
-left-hander   axis = (-0.8660254, -0.5, 0)     spin direction 11-5 o'clock
+slot       = atan2(|x|, y) of the calibrated r (chest-relative)   0 above, 90 beside, >90 below; z ignored
+turn       = slot - referenceSlotAngle (0)
+ideal'     = ideal palm turned in the x-y plane from up toward the arm side (+x) by turn,
+             then mirrored (x negated) for a left-hander
+actual     = inverse(Qframe) * (Q * palmLocal)       Q: the throwing controller's tracking rotation
+             palmLocal = rightPalmLocal / leftPalmLocal (0, -1, 0), provisional, to check per headset
+error      = Angle(actual, ideal')
+t          = clamp01((error - good) / (bad - good));  pose = 1 - (3t^2 - 2t^3)    (1 when evaluation is off)
 ```
 
-Overhand, sidearm and underhand forms, the release position, the arm angle and the controller
-pose never change it (`NoFormOrPoseChangesTheAxis`); the solver (`IdealSpinLocal`) and the
-release use the same `FourSeamAxis()`, turned by the launch direction with `PitchSpin.ToWorld`.
-Difference from the earlier specification (changed on purpose): the axis was `cross(F, A)` of
-the calibrated arm slot `A` and was turned by `axisTransferGain` x the pose error and by
-`gyroAtBadPose`; both coefficients were removed. The calibration preview and the panel show
-the fixed axis.
+Only the palm direction is judged: a roll about the palm normal changes nothing. Mirroring the
+turned palm equals turning the mirrored palm the other way, so the two hands ask for mirror-image
+poses at every slot. The slot turns only the ideal palm, never the type's spin axis. A bad angle
+not above the good one is a step at the good angle; an unknown palm (non-finite) is quality 0.
+The rotation judged is the one recorded **at the plate crossing** (an early release: the rotation
+at the release); the follow-through before an auto release is never judged.
 
-Pose quality uses the whole 3D rotation error `angle = Angle(Q, Qframe * Q4Scal)`:
+Provisional (game balance, to be tuned): the 4-Seam is not evaluated, the others are; good 25 deg,
+bad 60 deg for every type; palms (right-hander, overhand):
+
+| Type | Palm | Type | Palm |
+|---|---|---|---|
+| 4-Seam | (0, 0, 1) | Sweeper | (-0.866, 0, 0.5) |
+| 2-Seam | (0.342, 0, 0.94) | Curve | (-0.707, 0.5, 0.5) |
+| Sinker | (0.5, -0.174, 0.848) | Split | (0, -0.259, 0.966) |
+| Cutter | (-0.342, 0, 0.94) | Change | (0.5, 0, 0.866) |
+| Slider | (-0.707, 0, 0.707) | Knuckle | (0, 0, 1) |
+
+### Timing and final quality
 
 ```text
-t = clamp01((angle - goodPoseAngle) / (badPoseAngle - goodPoseAngle))   12 / 50 deg
-h = t^2 (3 - 2t)                                                          failure
-rpm    = min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800) x (1 - spinLossAtBadPose x h)
-spin   = axis x rpm                                    the fixed axis, never turned
-wake   = Fixed, wakeCoefficient 0.006 x (1 - wakeLossAtBadPose x h),
-         direction at wakeClockDegrees 90 (arm side, mirrored for a left-hander)
+timing ideal = Ideal or Auto (ReleasePlateMath.QualityTimingIdeal)    Early and Late are outside
+quality      = min(pose, timing ideal ? 1 : qualityTimingCap)          qualityTimingCap 0.6, provisional
 ```
 
-`spinLossAtBadPose` and `wakeLossAtBadPose` default to **0** (no pose penalty, a provisional
-balance setting); the pose error and quality are still computed and shown, and setting the
-earlier tuning (0.5, 1) brings the rpm and SSW losses back (`EachPoseCoefficientActsAlone`).
-`diagnosticIdealSpin` stays off; it differs from the zero coefficients in also reporting quality
-1. Pose never decides recognition and never divides by the spin (0 rpm is the zero vector). The
-wake uses the shared model of [Ball flight model](ball-flight-model.md): its component along
-the velocity is removed, so a wake can never add net thrust.
+Binary, never graded by how early. It applies to every type, the 4-Seam included, so an early
+4-Seam loses spin toward the failure mode even with its pose not evaluated. It shares only the
+timing classification with the control score: the control score caps Auto too, the quality does
+not, and the two caps are separate settings. `diagnosticIdealSpin` makes the quality 1.
+
+### Common failure mode and blend
+
+```text
+failure = the type's own speed, the hand's 4-Seam axis, failureSpinRatio (0.7) x the 4-Seam rpm,
+          the 4-Seam SSW
+q = 1: the type's ideal;  q = 0: the failure;  between:
+  rpm  = lerp(failure rpm, ideal rpm, q)            scalar, on its own
+  axis = great-circle turn from the failure axis toward the ideal axis by q
+  SSW  = coefficient lerp, direction great-circle turn (a type without SSW fades the 4-Seam's in)
+```
+
+The rpm and the axis are blended separately, so two far-apart axes never cancel the spin; the
+great-circle turn never gives NaN, zero or a flip (opposite axes turn about a fixed
+perpendicular). The speed and the launch direction never depend on the quality: nothing is
+aimed again for it, so a failed breaking ball misses the course by its changed movement.
+
+**Knuckle.** Its ideal wake is Rotating, the failure's Fixed. The blend keeps it Rotating, turns
+its axis toward the failure's direction, narrows the cone to `q x cone` and blends the
+coefficient (0.040 to 0.006). A Rotating wake with cone 0 pushes along its axis exactly as the
+Fixed wake along it does, so the force changes continuously into the 4-Seam's (q = 0 returns the
+Fixed form itself). No new wake mode, field or sync was needed; nothing is random in flight.
 
 ## Course
 
@@ -215,13 +330,21 @@ calibration.
 The glove-hand trigger (`InputUse` on the mound, filtered to the hand that is not
 `throwHand`; ignored outside pitcher mode) toggles the lock when it goes down (see above). Locking in `Targeting` with a
 valid ray and a usable calibration snapshots the smoothed cursor `T`, the fixed release point
-`P0` of the throwing hand, the solver speed (`maxPitchSpeedKmh` x `solverSpeedRatio`, 140 x 0.97 =
-135.8 km/h; see [Release speed](#release-speed)) and the ideal spin and wake, and starts
+`P0` of the throwing hand, the selected type with its build, its solver speed (`maxPitchSpeedKmh`
+x `solverSpeedRatio` x the type's multiplier, 140 x 0.97 = 135.8 km/h for the 4-Seam; see
+[Release speed](#release-speed)) and its ideal spin and wake (Knuckle: with its drawn phase), and starts
 `BallAimSolverBehaviour.BeginSolveRelativeSpin` once with the Ball's drag and Magnus,
 `Physics.gravity` and the fixed step. The mound advances it in `Update` (64 steps per frame).
 A converged solve, or the best one within `solverAcceptMeters` (0.10 m), gives `LockedReady`
 with direction `D0`; anything else returns to `Targeting`. Pressing the trigger again unlocks.
 The solver is never run at the release.
+
+**Switching the type** while `Solving` or `LockedReady` solves the same target and `P0` again for
+the new type (`Solving`, the lock kept); the default course is marked stale and solved again once
+no lock is being solved. Each course keeps the type it was solved for, and a release uses only a
+course of its own type (see [Type of a release](#type-of-a-release)), so no release mixes one
+type's solve with another type's flight; a release during that re-solve is a throw (`not locked`).
+Nothing is solved per frame or at the release.
 
 ### Default course (no course locked)
 
@@ -441,9 +564,15 @@ The raw release speed (before any future pitcher ability) comes from the control
 only for a recognized pitch; a throw never reads it:
 
 ```text
-Vraw    = maxPitchSpeedKmh x Clamp01(armSpeedCurve(|v_arm|))      km/h, 140 by default
-Vsolver = maxPitchSpeedKmh x Clamp01(solverSpeedRatio)            km/h, at the lock, 0.97 by default
+Vraw    = maxPitchSpeedKmh x Clamp01(armSpeedCurve(|v_arm|)) x m  km/h, 140 by default
+Vsolver = maxPitchSpeedKmh x Clamp01(solverSpeedRatio) x m        km/h, at the lock, 0.97 by default
+m       = PitchPropertiesCalculator.SpeedMultiplier(build)        1 for the 4-Seam (table in Pitch types)
 ```
+
+The multiplier is the calculator's speed at its default base divided by that base, so it is exact
+for every base and the calculator's 90-160 km/h **base limit (an automatic-pitch rule) never
+raises a slow manual pitch**: a 60 km/h arm gives a 60 km/h 4-Seam and a 39 km/h Knuckle. The
+quality never changes the speed (a failed Slider keeps the Slider's speed).
 
 `|v_arm|` is the same controller motion that recognition tested (the crossing's for a crossed
 hold, the release's for an early one), so recognition and speed never read different samples. `minArmSpeed` stays the only speed condition of recognition: a slow pitch
@@ -477,8 +606,8 @@ difference between the solver and the flight, apart from the launch point.
 
 ### Solver against flight
 
-With `Vraw = Vsolver`, the solver's spin and SSW (the zero pose coefficients, or
-`diagnosticIdealSpin`) and the arm-direction penalty 0, the pitch's initial state is the
+With `Vraw = Vsolver`, the type's ideal flight (quality 1, or `diagnosticIdealSpin`) and the
+arm-direction penalty 0, the pitch's initial state is the
 solver's own (`P0`, `D0`, speed, spin, wake), so the flight follows the solver's predicted
 crossing within 1 mm whatever the controller position (0.6 m off), the wrist pose (45 deg, which
 moves the ball centre) or the player's stance
@@ -493,13 +622,14 @@ from a fixed-step boundary; the re-assertion catches up by the elapsed time only
 restore the state), Rigidbody integration against the shared model, wind, and the frame-sampled
 crossing measurement (`ArrivalStep` interpolates between frames).
 
-`diagnosticIdealSpin` (off; diagnostics only) keeps the calibrated spin, axis and SSW the solver
-aimed with, whatever the pose, so that (1) the solver's own error, (2) the speed difference and
-(3) the pose-made ball change can be separated. The SSW at 90 deg (arm side) or at 0 deg (up) is
-aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`). The default stays 90 deg:
-which wake a VR release gives is not modelled; the spin axis is the fixed 4-Seam axis of the
-hand (the calibrated rotation only scores the pose). With the control penalty strength above 0
-the drawn control error also separates the flight from the solver's crossing, by design.
+`diagnosticIdealSpin` (off; diagnostics only) keeps the type's ideal spin, axis and SSW the solver
+aimed with (quality 1), whatever the pose and timing, so that (1) the solver's own error, (2) the
+speed difference and (3) the quality-made ball change can be separated. Every type is aimed and
+flown the same way (`EveryTypeIsAimedWithItsOwnFlightAndArrives`); a failed pose is not aimed
+again for (`ASwitchSolvesTheLockAgainAndQualityIsNeverReaimed`). The 4-Seam SSW at 90 deg (arm
+side) or at 0 deg (up) is aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`).
+With the control penalty strength above 0 the drawn control error also separates the flight from
+the solver's crossing, by design.
 
 ## Release feedback
 
@@ -522,20 +652,24 @@ Each release takes a **result snapshot** that later lock, cursor, setting or bal
 rewrite. `ClearResult` forgets the previous release's outputs first. The Ball reports the point
 and velocity it launches, pitch or throw (`RecordLaunch(position, velocity)`).
 
-The panel's `Result` text (summary): `PITCH` / `AUTO PITCH` / `THROW` with the crossing kind and
-timing or the reason, the control score (position, cap), release speed, and the **course
+The panel's `Result` text (summary): `PITCH <type>` / `AUTO PITCH <type>` / `THROW` with the
+crossing kind and timing or the reason, the control score (position, cap), the quality (pose or
+not evaluated, ideal timing or the cap), release speed, and the **course
 miss** where the pitch crossed the front-edge plane (`ArrivalStep`) against the snapshotted
 target. The mound follows a pitched ball in its loop only until that crossing; a hold or catch,
 a hit, a ground touch, another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving
-the mound ends it as **not measured** with that reason. The `Detail` text (analysis): `ARM`,
-`FORM` (arm-direction error, shown only, and controller-rotation error, quality), `PLATE`
+the mound ends it as **not measured** with that reason. The `Detail` text (analysis): `TYPE`
+(selected now; pitched type, its build and speed multiplier), `ARM`, `FORM` (arm-direction error,
+shown only; pose evaluation on/off, arm slot and its turn, ideal palm, palm for this slot and hand,
+actual palm, error, good/bad angles, pose quality, timing, quality cap and final quality), `PLATE`
 (Actual / Predicted / None or the miss reason, crossing right/up and distance from the centre in
 cm, frames from the crossing to the release with the auto frame, or the predicted path against
-its maximum, position score, cap, final score), `CONTROL` (arm-direction penalty, pose losses
-with the fixed axis, strength, the error limit at this score and after the strength, the drawn
+its maximum, position score, cap, final score), `CONTROL` (arm-direction penalty, strength, the
+error limit at this score and after the strength, the drawn
 distance, angle and right/up components, labelled as an aimed offset, and the launch direction),
-`LAUNCH`, `SPEED`, spin and SSW (rpm, fixed axis, SSW), and the aim (target, solver crossing,
-actual crossing and its error).
+`LAUNCH`, `SPEED` (the type's speed), `SPIN / SSW` (ideal and final rpm, axis and SSW, Rotating
+cone and phase), and the aim (target, solver crossing, actual crossing and its error). Nothing of
+the quality (palms, scores) is synced. No palm gizmo is drawn: the text is the only palm display.
 
 ## Recalling the ball
 
@@ -601,7 +735,8 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 │   ├── ReleasePlate (Reticle: MT_PitchReticle quad)
 │   ├── CrossingMarker (0.01 m sphere)
 │   ├── HandTrail (LineRenderer)
-│   └── PredictionLine (LineRenderer)
+│   ├── PredictionLine (LineRenderer)
+│   └── PitchTypeLabel (TextMeshPro, no collider: the selected type above the plate)
 ├── Panel (world-space Canvas, VRC_UiShape, ManualPitchPanelBehaviour)
 │   ├── Title, Status (Text), Result (Text, summary), Detail (Text, analysis; detailLabel)
 │   ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
@@ -638,6 +773,14 @@ predicted target to `debugLabel` for `debugSeconds` (6) and to the log. With it 
 is shown or logged.
 
 ## Validation limits
+
+Phase 2, not verified on real clients: the direction `InputLookVertical` reports for the right
+stick up and down on each controller (`invertPitchSelect`), and whether it arrives while the
+throwing hand holds the pickup; the right stick's own VRChat actions (jump, snap turn) still run;
+the palm normal in VRChat's hand tracking rotation of each hand and headset
+(`rightPalmLocal`/`leftPalmLocal`, provisional (0, -1, 0)); the provisional palms, angles,
+`qualityTimingCap` and `failureSpinRatio` (game balance); the label's size and readability; a
+remote client's view of every type (Knuckle included).
 
 Not verified on real clients: whether `OnPickupUseDown`/`Up` fire with `AutoHold = No` on
 every controller and with the VRChat Pickup behaviour of the current client, their order
