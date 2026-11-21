@@ -75,9 +75,10 @@ ball. Every release (pitch or throw) returns to `Targeting` while the mode holds
 
 The calibration is taken in the player's real 4-Seam release pose. It gives the **reference
 pose** (pose quality), the **arm slot** (shown as the form only) and the **depth and height of
-the fixed release point `P0`** (and so of the release plate centred on it): the controller's position relative to the mound's `ReleaseAnchor`, toward
-the plate and up, stored once (see [Launch point and direction](#launch-point-and-direction)).
-The side of `P0` is fixed by the throwing hand, never by the calibration.
+the fixed release point `P0`** (and so of the release plate centred on it): the controller's
+position relative to the mound's `ReleaseAnchor`, toward the plate, up and toward the throwing
+arm's side, stored as measured and limited to the [release range](#release-range) when `P0` is
+placed (see [Launch point and direction](#launch-point-and-direction)).
 The calibration frame is built from the **chest position** `C` (never the chest rotation), the
 horizontal direction `F` from the chest to the front edge of the plate, and world up `U`;
 `R = cross(U, F)`. For the throwing-hand controller position `H` and rotation `Q`:
@@ -88,9 +89,10 @@ Q4Scal = inverse(Qframe) * Q                stored: vvbc.pitching.calib.rotation
 ```
 
 plus `vvbc.pitching.calib.version` (1), `vvbc.pitching.calib.hand` and the release offset
-`vvbc.pitching.calib.releaseSet` / `releaseForward` / `releaseUp` (metres from `ReleaseAnchor`).
-Derived values are recomputed. A calibration saved before the release offset existed has no
-offset: `P0` stays on `ReleaseAnchor` until the player calibrates again.
+`vvbc.pitching.calib.releaseSet` / `releaseForward` / `releaseUp` / `releaseSide` (metres from
+`ReleaseAnchor`). Derived values are recomputed. A calibration saved before the release offset
+existed has no offset (`P0` is the anchor limited to the range) until the player calibrates
+again; one saved before `releaseSide` existed reads its side as 0 (limited to 0.1 m).
 
 Flow (panel `ManualPitchPanel` beside the mound): **Start Calibration** (only in pitcher
 mode; course locking is off meanwhile) → put the ball down and take the 4-Seam release pose
@@ -398,10 +400,24 @@ v   = D x Vraw;  spin and wake turned by D (PitchSpin.ToWorld)
 ```
 
 `P0` is computed by `ManualPitchMath.FixedReleasePoint` from the mound's `MoundCenter`, its
-`ReleaseAnchor` moved by the calibrated release offset (none without a calibrated release) and
-its plate: that point's distance toward the plate and height, the centre's lateral position, and
-`releaseSideOffset` (0.7 m) to the pitcher's right for a right-hander, to
-the left for a left-hander (see [manual pitch sync](manual-pitch-sync.md#fixed-release-point)).
+`ReleaseAnchor`, the calibrated release offset (none without a calibrated release), its plate and
+the release range (see [manual pitch sync](manual-pitch-sync.md#fixed-release-point)).
+
+### Release range
+
+P0, and so the release plate, is limited to a box measured from `ReleaseAnchor` and the ground
+(`MoundCenter`'s height), each axis on its own, edges included (Inspector, metres):
+
+| Axis | Fields | Default |
+|---|---|---|
+| Extension: toward the plate from `ReleaseAnchor`, along `F` | `releaseForwardMin` / `Max` | +0.5 / +2.3 |
+| Height above the ground (`MoundCenter`) | `releaseHeightMin` / `Max` | 0.1 / 2.0 |
+| Toward the throwing arm's side from `ReleaseAnchor` (pitcher's right for a right-hander, left for a left-hander) | `releaseSideMin` / `Max` | 0.1 / 0.6 |
+
+A calibrated release outside the box is still recorded as measured; `P0` is placed at the
+nearest point inside it (`ManualPitchMath.LimitReleaseOffset`), the calibration preview says
+`outside the release range`, and the panel's `LAUNCH` line marks a limited `P0`. A swapped
+minimum and maximum is read in order, a non-finite value as 0.
 The solver aims from it, the release leaves from it (`ManualPitchBehaviour.releasePosition`), and
 the Ball launches, publishes and re-asserts it. The player's position, HMD, chest, controllers,
 the plate crossing and the held ball never move it. A throw keeps launching from the ball centre.
@@ -578,14 +594,15 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 │   ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
 │   ├── Buttons: Start Calibration, Cancel, Ball → Glove
 │   └── ControlSettings (ManualPitchControlSettingsBehaviour; three sliders with labels)
-├── MoundCenter (local origin; the lateral origin of P0)
-└── ReleaseAnchor (local 0, 1.8, 1.5: distance toward the plate and height of P0)
+├── MoundCenter (local origin; the ground of the release range)
+└── ReleaseAnchor (local 0, 1.8, 1.5: origin of the calibrated release and of the release range)
 ```
 
 Place the root on the pitcher's plate area, its +Z toward the plate, with the trigger covering
 where the pitcher stands, and assign `strikeZone` to the target HomePlate's
-`StrikeZoneBehaviour` (its `ball` must be set). Move `ReleaseAnchor` along +Z and in height to
-tune the release; its X is ignored. Several mounds may target different plates.
+`StrikeZoneBehaviour` (its `ball` must be set). Moving `ReleaseAnchor` moves the release range
+(its height only moves where an uncalibrated `P0` sits; the height limits are above
+`MoundCenter`). Several mounds may target different plates.
 
 `Samples/Scenes/PracticeSpace.unity` has one instance, `ManualPitchMound`, as a scene root at
 (0, 0, 18.4) turned 180°, targeting `HomePlateSet/SharedRig/HomePlate`, with `showDebug` on;
@@ -594,8 +611,7 @@ tune the release; its X is ignored. Several mounds may target different plates.
 prefab instance stores them as one table, so references added to the prefab later do not reach
 it by themselves: `moundCenter`, `releaseAnchor`, the feedback objects (`Feedback/ReleasePlate`,
 `CrossingMarker`, `HandTrail`, `PredictionLine`) and the child `ManualPitchControlSettingsBehaviour`
-are therefore also found at `Start`. Value fields not in an instance table take the program's defaults (`releaseSideOffset`
-0.7). `armSpeedCurve` has no program default and is set in the prefab's table **and** in every
+are therefore also found at `Start`. Value fields not in an instance table take the program's defaults (the release range). `armSpeedCurve` has no program default and is set in the prefab's table **and** in every
 instance's table.
 
 ## Debug

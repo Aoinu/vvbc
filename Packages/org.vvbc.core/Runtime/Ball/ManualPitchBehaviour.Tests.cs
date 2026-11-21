@@ -1238,7 +1238,6 @@ public partial class ManualPitchBehaviour
     public void ByDefaultThereIsNoPositionOrPosePenalty()
     {
         Assert.AreEqual(0f, armDirectionPenaltyPerDegree);
-        Assert.AreEqual(0.7f, releaseSideOffset);
         Assert.AreEqual(0f, spinLossAtBadPose);
         Assert.AreEqual(0f, wakeLossAtBadPose);
         Assert.IsFalse(diagnosticIdealSpin, "the diagnostic stays off");
@@ -1681,30 +1680,99 @@ public partial class ManualPitchBehaviour
         }
     }
 
-    // ---- Fixed release point ----
+    // ---- Fixed release point and its range ----
 
-    // Right-hander: 0.7 m to the pitcher's right (the batter's left); left-hander: the mirror.
-    // The anchor gives only the distance toward the plate and the height.
+    // Test mound: F = -Z, the pitcher's right R = world -X; the anchor (0.3, 1.8, 17.84) is
+    // 1.55 m above the mound centre (y 0.25). Without a calibrated release the offset is zero and
+    // is limited to the range: 0.5 m toward the plate, 0.1 m to the arm side, height kept.
+    private static readonly Vector3 RightUncalibrated = new Vector3(0.2f, 1.80f, 17.34f);
+    private static readonly Vector3 LeftUncalibrated = new Vector3(0.4f, 1.80f, 17.34f);
+
+    private bool CalibratedOffsetForTest(int hand, Vector3 offset)
+    {
+        ActiveForTest(hand);
+        if (!RestoreCalibration(CalibrationVersion, hand, Overhand, TestPose)) return false;
+        return RestoreReleaseOffset(offset.x, offset.y, offset.z);
+    }
+
     [TsukimiTest]
-    public void TheFixedReleasePointDependsOnlyOnTheMoundAndTheHand()
+    public void TheReleaseRangeDefaultsAreExtensionHeightAndArmSide()
+    {
+        Assert.AreEqual(0.5f, releaseForwardMin);
+        Assert.AreEqual(2.3f, releaseForwardMax);
+        Assert.AreEqual(0.1f, releaseHeightMin);
+        Assert.AreEqual(2.0f, releaseHeightMax);
+        Assert.AreEqual(0.1f, releaseSideMin);
+        Assert.AreEqual(0.6f, releaseSideMax);
+    }
+
+    // Without a calibrated release the anchor itself is limited to the range; a right-hander
+    // releases to the pitcher's right (the batter's left), a left-hander the mirror.
+    [TsukimiTest]
+    public void WithoutACalibrationTheAnchorIsLimitedToTheRange()
     {
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
         Vector3 right = TestP0();
-        Assert.IsTrue(Vector3.Distance(right, new Vector3(-0.7f, 1.80f, 17.84f)) < 0.0001f, "right-hander " + right);
+        Assert.IsTrue(Vector3.Distance(right, RightUncalibrated) < 0.0001f, "right-hander " + right);
         ActiveForTest(GloveBehaviour.HandLeft);
         Vector3 left = TestP0();
-        Assert.IsTrue(Vector3.Distance(left, new Vector3(0.7f, 1.80f, 17.84f)) < 0.0001f, "left-hander " + left);
-        // The batter at the plate faces the mound (+Z), so the batter's left is world -X.
-        Vector3 batterLeft = Vector3.Cross(Vector3.forward, Vector3.up);
-        Assert.IsTrue(Vector3.Dot(right - TestCentre, batterLeft) > 0.69f, "right-hander from the batter's left");
-        Assert.IsTrue(Vector3.Dot(left - TestCentre, batterLeft) < -0.69f, "left-hander from the batter's right");
-        // Moving the anchor changes only the forward distance and the height.
-        ActiveForTest(GloveBehaviour.HandRight);
-        Vector3 moved = FixedReleaseAt(TestCentre, TestAnchor + new Vector3(0.9f, 0.2f, -0.3f), TestPlate);
-        Assert.IsTrue(Vector3.Distance(moved, new Vector3(-0.7f, 2.0f, 17.54f)) < 0.0001f, "anchor moved " + moved);
-        releaseSideOffset = 0.5f;
-        Assert.IsTrue(Mathf.Abs(TestP0().x + 0.5f) < 0.0001f, "the Inspector offset");
+        Assert.IsTrue(Vector3.Distance(left, LeftUncalibrated) < 0.0001f, "left-hander " + left);
+        Vector3 pitcherRight = Vector3.Cross(Vector3.up, Vector3.back);
+        Assert.IsTrue(Vector3.Dot(right - TestAnchor, pitcherRight) > 0.099f, "right-hander toward the pitcher's right");
+        Assert.IsTrue(Vector3.Dot(left - TestAnchor, pitcherRight) < -0.099f, "left-hander toward the pitcher's left");
+    }
+
+    // Each axis is limited on its own, edges included: forward and side from the anchor, height
+    // above the mound centre; a left-hander's side is mirrored.
+    [TsukimiTest]
+    public void ACalibratedReleaseIsLimitedOnEachAxis()
+    {
+        Mimic.Join();
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(1.0f, 0.2f, 0.3f)));
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(0f, 2.0f, 16.84f)) < 0.0001f, "inside: unchanged " + TestP0());
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(0.2f, 0.2f, 0.3f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().z - 17.34f) < 0.0001f, "extension at least 0.5 m");
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(3.0f, 0.2f, 0.3f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().z - 15.54f) < 0.0001f, "extension at most 2.3 m");
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(1.0f, -1.8f, 0.3f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().y - 0.35f) < 0.0001f, "at least 0.1 m above the ground: " + TestP0());
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(1.0f, 1.0f, 0.3f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().y - 2.25f) < 0.0001f, "at most 2.0 m above the ground: " + TestP0());
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(1.0f, 0.2f, -0.3f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().x - 0.2f) < 0.0001f, "at least 0.1 m to the arm side (a glove-side release too)");
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(1.0f, 0.2f, 0.9f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().x + 0.3f) < 0.0001f, "at most 0.6 m to the arm side");
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandLeft, new Vector3(1.0f, 0.2f, 0.9f)));
+        Assert.IsTrue(Mathf.Abs(TestP0().x - 0.9f) < 0.0001f, "a left-hander's arm side is the mirror");
+        ReleaseRange range = ReleaseRange();
+        Assert.IsTrue(ManualPitchMath.InReleaseRange(new Vector3(0.5f, 2.0f, 0.1f), 0f, range), "edges included");
+        Assert.IsTrue(ManualPitchMath.InReleaseRange(new Vector3(2.3f, 0.1f, 0.6f), 0f, range), "edges included");
+        Assert.IsFalse(ManualPitchMath.InReleaseRange(new Vector3(2.31f, 0f, 0.3f), 1.55f, range));
+        Assert.IsFalse(ManualPitchMath.InReleaseRange(new Vector3(1f, 0.5f, 0.3f), 1.55f, range), "2.05 m high");
+        Assert.IsFalse(ManualPitchMath.InReleaseRange(new Vector3(1f, 0f, 0.05f), 1.55f, range));
+    }
+
+    // The range is the Inspector's, read at each placement; a swapped minimum and maximum is
+    // read in order.
+    [TsukimiTest]
+    public void TheRangeComesFromTheInspector()
+    {
+        Mimic.Join();
+        Assert.IsTrue(CalibratedOffsetForTest(GloveBehaviour.HandRight, new Vector3(1.0f, 0.2f, 0.3f)));
+        releaseForwardMin = 1.2f;
+        Assert.IsTrue(Mathf.Abs(TestP0().z - 16.64f) < 0.0001f, "new minimum extension");
+        releaseForwardMin = 0.5f;
+        releaseSideMin = 0.4f;
+        releaseSideMax = 0.2f;
+        Assert.IsTrue(Mathf.Abs(TestP0().x - 0f) < 0.0001f, "0.3 inside 0.2..0.4");
+        releaseSideMin = 0.5f;
+        releaseSideMax = 0.6f;
+        Assert.IsTrue(Mathf.Abs(TestP0().x + 0.2f) < 0.0001f, "0.3 raised to 0.5");
+        releaseHeightMax = float.NaN;
+        ReleaseRange range = ReleaseRange();
+        Assert.AreEqual(0f, range.heightMin, "a non-finite value reads as 0");
+        Assert.AreEqual(0.1f, range.heightMax);
     }
 
     // A turned lane (another mound and plate direction) uses its own axes, not world X.
@@ -1718,7 +1786,7 @@ public partial class ManualPitchBehaviour
         Vector3 centre = plate + ManualPitchMath.Rotate(yaw, TestCentre - TestPlate);
         Vector3 anchor = plate + ManualPitchMath.Rotate(yaw, TestAnchor - TestPlate);
         Vector3 turned = FixedReleaseAt(centre, anchor, plate);
-        Vector3 expected = plate + ManualPitchMath.Rotate(yaw, new Vector3(-0.7f, 1.80f, 17.84f) - TestPlate);
+        Vector3 expected = plate + ManualPitchMath.Rotate(yaw, RightUncalibrated - TestPlate);
         Assert.IsTrue(Vector3.Distance(turned, expected) < 0.0001f, turned + " vs " + expected);
         Assert.AreEqual(Vector3.zero, FixedReleaseAt(plate + Vector3.up * 3f, anchor, plate), "a centre above the plate has no direction");
         Assert.AreEqual(Vector3.zero, FixedReleaseAt(new Vector3(float.NaN, 0f, 0f), anchor, plate));
@@ -1753,30 +1821,41 @@ public partial class ManualPitchBehaviour
         }
     }
 
-    // The calibration sets P0's depth (toward the plate) and height relative to ReleaseAnchor;
-    // the side stays fixed by the hand. Overhand at TestChest is world (-0.25, 1.85, 17.30): 0.54 m
-    // toward the plate and 0.05 m above the anchor.
+    // The calibration sets P0 on all three axes relative to ReleaseAnchor (no fixed side
+    // offset any more). Overhand at TestChest is world (-0.25, 1.85, 17.30): 0.54 m toward the
+    // plate, 0.05 m up and 0.55 m toward the right-hander's arm side, all inside the range.
     [TsukimiTest]
-    public void TheCalibratedReleaseSetsTheDepthAndHeightOfP0()
+    public void TheCalibratedReleaseSetsP0OnEveryAxis()
     {
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
-        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.7f, 1.80f, 17.84f)) < 0.0001f, "no calibration: the anchor");
+        Assert.IsTrue(Vector3.Distance(TestP0(), RightUncalibrated) < 0.0001f, "no calibration");
         BeginCalibration();
         Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand), IdealHand(TestChest), TestPlate,
             true, TestCentre, TestAnchor));
+        Assert.IsFalse(_draftReleaseLimited, "inside the range");
         Assert.IsTrue(CommitCalibration());
         Assert.IsTrue(HasCalibratedRelease());
-        Vector2 offset = CalibratedReleaseOffset();
-        Assert.IsTrue(Mathf.Abs(offset.x - 0.54f) < 0.0001f && Mathf.Abs(offset.y - 0.05f) < 0.0001f, "offset " + offset);
+        Vector3 offset = CalibratedReleaseOffset();
+        Assert.IsTrue(Vector3.Distance(offset, new Vector3(0.54f, 0.05f, 0.55f)) < 0.0001f, "offset " + offset);
         Vector3 p0 = TestP0();
-        Assert.IsTrue(Vector3.Distance(p0, new Vector3(-0.7f, 1.85f, 17.30f)) < 0.0001f, "calibrated P0 " + p0);
-        // Relative to the anchor: another lane or a moved anchor keeps the same offset.
+        Assert.IsTrue(Vector3.Distance(p0, HandAt(TestChest, Overhand)) < 0.0001f, "calibrated P0 is the hand " + p0);
+        // Relative to the anchor: a moved anchor keeps the same offset.
         Vector3 moved = FixedReleaseAt(TestCentre, TestAnchor + Vector3.up * 0.2f, TestPlate);
-        Assert.IsTrue(Vector3.Distance(moved, new Vector3(-0.7f, 2.05f, 17.30f)) < 0.0001f, "moved anchor " + moved);
-        // The other hand has no usable calibration: back to the anchor, mirrored.
+        Assert.IsTrue(Vector3.Distance(moved, new Vector3(-0.25f, 2.05f, 17.30f)) < 0.0001f, "moved anchor " + moved);
+        // The other hand has no usable calibration: the limited anchor, mirrored.
         ActiveForTest(GloveBehaviour.HandLeft);
-        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(0.7f, 1.80f, 17.84f)) < 0.0001f, "left hand: the anchor");
+        Assert.IsTrue(Vector3.Distance(TestP0(), LeftUncalibrated) < 0.0001f, "left hand: the anchor");
+        // A calibration outside the range is recorded as it is and limited, and the preview says so.
+        ActiveForTest(GloveBehaviour.HandRight);
+        BeginCalibration();
+        Assert.IsTrue(RecordCalibrationWithAnchorAt(TestChest, HandAt(TestChest, Overhand) + new Vector3(0f, 0f, 0.4f),
+            IdealHand(TestChest), TestPlate, true, TestCentre, TestAnchor));
+        Assert.IsTrue(_draftReleaseLimited, "0.14 m extension");
+        Assert.IsTrue(PreviewText().Contains("outside the release range"), PreviewText());
+        Assert.IsTrue(CommitCalibration());
+        Assert.IsTrue(Mathf.Abs(CalibratedReleaseOffset().x - 0.14f) < 0.0001f, "stored as measured");
+        Assert.IsTrue(Mathf.Abs(TestP0().z - 17.34f) < 0.0001f, "placed at 0.5 m");
     }
 
     // The player moving after the calibration does not move P0, and releases leave from it.
@@ -1802,18 +1881,22 @@ public partial class ManualPitchBehaviour
         Assert.AreEqual(p0, TestP0(), "nothing of the release moves it");
     }
 
-    // A calibration saved before the release offset existed uses the anchor until recalibrated.
+    // A calibration saved before the release offset existed uses the limited anchor; one saved
+    // before the side existed reads its side as 0 (the anchor's side, limited to 0.1 m).
     [TsukimiTest]
-    public void AnOldStoredCalibrationKeepsTheAnchorUntilItsOffsetIsRestored()
+    public void OldStoredCalibrationsAreLimitedToTheRange()
     {
         Mimic.Join();
         ActiveForTest(GloveBehaviour.HandRight);
         Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, TestPose));
         Assert.IsFalse(HasCalibratedRelease());
-        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.7f, 1.80f, 17.84f)) < 0.0001f);
-        Assert.IsFalse(RestoreReleaseOffset(float.NaN, 0f), "a non-finite offset is ignored");
-        Assert.IsTrue(RestoreReleaseOffset(0.54f, 0.05f));
-        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.7f, 1.85f, 17.30f)) < 0.0001f);
+        Assert.IsTrue(Vector3.Distance(TestP0(), RightUncalibrated) < 0.0001f);
+        Assert.IsFalse(RestoreReleaseOffset(float.NaN, 0f, 0f), "a non-finite offset is ignored");
+        Assert.IsFalse(RestoreReleaseOffset(0.54f, 0.05f, float.NaN));
+        Assert.IsTrue(RestoreReleaseOffset(0.54f, 0.05f, 0f));
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(0.2f, 1.85f, 17.30f)) < 0.0001f, "no stored side " + TestP0());
+        Assert.IsTrue(RestoreReleaseOffset(0.54f, 0.05f, 0.55f));
+        Assert.IsTrue(Vector3.Distance(TestP0(), new Vector3(-0.25f, 1.85f, 17.30f)) < 0.0001f);
         Assert.IsTrue(RestoreCalibration(CalibrationVersion, GloveBehaviour.HandRight, Overhand, TestPose));
         Assert.IsFalse(HasCalibratedRelease(), "restoring a calibration starts without an offset");
     }

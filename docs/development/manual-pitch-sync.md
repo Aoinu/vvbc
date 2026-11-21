@@ -29,24 +29,34 @@ the mound panel's sync text and ±10 ms buttons, `HomePlate/PitchDelaySetting`,
 ```text
 F     = horizontal unit direction from MoundCenter to the plate
 R     = normalize(cross(up, F))           pitcher's right = batter's left
-A     = ReleaseAnchor + F * d + up * h    (d, h) = the calibrated release offset; (0, 0) without one
-Pbase = MoundCenter + F * dot(A - MoundCenter, F),  y = A.y
-P0    = Pbase + releaseSideOffset * R     right-hander
-P0    = Pbase - releaseSideOffset * R     left-hander         releaseSideOffset = 0.7 m
+S     = R for a right-hander, -R for a left-hander          the throwing arm's side
+(d, h, s) = calibrated release relative to ReleaseAnchor: d along F, h up, s along S
+            (0, 0, 0) without one
+d'    = clamp(d, releaseForwardMin 0.5, releaseForwardMax 2.3)          extension from the anchor
+y'    = clamp(ReleaseAnchor.y + h - MoundCenter.y, releaseHeightMin 0.1, releaseHeightMax 2.0)
+                                                                       height above the ground
+s'    = clamp(s, releaseSideMin 0.1, releaseSideMax 0.6)                arm side from the anchor
+P0    = ReleaseAnchor + F * d' + S * s',   P0.y = MoundCenter.y + y'
 ```
 
 `MoundCenter` and `ReleaseAnchor` are static children of the mound (`ManualPitchMound.prefab`;
-`ReleaseAnchor` at local (0, 1.8, 1.5), toward the plate). **Depth and height come from the
+`ReleaseAnchor` at local (0, 1.8, 1.5), toward the plate). **All three axes come from the
 calibration**: when the release pose is recorded, the controller's position is stored relative to
-`ReleaseAnchor` as `d` (toward the plate along `F`) and `h` (up)
-(`vvbc.pitching.calib.releaseSet/releaseForward/releaseUp` in PlayerData). Without a calibrated
-release for the current hand (none yet, the other hand, or one saved before these keys existed)
-`P0` stays on `ReleaseAnchor`. The anchor's and the controller's lateral positions are ignored:
-the side is fixed by the hand. The player's position, head, chest, controllers and held ball at
-the lock and at the release never enter `P0`. Each mound uses its own transforms and its own
-plate, so several lanes, turned mounds and nested prefabs each get their own axes. Scene
-instances that override the mound's variable table without these fields find the children by
-name (`MoundCenter`, `ReleaseAnchor`) at `Start`.
+`ReleaseAnchor` as `d` (toward the plate along `F`), `h` (up) and `s` (toward the arm side)
+(`vvbc.pitching.calib.releaseSet/releaseForward/releaseUp/releaseSide` in PlayerData), as
+measured, and **limited to the release range** when `P0` is placed. The six limits are Inspector
+fields of the mound; `MoundCenter`'s height is the ground. Without a calibrated release for the
+current hand (none yet, the other hand, or one saved before these keys existed) the offset is
+zero, so `P0` is the anchor limited to the range (0.5 m extension, 0.1 m to the arm side, the
+anchor's height). A calibration saved before `releaseSide` existed reads its side as 0.
+Difference from the earlier specification (changed on purpose): the side was fixed at
+`releaseSideOffset` (0.7 m) from `MoundCenter` whatever the calibration, and depth and height
+had no limit; `releaseSideOffset` was removed. The player's position, head, chest, controllers
+and held ball at the lock and at the release never enter `P0`. Each mound uses its own
+transforms and its own plate, so several lanes, turned mounds and nested prefabs each get their
+own axes. Scene instances that override the mound's variable table without these fields find the
+children by name (`MoundCenter`, `ReleaseAnchor`) at `Start`; the range fields take the program's
+defaults there.
 
 The lock and the default course solve from `P0`; the release sets `releasePosition = P0` of that
 course; the Ball launches from it, publishes it and re-asserts it. Receivers never rebuild it.

@@ -126,41 +126,76 @@ public static class ManualPitchMath
 
     // ---- Fixed release point (P0) ----
 
-    // The mound's fixed release point for a throwing hand. F is the horizontal unit direction
-    // from the mound centre to the plate and R = normalize(cross(up, F)) the pitcher's right
-    // (the batter's left). Pbase takes the mound centre's lateral position and the anchor's
-    // distance along F and height; a right-hander releases sideOffset along +R, a left-hander
-    // along -R. Nothing of the player (position, head, chest, controllers or held ball) enters.
-    // Zero when the centre and the plate are vertically aligned or an input is not finite.
-    // The calibrated release relative to the release anchor: x = toward the plate along F (the
-    // horizontal direction from the mound centre to the plate), y = up. The lateral part is not
-    // kept (the release side is fixed by the hand). Zero when F is undefined or an input is not finite.
-    public static Vector2 AnchorOffset(Vector3 centre, Vector3 anchor, Vector3 plate, Vector3 point)
+    // F is the horizontal unit direction from the mound centre to the plate, R = cross(up, F)
+    // the pitcher's right (the batter's left), and the arm side is R for a right-hander and -R
+    // for a left-hander. Zero when F is undefined.
+    public static Vector3 ArmSide(Vector3 forward, bool leftHanded)
     {
-        if (!FiniteVector(anchor) || !FiniteVector(point)) return Vector2.zero;
-        Vector3 forward = HorizontalDirection(centre, plate);
-        if (forward == Vector3.zero) return Vector2.zero;
-        Vector3 d = point - anchor;
-        return new Vector2(Vector3.Dot(d, forward), d.y);
+        Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
+        return leftHanded ? -right : right;
     }
 
-    // The anchor moved by a calibrated offset (AnchorOffset): forward along F and up.
-    public static Vector3 OffsetAnchor(Vector3 centre, Vector3 anchor, Vector3 plate, Vector2 offset)
+    // A release point relative to the release anchor: x = toward the plate along F, y = up,
+    // z = toward the arm side. Zero when F is undefined or an input is not finite.
+    public static Vector3 ReleaseOffset(Vector3 centre, Vector3 anchor, Vector3 plate, Vector3 point, bool leftHanded)
     {
-        Vector3 forward = HorizontalDirection(centre, plate);
-        if (forward == Vector3.zero || !Finite(offset.x) || !Finite(offset.y)) return anchor;
-        return anchor + forward * offset.x + Vector3.up * offset.y;
-    }
-
-    public static Vector3 FixedReleasePoint(Vector3 centre, Vector3 anchor, Vector3 plate, bool leftHanded, float sideOffset)
-    {
-        if (!FiniteVector(centre) || !FiniteVector(anchor) || !Finite(sideOffset)) return Vector3.zero;
+        if (!FiniteVector(anchor) || !FiniteVector(point)) return Vector3.zero;
         Vector3 forward = HorizontalDirection(centre, plate);
         if (forward == Vector3.zero) return Vector3.zero;
-        Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
-        Vector3 pbase = centre + forward * Vector3.Dot(anchor - centre, forward);
-        pbase.y = anchor.y;
-        return pbase + right * (leftHanded ? -sideOffset : sideOffset);
+        Vector3 d = point - anchor;
+        return new Vector3(Vector3.Dot(d, forward), d.y, Vector3.Dot(d, ArmSide(forward, leftHanded)));
+    }
+
+    // The mound's fixed release point P0 (the centre of the release plate) from a release
+    // offset (ReleaseOffset), limited to the range: forward from the anchor along F, height above
+    // the mound centre (the ground), arm side from the anchor. Nothing of the player enters.
+    // Zero when the centre and the plate are vertically aligned or an input is not finite.
+    public static Vector3 FixedReleasePoint(Vector3 centre, Vector3 anchor, Vector3 plate, Vector3 offset, bool leftHanded, ReleaseRange range)
+    {
+        if (!FiniteVector(centre) || !FiniteVector(anchor) || !FiniteVector(offset)) return Vector3.zero;
+        Vector3 forward = HorizontalDirection(centre, plate);
+        if (forward == Vector3.zero) return Vector3.zero;
+        Vector3 limited = LimitReleaseOffset(offset, anchor.y - centre.y, range);
+        Vector3 point = anchor + forward * limited.x + ArmSide(forward, leftHanded) * limited.z;
+        point.y = centre.y + limited.y;
+        return point;
+    }
+
+    // The offset limited to the range: x forward and z arm side as offsets from the anchor, y as
+    // the height above the ground (anchorHeight = the anchor's height above the mound centre).
+    public static Vector3 LimitReleaseOffset(Vector3 offset, float anchorHeight, ReleaseRange range)
+    {
+        return new Vector3(Mathf.Clamp(offset.x, range.forwardMin, range.forwardMax),
+            Mathf.Clamp(anchorHeight + offset.y, range.heightMin, range.heightMax),
+            Mathf.Clamp(offset.z, range.sideMin, range.sideMax));
+    }
+
+    // Whether an offset lies inside the range as it is (edges included).
+    public static bool InReleaseRange(Vector3 offset, float anchorHeight, ReleaseRange range)
+    {
+        float height = anchorHeight + offset.y;
+        return offset.x >= range.forwardMin && offset.x <= range.forwardMax && height >= range.heightMin &&
+            height <= range.heightMax && offset.z >= range.sideMin && offset.z <= range.sideMax;
+    }
+
+    // A range from Inspector values: a non-finite value reads as 0, a minimum above its maximum
+    // is swapped with it.
+    public static ReleaseRange MakeReleaseRange(float forwardMin, float forwardMax, float heightMin, float heightMax,
+        float sideMin, float sideMax)
+    {
+        ReleaseRange range = new ReleaseRange();
+        range.forwardMin = Mathf.Min(OrZero(forwardMin), OrZero(forwardMax));
+        range.forwardMax = Mathf.Max(OrZero(forwardMin), OrZero(forwardMax));
+        range.heightMin = Mathf.Min(OrZero(heightMin), OrZero(heightMax));
+        range.heightMax = Mathf.Max(OrZero(heightMin), OrZero(heightMax));
+        range.sideMin = Mathf.Min(OrZero(sideMin), OrZero(sideMax));
+        range.sideMax = Mathf.Max(OrZero(sideMin), OrZero(sideMax));
+        return range;
+    }
+
+    private static float OrZero(float value)
+    {
+        return Finite(value) ? value : 0f;
     }
 
     // Arm slot A: the calibrated release position projected onto the plane perpendicular to
@@ -323,4 +358,17 @@ public static class ManualPitchMath
         if (value == ManualPitchBehaviour.InputAuto) return "Auto";
         return "None";
     }
+}
+
+// The range P0 (and the release plate centred on it) may take, in metres: forward from the
+// release anchor toward the plate, height above the mound centre (the ground), and toward the
+// throwing arm's side from the anchor (ManualPitchMath.MakeReleaseRange).
+public struct ReleaseRange
+{
+    public float forwardMin;
+    public float forwardMax;
+    public float heightMin;
+    public float heightMax;
+    public float sideMin;
+    public float sideMax;
 }

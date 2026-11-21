@@ -38,12 +38,22 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public UdonBehaviour statusListener;
     [Tooltip("Mound centre. Its horizontal position is the lateral origin of the fixed release point. When empty, the child named MoundCenter is used, else this object.")]
     public Transform moundCenter;
-    [Tooltip("Release anchor. Its distance toward the plate and its height give the fixed release point P0; its lateral position is not used. When empty, the child named ReleaseAnchor is used. Without one, no course can be solved.")]
+    [Tooltip("Release anchor. The calibrated release is stored relative to it (toward the plate, up, toward the arm side) and the release range is measured from it. When empty, the child named ReleaseAnchor is used. Without one, no course can be solved.")]
     public Transform releaseAnchor;
 
-    [Header("Release point")]
-    [Tooltip("Lateral offset of the fixed release point from the mound centre, in metres: toward the pitcher's right (the batter's left) for a right-hander, toward the pitcher's left for a left-hander. Default 0.7.")]
-    public float releaseSideOffset = 0.7f;
+    [Header("Release point range (P0 and the release plate centred on it)")]
+    [Tooltip("Nearest release toward the plate, in metres from ReleaseAnchor along the mound-to-plate direction (extension). Default 0.5.")]
+    public float releaseForwardMin = 0.5f;
+    [Tooltip("Farthest release toward the plate, in metres from ReleaseAnchor (extension). Default 2.3.")]
+    public float releaseForwardMax = 2.3f;
+    [Tooltip("Lowest release, in metres above MoundCenter (the ground). Default 0.1.")]
+    public float releaseHeightMin = 0.1f;
+    [Tooltip("Highest release, in metres above MoundCenter (the ground). Default 2.0.")]
+    public float releaseHeightMax = 2.0f;
+    [Tooltip("Least distance toward the throwing arm's side, in metres from ReleaseAnchor: the pitcher's right for a right-hander, the left for a left-hander. Default 0.1.")]
+    public float releaseSideMin = 0.1f;
+    [Tooltip("Greatest distance toward the throwing arm's side, in metres from ReleaseAnchor. Default 0.6.")]
+    public float releaseSideMax = 0.6f;
 
     [Header("Course (front-edge plane of home plate, metres)")]
     public float horizontalMin = -1.70f;
@@ -330,6 +340,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private Vector3 _releaseBallOffset;
     // The course's release point P0, and where the Ball really launched (RecordLaunch).
     private Vector3 _resultSolverRelease, _resultLaunchPoint;
+    private bool _resultReleaseLimited;
     private bool _resultLaunched;
     private bool _resultPitched;
     private bool _resultHasTarget;
@@ -816,8 +827,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // ---- Fixed release point ----
 
-    // P0 of the current throwing hand, from this mound's centre, its release anchor and its
-    // plate (ManualPitchMath.FixedReleasePoint). Zero without an anchor or a plate.
+    // P0 of the current throwing hand, from this mound's centre, its release anchor, its plate
+    // and the release range (ManualPitchMath.FixedReleasePoint). Zero without an anchor or a plate.
     public Vector3 FixedRelease()
     {
         if (releaseAnchor == null || strikeZone == null) return Vector3.zero;
@@ -825,14 +836,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return FixedReleaseAt(centre.position, releaseAnchor.position, strikeZone.PlateTransform().position);
     }
 
-    // The calibration of the current hand moves the anchor toward the plate and in height by
-    // its recorded offset (CalibratedReleaseOffset); without one the anchor itself is used.
+    // The calibrated release of the current hand (CalibratedReleaseOffset: toward the plate, up
+    // and toward the arm side from the anchor), limited to the release range; without one the
+    // anchor itself, limited the same way.
     public Vector3 FixedReleaseAt(Vector3 centre, Vector3 anchor, Vector3 plate)
     {
-        Vector3 point = CalibrationUsable() && _calHasRelease
-            ? ManualPitchMath.OffsetAnchor(centre, anchor, plate, _calReleaseOffset) : anchor;
-        return ManualPitchMath.FixedReleasePoint(centre, point, plate, _activeHand == GloveBehaviour.HandLeft,
-            ManualPitchMath.Finite(releaseSideOffset) ? releaseSideOffset : 0f);
+        Vector3 offset = CalibrationUsable() && _calHasRelease ? _calReleaseOffset : Vector3.zero;
+        return ManualPitchMath.FixedReleasePoint(centre, anchor, plate, offset, _activeHand == GloveBehaviour.HandLeft, ReleaseRange());
+    }
+
+    public ReleaseRange ReleaseRange()
+    {
+        return ManualPitchMath.MakeReleaseRange(releaseForwardMin, releaseForwardMax, releaseHeightMin, releaseHeightMax,
+            releaseSideMin, releaseSideMax);
     }
 
     public Vector3 ReleaseAnchorPosition()
@@ -1256,6 +1272,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultWakeClock = centre ? _defaultWakeClock : _lockWakeClock;
         _resultIdealSpin = diagnosticIdealSpin;
         _resultSolverRelease = courseRelease;
+        _resultReleaseLimited = ReleaseLimited();
         _resultHand = handPosition;
         debugInput = input;
         // An actual crossing of this hold: its own arm motion and rotation (taken at the
@@ -1825,7 +1842,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         {
             text += "  (pitch: from the fixed release point, " + (_activeHand == GloveBehaviour.HandLeft ? "left" : "right") +
                 "-handed)\n  P0  " + _resultSolverRelease.ToString("F2") + "   depth/height: " +
-                (CalibrationUsable() && _calHasRelease ? ReleaseOffsetText(_calReleaseOffset) : "ReleaseAnchor (no calibrated release)");
+                (CalibrationUsable() && _calHasRelease ? ReleaseOffsetText(_calReleaseOffset) : "ReleaseAnchor (no calibrated release)") +
+                (_resultReleaseLimited ? "  LIMITED to the release range" : "");
             if (_resultLaunched)
                 text += "   applied " + _resultLaunchPoint.ToString("F2") + "   diff " + AbsCm((_resultLaunchPoint - _resultSolverRelease).magnitude);
             else text += "   applied -";

@@ -21,6 +21,9 @@ public partial class ManualPitchBehaviour
     private const string KeyReleaseSet = "vvbc.pitching.calib.releaseSet";
     private const string KeyReleaseForward = "vvbc.pitching.calib.releaseForward";
     private const string KeyReleaseUp = "vvbc.pitching.calib.releaseUp";
+    // Added with the release range: toward the throwing arm's side from ReleaseAnchor. A
+    // calibration saved before has none and reads as 0 (the anchor's own side, then limited).
+    private const string KeyReleaseSide = "vvbc.pitching.calib.releaseSide";
 
     [HideInInspector] public string statusText = "";
 
@@ -28,9 +31,10 @@ public partial class ManualPitchBehaviour
     private int _calHand;
     private Vector3 _calPosition;
     private Quaternion _calRotation = Quaternion.identity;
-    // The calibrated release relative to ReleaseAnchor: x toward the plate, y up (metres).
+    // The calibrated release relative to ReleaseAnchor: x toward the plate, y up, z toward the
+    // throwing arm's side (metres). P0 is this, limited to the release range.
     private bool _calHasRelease;
-    private Vector2 _calReleaseOffset;
+    private Vector3 _calReleaseOffset;
     private bool _restored;
 
     private bool _calibrating;
@@ -38,7 +42,9 @@ public partial class ManualPitchBehaviour
     private Vector3 _draftPosition;
     private Quaternion _draftRotation = Quaternion.identity;
     private bool _draftHasRelease;
-    private Vector2 _draftReleaseOffset;
+    private Vector3 _draftReleaseOffset;
+    // The draft release lies outside the release range (it will be limited).
+    private bool _draftReleaseLimited;
     private Vector3 _triggerHandPosition;
 
     public bool Calibrating() { return _calibrating; }
@@ -47,7 +53,7 @@ public partial class ManualPitchBehaviour
     public Vector3 CalibratedPosition() { return _calPosition; }
     public Quaternion CalibratedRotation() { return _calRotation; }
     public bool HasCalibratedRelease() { return _calHasRelease; }
-    public Vector2 CalibratedReleaseOffset() { return _calReleaseOffset; }
+    public Vector3 CalibratedReleaseOffset() { return _calReleaseOffset; }
 
     // Only a calibration of the current throwing hand is used; the other hand's is never mirrored.
     public bool CalibrationUsable()
@@ -134,7 +140,9 @@ public partial class ManualPitchBehaviour
         _draftRotation = Normalized(ManualPitchMath.Multiply(ManualPitchMath.Inverse(frame), handRotation));
         _draftHasRotation = true;
         _draftHasRelease = anchored && ManualPitchMath.HorizontalDirection(centre, platePoint) != Vector3.zero;
-        _draftReleaseOffset = _draftHasRelease ? ManualPitchMath.AnchorOffset(centre, anchor, platePoint, handPosition) : Vector2.zero;
+        _draftReleaseOffset = _draftHasRelease
+            ? ManualPitchMath.ReleaseOffset(centre, anchor, platePoint, handPosition, _activeHand == GloveBehaviour.HandLeft) : Vector3.zero;
+        _draftReleaseLimited = _draftHasRelease && !ManualPitchMath.InReleaseRange(_draftReleaseOffset, anchor.y - centre.y, ReleaseRange());
         statusText = PreviewText();
         return true;
     }
@@ -152,14 +160,26 @@ public partial class ManualPitchBehaviour
         Vector3 magnus = Vector3.Cross(axis, Vector3.forward);
         return "Release " + _draftPosition.ToString("F2") + "  slot " + slotAngle.ToString("F0") + " deg (" + form + ")" +
             "\nSpin axis " + axis.ToString("F2") + " (fixed, " + (left ? "11-5" : "1-7") + " o'clock)  break dir " + magnus.ToString("F2") +
-            (_draftHasRelease ? "\nRelease point: " + ReleaseOffsetText(_draftReleaseOffset) : "\nRelease point: ReleaseAnchor") +
+            (_draftHasRelease ? "\nRelease point: " + ReleaseOffsetText(_draftReleaseOffset) +
+                (_draftReleaseLimited ? "\n  outside the release range: the plate is placed at the nearest point inside it" : "")
+                : "\nRelease point: ReleaseAnchor (limited to the release range)") +
             (_draftHasRotation ? "" : "\nRotation not recorded yet.");
     }
 
-    public static string ReleaseOffsetText(Vector2 offset)
+    public static string ReleaseOffsetText(Vector3 offset)
     {
         return (offset.x >= 0f ? "+" : "") + offset.x.ToString("F2") + " m toward the plate, " +
-            (offset.y >= 0f ? "+" : "") + offset.y.ToString("F2") + " m up from ReleaseAnchor";
+            (offset.y >= 0f ? "+" : "") + offset.y.ToString("F2") + " m up, " +
+            (offset.z >= 0f ? "+" : "") + offset.z.ToString("F2") + " m arm side from ReleaseAnchor";
+    }
+
+    // The calibrated release of the current hand lies outside the release range (P0 limited).
+    public bool ReleaseLimited()
+    {
+        if (releaseAnchor == null) return false;
+        Transform centre = moundCenter != null ? moundCenter : transform;
+        Vector3 offset = CalibrationUsable() && _calHasRelease ? _calReleaseOffset : Vector3.zero;
+        return !ManualPitchMath.InReleaseRange(offset, releaseAnchor.position.y - centre.position.y, ReleaseRange());
     }
 
     public bool SaveCalibration()
@@ -172,6 +192,7 @@ public partial class ManualPitchBehaviour
         PlayerData.SetBool(KeyReleaseSet, _calHasRelease);
         PlayerData.SetFloat(KeyReleaseForward, _calReleaseOffset.x);
         PlayerData.SetFloat(KeyReleaseUp, _calReleaseOffset.y);
+        PlayerData.SetFloat(KeyReleaseSide, _calReleaseOffset.z);
         return true;
     }
 
@@ -243,7 +264,7 @@ public partial class ManualPitchBehaviour
         else if (_hasCalibration && PlayerData.TryGetBool(player, KeyReleaseSet, out bool releaseSet) && releaseSet &&
             PlayerData.TryGetFloat(player, KeyReleaseForward, out float forward) &&
             PlayerData.TryGetFloat(player, KeyReleaseUp, out float up))
-            RestoreReleaseOffset(forward, up);
+            RestoreReleaseOffset(forward, up, PlayerData.TryGetFloat(player, KeyReleaseSide, out float side) ? side : 0f);
         Notify();
     }
 
@@ -260,18 +281,19 @@ public partial class ManualPitchBehaviour
         _calRotation = Normalized(rotation);
         // A calibration saved before the release offset existed keeps P0 on the ReleaseAnchor.
         _calHasRelease = false;
-        _calReleaseOffset = Vector2.zero;
+        _calReleaseOffset = Vector3.zero;
         _markerPlaced = false;
         InvalidateDefaultCourse();
         return true;
     }
 
-    // The stored release offset of the restored calibration; a non-finite one is ignored.
-    public bool RestoreReleaseOffset(float forward, float up)
+    // The stored release offset of the restored calibration (side 0 when it was saved before the
+    // side existed); a non-finite one is ignored.
+    public bool RestoreReleaseOffset(float forward, float up, float side)
     {
-        if (!_hasCalibration || !ManualPitchMath.Finite(forward) || !ManualPitchMath.Finite(up)) return false;
+        if (!_hasCalibration || !ManualPitchMath.Finite(forward) || !ManualPitchMath.Finite(up) || !ManualPitchMath.Finite(side)) return false;
         _calHasRelease = true;
-        _calReleaseOffset = new Vector2(forward, up);
+        _calReleaseOffset = new Vector3(forward, up, side);
         _markerPlaced = false;
         InvalidateDefaultCourse();
         return true;
