@@ -147,34 +147,45 @@ public static class ManualPitchMath
     }
 
     // The mound's fixed release point P0 (the centre of the release plate) from a release
-    // offset (ReleaseOffset), limited to the range: forward from the anchor along F, height above
-    // the mound centre (the ground), arm side from the anchor. Nothing of the player enters.
-    // Zero when the centre and the plate are vertically aligned or an input is not finite.
+    // offset (ReleaseOffset), limited to the range: the extension along F and the height both
+    // from the mound centre (the pitcher's plate on the mound surface), the arm side from the
+    // anchor. Nothing of the player enters. Zero when the centre and the plate are vertically
+    // aligned or an input is not finite.
     public static Vector3 FixedReleasePoint(Vector3 centre, Vector3 anchor, Vector3 plate, Vector3 offset, bool leftHanded, ReleaseRange range)
     {
         if (!FiniteVector(centre) || !FiniteVector(anchor) || !FiniteVector(offset)) return Vector3.zero;
         Vector3 forward = HorizontalDirection(centre, plate);
         if (forward == Vector3.zero) return Vector3.zero;
-        Vector3 limited = LimitReleaseOffset(offset, anchor.y - centre.y, range);
-        Vector3 point = anchor + forward * limited.x + ArmSide(forward, leftHanded) * limited.z;
+        Vector3 limited = LimitReleaseOffset(offset, AnchorFromCentre(centre, anchor, forward), range);
+        // The anchor's own side position (horizontal, across F) is the origin of the arm side.
+        Vector3 lateral = anchor - centre - forward * Vector3.Dot(anchor - centre, forward);
+        lateral.y = 0f;
+        Vector3 point = centre + lateral + forward * limited.x + ArmSide(forward, leftHanded) * limited.z;
         point.y = centre.y + limited.y;
         return point;
     }
 
-    // The offset limited to the range: x forward and z arm side as offsets from the anchor, y as
-    // the height above the ground (anchorHeight = the anchor's height above the mound centre).
-    public static Vector3 LimitReleaseOffset(Vector3 offset, float anchorHeight, ReleaseRange range)
+    // The anchor seen from the mound centre: x its extension along F, y its height.
+    public static Vector2 AnchorFromCentre(Vector3 centre, Vector3 anchor, Vector3 forward)
     {
-        return new Vector3(Mathf.Clamp(offset.x, range.forwardMin, range.forwardMax),
-            Mathf.Clamp(anchorHeight + offset.y, range.heightMin, range.heightMax),
+        return new Vector2(Vector3.Dot(anchor - centre, forward), anchor.y - centre.y);
+    }
+
+    // The offset limited to the range: x the extension from the mound centre, y the height above
+    // it, z the arm side from the anchor (anchorFromCentre = AnchorFromCentre).
+    public static Vector3 LimitReleaseOffset(Vector3 offset, Vector2 anchorFromCentre, ReleaseRange range)
+    {
+        return new Vector3(Mathf.Clamp(anchorFromCentre.x + offset.x, range.forwardMin, range.forwardMax),
+            Mathf.Clamp(anchorFromCentre.y + offset.y, range.heightMin, range.heightMax),
             Mathf.Clamp(offset.z, range.sideMin, range.sideMax));
     }
 
     // Whether an offset lies inside the range as it is (edges included).
-    public static bool InReleaseRange(Vector3 offset, float anchorHeight, ReleaseRange range)
+    public static bool InReleaseRange(Vector3 offset, Vector2 anchorFromCentre, ReleaseRange range)
     {
-        float height = anchorHeight + offset.y;
-        return offset.x >= range.forwardMin && offset.x <= range.forwardMax && height >= range.heightMin &&
+        float extension = anchorFromCentre.x + offset.x;
+        float height = anchorFromCentre.y + offset.y;
+        return extension >= range.forwardMin && extension <= range.forwardMax && height >= range.heightMin &&
             height <= range.heightMax && offset.z >= range.sideMin && offset.z <= range.sideMax;
     }
 
@@ -360,9 +371,10 @@ public static class ManualPitchMath
     }
 }
 
-// The range P0 (and the release plate centred on it) may take, in metres: forward from the
-// release anchor toward the plate, height above the mound centre (the ground), and toward the
-// throwing arm's side from the anchor (ManualPitchMath.MakeReleaseRange).
+// The range P0 (and the release plate centred on it) may take, in metres: the extension toward
+// the plate and the height, both from the mound centre (the pitcher's plate on the mound
+// surface), and toward the throwing arm's side from the release anchor
+// (ManualPitchMath.MakeReleaseRange).
 public struct ReleaseRange
 {
     public float forwardMin;

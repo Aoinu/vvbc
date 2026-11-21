@@ -32,11 +32,13 @@ R     = normalize(cross(up, F))           pitcher's right = batter's left
 S     = R for a right-hander, -R for a left-hander          the throwing arm's side
 (d, h, s) = calibrated release relative to ReleaseAnchor: d along F, h up, s along S
             (0, 0, 0) without one
-d'    = clamp(d, releaseForwardMin 0.5, releaseForwardMax 2.3)          extension from the anchor
+e'    = clamp(dot(ReleaseAnchor - MoundCenter, F) + d, releaseForwardMin 0.5, releaseForwardMax 2.3)
+                                                         extension from MoundCenter (the pitcher's plate)
 y'    = clamp(ReleaseAnchor.y + h - MoundCenter.y, releaseHeightMin 0.1, releaseHeightMax 2.0)
-                                                                       height above the ground
-s'    = clamp(s, releaseSideMin 0.1, releaseSideMax 0.6)                arm side from the anchor
-P0    = ReleaseAnchor + F * d' + S * s',   P0.y = MoundCenter.y + y'
+                                                         height above MoundCenter (the mound surface)
+s'    = clamp(s, releaseSideMin 0.1, releaseSideMax 0.6)  arm side from the anchor
+L     = the anchor's horizontal position across F, relative to MoundCenter
+P0    = MoundCenter + L + F * e' + S * s',   P0.y = MoundCenter.y + y'
 ```
 
 `MoundCenter` and `ReleaseAnchor` are static children of the mound (`ManualPitchMound.prefab`;
@@ -45,10 +47,11 @@ calibration**: when the release pose is recorded, the controller's position is s
 `ReleaseAnchor` as `d` (toward the plate along `F`), `h` (up) and `s` (toward the arm side)
 (`vvbc.pitching.calib.releaseSet/releaseForward/releaseUp/releaseSide` in PlayerData), as
 measured, and **limited to the release range** when `P0` is placed. The six limits are Inspector
-fields of the mound; `MoundCenter`'s height is the ground. Without a calibrated release for the
+fields of the mound. The extension and the height are measured from `MoundCenter`, which must
+sit on the pitcher's plate **on the mound surface**, not inside the mound; the side from the anchor. Without a calibrated release for the
 current hand (none yet, the other hand, or one saved before these keys existed) the offset is
-zero, so `P0` is the anchor limited to the range (0.5 m extension, 0.1 m to the arm side, the
-anchor's height). A calibration saved before `releaseSide` existed reads its side as 0.
+zero, so `P0` is the anchor limited to the range (the prefab's anchor: 1.5 m extension and 1.8 m
+height kept, 0.1 m to the arm side). A calibration saved before `releaseSide` existed reads its side as 0.
 Difference from the earlier specification (changed on purpose): the side was fixed at
 `releaseSideOffset` (0.7 m) from `MoundCenter` whatever the calibration, and depth and height
 had no limit; `releaseSideOffset` was removed. The player's position, head, chest, controllers

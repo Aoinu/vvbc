@@ -142,7 +142,8 @@ public partial class ManualPitchBehaviour
         _draftHasRelease = anchored && ManualPitchMath.HorizontalDirection(centre, platePoint) != Vector3.zero;
         _draftReleaseOffset = _draftHasRelease
             ? ManualPitchMath.ReleaseOffset(centre, anchor, platePoint, handPosition, _activeHand == GloveBehaviour.HandLeft) : Vector3.zero;
-        _draftReleaseLimited = _draftHasRelease && !ManualPitchMath.InReleaseRange(_draftReleaseOffset, anchor.y - centre.y, ReleaseRange());
+        _draftReleaseLimited = _draftHasRelease && !ManualPitchMath.InReleaseRange(_draftReleaseOffset,
+            ManualPitchMath.AnchorFromCentre(centre, anchor, ManualPitchMath.HorizontalDirection(centre, platePoint)), ReleaseRange());
         statusText = PreviewText();
         return true;
     }
@@ -176,10 +177,11 @@ public partial class ManualPitchBehaviour
     // The calibrated release of the current hand lies outside the release range (P0 limited).
     public bool ReleaseLimited()
     {
-        if (releaseAnchor == null) return false;
+        if (releaseAnchor == null || strikeZone == null) return false;
         Transform centre = moundCenter != null ? moundCenter : transform;
+        Vector3 forward = ManualPitchMath.HorizontalDirection(centre.position, strikeZone.PlateTransform().position);
         Vector3 offset = CalibrationUsable() && _calHasRelease ? _calReleaseOffset : Vector3.zero;
-        return !ManualPitchMath.InReleaseRange(offset, releaseAnchor.position.y - centre.position.y, ReleaseRange());
+        return !ManualPitchMath.InReleaseRange(offset, ManualPitchMath.AnchorFromCentre(centre.position, releaseAnchor.position, forward), ReleaseRange());
     }
 
     public bool SaveCalibration()

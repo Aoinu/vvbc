@@ -36,19 +36,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public MeshRenderer cursorRenderer;
     [Tooltip("Optional UI notified with OnManualPitchChanged when the state or calibration changes.")]
     public UdonBehaviour statusListener;
-    [Tooltip("Mound centre. Its horizontal position is the lateral origin of the fixed release point. When empty, the child named MoundCenter is used, else this object.")]
+    [Tooltip("The pitcher's plate on the mound surface: origin of the extension and the height of the release range, and of the direction to the plate. Place it on the surface, not inside the mound. When empty, the child named MoundCenter is used, else this object.")]
     public Transform moundCenter;
     [Tooltip("Release anchor. The calibrated release is stored relative to it (toward the plate, up, toward the arm side) and the release range is measured from it. When empty, the child named ReleaseAnchor is used. Without one, no course can be solved.")]
     public Transform releaseAnchor;
 
     [Header("Release point range (P0 and the release plate centred on it)")]
-    [Tooltip("Nearest release toward the plate, in metres from ReleaseAnchor along the mound-to-plate direction (extension). Default 0.5.")]
+    [Tooltip("Shortest extension: release distance toward the plate from MoundCenter (the pitcher's plate), in metres. Default 0.5.")]
     public float releaseForwardMin = 0.5f;
-    [Tooltip("Farthest release toward the plate, in metres from ReleaseAnchor (extension). Default 2.3.")]
+    [Tooltip("Longest extension: release distance toward the plate from MoundCenter, in metres. Default 2.3.")]
     public float releaseForwardMax = 2.3f;
-    [Tooltip("Lowest release, in metres above MoundCenter (the ground). Default 0.1.")]
+    [Tooltip("Lowest release, in metres above MoundCenter (the mound surface). Default 0.1.")]
     public float releaseHeightMin = 0.1f;
-    [Tooltip("Highest release, in metres above MoundCenter (the ground). Default 2.0.")]
+    [Tooltip("Highest release, in metres above MoundCenter (the mound surface). Default 2.0.")]
     public float releaseHeightMax = 2.0f;
     [Tooltip("Least distance toward the throwing arm's side, in metres from ReleaseAnchor: the pitcher's right for a right-hander, the left for a left-hander. Default 0.1.")]
     public float releaseSideMin = 0.1f;
@@ -339,6 +339,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // The course's release point P0, and where the Ball really launched (RecordLaunch).
     private Vector3 _resultSolverRelease, _resultLaunchPoint;
     private bool _resultReleaseLimited;
+    // Whether the placed P0 was limited to the release range (set with the plate, read by the release).
+    private bool _releaseLimited;
     private bool _resultLaunched;
     private bool _resultPitched;
     private bool _resultHasTarget;
@@ -464,6 +466,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         Transform centre = moundCenter != null ? moundCenter : transform;
         Vector3 plate = strikeZone != null ? strikeZone.PlateTransform().position : Vector3.zero;
         SetReleasePlate(ReleasePlateMath.Build(FixedRelease(), centre.position, plate, releasePlateWidth, releasePlateHeight));
+        _releaseLimited = ReleaseLimited();
     }
 
     public void SetReleasePlate(ReleasePlate plate)
@@ -1265,7 +1268,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultWakeClock = centre ? _defaultWakeClock : _lockWakeClock;
         _resultIdealSpin = diagnosticIdealSpin;
         _resultSolverRelease = courseRelease;
-        _resultReleaseLimited = ReleaseLimited();
+        _resultReleaseLimited = _releaseLimited;
         _resultHand = handPosition;
         debugInput = input;
         // An actual crossing of this hold: its own arm motion and rotation (taken at the

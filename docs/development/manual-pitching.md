@@ -405,19 +405,24 @@ the release range (see [manual pitch sync](manual-pitch-sync.md#fixed-release-po
 
 ### Release range
 
-P0, and so the release plate, is limited to a box measured from `ReleaseAnchor` and the ground
-(`MoundCenter`'s height), each axis on its own, edges included (Inspector, metres):
+P0, and so the release plate, is limited to a box, each axis on its own, edges included
+(Inspector, metres):
 
 | Axis | Fields | Default |
 |---|---|---|
-| Extension: toward the plate from `ReleaseAnchor`, along `F` | `releaseForwardMin` / `Max` | +0.5 / +2.3 |
-| Height above the ground (`MoundCenter`) | `releaseHeightMin` / `Max` | 0.1 / 2.0 |
+| Extension: toward the plate from `MoundCenter` (the pitcher's plate), along `F` | `releaseForwardMin` / `Max` | 0.5 / 2.3 |
+| Height above `MoundCenter` (the mound surface) | `releaseHeightMin` / `Max` | 0.1 / 2.0 |
 | Toward the throwing arm's side from `ReleaseAnchor` (pitcher's right for a right-hander, left for a left-hander) | `releaseSideMin` / `Max` | 0.1 / 0.6 |
 
 A calibrated release outside the box is still recorded as measured; `P0` is placed at the
 nearest point inside it (`ManualPitchMath.LimitReleaseOffset`), the calibration preview says
 `outside the release range`, and the panel's `LAUNCH` line marks a limited `P0`. A swapped
-minimum and maximum is read in order, a non-finite value as 0.
+minimum and maximum is read in order, a non-finite value as 0. The calibrated release stays
+stored relative to `ReleaseAnchor` (PlayerData unchanged); only the limits are measured from
+`MoundCenter`. Difference from the first version of the range (changed on purpose, after a
+real-client test): the extension was measured from `ReleaseAnchor`, 1.5 m in front of
+`MoundCenter`, so every real release (about 0.5 m in front of `MoundCenter`, -1.0 m from the
+anchor) was pushed to the 0.5 m minimum and the extension never followed the calibration.
 The solver aims from it, the release leaves from it (`ManualPitchBehaviour.releasePosition`), and
 the Ball launches, publishes and re-asserts it. The player's position, HMD, chest, controllers,
 the plate crossing and the held ball never move it. A throw keeps launching from the ball centre.
@@ -594,12 +599,13 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 │   ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
 │   ├── Buttons: Start Calibration, Cancel, Ball → Glove
 │   └── ControlSettings (ManualPitchControlSettingsBehaviour; three sliders with labels)
-├── MoundCenter (local origin; the ground of the release range)
+├── MoundCenter (the pitcher's plate on the mound surface: extension and height origin)
 └── ReleaseAnchor (local 0, 1.8, 1.5: origin of the calibrated release and of the release range)
 ```
 
 Place the root on the pitcher's plate area, its +Z toward the plate, with the trigger covering
-where the pitcher stands, and assign `strikeZone` to the target HomePlate's
+where the pitcher stands and `MoundCenter` on the mound surface at the pitcher's plate (raise it
+in the instance when the root stands below a raised mound), and assign `strikeZone` to the target HomePlate's
 `StrikeZoneBehaviour` (its `ball` must be set). Moving `ReleaseAnchor` moves the release range
 (its height only moves where an uncalibrated `P0` sits; the height limits are above
 `MoundCenter`). Several mounds may target different plates.
