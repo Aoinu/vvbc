@@ -57,6 +57,7 @@ public partial class BallBehaviour
         StartFlight(position, velocity, angularVelocity, true);
         if (body == null) return;
         _wake = BallAerodynamics.PrepareWake(wake, angularVelocity);
+        if (pitchSyncDiagnostics) FlightDiagBegin(position, velocity, angularVelocity, elapsed);
         if (_wake.mode == BallAerodynamics.WakeNone) return;
         _wakeTime = elapsed;
         _wakeSampleTime = elapsed;
@@ -136,6 +137,7 @@ public partial class BallBehaviour
             if (glove != null) CheckLocalCatch(glove, body.position);
         }
         if (!flying) return;
+        if (_diagFlightStep >= 0) FlightDiagStep();
         RecordMotion(Time.fixedTime, body.position, body.velocity, body.angularVelocity);
         if (!contactConsumed && motionObserver != null) motionObserver.AcceptSample(Time.fixedTime, body.position, body.velocity);
         Vector3 velocity = body.velocity;
@@ -154,6 +156,7 @@ public partial class BallBehaviour
     {
         // The strike observer extrapolates the pre-impact pitch, wake included.
         BallWake wake = _wake;
+        if (_diagFlightStep >= 0) FlightDiagCollision(collision);
         if (flying && body != null && collision != null && !body.isKinematic && (groundLayers.value & (1 << collision.gameObject.layer)) != 0)
         {
             // The first ground bounce ends the pitch's wake; walls and fences do not.

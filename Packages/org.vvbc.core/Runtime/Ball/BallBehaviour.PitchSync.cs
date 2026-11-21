@@ -353,4 +353,83 @@ public partial class BallBehaviour
             " sendTime=" + sendTime + " receiveTime=" + receiveTime + " (local rt s) storage=" + storage +
             (unchanged ? " UNCHANGED (no new sequence)" : ""));
     }
+
+    // ---- Flight diagnostics (pitchSyncDiagnostics) ----
+
+    // A launched pitch is compared, fixed step by fixed step, with the flight model it was
+    // solved with, started from the same launch state. The first FlightDiagFirstSteps steps
+    // and every FlightDiagEvery-th step up to FlightDiagMaxSteps are logged, with each
+    // collision while the comparison runs. Off (-1) whenever the diagnostics are off.
+    private const int FlightDiagMaxSteps = 90;
+    private const int FlightDiagEvery = 6;
+    private const int FlightDiagFirstSteps = 3;
+    private int _diagFlightStep = -1;
+    private int _diagFlightSequence;
+    private BallFlightState _diagModel;
+    private Vector3 _diagModelSpin;
+    private BallWake _diagModelWake;
+
+    private void FlightDiagLog(string message)
+    {
+        Debug.Log("FlightDiag local=" + LocalId() + " flight=" + flightSequence + " fixedTime=" + Time.fixedTime.ToString("F4") +
+            " fixedDt=" + Time.fixedDeltaTime.ToString("F5") + " " + message);
+    }
+
+    private void FlightDiagBegin(Vector3 position, Vector3 velocity, Vector3 spin, float elapsed)
+    {
+        _diagFlightStep = 0;
+        _diagFlightSequence = flightSequence;
+        _diagModel = new BallFlightState();
+        _diagModel.position = position;
+        _diagModel.velocity = velocity;
+        _diagModel.time = elapsed;
+        _diagModelSpin = spin;
+        _diagModelWake = _wake;
+        FlightDiagLog("begin p0=" + position.ToString("F4") + " v=" + velocity.ToString("F4") + " w=" + spin.ToString("F3") +
+            " elapsed=" + elapsed.ToString("F4") + " drag=" + dragCoefficient.ToString("F5") + " magnus=" + magnusCoefficient.ToString("F5") +
+            " wake=" + _wake.mode + "/" + _wake.coefficient.ToString("F4") + " dir=" + _wake.direction.ToString("F3") +
+            " maxW=" + (body != null ? body.maxAngularVelocity.ToString("F1") : "-") + " gravity=" + Physics.gravity.ToString("F2"));
+    }
+
+    // Before this step's force: the body as PhysX left it against the model at the same time.
+    private void FlightDiagStep()
+    {
+        if (flightSequence != _diagFlightSequence)
+        {
+            FlightDiagLog("end: another flight started");
+            _diagFlightStep = -1;
+            return;
+        }
+        int step = _diagFlightStep;
+        if (step < FlightDiagFirstSteps || step % FlightDiagEvery == 0)
+        {
+            Vector3 w = body.angularVelocity;
+            Vector3 v = body.velocity;
+            FlightDiagLog("step " + step + " t=" + _diagModel.time.ToString("F4") +
+                " pos=" + body.position.ToString("F3") + " v=" + v.ToString("F3") + " w=" + w.ToString("F2") +
+                " aMagnus=" + (magnusCoefficient * Vector3.Cross(w, v)).ToString("F2") +
+                " | model pos=" + _diagModel.position.ToString("F3") + " v=" + _diagModel.velocity.ToString("F3") +
+                " | dpos=" + (body.position - _diagModel.position).ToString("F3") + " dw=" + (w - _diagModelSpin).ToString("F2") +
+                " kinematic=" + body.isKinematic + " grounded=" + _flightGrounded + " hold=" + _localHold + " wakeTime=" + _wakeTime.ToString("F4"));
+        }
+        _diagModel = BallFlightModel.Step(_diagModel, _diagModelSpin, Physics.gravity, dragCoefficient, magnusCoefficient,
+            _diagModelWake, Time.fixedDeltaTime);
+        _diagFlightStep = step + 1 < FlightDiagMaxSteps ? step + 1 : -1;
+        if (_diagFlightStep < 0) FlightDiagLog("end: step limit");
+    }
+
+    private void FlightDiagReassert(bool kept, float elapsed)
+    {
+        FlightDiagLog("reassert kept=" + kept + " elapsed=" + elapsed.ToString("F4") + " kinematic=" + body.isKinematic +
+            " pos=" + body.position.ToString("F3") + " v=" + body.velocity.ToString("F3") + " w=" + body.angularVelocity.ToString("F2") +
+            " | release pos=" + _releasePosition.ToString("F3") + " v=" + _releaseVelocity.ToString("F3") + " w=" + _releaseSpin.ToString("F2"));
+    }
+
+    private void FlightDiagCollision(Collision collision)
+    {
+        if (collision == null) { FlightDiagLog("collision (null)"); return; }
+        GameObject other = collision.gameObject;
+        FlightDiagLog("collision with=" + (other != null ? other.name + " layer=" + other.layer : "-") +
+            " pos=" + (body != null ? body.position.ToString("F3") : "-") + " relV=" + collision.relativeVelocity.ToString("F2"));
+    }
 }

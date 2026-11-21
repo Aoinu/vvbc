@@ -641,8 +641,10 @@ public partial class BallBehaviour
         float elapsed = Mathf.Max(0f, Time.fixedTime - _releaseTime);
         // A hand pitch leaves from the solver's release point, away from the hand, so its
         // position is checked too; a throw keeps the existing velocity-only check.
-        if (ReleaseStateKept(body.isKinematic, body.position, body.velocity, _releasePosition, _releaseVelocity,
-            elapsed + Time.fixedDeltaTime, _releasePitch)) return;
+        bool kept = ReleaseStateKept(body.isKinematic, body.position, body.velocity, _releasePosition, _releaseVelocity,
+            elapsed + Time.fixedDeltaTime, _releasePitch);
+        if (pitchSyncDiagnostics && _releasePitch) FlightDiagReassert(kept, elapsed);
+        if (kept) return;
         // A hand pitch keeps its spin (a pitch has no spin damping) and its wake, as receivers' catch-up does.
         BallFlightState state = AdvanceSnapshot(_releasePosition, _releaseVelocity, _releaseSpin, Physics.gravity,
             dragCoefficient, magnusCoefficient, _releasePitch ? BallAerodynamics.PrepareWake(_releaseWake, _releaseSpin) : new BallWake(),
@@ -656,6 +658,8 @@ public partial class BallBehaviour
         body.position = state.position;
         body.velocity = state.velocity;
         body.angularVelocity = state.spin;
+        if (pitchSyncDiagnostics && _releasePitch) FlightDiagLog("reassert applied pos=" + body.position.ToString("F3") +
+            " v=" + body.velocity.ToString("F3") + " w=" + body.angularVelocity.ToString("F2"));
     }
 
     // Largest distance of the body from the released path still taken as the release's own.
