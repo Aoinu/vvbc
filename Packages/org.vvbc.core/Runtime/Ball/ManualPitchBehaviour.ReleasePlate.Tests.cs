@@ -81,7 +81,7 @@ public partial class ManualPitchBehaviour
     }
 
     // The auto release is due autoReleaseFrames (6) frames after the crossing, once, and is an
-    // Auto pitch with no cap.
+    // Auto pitch: held too long, so it is capped like any release outside the ideal timing.
     [TsukimiTest]
     public void TheAutoReleaseComesSixFramesAfterTheCrossing()
     {
@@ -96,8 +96,9 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(TrackedReleaseForTest(crossed + 6, hand, 3, InputAuto), debugReason);
         Assert.AreEqual(ReleasePlateMath.TimingAuto, _resultTiming);
         Assert.AreEqual(6, _resultCrossFrames);
-        Assert.AreEqual(100f, _resultTimingCap);
-        Assert.IsTrue(Near(_resultScore, 100f, 0.01f), "centre");
+        Assert.AreEqual(60f, _resultTimingCap, "capped");
+        Assert.IsTrue(Near(_resultPositionScore, 100f, 0.01f), "centre");
+        Assert.AreEqual(60f, _resultScore, "the cap");
         Assert.AreEqual("auto pitch", debugReason);
         Assert.IsTrue(ReleaseResultText(true).StartsWith("AUTO PITCH"), ReleaseResultText(true));
         Assert.IsFalse(AutoReleaseDueAt(crossed + 7), "never due twice");
@@ -115,7 +116,21 @@ public partial class ManualPitchBehaviour
         int crossed = SwingForTest(Vector2.zero, 10f, 0.4f, 5, 4);
         Assert.IsTrue(TrackedReleaseForTest(crossed + 6, PlatePointForTest(Vector2.zero, 0.3f), 4, InputTrigger));
         Assert.AreEqual(ReleasePlateMath.TimingIdeal, _resultTiming, "manual, still ideal at the auto frame");
+        Assert.AreEqual(100f, _resultTimingCap, "ideal: no cap");
         Assert.IsFalse(AutoReleaseDueAt(crossed + 6), "the auto release of this hold is gone");
+    }
+
+    // A manual release later than the auto frame (the auto release did not fire) is Late and capped.
+    [TsukimiTest]
+    public void AManualReleaseAfterTheAutoFrameIsLateAndCapped()
+    {
+        Mimic.Join();
+        Assert.IsTrue(PlateReadyForTest());
+        int crossed = SwingForTest(Vector2.zero, 10f, 0.4f, 5, 16);
+        Assert.IsTrue(TrackedReleaseForTest(crossed + 7, PlatePointForTest(Vector2.zero, 0.3f), 16, InputTrigger), debugReason);
+        Assert.AreEqual(ReleasePlateMath.TimingLate, _resultTiming);
+        Assert.AreEqual(60f, _resultScore, "capped");
+        Assert.IsTrue(ReleaseDetailText().Contains("cap 60 (Late)"), ReleaseDetailText());
     }
 
     // A crossing in the same frame as the release (the release's own segment) counts as actual.
@@ -242,8 +257,8 @@ public partial class ManualPitchBehaviour
         Vector3 hand = HandAt(TestChest, Overhand);
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
         Assert.AreEqual(Vector2.zero, _resultDrawError);
-        Assert.AreEqual(0f, _resultDrawMax);
-        Assert.IsTrue(_resultMaxError > 0.3f, "the score's limit is still shown: " + _resultMaxError);
+        Assert.AreEqual(0f, _resultDrawSigma);
+        Assert.IsTrue(_resultSigma > 0.3f, "the score's limit is still shown: " + _resultSigma);
         Assert.IsTrue(Vector3.Distance(_defaultDirection, releaseVelocity.normalized) < 0.000001f, "the solver's direction (no turn at all)");
     }
 
@@ -269,8 +284,8 @@ public partial class ManualPitchBehaviour
         CrossForTest(new Vector2(0.2f, 0.2f), TowardPlate(), IdealHand(TestChest));
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
         float score = ReleasePlateMath.PositionScore(new Vector2(0.2f, 0.2f), 0.25f, 0.25f);
-        Assert.IsTrue(Near(_resultDrawMax, 0.4f * (1f - score / 100f), 0.0001f), "limit " + _resultDrawMax);
-        Assert.IsTrue(Near(_resultDrawError.magnitude, _resultDrawMax, 0.0001f), "the largest draw reaches the limit");
+        Assert.IsTrue(Near(_resultDrawSigma, 0.4f * (1f - score / 100f), 0.0001f), "sigma " + _resultDrawSigma);
+        Assert.IsTrue(Near(_resultDrawError.magnitude, _resultDrawSigma * ReleasePlateMath.MaxSigmas, 0.0001f), "the largest draw is 2 sqrt(3) sigma");
         float distance = Vector3.Dot(_defaultRelease - TestPlate, TestNormal);
         Vector3 expected = ManualPitchMath.ControlDirection(_defaultDirection, _resultDrawError.x, _resultDrawError.y, 1f, 1f, distance);
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, expected) < 0.000001f, "turned by the drawn offset");
@@ -289,10 +304,10 @@ public partial class ManualPitchBehaviour
         CrossForTest(Vector2.zero, TowardPlate(), IdealHand(TestChest));
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
         Assert.AreEqual(Vector2.zero, _resultDrawError);
-        SetControlDraw(0.3f, 0.5f, 0.5f, 0.5f, 0.6f);
+        SetControlDraw(0.3f, 0.5f, 0.5f, 0.5f, 0.52f);
         CrossForTest(new Vector2(0.25f, 0.25f), TowardPlate(), IdealHand(TestChest));
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
-        Assert.IsTrue(_resultDrawMax > 0.39f && _resultDrawError.magnitude < 0.03f, "score 0, small draw " + _resultDrawError.magnitude);
+        Assert.IsTrue(_resultDrawSigma > 0.39f && _resultDrawError.magnitude < 0.03f, "score 0 (sigma 0.4 m), small draw " + _resultDrawError.magnitude);
         Assert.IsTrue(ReleaseDetailText().Contains("random  strength 100%"), ReleaseDetailText());
     }
 

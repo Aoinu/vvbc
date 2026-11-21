@@ -112,14 +112,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float maxPredictionDistance = 0.30f;
 
     [Header("Control score (local fallbacks when no Control Settings is found)")]
-    [Tooltip("Synced control settings of this mound (penalty strength, early cap, maximum error). When empty, the child ManualPitchControlSettingsBehaviour is used, else the three values below.")]
+    [Tooltip("Synced control settings of this mound (penalty strength, timing cap, error sigma). When empty, the child ManualPitchControlSettingsBehaviour is used, else the three values below.")]
     public ManualPitchControlSettingsBehaviour controlSettings;
     [Range(0f, 1f), Tooltip("Strength of the random control error, 0..1. Default 0: every pitch leaves along the solved direction.")]
     public float controlPenaltyStrength = 0f;
-    [Range(0f, 100f), Tooltip("Score cap of a release before the plate (early). Default 60.")]
-    public float earlyTimingScoreCap = 60f;
-    [Tooltip("Largest control error at score 0 (before the strength), in metres at the plate's front edge. Provisional default 0.40.")]
-    public float maxControlErrorMeters = 0.40f;
+    [Range(0f, 100f), Tooltip("Score cap of every release outside the ideal timing (early, auto, late). Default 60.")]
+    public float timingScoreCap = 60f;
+    [Tooltip("Control error sigma (1 sigma of the normal draw) at score 0, before the strength, in metres at the plate's front edge. Provisional default 0.40.")]
+    public float controlSigmaMeters = 0.40f;
 
     [Header("Control (control only; never speed, spin, axis or SSW)")]
     [Tooltip("Crossing miss per degree between the arm's motion and the direction from the release point to the target, in metres, toward where the arm moved. Independent of the controller rotation. Default 0 (no penalty).")]
@@ -271,7 +271,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // Control settings and random draw taken at the release (the settings Behaviour is read
     // only in the thin release wrapper; the core reads these).
-    private float _setStrength, _setEarlyCap = 60f, _setMaxError = 0.40f;
+    private float _setStrength, _setTimingCap = 60f, _setSigma = 0.40f;
     private float _drawAngle, _drawU1 = 0.5f, _drawU2 = 0.5f, _drawU3 = 0.5f, _drawU4 = 0.5f;
 
     // Plate result of the last release (snapshot).
@@ -283,7 +283,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private float _resultPredictDistance = -1f;
     private int _resultCrossFrames = -1;
     private float _resultPositionScore = -1f, _resultTimingCap = 100f, _resultScore = -1f;
-    private float _resultStrength, _resultMaxError, _resultDrawMax;
+    private float _resultStrength, _resultSigma, _resultDrawSigma;
     private Vector2 _resultDrawError;
     private float _resultDrawAngle;
     private Vector3 _resultLaunchDirection;
@@ -1138,22 +1138,22 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private void ReadControlSettings()
     {
         if (controlSettings != null)
-            SetControlSettings(controlSettings.penaltyStrength, controlSettings.earlyTimingCap, controlSettings.maxControlError);
-        else SetControlSettings(controlPenaltyStrength, earlyTimingScoreCap, maxControlErrorMeters);
+            SetControlSettings(controlSettings.penaltyStrength, controlSettings.timingCap, controlSettings.controlSigma);
+        else SetControlSettings(controlPenaltyStrength, timingScoreCap, controlSigmaMeters);
     }
 
-    public void SetControlSettings(float strength, float earlyCap, float maxError)
+    public void SetControlSettings(float strength, float timingCap, float sigma)
     {
         _setStrength = strength;
-        _setEarlyCap = earlyCap;
-        _setMaxError = maxError;
+        _setTimingCap = timingCap;
+        _setSigma = sigma;
     }
 
     // The five uniforms of the random control error, drawn on the pitcher's client only and
     // only when the strength can produce an error (never per frame, never on receivers).
     private void DrawControlUniforms()
     {
-        if (!(_setStrength > 0f) || !(_setMaxError > 0f))
+        if (!(_setStrength > 0f) || !(_setSigma > 0f))
         {
             SetControlDraw(0f, 0.5f, 0.5f, 0.5f, 0.5f);
             return;
@@ -1238,8 +1238,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             planePoint, planeNormal, input, true, curveOutput);
     }
 
-    // Recognition is the release plate: the hold's actual crossing (a manual release after it is
-    // Ideal, the auto release Auto), else, for a release before the plate, the arm's path
+    // Recognition is the release plate: the hold's actual crossing (a manual release up to the
+    // auto-release frame is Ideal, the auto release Auto, a later manual release Late), else, for a release before the plate, the arm's path
     // extrapolated from this release meeting the plate within maxPredictionDistance (Early).
     // The arm's direction against the course is measured and shown but never refuses a pitch,
     // so sidearm and underhand forms pitch like overhand ones.
@@ -1279,11 +1279,12 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             arm = _crossArm;
             handRotation = _crossRotation;
             _resultCross = ReleasePlateMath.CrossActual;
-            _resultTiming = input == InputAuto ? ReleasePlateMath.TimingAuto : ReleasePlateMath.TimingIdeal;
+            _resultCrossFrames = _releaseFrame - _crossFrame;
+            _resultTiming = input == InputAuto ? ReleasePlateMath.TimingAuto
+                : _resultCrossFrames > Mathf.Max(0, autoReleaseFrames) ? ReleasePlateMath.TimingLate : ReleasePlateMath.TimingIdeal;
             _resultCrossPoint = _crossPoint;
             _resultCrossOffset = _crossOffset;
             _resultPredictDistance = 0f;
-            _resultCrossFrames = _releaseFrame - _crossFrame;
         }
         _resultArm = arm;
         if (!CalibrationUsable()) { RecordRejection(input, "no calibration"); return false; }
@@ -1324,16 +1325,16 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             _resultCrossOffset = predicted.offset;
         }
 
-        // Control score: the crossing's distance from the plate centre, capped for an early
-        // release; it sets the largest random error, scaled by the penalty strength.
+        // Control score: the crossing's distance from the plate centre, capped for every release
+        // outside the ideal timing; it sets the error's sigma, scaled by the penalty strength.
         _resultPositionScore = ReleasePlateMath.PositionScore(_resultCrossOffset, _plate.halfWidth, _plate.halfHeight);
-        _resultTimingCap = ReleasePlateMath.TimingCap(_resultTiming, _setEarlyCap);
+        _resultTimingCap = ReleasePlateMath.TimingCap(_resultTiming, _setTimingCap);
         _resultScore = ReleasePlateMath.FinalScore(_resultPositionScore, _resultTimingCap);
         _resultStrength = ManualPitchMath.Finite(_setStrength) ? Mathf.Clamp01(_setStrength) : 0f;
-        _resultMaxError = ReleasePlateMath.MaxControlError(_resultScore, _setMaxError);
-        _resultDrawMax = ReleasePlateMath.ScaledControlError(_resultMaxError, _resultStrength);
-        _resultDrawError = ReleasePlateMath.ControlError(_resultDrawMax, _drawAngle, _drawU1, _drawU2, _drawU3, _drawU4);
-        _resultDrawAngle = _resultDrawMax > 0f ? Mathf.Clamp01(_drawAngle) * 360f : 0f;
+        _resultSigma = ReleasePlateMath.ControlSigma(_resultScore, _setSigma);
+        _resultDrawSigma = ReleasePlateMath.ScaledControlError(_resultSigma, _resultStrength);
+        _resultDrawError = ReleasePlateMath.ControlError(_resultDrawSigma, _drawAngle, _drawU1, _drawU2, _drawU3, _drawU4);
+        _resultDrawAngle = _resultDrawSigma > 0f ? Mathf.Clamp01(_drawAngle) * 360f : 0f;
 
         // The arm-direction penalty (default 0): the angle of the arm's motion, toward where it
         // moved, as a crossing offset (right, up, metres). A zero coefficient contributes exactly zero.
@@ -1438,8 +1439,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultTimingCap = 100f;
         _resultScore = -1f;
         _resultStrength = 0f;
-        _resultMaxError = 0f;
-        _resultDrawMax = 0f;
+        _resultSigma = 0f;
+        _resultDrawSigma = 0f;
         _resultDrawError = Vector2.zero;
         _resultDrawAngle = 0f;
         _resultLaunchDirection = Vector3.zero;
@@ -1703,7 +1704,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
                 "  (" + ReleasePlateMath.CrossName(_resultCross) + ", " + ReleasePlateMath.TimingName(_resultTiming) + ")"
             : "THROW - not a pitch: " + debugReason;
         if (pitched) text += "\nControl score  " + _resultScore.ToString("F0") + "  (position " + _resultPositionScore.ToString("F0") +
-            (_resultTimingCap < 100f ? ", early cap " + _resultTimingCap.ToString("F0") : ", no cap") + ")";
+            (_resultTiming != ReleasePlateMath.TimingIdeal ? ", timing cap " + _resultTimingCap.ToString("F0") : ", no cap") + ")";
         text += "\nRelease speed  " + (_resultSpeedKmh >= 0f ? _resultSpeedKmh.ToString("F1") + " km/h" : "-");
         if (arrivalStatus == ArrivalMeasured)
             text += "\nCourse miss  " + AbsCm(arrivalError.magnitude) + "   right " + Cm(arrivalError.x) + " cm   up " + Cm(arrivalError.y) + " cm";
@@ -1765,8 +1766,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         float rpmLoss = _resultIdealRpm - debugSpinRpm;
         text += "\n  rotation quality penalty: spin " + (rpmLoss > 0.5f ? "-" + rpmLoss.ToString("F0") : "0") + " rpm   axis fixed" +
             "   SSW " + debugWake.ToString("F4") + " of " + Mathf.Max(0f, wakeCoefficient).ToString("F4");
-        text += "\n  random  strength " + (_resultStrength * 100f).ToString("F0") + "%   max " + AbsCm(_resultDrawMax) +
-            " (score " + _resultScore.ToString("F0") + ": " + AbsCm(_resultMaxError) + " at full strength)" +
+        text += "\n  random  strength " + (_resultStrength * 100f).ToString("F0") + "%   sigma " + AbsCm(_resultDrawSigma) +
+            " (score " + _resultScore.ToString("F0") + ": " + AbsCm(_resultSigma) + " at full strength)" +
             "\n  drawn " + AbsCm(_resultDrawError.magnitude) + " at " + _resultDrawAngle.ToString("F0") + " deg   " + Offset(_resultDrawError) +
             "   (aimed offset at the plate's front edge, not the arrival)" +
             "\n  launch direction " + _resultLaunchDirection.ToString("F4");
@@ -1789,7 +1790,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             text += "\n  predicted path " + AbsCm(_resultPredictDistance) + " (max " + AbsCm(maxPredictionDistance) + ")";
         if (_resultScore >= 0f)
             text += "\n  score: position " + _resultPositionScore.ToString("F0") + "   cap " +
-                (_resultTimingCap < 100f ? _resultTimingCap.ToString("F0") + " (early)" : "none") + "   final " + _resultScore.ToString("F0");
+                (_resultTiming != ReleasePlateMath.TimingIdeal ? _resultTimingCap.ToString("F0") + " (" + ReleasePlateMath.TimingName(_resultTiming) + ")" : "none") +
+                "   final " + _resultScore.ToString("F0");
         return text;
     }
 
@@ -1907,7 +1909,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             "\nPlate: " + ReleasePlateMath.CrossName(_resultCross) + "  Timing: " + ReleasePlateMath.TimingName(_resultTiming) +
             "  Offset: " + _resultCrossOffset.ToString("F3") + "  Frames: " + _resultCrossFrames + "  Predict: " + _resultPredictDistance.ToString("F3") +
             "\nScore: " + _resultScore.ToString("F0") + " (pos " + _resultPositionScore.ToString("F0") + ", cap " + _resultTimingCap.ToString("F0") +
-            ")  Strength: " + _resultStrength.ToString("F2") + "  MaxError: " + _resultDrawMax.ToString("F3") + " m  Drawn: " + _resultDrawError.ToString("F3") +
+            ")  Strength: " + _resultStrength.ToString("F2") + "  Sigma: " + _resultDrawSigma.ToString("F3") + " m  Drawn: " + _resultDrawError.ToString("F3") +
             "\nControlOffset: " + _penaltyDirection.ToString("F3") + "  LaunchDir: " + _resultLaunchDirection.ToString("F4") +
             "\nControllerSpeed: " + debugArmSpeed.ToString("F2") + " m/s  DirError: " + debugDirectionError.ToString("F1") + " deg (shown only)" +
             "\nLaunch: " + (debugRecognized ? releasePosition.ToString("F2") + " (fixed P0)" : "ball centre") +

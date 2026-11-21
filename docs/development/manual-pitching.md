@@ -14,7 +14,7 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 | `Ball/ManualPitchMath.cs` | Pure math: pitching frame, the fixed release point `P0` (`FixedReleasePoint`), arm slot (form display), the fixed 4-Seam axis, pose failure, spin, arm direction, control direction, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
 | `Ball/ReleasePlateMath.cs` | Pure math of the release plate: plate frame, segment crossing, early-release prediction, position score, binary timing cap, maximum and random control error. |
 | `Ball/ManualPitchBehaviour.cs` | Mound component (local, no sync of its own; see [manual pitch sync](manual-pitch-sync.md)): mound trigger, pitcher-mode state, fixed release point and release plate, throwing-controller sampling and crossing, auto release, cursor, glove-hand lock, solver, release resolution, control, feedback, debug. |
-| `Ball/ManualPitchControlSettingsBehaviour.cs` | The mound's control balance (penalty strength, early cap, maximum error), Manual-synced on its own object, with its three panel sliders. |
+| `Ball/ManualPitchControlSettingsBehaviour.cs` | The mound's control balance (penalty strength, timing cap, error sigma), Manual-synced on its own object, with its three panel sliders. |
 | `Ball/ManualPitchBehaviour.Calibration.cs` | Calibration draft, commit, PlayerData persistence. |
 | `Ball/ManualPitchPanelBehaviour.cs` | World-space panel: buttons and status text only. |
 | `Ball/BallBehaviour.Fielding.cs` | Single release gate (Pickup Use / Drop / the mound's auto release, `AutoReleaseHand`), pitch-or-throw branch, launch (a pitch from the mound's `releasePosition`, `P0`), release re-assertion. |
@@ -322,7 +322,8 @@ launches at most once. Every release, a hand change, calibration and the end of 
 clear the crossing and its reservation. **Same-frame rule:** release events (Use up, Drop) run
 before `PostLateUpdate`, so a manual release in the frame the auto release is due reaches the
 gate first and is a manual (Ideal) pitch; an auto release that fired first wins over any later
-manual event (`AManualReleaseOnTheAutoFrameWinsAndCancelsTheAutoRelease`,
+manual event. A manual release later than the auto frame (only when the auto release did not
+fire) is **Late** (`AManualReleaseOnTheAutoFrameWinsAndCancelsTheAutoRelease`,
 `TheAutoReleaseUsesTheSingleGateOfItsHold`).
 
 ### Recognition
@@ -334,8 +335,8 @@ All needed; otherwise the existing throw (including pickoffs) from the ball cent
 2. a finite controller position, a valid controller rotation and a finite arm velocity;
 3. a measured arm motion and arm speed `v_arm >= minArmSpeed` (1 m/s) (the crossing's motion
    for a crossed hold);
-4. the plate: an **actual crossing** of this hold (a manual release after it is **Ideal**, the
-   auto release **Auto**), or, for a release before the plate, a **predicted crossing**
+4. the plate: an **actual crossing** of this hold (a manual release from it up to the auto
+   frame is **Ideal**, the auto release **Auto**, a later manual release **Late**), or, for a release before the plate, a **predicted crossing**
    (**Early**): from the hand at the release straight along its current velocity, the path
    meets the plate inside the rectangle within `maxPredictionDistance` (0.30 m, measured along
    the path, not the normal). A hand already past the plane, moving away, moving along the
@@ -355,18 +356,25 @@ The plate crossing (actual or predicted) gives the control score (`ReleasePlateM
 
 ```text
 positionScore = 100 x (1 - clamp01(|offset| / halfDiagonal))     linear, provisional
-timingCap     = earlyTimingCap (60) for Early, else 100            binary, never graded
+timingCap     = 100 for Ideal; timingCap (60) for Early, Auto and Late   binary, never graded
 score         = min(positionScore, timingCap)
-maxError      = maxErrorAtScore0 (0.40 m) x (1 - score / 100)      linear, provisional
-limit         = maxError x strength (0..1, default 0)
-distance      = limit x |u1 + u2 + u3 + u4 - 2| / 2               four uniforms: a bell near 0
+sigma         = sigmaAtScore0 (0.40 m) x (1 - score / 100)        linear, provisional
+sigma'        = sigma x strength (0..1, default 0)
+z             = (u1 + u2 + u3 + u4 - 2) x sqrt(3)                 four uniforms: ~N(0, 1), |z| <= 2 sqrt(3)
+distance      = sigma' x |z|                                      68 % within sigma', 95 % within 2 sigma'
 angle         = 2 pi u0                                           uniform, independent of the offset
 error (right, up) = distance x (cos angle, sin angle)             at the plate's front edge
 direction     = ControlDirection(D0, error + armDirectionPenalty, distance to the plane)
 ```
 
-The offset's sign never matters, the drawn distance never exceeds the limit and is most often
-near zero, so a low score can still hit the target. At strength 0 no uniform is drawn and the
+The offset's sign never matters. The setting is the **1 sigma** of the error, not a limit: about
+68 % of the draws fall within it, about 5 % beyond twice it, none beyond 3.46 times it, and small
+errors stay the most likely, so a low score can still hit the target. Difference from the first
+version (changed on purpose, after a real-client test): the setting was the largest error and the
+distance `limit x |u1 + u2 + u3 + u4 - 2| / 2`, whose mean is about 23 % of the limit; typical
+errors were 2-5 cm and could not be felt. The timing cap first applied to Early releases only; it
+now applies to every release outside the ideal timing, the auto release (held too long)
+included. At strength 0 no uniform is drawn and the
 pitch leaves along `D0` (the arm-direction penalty, default 0, is unchanged). The five uniforms
 are drawn only on the pitcher's client, once per release; the error turns only the launch
 direction (no new solve): `P0`, speed, spin, axis and SSW are untouched. The drawn error is an
@@ -383,8 +391,8 @@ Ball's pitch sync is unchanged) holds three synced floats with sliders and value
 | Slider | Range, step | Default |
 |---|---|---|
 | Control penalty (strength) | 0-100 %, 5 % | 0 % |
-| Early release cap | 0-100, 5 | 60 |
-| Max error at score 0 | 0-100 cm, 1 cm | 40 cm (provisional) |
+| Timing cap (every release but Ideal) | 0-100, 5 | 60 |
+| Error 1 sigma at score 0 | 0-100 cm, 1 cm | 40 cm (provisional) |
 
 An edit takes Ownership, snaps and clamps the values and requests a serialization; others and
 late joiners receive the owner's values in `OnDeserialization` (clamped again). Shown values

@@ -15,6 +15,8 @@ public static class ReleasePlateMath
     public const int TimingEarly = 1;
     public const int TimingIdeal = 2;
     public const int TimingAuto = 3;
+    // A manual release later than the auto-release frame (only when the auto release did not fire).
+    public const int TimingLate = 4;
 
     public const int MissNone = 0;
     public const int MissOutside = 1;
@@ -176,6 +178,7 @@ public static class ReleasePlateMath
         if (timing == TimingEarly) return "Early";
         if (timing == TimingIdeal) return "Ideal";
         if (timing == TimingAuto) return "Auto";
+        if (timing == TimingLate) return "Late";
         return "-";
     }
 
@@ -193,12 +196,13 @@ public static class ReleasePlateMath
         return 100f * (1f - Mathf.Clamp01(distance / corner));
     }
 
-    // Binary timing cap: an early (predicted) release is capped at earlyCap, everything else
-    // is uncapped (100). Never graded by how early.
-    public static float TimingCap(int timing, float earlyCap)
+    // Binary timing cap: only the ideal timing (a manual release from the crossing up to the
+    // auto-release frame) is uncapped (100); an early (predicted) release, the auto release (held
+    // too long) and a later manual release are capped at `cap`. Never graded by how far off.
+    public static float TimingCap(int timing, float cap)
     {
-        if (timing != TimingEarly) return 100f;
-        return ManualPitchMath.Finite(earlyCap) ? Mathf.Clamp(earlyCap, 0f, 100f) : 100f;
+        if (timing == TimingIdeal) return 100f;
+        return ManualPitchMath.Finite(cap) ? Mathf.Clamp(cap, 0f, 100f) : 100f;
     }
 
     public static float FinalScore(float positionScore, float timingCap)
@@ -206,36 +210,40 @@ public static class ReleasePlateMath
         return Mathf.Min(positionScore, timingCap);
     }
 
-    // Largest control error at a score: maxErrorAtZero at 0, none at 100, linear (provisional).
-    public static float MaxControlError(float score, float maxErrorAtZero)
+    // Control error scale (1 sigma) at a score: sigmaAtZero at 0, none at 100, linear (provisional).
+    public static float ControlSigma(float score, float sigmaAtZero)
     {
-        if (!ManualPitchMath.Finite(maxErrorAtZero) || !(maxErrorAtZero > 0f)) return 0f;
+        if (!ManualPitchMath.Finite(sigmaAtZero) || !(sigmaAtZero > 0f)) return 0f;
         float s = ManualPitchMath.Finite(score) ? Mathf.Clamp(score, 0f, 100f) : 0f;
-        return maxErrorAtZero * (1f - s / 100f);
+        return sigmaAtZero * (1f - s / 100f);
     }
 
-    // The error limit after the penalty strength (0..1). Exactly 0 at strength 0.
-    public static float ScaledControlError(float maxError, float strength)
+    // The sigma after the penalty strength (0..1). Exactly 0 at strength 0.
+    public static float ScaledControlError(float sigma, float strength)
     {
-        if (!(strength > 0f) || !ManualPitchMath.Finite(strength) || !(maxError > 0f)) return 0f;
-        return maxError * Mathf.Min(1f, strength);
+        if (!(strength > 0f) || !ManualPitchMath.Finite(strength) || !(sigma > 0f)) return 0f;
+        return sigma * Mathf.Min(1f, strength);
     }
+
+    // The largest distance a draw can give: |z| <= 2 sqrt(3) of the four-uniform normal.
+    public const float MaxSigmas = 3.4641016f;
 
     // A random control error (right, up, metres) from five uniforms in 0..1: the direction is
-    // uniform, the distance maxError x |u1 + u2 + u3 + u4 - 2| / 2 (a sum of four uniforms, a
-    // bell around 2), so it is most often near zero, never above maxError, and not uniform.
-    public static Vector2 ControlError(float maxError, float uAngle, float u1, float u2, float u3, float u4)
+    // uniform and the distance sigma x |z|, z = (u1 + u2 + u3 + u4 - 2) x sqrt(3), a fast
+    // approximation of a standard normal (mean 0, sigma 1, bounded at 2 sqrt(3)). So about 68 %
+    // of the draws lie within sigma, 95 % within 2 sigma, and small errors stay the most likely.
+    public static Vector2 ControlError(float sigma, float uAngle, float u1, float u2, float u3, float u4)
     {
-        if (!(maxError > 0f) || !ManualPitchMath.Finite(maxError)) return Vector2.zero;
-        float distance = ControlDistance(maxError, u1, u2, u3, u4);
+        if (!(sigma > 0f) || !ManualPitchMath.Finite(sigma)) return Vector2.zero;
+        float distance = ControlDistance(sigma, u1, u2, u3, u4);
         float angle = Mathf.Clamp01(ManualPitchMath.Finite(uAngle) ? uAngle : 0f) * 2f * Mathf.PI;
         return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
     }
 
-    public static float ControlDistance(float maxError, float u1, float u2, float u3, float u4)
+    public static float ControlDistance(float sigma, float u1, float u2, float u3, float u4)
     {
         float sum = Unit(u1) + Unit(u2) + Unit(u3) + Unit(u4);
-        return maxError * Mathf.Min(1f, Mathf.Abs(sum - 2f) * 0.5f);
+        return sigma * Mathf.Abs(sum - 2f) * 1.7320508f;
     }
 
     private static float Unit(float u)

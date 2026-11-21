@@ -17,18 +17,18 @@ MonoBehaviour:
   udonAssembly: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
     null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
     %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
-    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    MaxErrorLimitMeters:
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    SigmaLimitMeters:
     %SystemSingle, 1\n    StrengthStep: %SystemSingle, 0.05\n    CapStep: %SystemSingle,
-    5\n    MaxErrorStep: %SystemSingle, 0.01\n    penaltyStrength: %SystemSingle,
-    0\n    .export penaltyStrength\n    .sync penaltyStrength, none\n    earlyTimingCap:
-    %SystemSingle, 60\n    .export earlyTimingCap\n    .sync earlyTimingCap, none\n   
-    maxControlError: %SystemSingle, 0.4\n    .export maxControlError\n    .sync maxControlError,
-    none\n    strengthSlider: %UnityEngineUISlider, null\n    .export strengthSlider\n   
-    capSlider: %UnityEngineUISlider, null\n    .export capSlider\n    maxErrorSlider:
-    %UnityEngineUISlider, null\n    .export maxErrorSlider\n    strengthText: %UnityEngineUIText,
-    null\n    .export strengthText\n    capText: %UnityEngineUIText, null\n    .export
-    capText\n    maxErrorText: %UnityEngineUIText, null\n    .export maxErrorText\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchControlSettingsBehaviour\"\n   
+    5\n    SigmaStep: %SystemSingle, 0.01\n    penaltyStrength: %SystemSingle, 0\n   
+    .export penaltyStrength\n    .sync penaltyStrength, none\n    timingCap: %SystemSingle,
+    60\n    .export timingCap\n    .sync timingCap, none\n    controlSigma: %SystemSingle,
+    0.4\n    .export controlSigma\n    .sync controlSigma, none\n    strengthSlider:
+    %UnityEngineUISlider, null\n    .export strengthSlider\n    capSlider: %UnityEngineUISlider,
+    null\n    .export capSlider\n    maxErrorSlider: %UnityEngineUISlider, null\n   
+    .export maxErrorSlider\n    strengthText: %UnityEngineUIText, null\n    .export
+    strengthText\n    capText: %UnityEngineUIText, null\n    .export capText\n   
+    maxErrorText: %UnityEngineUIText, null\n    .export maxErrorText\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchControlSettingsBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __Start___inl1____t0: %UnityEngineUISlider,
     null\n    __Start___inl1____t1: %UnityEngineUISlider, null\n    __Start___inl1____t2:
     %UnityEngineUISlider, null\n    __Start___inl1____t3: %UnityEngineUISlider, null\n   
@@ -138,8 +138,8 @@ MonoBehaviour:
     %SystemString, null\n    __const_29: %SystemString, \"Control penalty  \"\n   
     __StrengthLabel_intnl_0: %SystemSingle, 0\n    __StrengthLabel_intnl_1: %SystemInt32,
     0\n    __StrengthLabel_intnl_2: %SystemString, null\n    __const_30: %SystemString,
-    \"%\"\n    __const_31: %SystemString, \"Early release cap  \"\n    __CapLabel_intnl_0:
-    %SystemInt32, 0\n    __const_32: %SystemString, \"Max error at score 0  \"\n   
+    \"%\"\n    __const_31: %SystemString, \"Timing cap (not ideal)  \"\n    __CapLabel_intnl_0:
+    %SystemInt32, 0\n    __const_32: %SystemString, \"Error 1 sigma at score 0  \"\n   
     __MaxErrorLabel_intnl_0: %SystemSingle, 0\n    __MaxErrorLabel_intnl_1: %SystemInt32,
     0\n    __MaxErrorLabel_intnl_2: %SystemString, null\n    __const_33: %SystemString,
     \" cm\"\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH,
@@ -4005,8 +4005,8 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, ___StrengthChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -4031,7 +4031,7 @@ MonoBehaviour:
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, penaltyStrength\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, ___CapChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_2\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -4055,7 +4055,7 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, penaltyStrength\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, ___MaxErrorChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_3\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
@@ -4252,7 +4252,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_18\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_22\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
     COPY\n        PUSH, __retaddr_5\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -4286,7 +4286,7 @@ MonoBehaviour:
     __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_intnl_4\n        COPY\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, earlyTimingCap\n        COPY\n        PUSH, __recStack\n        PUSH, __recSp\n       
+    PUSH, timingCap\n        COPY\n        PUSH, __recStack\n        PUSH, __recSp\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4330,7 +4330,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_16\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_23\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
     COPY\n        PUSH, __retaddr_6\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -4365,8 +4365,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, maxControlError\n        COPY\n        PUSH, __const_24\n        EXTERN,
-    \"VRCUdonCommonInterfacesIUdonEventReceiver.__RequestSerialization__SystemVoid\"\n       
+    PUSH, controlSigma\n        COPY\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__RequestSerialization__SystemVoid\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -4455,8 +4454,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_8\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, penaltyStrength\n        COPY\n        PUSH, earlyTimingCap\n        PUSH,
-    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
+    PUSH, penaltyStrength\n        COPY\n        PUSH, timingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_18\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_22\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
@@ -4464,8 +4462,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_9\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, earlyTimingCap\n        COPY\n        PUSH, maxControlError\n        PUSH,
-    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
+    PUSH, timingCap\n        COPY\n        PUSH, controlSigma\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_16\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_23\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
@@ -4473,9 +4470,9 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_10\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, maxControlError\n        COPY\n        PUSH, __retaddr_11\n        PUSH,
-    __ShowValues_retjump\n        COPY\n        JUMP, ShowValues\n        JUMP_INDIRECT,
-    __OnDeserialization_retjump\n    .export Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle\n   
+    PUSH, controlSigma\n        COPY\n        PUSH, __retaddr_11\n        PUSH, __ShowValues_retjump\n       
+    COPY\n        JUMP, ShowValues\n        JUMP_INDIRECT, __OnDeserialization_retjump\n   
+    .export Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle\n   
     Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body:\n       
@@ -4556,11 +4553,11 @@ MonoBehaviour:
     __ShowValues_L1:\n        PUSH, capSlider\n        PUSH, __const_4\n        PUSH,
     __ShowValues_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_1\n        JUMP_IF_FALSE, __ShowValues_L3\n        PUSH,
-    capSlider\n        PUSH, earlyTimingCap\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
+    capSlider\n        PUSH, timingCap\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
     __ShowValues_L3:\n        PUSH, maxErrorSlider\n        PUSH, __const_4\n       
     PUSH, __ShowValues_intnl_2\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_2\n        JUMP_IF_FALSE, __ShowValues_L5\n        PUSH,
-    maxErrorSlider\n        PUSH, maxControlError\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
+    maxErrorSlider\n        PUSH, controlSigma\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
     __ShowValues_L5:\n        PUSH, strengthText\n        PUSH, __const_4\n       
     PUSH, __ShowValues_intnl_3\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_3\n        JUMP_IF_FALSE, __ShowValues_L7\n        PUSH,
@@ -4594,15 +4591,15 @@ MonoBehaviour:
     PUSH, __StrengthLabel_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __StrengthLabel_retjump\n        JUMP_INDIRECT, __StrengthLabel_retjump\n   
     .export CapLabel\n    CapLabel:\n        PUSH, __retaddr_end\n        PUSH, __CapLabel_retjump\n       
-    COPY\n    __CapLabel_body:\n        PUSH, earlyTimingCap\n        PUSH, __CapLabel_intnl_0\n       
+    COPY\n    __CapLabel_body:\n        PUSH, timingCap\n        PUSH, __CapLabel_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__RoundToInt__SystemSingle__SystemInt32\"\n       
     PUSH, __const_31\n        PUSH, __CapLabel_intnl_0\n        PUSH, __CapLabel_ret\n       
     EXTERN, \"SystemString.__Concat__SystemObject_SystemObject__SystemString\"\n       
     PUSH, __CapLabel_ret\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __CapLabel_retjump\n        JUMP_INDIRECT, __CapLabel_retjump\n    .export MaxErrorLabel\n   
     MaxErrorLabel:\n        PUSH, __retaddr_end\n        PUSH, __MaxErrorLabel_retjump\n       
-    COPY\n    __MaxErrorLabel_body:\n        PUSH, maxControlError\n        PUSH,
-    __const_18\n        PUSH, __MaxErrorLabel_intnl_0\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    COPY\n    __MaxErrorLabel_body:\n        PUSH, controlSigma\n        PUSH, __const_18\n       
+    PUSH, __MaxErrorLabel_intnl_0\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __MaxErrorLabel_intnl_0\n        PUSH, __MaxErrorLabel_intnl_1\n       
     EXTERN, \"UnityEngineMathf.__RoundToInt__SystemSingle__SystemInt32\"\n       
     PUSH, __const_32\n        PUSH, __MaxErrorLabel_intnl_1\n        PUSH, __MaxErrorLabel_intnl_2\n       
@@ -4614,7 +4611,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 3b8866b99fe3bc540a5c3b3a4fab7a6e, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 20ea1a64c94d03104a0b542bcf02379da0cce213dad424fa267c2c472e94b11e
+  sourceFingerprint: d787722d4331fa489037fcb677e2da2ce27bda7d8881f0c0685593eb35f05eb7
   compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -4630,18 +4627,19 @@ MonoBehaviour:
     hasRange: 0
     rangeMin: 0
     rangeMax: 0
-  - symbol: earlyTimingCap
+  - symbol: timingCap
     header: 
-    tooltip: Score cap of a release before the plate, 0..100. Default 60.
+    tooltip: Score cap of every release outside the ideal timing (early, auto, late),
+      0..100. Default 60.
     hidden: 0
     space: 0
     hasRange: 0
     rangeMin: 0
     rangeMax: 0
-  - symbol: maxControlError
+  - symbol: controlSigma
     header: 
-    tooltip: Largest control error at score 0, in metres (0..1). Provisional default
-      0.40.
+    tooltip: Control error sigma (1 sigma of the normal draw) at score 0, in metres
+      (0..1). Provisional default 0.40.
     hidden: 0
     space: 0
     hasRange: 0
@@ -4657,8 +4655,8 @@ MonoBehaviour:
     rangeMax: 0
   inspectorFields:
   - penaltyStrength
-  - earlyTimingCap
-  - maxControlError
+  - timingCap
+  - controlSigma
   - strengthSlider
   - capSlider
   - maxErrorSlider
@@ -4678,18 +4676,18 @@ MonoBehaviour:
   optBeforeUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
     null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
     %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
-    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    MaxErrorLimitMeters:
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    SigmaLimitMeters:
     %SystemSingle, 1\n    StrengthStep: %SystemSingle, 0.05\n    CapStep: %SystemSingle,
-    5\n    MaxErrorStep: %SystemSingle, 0.01\n    penaltyStrength: %SystemSingle,
-    0\n    .export penaltyStrength\n    .sync penaltyStrength, none\n    earlyTimingCap:
-    %SystemSingle, 60\n    .export earlyTimingCap\n    .sync earlyTimingCap, none\n   
-    maxControlError: %SystemSingle, 0.4\n    .export maxControlError\n    .sync maxControlError,
-    none\n    strengthSlider: %UnityEngineUISlider, null\n    .export strengthSlider\n   
-    capSlider: %UnityEngineUISlider, null\n    .export capSlider\n    maxErrorSlider:
-    %UnityEngineUISlider, null\n    .export maxErrorSlider\n    strengthText: %UnityEngineUIText,
-    null\n    .export strengthText\n    capText: %UnityEngineUIText, null\n    .export
-    capText\n    maxErrorText: %UnityEngineUIText, null\n    .export maxErrorText\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchControlSettingsBehaviour\"\n   
+    5\n    SigmaStep: %SystemSingle, 0.01\n    penaltyStrength: %SystemSingle, 0\n   
+    .export penaltyStrength\n    .sync penaltyStrength, none\n    timingCap: %SystemSingle,
+    60\n    .export timingCap\n    .sync timingCap, none\n    controlSigma: %SystemSingle,
+    0.4\n    .export controlSigma\n    .sync controlSigma, none\n    strengthSlider:
+    %UnityEngineUISlider, null\n    .export strengthSlider\n    capSlider: %UnityEngineUISlider,
+    null\n    .export capSlider\n    maxErrorSlider: %UnityEngineUISlider, null\n   
+    .export maxErrorSlider\n    strengthText: %UnityEngineUIText, null\n    .export
+    strengthText\n    capText: %UnityEngineUIText, null\n    .export capText\n   
+    maxErrorText: %UnityEngineUIText, null\n    .export maxErrorText\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchControlSettingsBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __Start___inl1____t0: %UnityEngineUISlider,
     null\n    __Start___inl1____t1: %UnityEngineUISlider, null\n    __Start___inl1____t2:
     %UnityEngineUISlider, null\n    __Start___inl1____t3: %UnityEngineUISlider, null\n   
@@ -4804,11 +4802,11 @@ MonoBehaviour:
     __StrengthLabel_intnl_0: %SystemSingle, 0\n    __StrengthLabel_intnl_1: %SystemInt32,
     0\n    __StrengthLabel_intnl_2: %SystemString, null\n    __const_30: %SystemString,
     \"%\"\n    __StrengthLabel_intnl_3: %SystemString, null\n    __const_31: %SystemString,
-    \"Early release cap  \"\n    __CapLabel_intnl_0: %SystemInt32, 0\n    __CapLabel_intnl_1:
-    %SystemString, null\n    __const_32: %SystemString, \"Max error at score 0  \"\n   
-    __MaxErrorLabel_intnl_0: %SystemSingle, 0\n    __MaxErrorLabel_intnl_1: %SystemInt32,
-    0\n    __MaxErrorLabel_intnl_2: %SystemString, null\n    __const_33: %SystemString,
-    \" cm\"\n    __MaxErrorLabel_intnl_3: %SystemString, null\n.data_end\n.code_start\n   
+    \"Timing cap (not ideal)  \"\n    __CapLabel_intnl_0: %SystemInt32, 0\n    __CapLabel_intnl_1:
+    %SystemString, null\n    __const_32: %SystemString, \"Error 1 sigma at score
+    0  \"\n    __MaxErrorLabel_intnl_0: %SystemSingle, 0\n    __MaxErrorLabel_intnl_1:
+    %SystemInt32, 0\n    __MaxErrorLabel_intnl_2: %SystemString, null\n    __const_33:
+    %SystemString, \" cm\"\n    __MaxErrorLabel_intnl_3: %SystemString, null\n.data_end\n.code_start\n   
     .export _start\n    _start:\n        PUSH, __const_0\n        PUSH, __Start___inl1____t0\n       
     COPY\n        PUSH, __const_0\n        PUSH, __Start___inl1____t1\n        COPY\n       
     PUSH, __const_0\n        PUSH, __Start___inl1____t2\n        COPY\n        PUSH,
@@ -8674,8 +8672,8 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, ___StrengthChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -8700,7 +8698,7 @@ MonoBehaviour:
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, penaltyStrength\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, ___CapChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_2\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -8724,7 +8722,7 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, penaltyStrength\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, ___MaxErrorChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_3\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
@@ -8922,7 +8920,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_18\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_22\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
     COPY\n        PUSH, __retaddr_5\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -8956,7 +8954,7 @@ MonoBehaviour:
     __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_intnl_4\n        COPY\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_intnl_4\n        PUSH,
-    earlyTimingCap\n        COPY\n        PUSH, __recStack\n        PUSH, __recSp\n       
+    timingCap\n        COPY\n        PUSH, __recStack\n        PUSH, __recSp\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -9000,7 +8998,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_16\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_23\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
     COPY\n        PUSH, __retaddr_6\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -9037,7 +9035,7 @@ MonoBehaviour:
     __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_intnl_5\n        COPY\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_intnl_5\n        PUSH,
-    maxControlError\n        COPY\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__RequestSerialization__SystemVoid\"\n       
+    controlSigma\n        COPY\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__RequestSerialization__SystemVoid\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -9127,8 +9125,7 @@ MonoBehaviour:
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __OnDeserialization_intnl_0\n        COPY\n        PUSH, __OnDeserialization_intnl_0\n       
-    PUSH, penaltyStrength\n        COPY\n        PUSH, earlyTimingCap\n        PUSH,
-    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
+    PUSH, penaltyStrength\n        COPY\n        PUSH, timingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_18\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_22\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
@@ -9137,8 +9134,7 @@ MonoBehaviour:
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __OnDeserialization_intnl_1\n        COPY\n        PUSH, __OnDeserialization_intnl_1\n       
-    PUSH, earlyTimingCap\n        COPY\n        PUSH, maxControlError\n        PUSH,
-    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
+    PUSH, timingCap\n        COPY\n        PUSH, controlSigma\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_16\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_23\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
@@ -9147,9 +9143,9 @@ MonoBehaviour:
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __OnDeserialization_intnl_2\n        COPY\n        PUSH, __OnDeserialization_intnl_2\n       
-    PUSH, maxControlError\n        COPY\n        PUSH, __retaddr_11\n        PUSH,
-    __ShowValues_retjump\n        COPY\n        JUMP, ShowValues\n        JUMP_INDIRECT,
-    __OnDeserialization_retjump\n    .export Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle\n   
+    PUSH, controlSigma\n        COPY\n        PUSH, __retaddr_11\n        PUSH, __ShowValues_retjump\n       
+    COPY\n        JUMP, ShowValues\n        JUMP_INDIRECT, __OnDeserialization_retjump\n   
+    .export Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle\n   
     Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n   
@@ -9249,11 +9245,11 @@ MonoBehaviour:
     __ShowValues_L1:\n        PUSH, capSlider\n        PUSH, __const_4\n        PUSH,
     __ShowValues_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_1\n        JUMP_IF_FALSE, __ShowValues_L3\n        PUSH,
-    capSlider\n        PUSH, earlyTimingCap\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
+    capSlider\n        PUSH, timingCap\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
     __ShowValues_L3:\n        PUSH, maxErrorSlider\n        PUSH, __const_4\n       
     PUSH, __ShowValues_intnl_2\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_2\n        JUMP_IF_FALSE, __ShowValues_L5\n        PUSH,
-    maxErrorSlider\n        PUSH, maxControlError\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
+    maxErrorSlider\n        PUSH, controlSigma\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
     __ShowValues_L5:\n        PUSH, strengthText\n        PUSH, __const_4\n       
     PUSH, __ShowValues_intnl_3\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_3\n        JUMP_IF_FALSE, __ShowValues_L7\n        PUSH,
@@ -9296,7 +9292,7 @@ MonoBehaviour:
     PUSH, __StrengthLabel_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __StrengthLabel_retjump\n        JUMP_INDIRECT, __StrengthLabel_retjump\n   
     .export CapLabel\n    CapLabel:\n        PUSH, __retaddr_end\n        PUSH, __CapLabel_retjump\n       
-    COPY\n        JUMP, __CapLabel_body\n    __CapLabel_body:\n        PUSH, earlyTimingCap\n       
+    COPY\n        JUMP, __CapLabel_body\n    __CapLabel_body:\n        PUSH, timingCap\n       
     PUSH, __CapLabel_intnl_0\n        EXTERN, \"UnityEngineMathf.__RoundToInt__SystemSingle__SystemInt32\"\n       
     PUSH, __const_31\n        PUSH, __CapLabel_intnl_0\n        PUSH, __CapLabel_intnl_1\n       
     EXTERN, \"SystemString.__Concat__SystemObject_SystemObject__SystemString\"\n       
@@ -9305,7 +9301,7 @@ MonoBehaviour:
     __CapLabel_retjump\n        JUMP_INDIRECT, __CapLabel_retjump\n    .export MaxErrorLabel\n   
     MaxErrorLabel:\n        PUSH, __retaddr_end\n        PUSH, __MaxErrorLabel_retjump\n       
     COPY\n        JUMP, __MaxErrorLabel_body\n    __MaxErrorLabel_body:\n       
-    PUSH, maxControlError\n        PUSH, __const_18\n        PUSH, __MaxErrorLabel_intnl_0\n       
+    PUSH, controlSigma\n        PUSH, __const_18\n        PUSH, __MaxErrorLabel_intnl_0\n       
     EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __MaxErrorLabel_intnl_0\n        PUSH, __MaxErrorLabel_intnl_1\n       
     EXTERN, \"UnityEngineMathf.__RoundToInt__SystemSingle__SystemInt32\"\n       
@@ -9319,18 +9315,18 @@ MonoBehaviour:
   optAfterUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
     null\n    __sf__X9zPitchType__ParameterCounts: %SystemInt32Array, null\n    __sf__X9zPitchType__ParameterNames:
     %SystemStringArray, null\n    __sf__X9zPitchType__LowLabels: %SystemStringArray,
-    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    MaxErrorLimitMeters:
+    null\n    __sf__X9zPitchType__HighLabels: %SystemStringArray, null\n    SigmaLimitMeters:
     %SystemSingle, 1\n    StrengthStep: %SystemSingle, 0.05\n    CapStep: %SystemSingle,
-    5\n    MaxErrorStep: %SystemSingle, 0.01\n    penaltyStrength: %SystemSingle,
-    0\n    .export penaltyStrength\n    .sync penaltyStrength, none\n    earlyTimingCap:
-    %SystemSingle, 60\n    .export earlyTimingCap\n    .sync earlyTimingCap, none\n   
-    maxControlError: %SystemSingle, 0.4\n    .export maxControlError\n    .sync maxControlError,
-    none\n    strengthSlider: %UnityEngineUISlider, null\n    .export strengthSlider\n   
-    capSlider: %UnityEngineUISlider, null\n    .export capSlider\n    maxErrorSlider:
-    %UnityEngineUISlider, null\n    .export maxErrorSlider\n    strengthText: %UnityEngineUIText,
-    null\n    .export strengthText\n    capText: %UnityEngineUIText, null\n    .export
-    capText\n    maxErrorText: %UnityEngineUIText, null\n    .export maxErrorText\n   
-    __refl_typeid: %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchControlSettingsBehaviour\"\n   
+    5\n    SigmaStep: %SystemSingle, 0.01\n    penaltyStrength: %SystemSingle, 0\n   
+    .export penaltyStrength\n    .sync penaltyStrength, none\n    timingCap: %SystemSingle,
+    60\n    .export timingCap\n    .sync timingCap, none\n    controlSigma: %SystemSingle,
+    0.4\n    .export controlSigma\n    .sync controlSigma, none\n    strengthSlider:
+    %UnityEngineUISlider, null\n    .export strengthSlider\n    capSlider: %UnityEngineUISlider,
+    null\n    .export capSlider\n    maxErrorSlider: %UnityEngineUISlider, null\n   
+    .export maxErrorSlider\n    strengthText: %UnityEngineUIText, null\n    .export
+    strengthText\n    capText: %UnityEngineUIText, null\n    .export capText\n   
+    maxErrorText: %UnityEngineUIText, null\n    .export maxErrorText\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"ManualPitchControlSettingsBehaviour\"\n   
     __refl_typeids: %SystemInt64Array, null\n    __Start___inl1____t0: %UnityEngineUISlider,
     null\n    __Start___inl1____t1: %UnityEngineUISlider, null\n    __Start___inl1____t2:
     %UnityEngineUISlider, null\n    __Start___inl1____t3: %UnityEngineUISlider, null\n   
@@ -9440,8 +9436,8 @@ MonoBehaviour:
     %SystemString, null\n    __const_29: %SystemString, \"Control penalty  \"\n   
     __StrengthLabel_intnl_0: %SystemSingle, 0\n    __StrengthLabel_intnl_1: %SystemInt32,
     0\n    __StrengthLabel_intnl_2: %SystemString, null\n    __const_30: %SystemString,
-    \"%\"\n    __const_31: %SystemString, \"Early release cap  \"\n    __CapLabel_intnl_0:
-    %SystemInt32, 0\n    __const_32: %SystemString, \"Max error at score 0  \"\n   
+    \"%\"\n    __const_31: %SystemString, \"Timing cap (not ideal)  \"\n    __CapLabel_intnl_0:
+    %SystemInt32, 0\n    __const_32: %SystemString, \"Error 1 sigma at score 0  \"\n   
     __MaxErrorLabel_intnl_0: %SystemSingle, 0\n    __MaxErrorLabel_intnl_1: %SystemInt32,
     0\n    __MaxErrorLabel_intnl_2: %SystemString, null\n    __const_33: %SystemString,
     \" cm\"\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH,
@@ -13307,8 +13303,8 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, ___StrengthChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -13333,7 +13329,7 @@ MonoBehaviour:
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, penaltyStrength\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, ___CapChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_2\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -13357,7 +13353,7 @@ MonoBehaviour:
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, penaltyStrength\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, ___MaxErrorChanged_intnl_1\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __retaddr_3\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Submit__SystemSingle_SystemSingle_SystemSingle_body\n       
@@ -13554,7 +13550,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_18\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_22\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
-    COPY\n        PUSH, earlyTimingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
+    COPY\n        PUSH, timingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
     COPY\n        PUSH, __retaddr_5\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -13588,7 +13584,7 @@ MonoBehaviour:
     __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_intnl_4\n        COPY\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, earlyTimingCap\n        COPY\n        PUSH, __recStack\n        PUSH, __recSp\n       
+    PUSH, timingCap\n        COPY\n        PUSH, __recStack\n        PUSH, __recSp\n       
     PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -13632,7 +13628,7 @@ MonoBehaviour:
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_16\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_23\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
-    COPY\n        PUSH, maxControlError\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
+    COPY\n        PUSH, controlSigma\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_4\n       
     COPY\n        PUSH, __retaddr_6\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -13667,8 +13663,7 @@ MonoBehaviour:
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
     __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, maxControlError\n        COPY\n        PUSH, __const_24\n        EXTERN,
-    \"VRCUdonCommonInterfacesIUdonEventReceiver.__RequestSerialization__SystemVoid\"\n       
+    PUSH, controlSigma\n        COPY\n        PUSH, __const_24\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__RequestSerialization__SystemVoid\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __Submit__SystemSingle_SystemSingle_SystemSingle_p_0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_15\n        PUSH, __recSp\n        EXTERN,
@@ -13757,8 +13752,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_8\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, penaltyStrength\n        COPY\n        PUSH, earlyTimingCap\n        PUSH,
-    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
+    PUSH, penaltyStrength\n        COPY\n        PUSH, timingCap\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_18\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_22\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
@@ -13766,8 +13760,7 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_9\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, earlyTimingCap\n        COPY\n        PUSH, maxControlError\n        PUSH,
-    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
+    PUSH, timingCap\n        COPY\n        PUSH, controlSigma\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_0\n       
     COPY\n        PUSH, __const_14\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_1\n       
     COPY\n        PUSH, __const_16\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_2\n       
     COPY\n        PUSH, __const_23\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_p_3\n       
@@ -13775,9 +13768,9 @@ MonoBehaviour:
     COPY\n        PUSH, __retaddr_10\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n        JUMP, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body\n       
     PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_ret\n       
-    PUSH, maxControlError\n        COPY\n        PUSH, __retaddr_11\n        PUSH,
-    __ShowValues_retjump\n        COPY\n        JUMP, ShowValues\n        JUMP_INDIRECT,
-    __OnDeserialization_retjump\n    .export Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle\n   
+    PUSH, controlSigma\n        COPY\n        PUSH, __retaddr_11\n        PUSH, __ShowValues_retjump\n       
+    COPY\n        JUMP, ShowValues\n        JUMP_INDIRECT, __OnDeserialization_retjump\n   
+    .export Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle\n   
     Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle:\n       
     PUSH, __retaddr_end\n        PUSH, __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_retjump\n       
     COPY\n    __Snap__SystemSingle_SystemSingle_SystemSingle_SystemSingle_SystemSingle_body:\n       
@@ -13858,11 +13851,11 @@ MonoBehaviour:
     __ShowValues_L1:\n        PUSH, capSlider\n        PUSH, __const_4\n        PUSH,
     __ShowValues_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_1\n        JUMP_IF_FALSE, __ShowValues_L3\n        PUSH,
-    capSlider\n        PUSH, earlyTimingCap\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
+    capSlider\n        PUSH, timingCap\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
     __ShowValues_L3:\n        PUSH, maxErrorSlider\n        PUSH, __const_4\n       
     PUSH, __ShowValues_intnl_2\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_2\n        JUMP_IF_FALSE, __ShowValues_L5\n        PUSH,
-    maxErrorSlider\n        PUSH, maxControlError\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
+    maxErrorSlider\n        PUSH, controlSigma\n        EXTERN, \"UnityEngineUISlider.__SetValueWithoutNotify__SystemSingle__SystemVoid\"\n   
     __ShowValues_L5:\n        PUSH, strengthText\n        PUSH, __const_4\n       
     PUSH, __ShowValues_intnl_3\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __ShowValues_intnl_3\n        JUMP_IF_FALSE, __ShowValues_L7\n        PUSH,
@@ -13896,15 +13889,15 @@ MonoBehaviour:
     PUSH, __StrengthLabel_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __StrengthLabel_retjump\n        JUMP_INDIRECT, __StrengthLabel_retjump\n   
     .export CapLabel\n    CapLabel:\n        PUSH, __retaddr_end\n        PUSH, __CapLabel_retjump\n       
-    COPY\n    __CapLabel_body:\n        PUSH, earlyTimingCap\n        PUSH, __CapLabel_intnl_0\n       
+    COPY\n    __CapLabel_body:\n        PUSH, timingCap\n        PUSH, __CapLabel_intnl_0\n       
     EXTERN, \"UnityEngineMathf.__RoundToInt__SystemSingle__SystemInt32\"\n       
     PUSH, __const_31\n        PUSH, __CapLabel_intnl_0\n        PUSH, __CapLabel_ret\n       
     EXTERN, \"SystemString.__Concat__SystemObject_SystemObject__SystemString\"\n       
     PUSH, __CapLabel_ret\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __CapLabel_retjump\n        JUMP_INDIRECT, __CapLabel_retjump\n    .export MaxErrorLabel\n   
     MaxErrorLabel:\n        PUSH, __retaddr_end\n        PUSH, __MaxErrorLabel_retjump\n       
-    COPY\n    __MaxErrorLabel_body:\n        PUSH, maxControlError\n        PUSH,
-    __const_18\n        PUSH, __MaxErrorLabel_intnl_0\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
+    COPY\n    __MaxErrorLabel_body:\n        PUSH, controlSigma\n        PUSH, __const_18\n       
+    PUSH, __MaxErrorLabel_intnl_0\n        EXTERN, \"SystemSingle.__op_Multiplication__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __MaxErrorLabel_intnl_0\n        PUSH, __MaxErrorLabel_intnl_1\n       
     EXTERN, \"UnityEngineMathf.__RoundToInt__SystemSingle__SystemInt32\"\n       
     PUSH, __const_32\n        PUSH, __MaxErrorLabel_intnl_1\n        PUSH, __MaxErrorLabel_intnl_2\n       

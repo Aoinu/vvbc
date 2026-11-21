@@ -142,12 +142,14 @@ public partial struct ReleasePlateHit
         Assert.AreEqual(100f, ReleasePlateMath.PositionScore(Vector2.zero, 0f, 0f));
     }
 
+    // Only the ideal timing is uncapped; early, auto (held too long) and late are capped.
     [TsukimiTest]
     public void TheTimingCapIsBinaryAndOnlyLowersAHigherScore()
     {
         Assert.AreEqual(60f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingEarly, 60f));
         Assert.AreEqual(100f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingIdeal, 60f));
-        Assert.AreEqual(100f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingAuto, 60f));
+        Assert.AreEqual(60f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingAuto, 60f));
+        Assert.AreEqual(60f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingLate, 60f));
         Assert.AreEqual(60f, ReleasePlateMath.FinalScore(90f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingEarly, 60f)));
         Assert.AreEqual(40f, ReleasePlateMath.FinalScore(40f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingEarly, 60f)), "no extra penalty below the cap");
         Assert.AreEqual(100f, ReleasePlateMath.TimingCap(ReleasePlateMath.TimingEarly, float.NaN));
@@ -155,42 +157,47 @@ public partial struct ReleasePlateHit
     }
 
     [TsukimiTest]
-    public void TheMaximumErrorShrinksWithTheScoreAndVanishesAtZeroStrength()
+    public void TheSigmaShrinksWithTheScoreAndVanishesAtZeroStrength()
     {
-        Assert.AreEqual(0.4f, ReleasePlateMath.MaxControlError(0f, 0.4f));
-        Assert.AreEqual(0f, ReleasePlateMath.MaxControlError(100f, 0.4f));
-        Assert.IsTrue(ReleasePlateMath.MaxControlError(30f, 0.4f) > ReleasePlateMath.MaxControlError(70f, 0.4f));
+        Assert.AreEqual(0.4f, ReleasePlateMath.ControlSigma(0f, 0.4f));
+        Assert.AreEqual(0f, ReleasePlateMath.ControlSigma(100f, 0.4f));
+        Assert.IsTrue(ReleasePlateMath.ControlSigma(30f, 0.4f) > ReleasePlateMath.ControlSigma(70f, 0.4f));
         Assert.AreEqual(0f, ReleasePlateMath.ScaledControlError(0.4f, 0f));
         Assert.AreEqual(0.2f, ReleasePlateMath.ScaledControlError(0.4f, 0.5f));
         Assert.AreEqual(Vector2.zero, ReleasePlateMath.ControlError(0f, 0.3f, 0f, 0f, 0f, 0f), "zero limit: exactly no error");
     }
 
-    // The distance never exceeds the limit, is not uniform (most draws near zero) and can be
-    // small at any limit; the direction comes only from its own uniform.
+    // The distance is sigma x |z|, z the four-uniform normal: about 68 % within sigma, rarely
+    // beyond 3 sigma, never beyond 2 sqrt(3) sigma, most often small; the direction comes only
+    // from its own uniform.
     [TsukimiTest(maxSteps: 20000000)]
-    public void TheErrorIsBoundedBellShapedAndIndependentOfThePlate()
+    public void TheErrorIsNormalWithSigmaAsOneSigmaAndIndependentOfThePlate()
     {
-        Assert.AreEqual(0.4f, ReleasePlateMath.ControlDistance(0.4f, 1f, 1f, 1f, 1f), "the largest draw is the limit");
+        Assert.IsTrue(Mathf.Abs(ReleasePlateMath.ControlDistance(0.4f, 1f, 1f, 1f, 1f) - 0.4f * ReleasePlateMath.MaxSigmas) < 0.0001f,
+            "the largest draw is 2 sqrt(3) sigma");
         Assert.AreEqual(0f, ReleasePlateMath.ControlDistance(0.4f, 0.5f, 0.5f, 0.5f, 0.5f), "a draw can hit the target exactly");
-        // A fixed grid of uniforms in place of random numbers: 6^4 sums.
-        int near = 0, farCount = 0, total = 0;
-        float[] u = { 0.05f, 0.25f, 0.45f, 0.55f, 0.75f, 0.95f };
-        for (int a = 0; a < 6; a++)
-            for (int b = 0; b < 6; b++)
-                for (int c = 0; c < 6; c++)
-                    for (int d = 0; d < 6; d++)
+        // A fixed grid of uniforms in place of random numbers: 10^4 sums.
+        int within1 = 0, within2 = 0, beyond3 = 0, total = 0;
+        for (int a = 0; a < 10; a++)
+            for (int b = 0; b < 10; b++)
+                for (int c = 0; c < 10; c++)
+                    for (int d = 0; d < 10; d++)
                     {
-                        float distance = ReleasePlateMath.ControlDistance(1f, u[a], u[b], u[c], u[d]);
-                        Assert.IsTrue(distance <= 1f);
-                        if (distance < 0.25f) near++;
-                        if (distance >= 0.75f) farCount++;
+                        float z = ReleasePlateMath.ControlDistance(1f, 0.05f + a * 0.1f, 0.05f + b * 0.1f, 0.05f + c * 0.1f, 0.05f + d * 0.1f);
+                        Assert.IsTrue(z <= ReleasePlateMath.MaxSigmas + 0.0001f);
+                        if (z <= 1f) within1++;
+                        if (z <= 2f) within2++;
+                        if (z > 3f) beyond3++;
                         total++;
                     }
-        Assert.IsTrue(near > total / 2, "more than half within a quarter of the limit: " + near + "/" + total);
-        Assert.IsTrue(farCount * 20 < total, "rarely near the limit: " + farCount + "/" + total);
+        float p1 = (float)within1 / total, p2 = (float)within2 / total;
+        Assert.IsTrue(p1 > 0.64f && p1 < 0.72f, "about 68 % within 1 sigma: " + p1);
+        Assert.IsTrue(p2 > 0.93f && p2 < 0.98f, "about 95 % within 2 sigma: " + p2);
+        Assert.IsTrue(beyond3 * 100 < total, "rarely beyond 3 sigma: " + beyond3 + "/" + total);
         Vector2 east = ReleasePlateMath.ControlError(0.4f, 0f, 1f, 1f, 1f, 1f);
         Vector2 north = ReleasePlateMath.ControlError(0.4f, 0.25f, 1f, 1f, 1f, 1f);
-        Assert.IsTrue((east - new Vector2(0.4f, 0f)).magnitude < 0.0001f, "angle 0: right " + east);
-        Assert.IsTrue((north - new Vector2(0f, 0.4f)).magnitude < 0.0001f, "angle 1/4: up " + north);
+        float r = 0.4f * ReleasePlateMath.MaxSigmas;
+        Assert.IsTrue((east - new Vector2(r, 0f)).magnitude < 0.0001f, "angle 0: right " + east);
+        Assert.IsTrue((north - new Vector2(0f, r)).magnitude < 0.0001f, "angle 1/4: up " + north);
     }
 }
