@@ -37,21 +37,51 @@ warning when the local player is inside it at join or respawn.
 
 ```text
 Idle --RequestEnter--> Entering --OnStationEntered--> Active
-Active --OnStationExited / OnPlayerRespawn--> Idle   (Respawn from any state)
-Entering --no entry within enterTimeoutFrames--> Idle
+Active --re-seat--> Reseating --OnStationEntered--> Active   (same session)
+Active --OnStationExited (not a re-seat's own)--> Idle
+any --OnPlayerRespawn--> Idle
+Entering / Reseating --no entry within enterTimeoutFrames--> Idle
 ```
 
 - `RequestEnter` (owner only, Idle only) places MovementRoot at the player's position
   facing the player's yaw, calls `VRCObjectSync.FlagDiscontinuity`, then `UseStation`.
-- The Station rotation stays fixed for the session; only horizontal translation is
-  applied.
+- The stick applies horizontal translation only. The Station turns only by a snap turn
+  or a re-seat (below).
 - Exited and Respawn may arrive in either order: the first stops the session, the
   second finds Idle. An Exited while Entering is stale and ignored. An entry after the
   timeout still takes control, since the player would otherwise be held without it.
+  The exit a re-seat causes is swallowed whichever side of the new entry it arrives on.
 - Respawn never re-enters; the next zone entry does. Velocity, input and the commanded
   distance reset on every stop.
 - The movement loop runs only while Active (`SendCustomEventDelayedFrames` each frame,
-  stopping itself on any other state).
+  stopping itself on any other state); it also drives snap turn and the re-seat check.
+
+## Turning and real-body movement
+
+First real-client run (VR, one client): the playspace is carried rigidly with the
+Station. Stick movement leaves every Station-local tracking value unchanged; real
+walking moves only Head (and hands) while Origin, AvatarRoot and GetPosition stay
+on the Station, so the avatar's feet stay put and the body stretches toward the head.
+VRChat's own snap/smooth turn has no effect inside the Station, and real-body turning
+leaves the avatar facing the Station. Consequence: moving or turning the Station
+cannot reduce the head's offset; only leaving and re-entering it can change it. The
+avatar's locomotion animation also stops (it sees no velocity inside the Station, and
+Udon cannot drive avatar parameters); that is a limit of the approach, not handled here.
+
+- **Snap turn (VR):** a right-stick flick (`InputLookHorizontal` past 0.7, re-armed
+  below 0.3) turns the Station by `snapTurnDegrees` (30°) about the head, so the view
+  turns in place. Desktop is unchanged.
+- **Re-seat (experimental):** when the head is more than `recenterDistance` (0.5 m,
+  horizontal) or `recenterYaw` (60°) from the Station, and `recenterCooldownFrames`
+  (45) have passed since the last entry, the controller calls `ExitStation`, then the
+  next frame moves the Station under the head (turning it to the head's yaw only for a
+  yaw trigger) and calls `UseStation`. Velocity carries over.
+- **Self-check:** `measureDelayFrames` (10) after every entry the controller logs the
+  head's world jump and its Station-local offset before and after. If a re-seat leaves
+  the head outside either limit, re-seating would fire again at once, so it is turned
+  off for the rest of the session ("re-seat disabled"). This answers on device whether
+  VRChat re-aligns the avatar to the tracked head on entry.
+- The entry log also measures the view jump seen on the first run.
 
 ## Motion model
 

@@ -7,8 +7,8 @@ namespace VVBC.Locomotion
 {
     // Validation-scene readout for the Station locomotion test, refreshed a few times a
     // second. Interact writes the same snapshot to the log. Observes only: it never drives
-    // a Station. "rel" values are in the Station's local frame (its rotation is fixed for
-    // the session), so room-scale walking and leaning show up as changes there.
+    // a Station. "rel" values are in the Station's local frame (its rotation changes only
+    // with a snap turn or re-seat), so room-scale walking and leaning show up as changes there.
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public partial class LocomotionDiagnosticsBehaviour : TsukimiBehaviour
     {
@@ -39,6 +39,10 @@ namespace VVBC.Locomotion
         private float _modelSpeed;
         private float _stationSpeed;
         private float _commanded;
+        private int _snapTurns;
+        private int _reseats;
+        private bool _recenterUsable;
+        private string _seatReport = "";
 
         private void Start()
         {
@@ -80,6 +84,8 @@ namespace VVBC.Locomotion
                 + "  in/out/respawn " + _entered + "/" + _exited + "/" + _respawned + "\n";
             text += "root " + V(root.position) + "  station " + V(_stationPosition)
                 + "  anchor " + V(_anchorPosition) + "\n";
+            text += "snap turns " + _snapTurns + "  re-seats " + _reseats
+                + (_recenterUsable ? "" : " (off)") + "  last seat: " + _seatReport + "\n";
 
             text += "<b>Movement</b>  stick " + F(_stick.x) + "," + F(_stick.y)
                 + "  model " + F(_modelSpeed) + " m/s"
@@ -123,6 +129,10 @@ namespace VVBC.Locomotion
             _modelSpeed = controller.ModelVelocity.magnitude;
             _stationSpeed = controller.StationSpeed;
             _commanded = controller.CommandedDistance;
+            _snapTurns = controller.SnapTurnCount;
+            _reseats = controller.ReseatCount;
+            _recenterUsable = controller.RecenterUsable;
+            _seatReport = controller.LastSeatReport;
         }
 
         private void Sample(Vector3 position)
@@ -188,6 +198,7 @@ namespace VVBC.Locomotion
         {
             if (state == LocomotionControllerBehaviour.StateActive) return "Active";
             if (state == LocomotionControllerBehaviour.StateEntering) return "Entering";
+            if (state == LocomotionControllerBehaviour.StateReseating) return "Reseating";
             return "Idle";
         }
 

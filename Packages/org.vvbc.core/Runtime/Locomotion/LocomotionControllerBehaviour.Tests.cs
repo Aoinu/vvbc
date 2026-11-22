@@ -96,8 +96,8 @@ namespace VVBC.Locomotion
         {
             Assert.IsTrue(BeginEnter(100), "first request");
             Assert.IsFalse(BeginEnter(101), "while entering");
-            Assert.IsTrue(HandleEntered(), "entered");
-            Assert.IsFalse(HandleEntered(), "duplicate entry does not restart");
+            Assert.IsTrue(HandleEntered(0), "entered");
+            Assert.IsFalse(HandleEntered(0), "duplicate entry does not restart");
             Assert.IsFalse(BeginEnter(102), "while active");
             Assert.AreEqual(1, Session);
             Assert.AreEqual(StateActive, State);
@@ -107,7 +107,7 @@ namespace VVBC.Locomotion
         public void RespawnResetsMotionAndDoesNotReenter()
         {
             BeginEnter(0);
-            HandleEntered();
+            HandleEntered(0);
             _inputVertical = 1f;
             Advance(Vector3.forward, Dt);
             HandleRespawn();
@@ -121,11 +121,11 @@ namespace VVBC.Locomotion
         [TsukimiTest]
         public void ExitAndRespawnInEitherOrderStopOnce()
         {
-            BeginEnter(0); HandleEntered();
+            BeginEnter(0); HandleEntered(0);
             HandleExited(); HandleRespawn();
             Assert.AreEqual(StateIdle, State, "exit then respawn");
             Assert.IsTrue(BeginEnter(10), "re-entry allowed");
-            HandleEntered();
+            HandleEntered(0);
             HandleRespawn(); HandleExited();
             Assert.AreEqual(StateIdle, State, "respawn then exit");
             Assert.AreEqual("exited (ignored)", LastEvent);
@@ -138,7 +138,7 @@ namespace VVBC.Locomotion
             BeginEnter(0);
             HandleExited();
             Assert.AreEqual(StateEntering, State);
-            Assert.IsTrue(HandleEntered());
+            Assert.IsTrue(HandleEntered(0));
             Assert.AreEqual(StateActive, State);
         }
 
@@ -159,9 +159,114 @@ namespace VVBC.Locomotion
         {
             BeginEnter(0);
             HandleEnterTimeout(enterTimeoutFrames);
-            Assert.IsTrue(HandleEntered());
+            Assert.IsTrue(HandleEntered(0));
             Assert.AreEqual(StateActive, State);
             Assert.AreEqual(2, Session, "a new session");
+        }
+
+        [TsukimiTest]
+        public void TurningAboutTheHeadKeepsTheHeadInPlace()
+        {
+            Vector3 root = new Vector3(0f, 0.5f, 0f);
+            Vector3 head = new Vector3(1f, 1.7f, 0f);
+            Vector3 turned = LocomotionModel.TurnAbout(root, head, 90f);
+            Assert.IsTrue((turned - new Vector3(1f, 0.5f, 1f)).magnitude < 1e-4f, "root swings round the head");
+            Assert.IsTrue((LocomotionModel.TurnAbout(root, head, 0f) - root).magnitude < 1e-5f, "no turn keeps it");
+        }
+
+        [TsukimiTest]
+        public void ASnapTurnFiresOncePerFlick()
+        {
+            Assert.AreEqual(0, SnapStep(0.5f), "below the press threshold");
+            Assert.AreEqual(1, SnapStep(0.9f), "flick right");
+            Assert.AreEqual(0, SnapStep(1f), "held: no repeat");
+            Assert.AreEqual(0, SnapStep(0.5f), "not yet released");
+            Assert.AreEqual(0, SnapStep(0.1f), "released, re-armed");
+            Assert.AreEqual(-1, SnapStep(-0.8f), "flick left");
+            Assert.AreEqual(0, SnapStep(float.NaN), "non-finite counts as released");
+            Assert.AreEqual(1, SnapStep(0.8f), "re-armed by the NaN");
+        }
+
+        [TsukimiTest]
+        public void RecenterWaitsForTheLimitsAndTheCooldown()
+        {
+            BeginEnter(0);
+            HandleEntered(100);
+            Assert.AreEqual(0, RecenterReason(1f, 0f, 100 + recenterCooldownFrames - 1), "cooldown");
+            int frame = 100 + recenterCooldownFrames;
+            Assert.AreEqual(0, RecenterReason(0.4f, 50f, frame), "inside both limits");
+            Assert.AreEqual(1, RecenterReason(0.6f, 0f, frame), "drift");
+            Assert.AreEqual(2, RecenterReason(0.1f, -70f, frame), "yaw either way");
+            Assert.AreEqual(3, RecenterReason(0.6f, 70f, frame), "both");
+            recenterDistance = 0f;
+            recenterYaw = 0f;
+            Assert.AreEqual(0, RecenterReason(5f, 170f, frame), "zero disables");
+        }
+
+        [TsukimiTest]
+        public void AReseatKeepsTheSessionAndSwallowsItsOwnExit()
+        {
+            BeginEnter(0);
+            HandleEntered(0);
+            _velocity = Vector3.forward;
+            Assert.IsTrue(BeginReseat(100, Vector3.one, 90f));
+            Assert.AreEqual(StateReseating, State);
+            Assert.IsFalse(BeginReseat(101, Vector3.one, 90f), "one at a time");
+            HandleExited();
+            Assert.AreEqual(StateReseating, State, "its own exit does not stop it");
+            Assert.IsTrue(HandleEntered(102));
+            Assert.AreEqual(StateActive, State);
+            Assert.AreEqual(1, Session, "same session");
+            Assert.AreEqual(1, ReseatCount);
+            Assert.AreEqual(Vector3.forward, ModelVelocity, "motion carries over");
+        }
+
+        [TsukimiTest]
+        public void AReseatExitArrivingAfterTheEntryIsAlsoSwallowed()
+        {
+            BeginEnter(0);
+            HandleEntered(0);
+            BeginReseat(100, Vector3.zero, 0f);
+            HandleEntered(101);
+            HandleExited();
+            Assert.AreEqual(StateActive, State, "late re-seat exit ignored");
+            HandleExited();
+            Assert.AreEqual(StateIdle, State, "a later exit still stops");
+        }
+
+        [TsukimiTest]
+        public void RespawnOrTimeoutDuringAReseatStops()
+        {
+            BeginEnter(0);
+            HandleEntered(0);
+            BeginReseat(100, Vector3.zero, 0f);
+            HandleRespawn();
+            Assert.AreEqual(StateIdle, State, "respawn");
+            HandleExited();
+            Assert.AreEqual("exited (ignored)", LastEvent, "pending exit cleared by the stop");
+
+            BeginEnter(200);
+            HandleEntered(200);
+            BeginReseat(300, Vector3.zero, 0f);
+            Assert.IsFalse(HandleEnterTimeout(300 + enterTimeoutFrames - 1));
+            Assert.IsTrue(HandleEnterTimeout(300 + enterTimeoutFrames));
+            Assert.AreEqual(StateIdle, State, "timeout");
+        }
+
+        [TsukimiTest]
+        public void AReseatThatDoesNotSettleIsGivenUp()
+        {
+            BeginEnter(0);
+            HandleEntered(0);
+            RememberHeadBeforeSeat(Vector3.zero, true);
+            Assert.IsTrue(EvaluateSeat(0.1f, 10f), "settled");
+            Assert.IsTrue(RecenterUsable);
+            Assert.IsFalse(EvaluateSeat(0.8f, 0f), "drift left as it was");
+            Assert.IsFalse(RecenterUsable);
+            Assert.AreEqual(0, RecenterReason(2f, 0f, 100000), "no further re-seat this session");
+            HandleRespawn();
+            BeginEnter(0);
+            Assert.IsTrue(RecenterUsable, "a new session tries again");
         }
     }
 }

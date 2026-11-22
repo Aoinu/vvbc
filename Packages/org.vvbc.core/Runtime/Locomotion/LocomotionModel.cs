@@ -24,6 +24,18 @@ namespace VVBC.Locomotion
             return Quaternion.Euler(0f, headYawDegrees, 0f) * new Vector3(stick.x, 0f, stick.y);
         }
 
+        // Where a root at rootPosition ends up when it turns by degrees (yaw) about pivot,
+        // so that whatever is carried with the root (the playspace) keeps the pivot in place.
+        // Height is kept.
+        public static Vector3 TurnAbout(Vector3 rootPosition, Vector3 pivot, float degrees)
+        {
+            Vector3 offset = rootPosition - pivot;
+            offset.y = 0f;
+            Vector3 turned = pivot + Quaternion.Euler(0f, degrees, 0f) * offset;
+            turned.y = rootPosition.y;
+            return turned;
+        }
+
         // One step of the horizontal velocity toward target (m/s), over dt seconds.
         //   no input                    -> slow down at deceleration (inertia, then stop)
         //   input against the velocity  -> move toward the target at reverseAcceleration,
