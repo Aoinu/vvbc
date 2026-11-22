@@ -182,7 +182,7 @@ public partial class ManualPitchBehaviour
             Assert.AreEqual(1f, debugQuality, name + ": the ideal palm at the ideal timing");
             float multiplier = PitchPropertiesCalculator.SpeedMultiplier(BuildFor(type));
             Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 140f * 0.97f * multiplier, 0.01f), name + " speed " + releaseVelocity.magnitude * 3.6f);
-            PitchProperties ideal = ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(), wakeCoefficient, wakeClockDegrees, false);
+            PitchProperties ideal = ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(), false);
             Assert.IsTrue(Near(ReleaseRpm(), ideal.spinRpm, 0.5f), name + " rpm " + ReleaseRpm());
             Assert.IsTrue(Vector3.Distance(debugSpinAxis, ideal.spinAxisLocal) < 0.0001f, name + " axis");
             Assert.AreEqual(ideal.wakeLocal.mode, releaseWakeMode, name + " SSW mode");
@@ -209,7 +209,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(Near(ReleaseRpm(), 0.7f * 2500f, 0.5f), "70 % of the 4-Seam rpm: " + ReleaseRpm());
         Assert.IsTrue(Vector3.Distance(debugSpinAxis, FourSeamAxis()) < 0.0001f, "the 4-Seam axis");
         Assert.AreEqual(BallAerodynamics.WakeFixed, releaseWakeMode);
-        Assert.AreEqual(wakeCoefficient, releaseWakeCoefficient, "the 4-Seam SSW");
+        Assert.AreEqual(PitchPropertiesCalculator.FourSeamWake().coefficient, releaseWakeCoefficient, "the 4-Seam SSW");
         Assert.IsTrue(Vector3.Distance(releaseVelocity, idealVelocity) < 0.00001f, "the same speed and direction");
         // Half way between the good and bad angles: half quality, between the two.
         float middle = 0.5f * (PoseGoodAngle(PitchType.Slider) + PoseBadAngle(PitchType.Slider));
@@ -257,7 +257,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(Near(ReleaseRpm(), 1750f + 750f * qualityTimingCap, 0.5f), "rpm toward the failure " + ReleaseRpm());
         Assert.IsTrue(Vector3.Angle(axis, releaseSpin.normalized) < 2f, "the axis is the 4-Seam's either way");
         Assert.IsTrue(Near(releaseVelocity.magnitude, speed, 0.0001f), "the same speed");
-        Assert.AreEqual(wakeCoefficient, releaseWakeCoefficient);
+        Assert.AreEqual(PitchPropertiesCalculator.FourSeamWake().coefficient, releaseWakeCoefficient);
         // The control cap is its own setting.
         qualityTimingCap = 0.2f;
         PlateForTest();

@@ -186,20 +186,16 @@ release is a throw (`not locked`).
 
 ### Ideal flight of a type
 
-`ManualPitchQuality.IdealProperties`: every type but the 4-Seam is `PitchPropertiesCalculator`'s
-(spin rpm, unit axis, pitch-local wake), with the base spin the mound's 4-Seam rpm
-(`min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800)`). The 4-Seam keeps the mound's own rpm and
-Fixed SSW (`wakeCoefficient` 0.006 at `wakeClockDegrees` 90, the arm side) and the calculator's
-axis. A Rotating wake (Knuckle) gets its initial phase when the course is solved, from the mound's
+`ManualPitchQuality.IdealProperties` uses `PitchPropertiesCalculator` for each type's
+unit axis and pitch-local wake. The mound's 4-Seam rpm sets the base spin
+(`min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800)`). The 4-Seam ideal and the
+common failure flight both use the same wake as the batting pitcher. A Rotating wake (Knuckle) gets its initial phase when the course is solved, from the mound's
 own seed (`PitchPropertiesCalculator.PhaseFromSeed`, as the batting pitcher), so the solver aims
 with the phase the pitch is released with; a default course used by a Knuckle is solved again
 after that release, for a new phase.
 
-**The 4-Seam axis is the calculator's.** `PitchPropertiesCalculator`'s 4-Seam axis is the fixed
-manual axis (right-hander `(-0.8660254, 0.5, 0)`, a 1-7 o'clock spin; `FourSeamAxisX`/`Y`), no
-longer `Vector3.left` (pure backspin). This also changes the **batting pitcher's** 4-Seam: its
-Magnus break now leans 30 deg toward the arm side (as a right-hander's), its solver aims with it,
-and its speed, rpm and wake (None) are unchanged; the other types are unchanged.
+Both pitching modes use the calculator's fixed 4-Seam axis (right-hander
+`(-0.8660254, 0.5, 0)`), which produces Magnus break 30 degrees toward the arm side.
 
 **Left-handers** are the mirror image across the pitch-local y-z plane
 (`PitchPropertiesCalculator.MirrorForLeftHand`): the spin, an axial vector, keeps x and negates
@@ -315,7 +311,7 @@ by 0.4-2.6 m whatever the control score.
 
 **Knuckle.** Its ideal wake is Rotating, the failure's Fixed. The blend keeps it Rotating, turns
 its axis toward the failure's direction, narrows the cone to `q x cone` and blends the
-coefficient (0.040 to 0.006). A Rotating wake with cone 0 pushes along its axis exactly as the
+coefficient (0.040 to 0.020). A Rotating wake with cone 0 pushes along its axis exactly as the
 Fixed wake along it does, so the force changes continuously into the 4-Seam's (q = 0 returns the
 Fixed form itself). No new wake mode, field or sync was needed; nothing is random in flight.
 
@@ -668,8 +664,7 @@ crossing measurement (`ArrivalStep` interpolates between frames).
 aimed with (quality 1), whatever the pose and timing, so that (1) the solver's own error, (2) the
 speed difference and (3) the quality-made ball change can be separated. Every type is aimed and
 flown the same way (`EveryTypeIsAimedWithItsOwnFlightAndArrives`), the ideal and the failure
-flight, and the aim follows the quality (`ASwitchSolvesTheLockAgainAndTheAimFollowsTheQuality`). The 4-Seam SSW at 90 deg (arm
-side) or at 0 deg (up) is aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`).
+flight, and the aim follows the quality (`ASwitchSolvesTheLockAgainAndTheAimFollowsTheQuality`). The shared upward 4-Seam SSW is aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`).
 With the control penalty strength above 0 the drawn control error also separates the flight from
 the solver's crossing, by design.
 

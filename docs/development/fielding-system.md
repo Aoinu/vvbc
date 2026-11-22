@@ -534,12 +534,12 @@ Ball's own flight model; the flight itself is unchanged.
 - **Prediction** (`FieldingMath.PredictThrowHeight`): the Ball's semi-implicit
   Euler step (`BallFlightModel.Step`: aerodynamics from the velocity before the
   step, `v += (g + a)·dt`, then `x += v·dt`), with the throw's spin decayed by
-  `0.5^(dt / battedSpinHalfLife)` after every step, as `AdvanceDecayingSpin` and
+  `0.5^(dt / ThrowSpinHalfLife)` after every step, as `AdvanceDecayingSpin` and
   the Rigidbody `angularDrag` set by `StartFlight` do. `FieldingMath.Backspin`
   gives a horizontal axis perpendicular to the heading, so drag and Magnus stay
   in the vertical plane and the flight is computed in 2D: Magnus =
   `magnus · ω · (−vy, vx)` in (along, up), ω in rad/s (positive backspin lifts).
-  The Ball passes `dragCoefficient`, `magnusCoefficient`, `battedSpinHalfLife`,
+  The Ball passes `dragCoefficient`, `magnusCoefficient`, `ThrowSpinHalfLife` (1 s),
   `−Physics.gravity.y` and `Time.fixedDeltaTime`. The height at the target's
   horizontal distance is interpolated between the two fixed steps around it.
   The target point is the TargetBehaviour's Target Point position.
@@ -818,7 +818,7 @@ was not measured.
 Height error where the throw crosses the target's horizontal distance, release
 1.8 m, target 1.1 m (rows) and also 0.3 m and 2.3 m, measured with a real
 Rigidbody in an isolated Editor physics scene: `useGravity`, `angularDrag` from
-`battedSpinHalfLife`, the Ball's `AddForce` before every `Simulate`, backspin
+`ThrowSpinHalfLife`, the Ball's `AddForce` before every `Simulate`, backspin
 1500 rpm, project fixed step 1/90 s.
 
 | km/h | 8 m | 18 m | 27.43 m | 38.8 m | 50 m | 63 m |

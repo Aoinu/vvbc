@@ -6,7 +6,6 @@ using UnityEngine;
 public partial struct PitchQuality
 {
     private const float Rpm4 = 2500f;
-    private const float Wake4 = 0.006f;
 
     private static PitchBuild TypeBuild(int type)
     {
@@ -20,14 +19,14 @@ public partial struct PitchQuality
 
     private static PitchProperties Ideal(int type, bool left)
     {
-        PitchProperties p = ManualPitchQuality.IdealProperties(TypeBuild(type), Rpm4, Wake4, 90f, left);
+        PitchProperties p = ManualPitchQuality.IdealProperties(TypeBuild(type), Rpm4, left);
         if (p.wakeLocal.mode == BallAerodynamics.WakeRotating) p.wakeLocal.initialPhase = 0.9f;
         return p;
     }
 
     private static PitchProperties Failure(bool left)
     {
-        return ManualPitchQuality.FailureProperties(Rpm4, 0.7f, Wake4, 90f, left);
+        return ManualPitchQuality.FailureProperties(Rpm4, 0.7f, left);
     }
 
     private static Vector3 Spin(PitchProperties p)
@@ -94,23 +93,21 @@ public partial struct PitchQuality
     }
 
     [TsukimiTest]
-    public void TheIdealOfEveryTypeIsTheCalculatorsAndTheFourSeamKeepsTheMoundsSettings()
+    public void TheIdealWakeOfEveryTypeIsSharedWithTheCalculator()
     {
         PitchProperties four = Ideal(PitchType.FourSeam, false);
         Assert.AreEqual(Rpm4, four.spinRpm);
         Assert.AreEqual(BallAerodynamics.WakeFixed, four.wakeLocal.mode);
-        Assert.AreEqual(Wake4, four.wakeLocal.coefficient);
-        Assert.IsTrue(Vector3.Distance(four.wakeLocal.direction, Vector3.right) < 0.00001f, "arm side");
-        Assert.IsTrue(Vector3.Distance(Ideal(PitchType.FourSeam, true).wakeLocal.direction, Vector3.left) < 0.00001f, "left-hander's arm side");
-        Assert.AreEqual(BallAerodynamics.WakeNone, ManualPitchQuality.IdealProperties(TypeBuild(0), Rpm4, 0f, 90f, false).wakeLocal.mode, "no SSW at 0");
-        for (int type = 1; type < PitchType.Count; type++)
+        Assert.AreEqual(four.wakeLocal.direction, Mirror(Ideal(PitchType.FourSeam, true).wakeLocal.direction));
+        for (int type = 0; type < PitchType.Count; type++)
         {
             PitchProperties calc = PitchPropertiesCalculator.Calculate(TypeBuild(type), PitchPropertiesCalculator.DefaultBaseSpeedMps, Rpm4);
-            PitchProperties ideal = ManualPitchQuality.IdealProperties(TypeBuild(type), Rpm4, Wake4, 90f, false);
+            PitchProperties ideal = ManualPitchQuality.IdealProperties(TypeBuild(type), Rpm4, false);
             Assert.AreEqual(calc.spinRpm, ideal.spinRpm, PitchType.Name(type));
             Assert.AreEqual(calc.spinAxisLocal, ideal.spinAxisLocal, PitchType.Name(type));
             Assert.AreEqual(calc.wakeLocal.mode, ideal.wakeLocal.mode, PitchType.Name(type));
             Assert.AreEqual(calc.wakeLocal.coefficient, ideal.wakeLocal.coefficient, PitchType.Name(type));
+            Assert.AreEqual(calc.wakeLocal.direction, ideal.wakeLocal.direction, PitchType.Name(type));
         }
     }
 
@@ -258,7 +255,7 @@ public partial struct PitchQuality
             Assert.IsTrue(Mathf.Abs(failure.spinRpm - 1750f) < 0.01f, "70% of the 4-Seam rpm");
             Assert.IsTrue(Vector3.Distance(failure.spinAxisLocal, ManualPitchMath.FixedFourSeamAxis(hands[h])) < 0.000001f);
             Assert.AreEqual(BallAerodynamics.WakeFixed, failure.wakeLocal.mode);
-            Assert.AreEqual(Wake4, failure.wakeLocal.coefficient);
+            Assert.AreEqual(PitchPropertiesCalculator.FourSeamWake().coefficient, failure.wakeLocal.coefficient);
             for (int type = 0; type < PitchType.Count; type++)
             {
                 PitchProperties ideal = Ideal(type, hands[h]);
@@ -345,7 +342,7 @@ public partial struct PitchQuality
         Assert.AreEqual(BallAerodynamics.WakeNone, slider.wakeLocal.mode);
         WakeProfile half = ManualPitchQuality.BlendWake(slider.wakeLocal, failure.wakeLocal, 0.5f);
         Assert.AreEqual(BallAerodynamics.WakeFixed, half.mode);
-        Assert.IsTrue(Mathf.Abs(half.coefficient - Wake4 * 0.5f) < 0.000001f);
+        Assert.IsTrue(Mathf.Abs(half.coefficient - PitchPropertiesCalculator.FourSeamWake().coefficient * 0.5f) < 0.000001f);
         Assert.IsTrue(Vector3.Distance(half.direction, failure.wakeLocal.direction) < 0.00001f);
         WakeProfile none = new WakeProfile();
         Assert.AreEqual(BallAerodynamics.WakeNone, ManualPitchQuality.BlendWake(none, none, 0.5f).mode, "no SSW on either side");

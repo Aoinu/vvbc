@@ -80,10 +80,6 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float fourSeamSpinRpm = 2500f;
     [Tooltip("Upper limit of the 4-Seam spin, in rpm. Default 2800.")]
     public float maxFourSeamSpinRpm = 2800f;
-    [Tooltip("Fixed seam-shifted wake coefficient, in 1/s (capped at 0.055). Default 0.006.")]
-    public float wakeCoefficient = 0.006f;
-    [Tooltip("Wake direction as a clock angle seen from behind the pitcher: 0 up, 90 arm side. Default 90.")]
-    public float wakeClockDegrees = 90f;
 
     [Header("Recognition (throwing controller)")]
     [Tooltip("Minimum throwing-controller speed, in m/s. Default 1.")]

@@ -987,13 +987,14 @@ public partial class BallBehaviour
         }
         if (elapsed > duration && duration > 0f)
             Debug.LogWarning("BallNetwork: flight snapshot older than the catch-up window, shown from " + duration + " s: " + elapsed);
-        bool batted = !IsPitchKind(_acceptedKind);
-        BallWake wake = batted ? new BallWake() : BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin);
+        bool pitch = IsPitchKind(_acceptedKind);
+        float spinHalfLife = pitch ? 0f : _acceptedKind == HitState ? battedSpinHalfLife : ThrowSpinHalfLife;
+        BallWake wake = !pitch ? new BallWake() : BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin);
         BallFlightState state = AdvanceToGround(_acceptedPosition, _acceptedVelocity, _acceptedSpin,
-            wake, duration, Time.fixedDeltaTime, batted ? battedSpinHalfLife : 0f);
-        if (batted)
+            wake, duration, Time.fixedDeltaTime, spinHalfLife);
+        if (!pitch)
         {
-            ApplyRemoteHit(state.position, state.velocity, state.spin);
+            StartFlight(state.position, state.velocity, state.spin, false, spinHalfLife);
             _flightOrigin = _acceptedKind;
         }
         else LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);

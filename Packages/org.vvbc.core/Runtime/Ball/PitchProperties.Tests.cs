@@ -122,7 +122,7 @@ public partial struct PitchProperties
         Assert.AreEqual(new Vector3(PitchPropertiesCalculator.FourSeamAxisX, PitchPropertiesCalculator.FourSeamAxisY, 0f), p.spinAxisLocal);
         Vector3 brk = MagnusBreak(p);
         Assert.IsTrue(Mathf.Abs(Mathf.Atan2(brk.x, brk.y) * Mathf.Rad2Deg - 30f) < 0.01f, "break toward 30 deg " + brk);
-        Assert.AreEqual(BallAerodynamics.WakeNone, p.wakeLocal.mode);
+        Assert.AreEqual(BallAerodynamics.WakeFixed, p.wakeLocal.mode);
         PitchBuild build = new PitchBuild();
         Assert.AreEqual(PitchPropertiesCalculator.FourSeamMaxSpinRpm, PitchPropertiesCalculator.Calculate(build, BaseSpeed, 3000f).spinRpm, "4-Seam spin is capped");
     }
@@ -215,7 +215,7 @@ public partial struct PitchProperties
         Assert.IsTrue(Build(PitchType.Sinker, 0.5f, 1f, 0.5f).wakeLocal.direction.y < -0.99f, "Sinker B=1: down");
         Vector3 mixed = Build(PitchType.Sinker, 0.5f, 0.5f, 0.5f).wakeLocal.direction;
         Assert.IsTrue(mixed.x > 0f && mixed.y < 0f && mixed.x < 0.8f && mixed.y > -0.8f, "run and sink trade off");
-        Assert.IsTrue(Near(Build(PitchType.Sinker, 1f, 0.5f, 0.5f).wakeLocal.coefficient, 0.05f));
+        Assert.IsTrue(Near(Build(PitchType.Sinker, 1f, 0.5f, 0.5f).wakeLocal.coefficient, 0.055f));
         Assert.IsTrue(Build(PitchType.Cutter, 0.5f, 0.5f, 0.5f).wakeLocal.direction.x < -0.99f, "Cutter: glove side");
         Assert.IsTrue(MagnusBreak(Build(PitchType.Cutter, 1f, 0.5f, 0.5f)).x < MagnusBreak(Build(PitchType.Cutter, 0f, 0.5f, 0.5f)).x,
             "more cut, more glove-side Magnus");

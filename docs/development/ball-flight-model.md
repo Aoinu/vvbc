@@ -153,9 +153,9 @@ names the slider ends (0 <-> 1).
 
 | Type | A | B | C | Speed x base | Spin | Magnus angle t, efficiency e | Wake |
 |---|---|---|---|---|---|---|---|
-| 4-Seam | - | - | - | 1 | base, at most 2800 rpm | t = 30, e = 1 (the manual pitch's fixed axis) | None |
+| 4-Seam | - | - | - | 1 | base, at most 2800 rpm | t = 30, e = 1 | Fixed 0.020, t = -15 |
 | 2-Seam | run: small <-> large | - | - | 0.99 - 0.04A | 0.92 x base | t = 30 + 20A, e = 0.95 | Fixed 0.008 + 0.025A, t = 90 |
-| Sinker | break: small <-> large | run <-> sink | - | 0.95 | 0.82 x base | t = 65, e = 0.9 | Fixed 0.010 + 0.040A, t = 90 + 90B |
+| Sinker | break: small <-> large | run <-> sink | - | 0.95 | 0.82 x base | t = 65, e = 0.9 | Fixed 0.030 + 0.025A, t = 90 + 90B |
 | Cutter | cut: small <-> large | - | - | 0.98 - 0.07A | 0.90 x base | t = -(10 + 25A), e = 0.7 | Fixed 0.005 + 0.020A, t = -90 |
 | Slider | velocity: slow <-> fast | break: small <-> large | horizontal <-> vertical | 0.79 + 0.13A | 0.90 x base | t = -(90 + 90C), e = 0.15 + 0.65B | None |
 | Sweeper | sweep <-> lift | - | - | 0.84 | 0.90 x base | t = -90, e = 0.85 | Fixed 0.045, t = -90 + 90A |
@@ -181,5 +181,17 @@ seed, so Knuckles in a playlist do not change its Random order. The phase travel
 schedule (`_releaseWakePhase`) and the Ball snapshot; receivers, late joiners and a new Owner
 replaying a schedule use it as sent. A new Owner draws later phases from its own seed.
 
-The Inspector defaults stay at the previous values (`magnusCoefficient` 0.00063,
-`battedSpinHalfLife` 1 s) until the candidate set is confirmed in clients.
+The Ball defaults are `magnusCoefficient` 0.00055 and `battedSpinHalfLife` 5 s.
+Pitches keep their release spin. Fielding throws use a 1 s spin half-life
+through launch, aim prediction and network catch-up.
+
+The 4-Seam calibration uses the [Scherzer](https://baseballsavant.mlb.com/savant-player/max-scherzer-453286)
+and [Gausman](https://baseballsavant.mlb.com/savant-player/kevin-gausman-592332)
+Statcast season averages for speed, spin rate, extension and spin-based direction
+and efficiency. The small upward 4-Seam wake accounts for part of the residual
+between the modeled Magnus break and the observed movement. The Sinker wake has
+more arm-side and downward force, consistent with
+[Wheeler's spin and observed movement](https://baseballsavant.mlb.com/savant-player/zack-wheeler-554430?stats=statcast-r-zones-mlb).
+The TestStadium fly-ball benchmark uses its authored spin curve and checks
+whether 90% power and 90% contact quality can clear the roughly 5 m fence about
+94 m from home near the foul poles.

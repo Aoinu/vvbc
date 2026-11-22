@@ -61,7 +61,7 @@ public static class PitchPropertiesCalculator
             spinScale = 0.82f;
             p.spinAxisLocal = Axis(65f, 0.9f);
             // B turns the wake from the arm side to straight down: run and sink trade off.
-            p.wakeLocal = Fixed(0.010f + 0.040f * a, 90f + 90f * b);
+            p.wakeLocal = Fixed(0.030f + 0.025f * a, 90f + 90f * b);
         }
         else if (type == PitchType.Cutter)
         {
@@ -122,6 +122,7 @@ public static class PitchPropertiesCalculator
         {
             // The fixed 4-Seam axis shared with the manual pitch: a right-hander's 1-7 o'clock spin.
             p.spinAxisLocal = new Vector3(FourSeamAxisX, FourSeamAxisY, 0f);
+            p.wakeLocal = FourSeamWake();
         }
 
         p.speedMps = speed * speedScale;
@@ -187,6 +188,11 @@ public static class PitchPropertiesCalculator
         Vector3 direction = Clock(breakDegrees);
         float e = Mathf.Clamp01(efficiency);
         return new Vector3(-direction.y * e, direction.x * e, Mathf.Sqrt(1f - e * e));
+    }
+
+    public static WakeProfile FourSeamWake()
+    {
+        return Fixed(0.020f, -15f);
     }
 
     private static WakeProfile Fixed(float coefficient, float directionDegrees)

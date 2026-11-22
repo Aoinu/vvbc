@@ -78,10 +78,10 @@ public partial class BallBehaviour
     // A remote hit replaces the physical trajectory without starting another pitch.
     public void ApplyRemoteHit(Vector3 position, Vector3 velocity, Vector3 angularVelocity)
     {
-        StartFlight(position, velocity, angularVelocity, false);
+        StartFlight(position, velocity, angularVelocity, false, battedSpinHalfLife);
     }
 
-    private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
+    private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch, float spinHalfLife = ThrowSpinHalfLife)
     {
         ClearWake();
         CancelHandPitchWait();
@@ -92,8 +92,8 @@ public partial class BallBehaviour
         contactConsumed = !pitch;
         _contactPending = false;
         ConfigureBody();
-        // A remote hit continues with the batted-ball spin damping; a pitch keeps angularDrag 0.
-        if (!pitch) body.angularDrag = BallFlightModel.AngularDragForHalfLife(battedSpinHalfLife);
+        // Hits and throws use their own decay; pitches keep angularDrag 0.
+        if (!pitch) body.angularDrag = BallFlightModel.AngularDragForHalfLife(spinHalfLife);
         body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, angularVelocity.magnitude + 1f);
         body.position = position;
         body.isKinematic = false;

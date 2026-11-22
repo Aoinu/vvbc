@@ -1145,7 +1145,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, ManualPitchMath.Multiply(IdealHand(TestChest), ManualPitchMath.AxisAngle(Vector3.up, 30f)), TowardPlate()));
         debugPredictedTarget = Vector3.zero;
         string detail = ReleaseDetailText();
-        Assert.IsTrue(detail.Contains("pose evaluation off") && detail.Contains("TYPE  selected 4-Seam   pitched 4-Seam") && detail.Contains("rpm") && detail.Contains("SSW fixed 0.00"), detail);
+        Assert.IsTrue(detail.Contains("pose evaluation off") && detail.Contains("TYPE  selected 4-Seam   pitched 4-Seam") && detail.Contains("rpm") && detail.Contains("SSW fixed 0.0200"), detail);
         Assert.IsTrue(detail.Contains("solver   x +0.02  y 0.76 m   miss 2.2 cm (at lock, converged)"), detail);
         Assert.IsTrue(detail.Contains("actual   measuring...") || detail.Contains("actual   not measured"), detail);
     }
@@ -1205,17 +1205,12 @@ public partial class ManualPitchBehaviour
         _ball = strikeZone != null ? strikeZone.ball : null;
         ActiveForTest(GloveBehaviour.HandRight);
         Assert.IsTrue(CalibrateForTest(Overhand));
-        float[] clocks = { 0f, 30f };
-        for (int c = 0; c < clocks.Length; c++)
-        {
-            wakeClockDegrees = clocks[c];
-            Assert.IsTrue(SolveLock(new Vector3(0.2f, 0.8f, 0f)), "solved " + c);
-            Vector3 hand = HandAt(TestChest, Overhand);
-            Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
-            Assert.IsTrue(releaseWakeDirection.y > 0.8f, "mostly upward " + c);
-            Vector3 crossing = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
-            Assert.IsTrue(Vector3.Distance(crossing, LockedTarget()) <= aimSolver.tolerance + 0.005f, "clock " + clocks[c]);
-        }
+        Assert.IsTrue(SolveLock(new Vector3(0.2f, 0.8f, 0f)));
+        Vector3 hand = HandAt(TestChest, Overhand);
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
+        Assert.IsTrue(releaseWakeDirection.y > 0.8f, "mostly upward");
+        Vector3 crossing = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
+        Assert.IsTrue(Vector3.Distance(crossing, LockedTarget()) <= aimSolver.tolerance + 0.005f);
     }
 
     // ---- Release speed (arm-speed curve, maximum and the solver's single speed) ----

@@ -63,33 +63,26 @@ public static class ManualPitchQuality
 {
     // ---- Ideal and failure flights ----
 
-    // The type's ideal flight for this hand, pitch-local. Every type but the 4-Seam is
-    // PitchPropertiesCalculator's (its spin from the 4-Seam rpm given); the 4-Seam keeps the
-    // mound's own rpm and SSW (its axis is the calculator's). A left-hander's is the mirror image.
+    // The calculator supplies the ideal pitch-local flight and wake. The 4-Seam keeps the
+    // mound's own spin rate. A left-hander's flight is the mirror image.
     // speedMps is the calculator's at its default base and is not the release speed: the release
     // multiplies the mound's 4-Seam speed by PitchPropertiesCalculator.SpeedMultiplier.
-    public static PitchProperties IdealProperties(PitchBuild build, float fourSeamRpm, float fourSeamWakeCoefficient,
-        float fourSeamWakeClock, bool leftHanded)
+    public static PitchProperties IdealProperties(PitchBuild build, float fourSeamRpm, bool leftHanded)
     {
         float rpm = FourSeamRpm(fourSeamRpm);
         PitchProperties p = PitchPropertiesCalculator.Calculate(build, PitchPropertiesCalculator.DefaultBaseSpeedMps, rpm);
-        if (PitchType.Safe(build.pitchTypeId) == PitchType.FourSeam)
-        {
-            p.spinRpm = rpm;
-            p.wakeLocal = FourSeamWake(fourSeamWakeCoefficient, fourSeamWakeClock);
-        }
+        if (PitchType.Safe(build.pitchTypeId) == PitchType.FourSeam) p.spinRpm = rpm;
         return leftHanded ? PitchPropertiesCalculator.MirrorForLeftHand(p) : p;
     }
 
     // The common failure mode: the type's own speed, the hand's fixed 4-Seam axis, failureRatio
     // of the pitcher's 4-Seam rpm (never of the type's own) and the 4-Seam's SSW.
-    public static PitchProperties FailureProperties(float fourSeamRpm, float failureRatio, float fourSeamWakeCoefficient,
-        float fourSeamWakeClock, bool leftHanded)
+    public static PitchProperties FailureProperties(float fourSeamRpm, float failureRatio, bool leftHanded)
     {
         PitchProperties p = new PitchProperties();
         p.spinAxisLocal = new Vector3(PitchPropertiesCalculator.FourSeamAxisX, PitchPropertiesCalculator.FourSeamAxisY, 0f);
         p.spinRpm = FourSeamRpm(fourSeamRpm) * Mathf.Clamp01(ManualPitchMath.Finite(failureRatio) ? failureRatio : 0f);
-        p.wakeLocal = FourSeamWake(fourSeamWakeCoefficient, fourSeamWakeClock);
+        p.wakeLocal = PitchPropertiesCalculator.FourSeamWake();
         return leftHanded ? PitchPropertiesCalculator.MirrorForLeftHand(p) : p;
     }
 
@@ -97,17 +90,6 @@ public static class ManualPitchQuality
     private static float FourSeamRpm(float rpm)
     {
         return ManualPitchMath.Finite(rpm) && rpm > 0f ? rpm : 0f;
-    }
-
-    // The 4-Seam's Fixed SSW of a right-hander at a clock angle (90 arm side); None at 0.
-    private static WakeProfile FourSeamWake(float coefficient, float clockDegrees)
-    {
-        WakeProfile wake = new WakeProfile();
-        if (!(coefficient > 0f) || !ManualPitchMath.Finite(coefficient)) return wake;
-        wake.mode = BallAerodynamics.WakeFixed;
-        wake.coefficient = coefficient;
-        wake.direction = ManualPitchMath.WakeDirection(ManualPitchMath.Finite(clockDegrees) ? clockDegrees : 90f, 1f);
-        return wake;
     }
 
     // ---- Pose ----

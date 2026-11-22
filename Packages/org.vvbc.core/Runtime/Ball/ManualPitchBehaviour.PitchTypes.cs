@@ -167,7 +167,7 @@ public partial class ManualPitchBehaviour
     // (Knuckle) gets its initial phase here, once per solve, from the mound's own seed.
     public PitchProperties IdealFor(int type)
     {
-        PitchProperties ideal = ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(), wakeCoefficient, wakeClockDegrees,
+        PitchProperties ideal = ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(),
             _activeHand == GloveBehaviour.HandLeft);
         if (ideal.wakeLocal.mode == BallAerodynamics.WakeRotating)
         {
@@ -180,7 +180,7 @@ public partial class ManualPitchBehaviour
     // The common failure mode of the current hand.
     public PitchProperties FailureFlight()
     {
-        return ManualPitchQuality.FailureProperties(FourSeamRpm(), failureSpinRatio, wakeCoefficient, wakeClockDegrees,
+        return ManualPitchQuality.FailureProperties(FourSeamRpm(), failureSpinRatio,
             _activeHand == GloveBehaviour.HandLeft);
     }
 

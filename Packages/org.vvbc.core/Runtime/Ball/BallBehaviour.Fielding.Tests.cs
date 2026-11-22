@@ -360,7 +360,7 @@ public partial class BallBehaviour
             for (int h = 0; h < heights.Length; h++)
             {
                 Vector4 solved = FieldingMath.SolveLaunchElevation(speed, distances[d], heights[h], dragCoefficient,
-                    magnusCoefficient, 1500f, battedSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
+                    magnusCoefficient, 1500f, ThrowSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
                 if ((int)solved.z != FieldingMath.ReachExact) continue;
                 reached++;
                 Vector3 direction = FieldingMath.LaunchDirection(heading, solved.x, 0f);
@@ -379,7 +379,7 @@ public partial class BallBehaviour
         Vector3 direction = FieldingMath.LaunchDirection(new Vector3(-0.3f, 0f, -0.9f), 7f, 0f);
         float speed = 35f;
         float predicted = FieldingMath.PredictThrowHeight(speed, 7f, 40f, dragCoefficient, magnusCoefficient,
-            1500f * 2f * Mathf.PI / 60f, Mathf.Pow(0.5f, 0.02f / battedSpinHalfLife), 9.81f, 0.02f, -100f, 512);
+            1500f * 2f * Mathf.PI / 60f, Mathf.Pow(0.5f, 0.02f / ThrowSpinHalfLife), 9.81f, 0.02f, -100f, 512);
         float flown = FlyThrow(direction * speed, FieldingMath.Backspin(direction, 1500f), 40f);
         Assert.IsTrue(Mathf.Abs(predicted - flown) < 0.002f, "planar " + predicted + " vs 3D " + flown);
     }
@@ -395,7 +395,7 @@ public partial class BallBehaviour
         Vector3 oldDirection = FieldingMath.LaunchDirection(heading, old, 0f);
         float oldHeight = FlyThrow(oldDirection * speed, FieldingMath.Backspin(oldDirection, 1500f), 38.8f) + 0.7f;
         Vector4 solved = FieldingMath.SolveLaunchElevation(speed, 38.8f, -0.7f, dragCoefficient, magnusCoefficient,
-            1500f, battedSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
+            1500f, ThrowSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
         Vector3 newDirection = FieldingMath.LaunchDirection(heading, solved.x, 0f);
         float newHeight = FlyThrow(newDirection * speed, FieldingMath.Backspin(newDirection, 1500f), 38.8f) + 0.7f;
         Assert.IsTrue(oldHeight > 0.5f, "old: " + oldHeight + " m above the target");
@@ -413,7 +413,7 @@ public partial class BallBehaviour
         {
             Vector3 previous = state.position;
             state = BallFlightModel.Step(state, spin, gravity, dragCoefficient, magnusCoefficient, 0.02f);
-            spin = BallFlightModel.DecaySpin(spin, battedSpinHalfLife, 0.02f);
+            spin = BallFlightModel.DecaySpin(spin, ThrowSpinHalfLife, 0.02f);
             float before = new Vector2(previous.x, previous.z).magnitude;
             float after = new Vector2(state.position.x, state.position.z).magnitude;
             if (after >= distance) return previous.y + (state.position.y - previous.y) * ((distance - before) / (after - before));

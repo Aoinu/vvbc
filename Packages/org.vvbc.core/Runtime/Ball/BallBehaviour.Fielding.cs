@@ -603,7 +603,7 @@ public partial class BallBehaviour
             // A recognition that failed in pitcher mode falls back to a throw without HomePlate.
             throwAim.SetPitcherMode(manualPitcher != null);
             throwAim.RefreshMarkers();
-            throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, battedSpinHalfLife,
+            throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, ThrowSpinHalfLife,
                 -Physics.gravity.y, Time.fixedDeltaTime, Random.Range(0f, 2f * Mathf.PI), Random.value);
             velocity = throwAim.releaseVelocity;
             spin = throwAim.releaseSpin;
@@ -666,7 +666,7 @@ public partial class BallBehaviour
         // A hand pitch keeps its spin (a pitch has no spin damping) and its wake, as receivers' catch-up does.
         BallFlightState state = AdvanceSnapshot(_releasePosition, _releaseVelocity, _releaseSpin, Physics.gravity,
             dragCoefficient, magnusCoefficient, _releasePitch ? BallAerodynamics.PrepareWake(_releaseWake, _releaseSpin) : new BallWake(),
-            elapsed, Time.fixedDeltaTime, _releasePitch ? 0f : battedSpinHalfLife);
+            elapsed, Time.fixedDeltaTime, _releasePitch ? 0f : ThrowSpinHalfLife);
         if (_releasePitch && _wake.mode != BallAerodynamics.WakeNone)
         {
             _wakeTime = state.time;
