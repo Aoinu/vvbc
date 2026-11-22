@@ -43,8 +43,13 @@ any --OnPlayerRespawn--> Idle
 Entering / Reseating --no entry within enterTimeoutFrames--> Idle
 ```
 
-- `RequestEnter` (owner only, Idle only) places MovementRoot at the player's position
-  facing the player's yaw, calls `VRCObjectSync.FlagDiscontinuity`, then `UseStation`.
+- `RequestEnter` (owner only, Idle only) starts the session; one frame later
+  `_EnterSeat` places MovementRoot (Transform and kinematic Rigidbody) at the player's
+  position facing the player's yaw, calls `VRCObjectSync.FlagDiscontinuity`, then
+  `UseStation`. The zone calls `RequestEnter` from a physics trigger callback; placing
+  and using the Station right there pulled it back to its old position on the second
+  run (7.15 m view jump; `OnStationEntered` runs inside `UseStation`). The entry log
+  reports any pull-back left ("entry Station pulled X m").
 - The stick applies horizontal translation only. The Station turns only by the smooth turn
   or a re-seat (below).
 - Exited and Respawn may arrive in either order: the first stops the session, the
@@ -72,17 +77,27 @@ Udon cannot drive avatar parameters); that is a limit of the approach, not handl
   about the head every frame, so the view turns in place: nothing inside a 0.15
   deadzone, then linear up to `turnSpeed` (90°/s) at full deflection. Continuous, so
   ObjectSync interpolates it (no discontinuity flag). Desktop is unchanged.
-- **Re-seat (experimental):** when the head is more than `recenterDistance` (0.5 m,
-  horizontal) or `recenterYaw` (60°) from the Station, and `recenterCooldownFrames`
-  (45) have passed since the last entry, the controller calls `ExitStation`, then the
-  next frame moves the Station under the head (turning it to the head's yaw only for a
-  yaw trigger) and calls `UseStation`. Velocity carries over.
-- **Self-check:** `measureDelayFrames` (10) after every entry the controller logs the
-  head's world jump and its Station-local offset before and after. If a re-seat leaves
-  the head outside either limit, re-seating would fire again at once, so it is turned
-  off for the rest of the session ("re-seat disabled"). This answers on device whether
-  VRChat re-aligns the avatar to the tracked head on entry.
-- The entry log also measures the view jump seen on the first run.
+- **Re-seat works** (second run, 15 of 15): after `ExitStation`, moving the Station and
+  `UseStation`, the head stays put (0.05–0.15 m world jump) and the avatar's feet land
+  on the Station, so the head's offset drops to about 0.1 m. A single re-seat of
+  0.5 m reads as the feet snapping under the player.
+- **Stepped follow:** each re-seat is a discrete snap, so following is done in small
+  steps. Following starts when the head is more than `recenterDistance` (0.3 m,
+  horizontal) from the Station and continues until it is within `followStopDistance`
+  (0.08 m). Each step moves the Station at most `followStepDistance` (0.15 m) toward the
+  head, every `followStepFrames` (6) frames. Turning works the same way: start past
+  `recenterYaw` (60°), stop within `followStopYaw` (10°), at most `followStepYaw`
+  (20°) per step. The first follow waits `recenterCooldownFrames` (45) after a session
+  entry. Steps do not flag a discontinuity, so ObjectSync interpolates them. Velocity
+  carries over; the stick and smooth turn pause during the one-frame exit.
+- **Self-check:** `measureDelayFrames` (3) after every entry the controller measures
+  the head's world jump and offset, and after a re-seat the playspace Origin's world
+  jump. A working re-seat leaves the Origin in place. If it moves with the Station
+  (summed over the current follow: at least half of the Station's total move, once
+  that reaches 0.1 m), re-seating cannot close the gap, so it is turned off for the session ("re-seat disabled"). The Origin is used
+  because, unlike the head, it does not move when the player walks. Entries, failures
+  and the end of each follow ("follow done: N re-seats, X m, Y deg") are logged;
+  individual working steps are not.
 
 ## Motion model
 

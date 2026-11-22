@@ -204,13 +204,52 @@ namespace VVBC.Locomotion
             HandleEntered(100);
             Assert.AreEqual(0, RecenterReason(1f, 0f, 100 + recenterCooldownFrames - 1), "cooldown");
             int frame = 100 + recenterCooldownFrames;
-            Assert.AreEqual(0, RecenterReason(0.4f, 50f, frame), "inside both limits");
-            Assert.AreEqual(1, RecenterReason(0.6f, 0f, frame), "drift");
-            Assert.AreEqual(2, RecenterReason(0.1f, -70f, frame), "yaw either way");
-            Assert.AreEqual(3, RecenterReason(0.6f, 70f, frame), "both");
+            Assert.AreEqual(0, RecenterReason(0.25f, 50f, frame), "inside both start limits");
+            Assert.AreEqual(1, RecenterReason(0.4f, 0f, frame), "drift");
+            StopFollowing();
+            Assert.AreEqual(2, RecenterReason(0.05f, -70f, frame), "yaw either way");
+            StopFollowing();
+            Assert.AreEqual(3, RecenterReason(0.4f, 70f, frame), "both");
+            StopFollowing();
             recenterDistance = 0f;
             recenterYaw = 0f;
             Assert.AreEqual(0, RecenterReason(5f, 170f, frame), "zero disables");
+        }
+
+        [TsukimiTest]
+        public void FollowingKeepsGoingUntilInsideTheStopLimits()
+        {
+            BeginEnter(0);
+            HandleEntered(0);
+            int frame = recenterCooldownFrames;
+            Assert.AreEqual(1, RecenterReason(0.35f, 0f, frame), "starts past 0.3 m");
+            Assert.AreEqual(1, RecenterReason(0.2f, 0f, frame), "keeps following below the start limit");
+            Assert.AreEqual(0, RecenterReason(0.05f, 0f, frame), "stops inside 0.08 m");
+            Assert.AreEqual(0, RecenterReason(0.2f, 0f, frame), "does not restart below the start limit");
+            Assert.AreEqual(2, RecenterReason(0f, 65f, frame), "turn starts past 60 degrees");
+            Assert.AreEqual(2, RecenterReason(0f, 30f, frame), "keeps turning");
+            Assert.AreEqual(0, RecenterReason(0f, 8f, frame), "stops inside 10 degrees");
+        }
+
+        [TsukimiTest]
+        public void FollowStepsUseTheShortCooldown()
+        {
+            BeginEnter(0);
+            HandleEntered(0);
+            BeginReseat(100, Vector3.zero, 0f);
+            HandleEntered(101);
+            Assert.AreEqual(0, RecenterReason(0.4f, 0f, 101 + followStepFrames - 1), "between steps");
+            Assert.AreEqual(1, RecenterReason(0.4f, 0f, 101 + followStepFrames), "next step");
+        }
+
+        [TsukimiTest]
+        public void AFollowStepMovesAtMostOneStepTowardTheHead()
+        {
+            Vector3 from = new Vector3(0f, 0.5f, 0f);
+            Vector3 step = LocomotionModel.StepToward(from, new Vector3(0f, 1.7f, 1f), 0.15f);
+            Assert.IsTrue((step - new Vector3(0f, 0.5f, 0.15f)).magnitude < 1e-5f, "one step, height kept");
+            Vector3 near = LocomotionModel.StepToward(from, new Vector3(0.05f, 1.7f, 0f), 0.15f);
+            Assert.IsTrue((near - new Vector3(0.05f, 0.5f, 0f)).magnitude < 1e-5f, "a short gap closes exactly");
         }
 
         [TsukimiTest]
@@ -269,9 +308,14 @@ namespace VVBC.Locomotion
             BeginEnter(0);
             HandleEntered(0);
             RememberHeadBeforeSeat(Vector3.zero, true);
-            Assert.IsTrue(EvaluateSeat(0.1f, 10f), "settled");
+            _followMoved = 0.15f;
+            Assert.IsTrue(EvaluateSeat(0.02f), "playspace stayed: works");
             Assert.IsTrue(RecenterUsable);
-            Assert.IsFalse(EvaluateSeat(0.8f, 0f), "drift left as it was");
+            StopFollowing();
+            _followMoved = 0.06f;
+            Assert.IsTrue(EvaluateSeat(0.06f), "one small step is too little to judge");
+            _followMoved = 0.12f;
+            Assert.IsFalse(EvaluateSeat(0.06f), "small steps add up: the playspace moved with the Station");
             Assert.IsFalse(RecenterUsable);
             Assert.AreEqual(0, RecenterReason(2f, 0f, 100000), "no further re-seat this session");
             HandleRespawn();

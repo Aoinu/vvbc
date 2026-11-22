@@ -36,6 +36,13 @@ namespace VVBC.Locomotion
             return turned;
         }
 
+        // from moved horizontally toward target by at most maxStep, keeping from's height.
+        public static Vector3 StepToward(Vector3 from, Vector3 target, float maxStep)
+        {
+            Vector3 to = new Vector3(target.x, from.y, target.z);
+            return Vector3.MoveTowards(from, to, maxStep > 0f ? maxStep : 0f);
+        }
+
         // One step of the horizontal velocity toward target (m/s), over dt seconds.
         //   no input                    -> slow down at deceleration (inertia, then stop)
         //   input against the velocity  -> move toward the target at reverseAcceleration,
