@@ -175,16 +175,26 @@ namespace VVBC.Locomotion
         }
 
         [TsukimiTest]
-        public void ASnapTurnFiresOncePerFlick()
+        public void SmoothTurnFollowsTheStickPastTheDeadzone()
         {
-            Assert.AreEqual(0, SnapStep(0.5f), "below the press threshold");
-            Assert.AreEqual(1, SnapStep(0.9f), "flick right");
-            Assert.AreEqual(0, SnapStep(1f), "held: no repeat");
-            Assert.AreEqual(0, SnapStep(0.5f), "not yet released");
-            Assert.AreEqual(0, SnapStep(0.1f), "released, re-armed");
-            Assert.AreEqual(-1, SnapStep(-0.8f), "flick left");
-            Assert.AreEqual(0, SnapStep(float.NaN), "non-finite counts as released");
-            Assert.AreEqual(1, SnapStep(0.8f), "re-armed by the NaN");
+            Assert.AreEqual(0f, TurnRate(0.1f), "inside the deadzone");
+            Assert.AreEqual(0f, TurnRate(-0.15f), "at the deadzone edge");
+            Assert.IsTrue(Mathf.Abs(TurnRate(1f) - turnSpeed) < 1e-3f, "full right");
+            Assert.IsTrue(Mathf.Abs(TurnRate(-1f) + turnSpeed) < 1e-3f, "full left");
+            Assert.IsTrue(Mathf.Abs(TurnRate(0.575f) - turnSpeed * 0.5f) < 1e-3f, "linear past the deadzone");
+            Assert.IsTrue(Mathf.Abs(TurnRate(3f) - turnSpeed) < 1e-3f, "clamped");
+            Assert.AreEqual(0f, TurnRate(float.NaN), "non-finite counts as released");
+            turnSpeed = 0f;
+            Assert.AreEqual(0f, TurnRate(1f), "zero disables");
+        }
+
+        [TsukimiTest]
+        public void SmallTurnsAddUpAboutTheHead()
+        {
+            Vector3 root = Vector3.zero;
+            Vector3 head = new Vector3(0f, 1.7f, 0.5f);
+            for (int i = 0; i < 90; i++) root = LocomotionModel.TurnAbout(root, head, 1f);
+            Assert.IsTrue((root - new Vector3(-0.5f, 0f, 0.5f)).magnitude < 1e-3f, "90 one-degree steps swing the root a quarter round the head");
         }
 
         [TsukimiTest]

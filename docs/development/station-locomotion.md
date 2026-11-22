@@ -45,7 +45,7 @@ Entering / Reseating --no entry within enterTimeoutFrames--> Idle
 
 - `RequestEnter` (owner only, Idle only) places MovementRoot at the player's position
   facing the player's yaw, calls `VRCObjectSync.FlagDiscontinuity`, then `UseStation`.
-- The stick applies horizontal translation only. The Station turns only by a snap turn
+- The stick applies horizontal translation only. The Station turns only by the smooth turn
   or a re-seat (below).
 - Exited and Respawn may arrive in either order: the first stops the session, the
   second finds Idle. An Exited while Entering is stale and ignored. An entry after the
@@ -54,7 +54,7 @@ Entering / Reseating --no entry within enterTimeoutFrames--> Idle
 - Respawn never re-enters; the next zone entry does. Velocity, input and the commanded
   distance reset on every stop.
 - The movement loop runs only while Active (`SendCustomEventDelayedFrames` each frame,
-  stopping itself on any other state); it also drives snap turn and the re-seat check.
+  stopping itself on any other state); it also drives the smooth turn and the re-seat check.
 
 ## Turning and real-body movement
 
@@ -68,9 +68,10 @@ cannot reduce the head's offset; only leaving and re-entering it can change it. 
 avatar's locomotion animation also stops (it sees no velocity inside the Station, and
 Udon cannot drive avatar parameters); that is a limit of the approach, not handled here.
 
-- **Snap turn (VR):** a right-stick flick (`InputLookHorizontal` past 0.7, re-armed
-  below 0.3) turns the Station by `snapTurnDegrees` (30°) about the head, so the view
-  turns in place. Desktop is unchanged.
+- **Smooth turn (VR):** the right stick (`InputLookHorizontal`) turns the Station
+  about the head every frame, so the view turns in place: nothing inside a 0.15
+  deadzone, then linear up to `turnSpeed` (90°/s) at full deflection. Continuous, so
+  ObjectSync interpolates it (no discontinuity flag). Desktop is unchanged.
 - **Re-seat (experimental):** when the head is more than `recenterDistance` (0.5 m,
   horizontal) or `recenterYaw` (60°) from the Station, and `recenterCooldownFrames`
   (45) have passed since the last entry, the controller calls `ExitStation`, then the

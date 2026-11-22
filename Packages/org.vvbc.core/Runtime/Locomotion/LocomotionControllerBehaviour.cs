@@ -22,7 +22,7 @@ namespace VVBC.Locomotion
     // Respawn never re-enters: the next FieldLocomotionZone entry does.
     //
     // The playspace is carried with the Station, so moving or turning the Station never
-    // changes where the head is relative to it. Snap turn rotates the Station about the
+    // changes where the head is relative to it. Smooth turn rotates the Station about the
     // head (the view turns, the head stays put). A re-seat (exit, move, enter again) is the
     // only way to change the head's offset; it is tried when the head drifts or turns too
     // far from the Station, measured, and given up for the session when it does not help.
@@ -41,8 +41,8 @@ namespace VVBC.Locomotion
         [Tooltip("Rate while the stick opposes the current velocity, in m/s².")] public float reverseAcceleration = 6f;
 
         [Header("Turning and re-seat (validation)")]
-        [Tooltip("VR snap turn per right-stick flick, in degrees. 0 disables it.")]
-        public float snapTurnDegrees = 30f;
+        [Tooltip("VR smooth turn at full right-stick deflection, in degrees per second. 0 disables it.")]
+        public float turnSpeed = 90f;
         [Tooltip("Re-seat when the head is this far (m, horizontal) from the Station. 0 disables it.")]
         public float recenterDistance = 0.5f;
         [Tooltip("Re-seat facing the head when its yaw is this far (degrees) from the Station. 0 disables it.")]
@@ -59,8 +59,7 @@ namespace VVBC.Locomotion
         [Tooltip("Frames after an entry before the head offset is measured.")]
         [SerializeField] private int measureDelayFrames = 10;
 
-        private const float SnapPress = 0.7f;
-        private const float SnapRelease = 0.3f;
+        private const float TurnDeadzone = 0.15f;
 
         private int _state;
         private int _session;
@@ -70,7 +69,6 @@ namespace VVBC.Locomotion
         private float _inputHorizontal;
         private float _inputVertical;
         private float _lookHorizontal;
-        private bool _snapArmed = true;
         private Vector3 _velocity;
         private Vector3 _lastDisplacement;
         private float _lastDeltaTime;
@@ -78,7 +76,7 @@ namespace VVBC.Locomotion
         private int _enteredCount;
         private int _exitedCount;
         private int _respawnCount;
-        private int _snapTurnCount;
+        private float _turnedDegrees;
         private int _reseatCount;
         private string _lastEvent = "none";
 
@@ -105,7 +103,7 @@ namespace VVBC.Locomotion
         public int EnteredCount => _enteredCount;
         public int ExitedCount => _exitedCount;
         public int RespawnCount => _respawnCount;
-        public int SnapTurnCount => _snapTurnCount;
+        public float TurnedDegrees => _turnedDegrees;
         public int ReseatCount => _reseatCount;
         public bool RecenterUsable => _recenterUsable;
         public string LastEvent => _lastEvent;
@@ -191,8 +189,9 @@ namespace VVBC.Locomotion
                 TryRecenter(player, head.position, yaw);
                 if (_state == StateActive)
                 {
-                    if (_inVR) ApplySnapTurn(SnapStep(_lookHorizontal), head.position);
-                    Advance(LocomotionModel.WorldInput(Stick, yaw), Time.deltaTime);
+                    float dt = Time.deltaTime;
+                    if (_inVR && dt > 0f && dt < 1f) ApplyTurn(TurnRate(_lookHorizontal) * dt, head.position);
+                    Advance(LocomotionModel.WorldInput(Stick, yaw), dt);
                 }
             }
             if (_state == StateActive) SendCustomEventDelayedFrames(nameof(_Tick), 1);
@@ -313,7 +312,6 @@ namespace VVBC.Locomotion
             _inputHorizontal = 0f;
             _inputVertical = 0f;
             _lookHorizontal = 0f;
-            _snapArmed = true;
             _lastDisplacement = Vector3.zero;
             _lastDeltaTime = 0f;
             _commandedDistance = 0f;
@@ -331,31 +329,26 @@ namespace VVBC.Locomotion
             if (displacement.sqrMagnitude > 0f) transform.position = transform.position + displacement;
         }
 
-        // Right-stick flick to -1 / 0 / +1: one turn per push past SnapPress, re-armed
-        // once the stick comes back inside SnapRelease.
-        private int SnapStep(float look)
+        // Right-stick x to a yaw rate in degrees per second: nothing inside TurnDeadzone,
+        // then rising linearly to turnSpeed at full deflection.
+        private float TurnRate(float look)
         {
-            if (!(look >= -1e9f && look <= 1e9f)) look = 0f;
-            if (!_snapArmed)
-            {
-                if (Mathf.Abs(look) < SnapRelease) _snapArmed = true;
-                return 0;
-            }
-            if (Mathf.Abs(look) < SnapPress) return 0;
-            _snapArmed = false;
-            return look > 0f ? 1 : -1;
+            if (!(look >= -1e9f && look <= 1e9f) || !(turnSpeed > 0f)) return 0f;
+            float magnitude = Mathf.Min(Mathf.Abs(look), 1f);
+            if (magnitude <= TurnDeadzone) return 0f;
+            float rate = (magnitude - TurnDeadzone) / (1f - TurnDeadzone) * turnSpeed;
+            return look > 0f ? rate : -rate;
         }
 
-        // Turns the Station about the head so the view turns in place. The velocity is a
-        // world vector, so it keeps its direction.
-        private void ApplySnapTurn(int direction, Vector3 head)
+        // Turns the Station about the head so the view turns in place. Continuous, so
+        // ObjectSync interpolates it (no discontinuity flag). The velocity is a world
+        // vector, so it keeps its direction.
+        private void ApplyTurn(float degrees, Vector3 head)
         {
-            if (direction == 0 || !(snapTurnDegrees > 0f)) return;
-            float degrees = direction * snapTurnDegrees;
+            if (degrees == 0f) return;
             transform.SetPositionAndRotation(LocomotionModel.TurnAbout(transform.position, head, degrees),
                 Quaternion.Euler(0f, transform.eulerAngles.y + degrees, 0f));
-            if (objectSync != null) objectSync.FlagDiscontinuity();
-            _snapTurnCount++;
+            _turnedDegrees += Mathf.Abs(degrees);
         }
 
         // Starts a re-seat when the head has drifted or turned too far from the Station.
