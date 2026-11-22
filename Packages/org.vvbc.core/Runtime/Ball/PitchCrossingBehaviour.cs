@@ -21,9 +21,16 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
     private float _previousTime;
     private Vector3 _previousPosition, _previousVelocity;
     private bool _swingPending;
+    // Wake of the pitch being tracked: prediction continues it from the flight time at `time`.
+    private WakeProfile _wakeProfile;
+    private float _wakeStartTime, _wakeStartElapsed;
 
     public void BeginPitch(float time, Vector3 position, Vector3 velocity, float radius)
     {
+        // A new pitch never inherits the previous pitch's wake.
+        _wakeProfile.mode = BallAerodynamics.WakeNone;
+        _wakeStartTime = time;
+        _wakeStartElapsed = 0f;
         if (zone == null) return;
         zone.Snapshot();
         _origin = zone.snapshotOrigin;
@@ -42,6 +49,21 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
         hasResult = false;
         bounced = false;
         _swingPending = false;
+    }
+
+    // Called by the Ball right after BeginPitch for a pitch with a wake. sampleTime is the
+    // Time.fixedTime of the first motion sample that is at flight time elapsed; a state at
+    // time t is then at flight time elapsed + (t - sampleTime).
+    public void SetPitchWake(int mode, float coefficient, Vector3 direction, float coneAngle, float initialPhase,
+        float elapsed, float sampleTime)
+    {
+        _wakeProfile.mode = mode;
+        _wakeProfile.coefficient = coefficient;
+        _wakeProfile.direction = direction;
+        _wakeProfile.coneAngle = coneAngle;
+        _wakeProfile.initialPhase = initialPhase;
+        _wakeStartElapsed = elapsed;
+        _wakeStartTime = sampleTime;
     }
 
     public void CancelPitch()
@@ -129,15 +151,25 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
 
     private void PredictCrossings(float time, Vector3 position, Vector3 velocity, Vector3 spin, bool frontOnly)
     {
+        PredictCrossings(time, position, velocity, spin, frontOnly, Time.fixedDeltaTime, Physics.gravity);
+    }
+
+    // Steps the Ball's flight model from a state at fixed time `time`, which is at flight
+    // time _wakeStartElapsed + (time - _wakeStartTime) for the pitch's wake.
+    private void PredictCrossings(float time, Vector3 position, Vector3 velocity, Vector3 spin, bool frontOnly,
+        float dt, Vector3 gravity)
+    {
         if (flight == null) return;
-        float dt = Time.fixedDeltaTime;
         if (dt <= 0f) return;
+        BallWake wake = BallAerodynamics.PrepareWake(_wakeProfile, spin);
+        float flightTime = _wakeStartElapsed + (time - _wakeStartTime);
         for (int i = 0; i < 500; i++)
         {
             BallFlightState state = new BallFlightState();
             state.position = position;
             state.velocity = velocity;
-            state = BallFlightModel.Step(state, spin, Physics.gravity, flight.dragCoefficient, flight.magnusCoefficient, dt);
+            state.time = flightTime + i * dt;
+            state = BallFlightModel.Step(state, spin, gravity, flight.dragCoefficient, flight.magnusCoefficient, wake, dt);
             Vector3 nextVelocity = state.velocity;
             Vector3 nextPosition = state.position;
             if (!hasFrontCrossing)

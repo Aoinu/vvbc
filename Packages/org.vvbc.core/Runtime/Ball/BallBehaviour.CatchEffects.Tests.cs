@@ -104,9 +104,9 @@ public partial class BallBehaviour
         _sequence = 2;
         _kind = PossessionState;
         _hold = HoldHand;
-        _holderId = catcher.playerId;
+        _batterOrHolderId = catcher.playerId;
         _publisherId = catcher.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(HoldHand, LocalHoldState());
         Assert.AreEqual(0, catchEffectsRequested);
     }
@@ -121,17 +121,17 @@ public partial class BallBehaviour
         _sequence = 4;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = catcher.playerId;
+        _batterOrHolderId = catcher.playerId;
         _publisherId = catcher.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(HoldGlove, LocalHoldState(), "an existing hold is restored");
         Assert.AreEqual(0, catchEffectsRequested, "the ball was not in flight here");
         Networking.SetOwner(heir, gameObject);
         _sequence = 5;
         _publisherId = heir.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         _sequence = 5;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.AreEqual(0, catchEffectsRequested, "the same hold republished or received again");
     }

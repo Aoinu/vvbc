@@ -4,7 +4,9 @@
 - TsukimiSharp is a required development/compile dependency of `org.vvbc.core`; use the version declared by VVBC.
 - Put `<Name>.Tests.cs` beside its implementation in the same module directory.
 - Keep Tsukimi Program Assets in `Packages/org.vvbc.core/Runtime/TsukimiProgramAssets/`.
-- Runtime work requires successful Unity compilation, clean T# inspect, green relevant tests, successful T# Program compilation/UdonProgram generation, and clean consumer validation.
+- Validation runs in two tiers (see [toolchain](docs/development/tsharp-toolchain.md#required-local-gates)):
+  - Every runtime task: successful Unity compilation, clean T# inspect, green relevant tests, the Performance Budget when the Bat Behaviours it covers change, toolchain check and `git diff --check`.
+  - Milestones only (before merging to main, before real-device testing): full T# Program compilation/UdonProgram generation through the validator, both clean consumer scopes and the Python tooling tests. Run them only after the user approves; when a milestone is reached, report them as pending and ask.
 - Before implementing a subsystem, read its applicable design document and any nested `AGENTS.md`.
 - Do not invent or silently change subsystem behavior or architecture not defined by the applicable design.
 - Separate state authority, input, physics and client-local visual correction by responsibility and lifecycle; avoid duplicated authoritative state and keep cross-Behaviour APIs minimal. Do not add abstractions or defensive states without a concrete need.

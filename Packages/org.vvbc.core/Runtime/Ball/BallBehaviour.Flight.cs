@@ -20,6 +20,10 @@ public partial class BallBehaviour
         EndFlight();
         StopBallAudio();
         SetPresentation(false);
+        ClearWake();
+        CancelHandPitchWait();
+        _lineage = new PitchLineage();
+        _flightGrounded = false;
         flightSequence++;
         contactConsumed = false;
         _contactPending = false;
@@ -46,22 +50,50 @@ public partial class BallBehaviour
         StartFlight(position, velocity, angularVelocity, true);
     }
 
+    // A pitch released with its wake; elapsed is the flight time since the release that the
+    // given state is at (non-zero after a network catch-up).
+    private void LaunchPitch(Vector3 position, Vector3 velocity, Vector3 angularVelocity, WakeProfile wake, float elapsed)
+    {
+        StartFlight(position, velocity, angularVelocity, true);
+        if (body == null) return;
+        _wake = BallAerodynamics.PrepareWake(wake, angularVelocity);
+        if (pitchSyncDiagnostics) FlightDiagBegin(position, velocity, angularVelocity, elapsed);
+        if (_wake.mode == BallAerodynamics.WakeNone) return;
+        _wakeTime = elapsed;
+        _wakeSampleTime = elapsed;
+        // A launch runs outside the fixed step (a delayed event, a deserialization or an
+        // ownership callback), so the next FixedUpdate, at Time.fixedTime + fixedDeltaTime,
+        // samples this state first and applies the wake at flight time elapsed.
+        if (motionObserver != null)
+            motionObserver.SetPitchWake(wake.mode, wake.coefficient, wake.direction, wake.coneAngle, wake.initialPhase,
+                elapsed, Time.fixedTime + Time.fixedDeltaTime);
+    }
+
+    // A flight that is not the pitch released with the wake never carries it on.
+    private void ClearWake()
+    {
+        _wake.mode = BallAerodynamics.WakeNone;
+    }
+
     // A remote hit replaces the physical trajectory without starting another pitch.
     public void ApplyRemoteHit(Vector3 position, Vector3 velocity, Vector3 angularVelocity)
     {
-        StartFlight(position, velocity, angularVelocity, false);
+        StartFlight(position, velocity, angularVelocity, false, battedSpinHalfLife);
     }
 
-    private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch)
+    private void StartFlight(Vector3 position, Vector3 velocity, Vector3 angularVelocity, bool pitch, float spinHalfLife = ThrowSpinHalfLife)
     {
+        ClearWake();
+        CancelHandPitchWait();
+        _flightGrounded = false;
         if (body == null) return;
         ExitHold();
         flightSequence++;
         contactConsumed = !pitch;
         _contactPending = false;
         ConfigureBody();
-        // A remote hit continues with the batted-ball spin damping; a pitch keeps angularDrag 0.
-        if (!pitch) body.angularDrag = BallFlightModel.AngularDragForHalfLife(battedSpinHalfLife);
+        // Hits and throws use their own decay; pitches keep angularDrag 0.
+        if (!pitch) body.angularDrag = BallFlightModel.AngularDragForHalfLife(spinHalfLife);
         body.maxAngularVelocity = Mathf.Max(body.maxAngularVelocity, angularVelocity.magnitude + 1f);
         body.position = position;
         body.isKinematic = false;
@@ -105,19 +137,35 @@ public partial class BallBehaviour
             if (glove != null) CheckLocalCatch(glove, body.position);
         }
         if (!flying) return;
+        if (_diagFlightStep >= 0) FlightDiagStep();
         RecordMotion(Time.fixedTime, body.position, body.velocity, body.angularVelocity);
         if (!contactConsumed && motionObserver != null) motionObserver.AcceptSample(Time.fixedTime, body.position, body.velocity);
-        body.AddForce(BallFlightModel.AerodynamicAcceleration(body.velocity, body.angularVelocity,
-            dragCoefficient, magnusCoefficient), ForceMode.Acceleration);
+        Vector3 velocity = body.velocity;
+        Vector3 acceleration = BallFlightModel.AerodynamicAcceleration(velocity, body.angularVelocity,
+            dragCoefficient, magnusCoefficient);
+        if (_wake.mode != BallAerodynamics.WakeNone)
+        {
+            acceleration += BallAerodynamics.WakeAcceleration(_wake, velocity, _wakeTime);
+            _wakeSampleTime = _wakeTime;
+            _wakeTime += Time.fixedDeltaTime;
+        }
+        body.AddForce(acceleration, ForceMode.Acceleration);
     }
 
     public void OnCollisionEnter(Collision collision)
     {
+        // The strike observer extrapolates the pre-impact pitch, wake included.
+        BallWake wake = _wake;
+        if (_diagFlightStep >= 0) FlightDiagCollision(collision);
         if (flying && body != null && collision != null && !body.isKinematic && (groundLayers.value & (1 << collision.gameObject.layer)) != 0)
         {
+            // The first ground bounce ends the pitch's wake; walls and fences do not.
+            ClearWake();
+            _flightGrounded = true;
             // Every ground bounce kills most of the spin; angularDrag then also acts as rolling resistance.
             body.angularVelocity *= bounceSpinRetention;
             body.angularDrag = rollingAngularDrag;
+            NotifyGroundContactListeners();
         }
         PlayImpact(collision);
         if (contactConsumed) return;
@@ -138,7 +186,7 @@ public partial class BallBehaviour
             ? Mathf.Clamp(Vector3.Dot(contactCenter - _positions[last], velocity) / speedSquared, 0f, Time.fixedDeltaTime)
             : 0f;
         velocity += (Physics.gravity + BallFlightModel.AerodynamicAcceleration(velocity, spin,
-            dragCoefficient, magnusCoefficient)) * elapsed;
+            dragCoefficient, magnusCoefficient, wake, _wakeSampleTime)) * elapsed;
         motionObserver.NotifyGroundContact(_times[last] + elapsed, contactCenter, velocity, spin);
     }
 
@@ -178,6 +226,8 @@ public partial class BallBehaviour
         float remaining = physicsTime - _pendingTime;
         float step = Time.fixedDeltaTime;
         if (step <= 0f) return;
+        // The batted ball flies on its own spin only.
+        ClearWake();
         state = BallFlightModel.AdvanceDecayingSpin(state, _pendingSpin, Physics.gravity,
             dragCoefficient, magnusCoefficient, remaining, step, battedSpinHalfLife);
         body.angularDrag = BallFlightModel.AngularDragForHalfLife(battedSpinHalfLife);

@@ -1,0 +1,379 @@
+using Tsukimi;
+using UnityEngine;
+using VRC.SDKBase;
+using VRC.Udon.Common.Interfaces;
+
+// Shared playlist, Start/Stop and settings. Every player may edit: a request is queued
+// locally, Ownership is taken, and the Owner applies the queue to the synced arrays and sends
+// them whole. Concurrent edits converge to the last accepted state.
+public partial class BattingPitcherBehaviour
+{
+    // The 4-Seam's base speed; PitchPropertiesCalculator explains the minimum.
+    public const float MinSpeedKmh = PitchPropertiesCalculator.MinBaseSpeedKmh;
+    public const float MaxSpeedKmh = PitchPropertiesCalculator.MaxBaseSpeedKmh;
+    public const float MinSpinRpm = 0f;
+    public const float MaxSpinRpm = 3000f;
+    public const float MinResetSeconds = 3f;
+    public const float MaxResetSeconds = 15f;
+
+    // Cycle phases reported to UIs. Every client derives them from the synced state.
+    public const int PhaseStopped = 0;
+    public const int PhaseAwaitingContact = 1;
+    public const int PhaseResetting = 2;
+    public const int PhaseBallHeld = 3;
+    public const int PhasePreparing = 4;
+    public const int PhaseScheduled = 5;
+    public const int PhaseSyncing = 6;
+
+    // Save results for UIs.
+    public const int SavePending = 0;
+    public const int SaveDone = 1;
+    public const int SaveFull = -1;
+    public const int SaveInterrupted = -2;
+    // The synced state never reached this client, so the edit could not be applied.
+    public const int SaveUnavailable = -3;
+
+    [UdonSynced] private int[] _playlist = new int[10];
+    // Packed PitchBuild parameters of each item, at the same index (PitchPlaylist).
+    [UdonSynced] private int[] _playlistBuilds = new int[10];
+    [UdonSynced] private int _playlistState;
+    [UdonSynced] private int _nextItemId = 1;
+
+    // Requests waiting for Ownership. Start/Stop, mode and settings keep only their latest value;
+    // item edits are applied in order and address items by id, never by index.
+    private bool _settingsPending;
+    private float _pendingSpeed, _pendingSpin, _pendingReset;
+    private bool _pendingTimer;
+    private bool _runningPending, _pendingRunning;
+    private bool _modePending, _pendingSequence;
+    private const int OpCapacity = 8;
+    private const int OpSave = 1;
+    private const int OpMove = 2;
+    private const int OpDelete = 3;
+    private readonly int[] _opKind = new int[OpCapacity];
+    private readonly int[] _opId = new int[OpCapacity];
+    private readonly int[] _opValue = new int[OpCapacity];
+    private readonly int[] _opBuild = new int[OpCapacity];
+    private readonly int[] _opToken = new int[OpCapacity];
+    private int _opCount;
+    private int _saveToken;
+    private int _resultToken;
+    // Result of each recent token. Saves finish in queue order, so every token up to
+    // _resultToken has finished; the window is larger than the queue.
+    private const int ResultWindow = 16;
+    private readonly int[] _saveResults = new int[ResultWindow];
+    private int _savedItemId;
+    // A client without the synced state asks the Owner to send it before taking Ownership.
+    private const int StateRequestAttempts = 3;
+    private const float StateRequestSeconds = 2f;
+    private bool _awaitingState, _stateRetryScheduled;
+    private int _stateRequests;
+
+    // ---- Queries (local; no network) ----
+
+    // Running means pitching now: the synced Running flag, unless the lane stops this pitcher.
+    public bool IsRunning() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.RunningFlag) && !_laneStopped; }
+    public bool IsSequence() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.SequenceFlag); }
+    public bool IsResetOnTimer() { return PitchPlaylist.Has(_playlistState, PitchPlaylist.TimerFlag); }
+    public int PlaylistCount() { return PitchPlaylist.Count(_playlistState); }
+    public int PlaylistItem(int index) { return index >= 0 && index < PlaylistCount() ? _playlist[index] : 0; }
+    public int PlaylistBuild(int index) { return index >= 0 && index < PlaylistCount() ? _playlistBuilds[index] : PitchPlaylist.DefaultBuild; }
+    public bool PlaylistDone(int index) { return PitchPlaylist.Done(_playlistState, index); }
+    public int NextIndex() { return PitchPlaylist.FirstPending(_playlistState); }
+    public int IndexOfItem(int itemId) { return PitchPlaylist.IndexOf(_playlist, _playlistState, itemId); }
+    public bool StateKnown() { return _stateKnown; }
+
+    // The phase this client sees now. The countdowns below never claim a pitch start time that
+    // has not been committed: only PhaseScheduled counts down to an actual motion start.
+    public int CyclePhase() { return CyclePhaseAt(ServerNow()); }
+    public float PhaseRemaining() { return PhaseRemainingAt(ServerNow()); }
+    public float PhaseSpan() { return PhaseSpanAt(ServerNow()); }
+
+    private int CyclePhaseAt(double now)
+    {
+        if (!_stateKnown) return PhaseSyncing;
+        if (_suspended) return PhaseStopped;
+        if (_appliedId != 0 && _motionStartedId != _appliedId && ServerDelta(_appliedStart, now) > 0.0) return PhaseScheduled;
+        if (!IsRunning()) return PhaseStopped;
+        if (ball != null && ball.IsHeld()) return PhaseBallHeld;
+        if (_appliedId != 0 && ServerDelta(CycleReadyAt(), now) > 0.0)
+            return !_appliedOnTimer && !_appliedHasEvent ? PhaseAwaitingContact : PhaseResetting;
+        return PhasePreparing;
+    }
+
+    // Seconds until the phase's own deadline: the motion start when scheduled, the fallback
+    // when awaiting contact, the earliest preparation when resetting. Zero otherwise.
+    private float PhaseRemainingAt(double now)
+    {
+        if (_appliedId == 0) return 0f;
+        int phase = CyclePhaseAt(now);
+        double target;
+        if (phase == PhaseScheduled) target = _appliedStart;
+        else if (phase == PhaseAwaitingContact) target = FallbackAt();
+        else if (phase == PhaseResetting) target = CycleReadyAt();
+        else return 0f;
+        return Mathf.Max(0f, (float)ServerDelta(target, now));
+    }
+
+    // Length of the span PhaseRemaining counts down, for the progress gauge.
+    private float PhaseSpanAt(double now)
+    {
+        if (_appliedId == 0) return 0f;
+        int phase = CyclePhaseAt(now);
+        if (phase == PhaseScheduled) return Mathf.Max(0.01f, leadSeconds);
+        if (phase == PhaseAwaitingContact) return Mathf.Max(0.01f, (float)ServerDelta(FallbackAt(), _appliedStart));
+        if (phase == PhaseResetting)
+        {
+            double from = _appliedOnTimer ? _appliedStart : Later(_appliedStart, _appliedEventTime);
+            return Mathf.Max(0.01f, (float)ServerDelta(CycleReadyAt(), from));
+        }
+        return 0f;
+    }
+
+    // ---- Requests (any player) ----
+
+    public void RequestRunning(bool running)
+    {
+        _runningPending = true;
+        _pendingRunning = running;
+        RequestEdit();
+    }
+
+    public void RequestSequence(bool sequence)
+    {
+        _modePending = true;
+        _pendingSequence = sequence;
+        RequestEdit();
+    }
+
+    public void SubmitSettings(float speed, float spin, float reset, bool onTimer)
+    {
+        _pendingSpeed = speed;
+        _pendingSpin = spin;
+        _pendingReset = reset;
+        _pendingTimer = onTimer;
+        _settingsPending = true;
+        RequestEdit();
+    }
+
+    // Saves an item with its packed build (PitchPlaylist.PackBuild) in one edit: the item with
+    // this id is updated, otherwise (new, or deleted meanwhile) a new id is appended. Returns a
+    // token for SaveResult.
+    public int RequestSaveItem(int itemId, int type, int mask, int build)
+    {
+        _saveToken++;
+        int safeType = PitchType.Safe(type);
+        QueueOp(OpSave, itemId, PitchPlaylist.Pack(0, safeType, mask), PitchPlaylist.NormalizeBuild(safeType, build), _saveToken);
+        return _saveToken;
+    }
+
+    public void RequestMoveItem(int itemId, int direction) { QueueOp(OpMove, itemId, direction, 0, 0); }
+    public void RequestDeleteItem(int itemId) { QueueOp(OpDelete, itemId, 0, 0, 0); }
+
+    // SavePending until the Owner applied the save with this token.
+    public int SaveResult(int token)
+    {
+        if (token <= 0 || token > _resultToken) return SavePending;
+        // A failed save keeps its own result after later saves finish.
+        if (_resultToken - token >= ResultWindow) return SaveDone;
+        return _saveResults[token % ResultWindow];
+    }
+
+    public int SavedItemId() { return _savedItemId; }
+
+    private void QueueOp(int kind, int id, int value, int build, int token)
+    {
+        if (_opCount >= OpCapacity)
+        {
+            // Full queue: the oldest edit is dropped; a dropped save reports as interrupted.
+            if (_opKind[0] == OpSave) FinishSave(_opToken[0], SaveInterrupted, 0);
+            for (int i = 1; i < OpCapacity; i++)
+            {
+                _opKind[i - 1] = _opKind[i];
+                _opId[i - 1] = _opId[i];
+                _opValue[i - 1] = _opValue[i];
+                _opBuild[i - 1] = _opBuild[i];
+                _opToken[i - 1] = _opToken[i];
+            }
+            _opCount--;
+        }
+        _opKind[_opCount] = kind;
+        _opId[_opCount] = id;
+        _opValue[_opCount] = value;
+        _opBuild[_opCount] = build;
+        _opToken[_opCount] = token;
+        _opCount++;
+        RequestEdit();
+    }
+
+    // Ownership is taken only with the synced state in hand: an Owner never receives the state,
+    // so a client taking Ownership without it could never apply its queue. Until the state
+    // arrives the queue waits and the Owner is asked to send it again.
+    private void RequestEdit()
+    {
+        if (IsPitchController())
+        {
+            ApplyPendingEdits();
+            return;
+        }
+        if (Networking.LocalPlayer == null) return;
+        if (!_stateKnown)
+        {
+            if (_awaitingState) return;
+            _awaitingState = true;
+            _stateRequests = 0;
+            RequestState();
+            return;
+        }
+        Networking.SetOwner(Networking.LocalPlayer, gameObject);
+    }
+
+    // A limited number of requests; when none is answered the queue is dropped as unavailable.
+    private void RequestState()
+    {
+        _stateRequests++;
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(ResendState));
+        if (_stateRetryScheduled) return;
+        _stateRetryScheduled = true;
+        SendCustomEventDelayedSeconds(nameof(_RetryStateRequest), StateRequestSeconds);
+    }
+
+    public void _RetryStateRequest()
+    {
+        _stateRetryScheduled = false;
+        if (!_awaitingState) return;
+        if (_stateRequests < StateRequestAttempts)
+        {
+            RequestState();
+            return;
+        }
+        DropPendingEdits(SaveUnavailable);
+        NotifyListeners();
+    }
+
+    // Owner: a client without the synced state asked for it; the whole state is sent again.
+    public void ResendState()
+    {
+        if (!localOnly && _stateKnown && IsPitchController()) RequestSerialization();
+    }
+
+    // The state arrived: a waiting queue now takes Ownership (or applies, if already Owner).
+    private void ResumeAwaitedEdits()
+    {
+        if (!_awaitingState) return;
+        _awaitingState = false;
+        RequestEdit();
+    }
+
+    // The queue cannot be applied: Ownership went to someone else first (interrupted), or the
+    // synced state is missing (unavailable).
+    private void DropPendingEdits(int saveResult)
+    {
+        _awaitingState = false;
+        _settingsPending = false;
+        _runningPending = false;
+        _modePending = false;
+        for (int i = 0; i < _opCount; i++)
+            if (_opKind[i] == OpSave) FinishSave(_opToken[i], saveResult, 0);
+        _opCount = 0;
+    }
+
+    private bool HasPendingEdits()
+    {
+        return _settingsPending || _runningPending || _modePending || _opCount > 0;
+    }
+
+    private void FinishSave(int token, int result, int itemId)
+    {
+        if (token < _resultToken) return;
+        _resultToken = token;
+        _saveResults[token % ResultWindow] = result;
+        _savedItemId = itemId;
+    }
+
+    // Owner with a synced state: applies everything queued and sends once.
+    private void ApplyPendingEdits()
+    {
+        if (!IsPitchController() || !_stateKnown) return;
+        if (!HasPendingEdits()) return;
+        bool wasRunning = IsRunning();
+        if (_settingsPending)
+        {
+            _settingsPending = false;
+            speedKmh = Mathf.Clamp(_pendingSpeed, MinSpeedKmh, MaxSpeedKmh);
+            spinRpm = Mathf.Clamp(_pendingSpin, MinSpinRpm, MaxSpinRpm);
+            resetSeconds = Mathf.Clamp(_pendingReset, MinResetSeconds, MaxResetSeconds);
+            _playlistState = PitchPlaylist.WithFlag(_playlistState, PitchPlaylist.TimerFlag, _pendingTimer);
+        }
+        for (int i = 0; i < _opCount; i++) ApplyOp(_opKind[i], _opId[i], _opValue[i], _opBuild[i], _opToken[i]);
+        _opCount = 0;
+        if (_modePending)
+        {
+            _modePending = false;
+            ApplyMode(_pendingSequence);
+        }
+        if (_runningPending)
+        {
+            _runningPending = false;
+            _playlistState = PitchPlaylist.WithFlag(_playlistState, PitchPlaylist.RunningFlag, _pendingRunning);
+            // A fresh Random lap that has not pitched anything starts in a random order.
+            if (_pendingRunning && !wasRunning && !IsSequence() && PitchPlaylist.History(_playlistState) == 0)
+                _playlistState = PitchPlaylist.Shuffle(_playlist, _playlistBuilds, _playlistState, NextShuffleSeed());
+        }
+        Sync();
+        if (IsRunning()) TryAdvanceCycle();
+        else StopPreparation();
+        NotifyListeners();
+    }
+
+    private void ApplyOp(int kind, int id, int value, int build, int token)
+    {
+        int index = PitchPlaylist.IndexOf(_playlist, _playlistState, id);
+        if (kind == OpSave)
+        {
+            int type = PitchPlaylist.Type(value);
+            int mask = PitchPlaylist.Mask(value);
+            if (index >= 0)
+            {
+                // Editing keeps the id, the position and the done bit, and replaces the build.
+                _playlist[index] = PitchPlaylist.Pack(id, type, mask);
+                _playlistBuilds[index] = build;
+                FinishSave(token, SaveDone, id);
+                return;
+            }
+            int newId = PitchPlaylist.FreeId(_playlist, _playlistState, _nextItemId);
+            int state = PitchPlaylist.Append(_playlist, _playlistBuilds, _playlistState, PitchPlaylist.Pack(newId, type, mask), build);
+            if (state < 0)
+            {
+                FinishSave(token, SaveFull, 0);
+                return;
+            }
+            _playlistState = state;
+            _nextItemId = newId >= PitchPlaylist.IdBits ? 1 : newId + 1;
+            FinishSave(token, SaveDone, newId);
+            return;
+        }
+        if (index < 0) return;
+        if (kind == OpMove) _playlistState = PitchPlaylist.Swap(_playlist, _playlistBuilds, _playlistState, index, index + (value < 0 ? -1 : 1));
+        else if (kind == OpDelete) _playlistState = PitchPlaylist.RemoveAt(_playlist, _playlistBuilds, _playlistState, index);
+    }
+
+    // A mode change starts a new lap from the next unconfirmed pitch. Sequence keeps the
+    // current order; Random reshuffles.
+    private void ApplyMode(bool sequence)
+    {
+        if (sequence == IsSequence()) return;
+        _playlistState = PitchPlaylist.WithFlag(_playlistState, PitchPlaylist.SequenceFlag, sequence);
+        _playlistState = sequence ? PitchPlaylist.WithHistory(_playlistState, 0)
+            : PitchPlaylist.Shuffle(_playlist, _playlistBuilds, _playlistState, NextShuffleSeed());
+    }
+
+    // Stop cancels only work that has not been sent; a reservation in flight completes, and a
+    // committed motion and flight always continue.
+    private void StopPreparation()
+    {
+        if (_reserving || !_preparing) return;
+        _preparing = false;
+        _solving = false;
+    }
+}

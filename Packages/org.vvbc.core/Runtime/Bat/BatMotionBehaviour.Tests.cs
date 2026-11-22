@@ -497,4 +497,18 @@ public partial class BatMotionBehaviour
         Assert.IsTrue(BatVisualCorrection.RotationAngleDegrees(pose.rotation, bodyRotation) < 0.01f);
     }
 
+    [TsukimiTest]
+    public void AnEndedContactListenerIsRemovedAndDoesNotAccumulate()
+    {
+        VRC.Udon.UdonBehaviour self = (VRC.Udon.UdonBehaviour)GetComponent(typeof(VRC.Udon.UdonBehaviour));
+        for (int i = 0; i < 3; i++)
+        {
+            RegisterContactListener(self, true);
+            Assert.AreEqual(1, ContactListenerCount(), "registering again keeps one entry");
+            UnregisterContactListener(self);
+            Assert.AreEqual(0, ContactListenerCount(), "a LocalRig that ended leaves nothing behind");
+        }
+        UnregisterContactListener(self);
+        Assert.AreEqual(0, ContactListenerCount());
+    }
 }

@@ -155,8 +155,9 @@ public partial class BallBehaviour
         BallFlightState state = new BallFlightState();
         state.position = _positions[last];
         state.velocity = _velocities[last];
+        state.time = _wakeSampleTime;
         state = BallFlightModel.Advance(state, sampledAngularVelocity, gravity,
-            dragCoefficient, magnusCoefficient, elapsed, fixedStep);
+            dragCoefficient, magnusCoefficient, _wake, elapsed, fixedStep);
         sampledPosition = state.position;
         sampledVelocity = state.velocity;
         return FiniteVector(sampledPosition) && FiniteVector(sampledVelocity) && FiniteVector(sampledAngularVelocity);
@@ -196,6 +197,8 @@ public partial class BallBehaviour
             float limit = 2f * speed + 10f;
             float accel = gravity.magnitude + dragCoefficient * limit * limit +
                 magnusCoefficient * _angularVelocities[last].magnitude * limit;
+            // |aWake| <= k |v|: the projected wake direction is never longer than one.
+            if (_wake.mode != BallAerodynamics.WakeNone) accel += _wake.coefficient * limit;
             if (!Finite(accel) || accel * elapsed > limit - speed) return false;
             float maxInverse = Mathf.Max(Mathf.Abs(inverseScale.x), Mathf.Max(Mathf.Abs(inverseScale.y), Mathf.Abs(inverseScale.z)));
             float radius = limit * elapsed * maxInverse + 0.01f;

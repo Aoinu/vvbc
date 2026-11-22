@@ -24,7 +24,7 @@ public partial class GloveBehaviour : TsukimiBehaviour
     [SerializeField] private Transform mount;
     [Tooltip("Ball position while the ball is in this glove.")]
     [SerializeField] private Transform socket;
-    [Tooltip("Catch volume. Enabled only on the owner's client while worn.")]
+    [Tooltip("Catch volume. Enabled only on the owner's client while worn and not holding the ball.")]
     [SerializeField] private SphereCollider catchTrigger;
     [Tooltip("Visual root; hidden while not worn.")]
     [SerializeField] private GameObject visual;
@@ -181,10 +181,26 @@ public partial class GloveBehaviour : TsukimiBehaviour
     {
         bool visible = equipped || _calibrating;
         if (visual != null && visual.activeSelf != visible) visual.SetActive(visible);
-        if (catchTrigger != null) catchTrigger.enabled = _isLocalOwner && equipped && !_calibrating;
+        ApplyCatchTrigger();
         if (!_isLocalOwner || !equipped || _calibrating) catchReady = false;
         ApplyClosed();
         UpdateCatchVolumeVisual();
+    }
+
+    // The trigger is also off while the ball sits in this glove: the ball is then inside
+    // it, and the throwing hand's pickup must not compete with it. It follows the glove's
+    // ball mode, which every possession change (catch, transfer to the hand, release,
+    // reset, abandoned speculation) sets through HoldBall or ReleaseBall, so no exit event
+    // is needed. Turning it back on over a held or resting ball does not catch it again:
+    // the Ball accepts a trigger catch only for its own free flight.
+    public bool CatchTriggerEnabled()
+    {
+        return _isLocalOwner && equipped && !_calibrating && _ballMode != BallInSocket;
+    }
+
+    private void ApplyCatchTrigger()
+    {
+        if (catchTrigger != null) catchTrigger.enabled = CatchTriggerEnabled();
     }
 
     // The catch volume is drawn only for the owner, while the glove is worn or calibrating.
@@ -332,6 +348,7 @@ public partial class GloveBehaviour : TsukimiBehaviour
         _ball = ball;
         _ballMode = ball == null ? BallNone : mode;
         _ballOffset = offset;
+        ApplyCatchTrigger();
         SetClosed(_ballMode == BallInSocket);
         NotifyListener();
     }
@@ -340,6 +357,7 @@ public partial class GloveBehaviour : TsukimiBehaviour
     {
         _ball = null;
         _ballMode = BallNone;
+        ApplyCatchTrigger();
         SetClosed(false);
         NotifyListener();
     }

@@ -1,7 +1,6 @@
 using Tsukimi;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon.Common;
 
 // Possession of the shared ball: Free, GloveHeld or HandHeld by one player. Local actions
 // apply immediately and are published through QueueSnapshot; accepted snapshots from the
@@ -17,10 +16,14 @@ public partial class BallBehaviour
     public float selfCatchDelay = 0.3f;
     [Tooltip("Speed of a throw when no ThrowAim is assigned, in km/h. Default 90.")]
     public float fallbackThrowSpeedKmh = 90f;
+    // The mound whose pitcher mode is active for the local player; set and cleared by it.
+    [HideInInspector] public ManualPitchBehaviour manualPitcher;
 
     // Diagnostics for catch-check frequency: broad-phase tests and those that reached the narrow phase.
     [HideInInspector] public int catchBroadPhaseTests;
     [HideInInspector] public int catchNarrowPhaseTests;
+    // Diagnostics: releases accepted by the single release gate (at most one per hand hold).
+    [HideInInspector] public int releaseCount;
 
     private int _localHold;
     private int _localHolderId;
@@ -35,6 +38,12 @@ public partial class BallBehaviour
     private float _ballRadius = -1f;
     private bool _suppressDrop;
     private bool _useArmed;
+    // One release per hand hold: a hold session starts when the ball is taken into the hand,
+    // and Use up, OnDrop and the Drop the release itself causes all share it.
+    private int _handSession;
+    private int _releasedHandSession;
+    private bool _releasePitch;
+    private WakeProfile _releaseWake;
     private bool _aimActive;
     private bool _pickupResolving;
     private int _pickupAttempts;
@@ -154,6 +163,32 @@ public partial class BallBehaviour
         RequestCatchEffect(flight, glove, position, speed, origin, true);
     }
 
+    // ---- Recall ----
+
+    // Whether the current flight has touched a groundLayers collider (cleared by every new flight).
+    public bool FlightGrounded()
+    {
+        return _flightGrounded;
+    }
+
+    // Forces the ball into the local player's glove as a catch would, without catch effects,
+    // whatever its state: in the air, out of play, held by anyone, or behind a local action
+    // that still waits for ownership (the recall replaces it). Published as an ordinary
+    // Possession, so ownership and conflicts follow the catch path.
+    public bool RecallToLocalGlove(double serverTime)
+    {
+        int local = LocalId();
+        if (local <= 0) return false;
+        Vector3 position = body != null ? body.position : transform.position;
+        // A ball in this player's own hand leaves the VRCPickup first; nothing is released.
+        if (HeldLocally() && _localHold == HoldHand) ExitHold();
+        EnterHold(HoldGlove, local, Vector3.zero);
+        // A recalled ball no longer comes from any pitch.
+        _lineage = new PitchLineage();
+        QueueSnapshot(PossessionState, position, Vector3.zero, Vector3.zero, serverTime, -1, 0f, HoldGlove, local);
+        return true;
+    }
+
     private float BallRadius()
     {
         if (_ballRadius >= 0f) return _ballRadius;
@@ -254,6 +289,9 @@ public partial class BallBehaviour
 
     private void StopFlightForHold()
     {
+        ClearWake();
+        CancelHandPitchWait();
+        _flightGrounded = false;
         flying = false;
         flightSequence++;
         contactConsumed = true;
@@ -434,8 +472,9 @@ public partial class BallBehaviour
         Quaternion boneRotation = player.GetBoneRotation(bone);
         Vector3 offset = FieldingMath.ValidPose(bonePosition, boneRotation)
             ? Quaternion.Inverse(boneRotation) * (position - bonePosition) : Vector3.zero;
+        _handSession++;
         EnterHold(HoldHand, local, offset);
-        QueueSnapshot(PossessionState, position, offset, Vector3.zero,
+        QueueSnapshot(PossessionState, position, offset, EncodeHandSession(_handSession),
             Networking.GetServerTimeInSeconds(), -1, 0f, HoldHand, local);
     }
 
@@ -465,35 +504,76 @@ public partial class BallBehaviour
             RestoreAfterRejectedPickup();
             return;
         }
-        if (_localHold == HoldHand && HeldLocally()) ReleaseThrow();
+        TryReleaseBall(ManualPitchBehaviour.InputGrip);
     }
 
-    // Use down then up on the throwing hand releases; the Drop that follows is suppressed.
-    public override void InputUse(bool value, UdonInputEventArgs args)
+    // Pickup Use comes only from the hand holding the ball. Use down then up releases; the
+    // Drop that the release causes, or a grip let go afterwards, is the same hold session.
+    public override void OnPickupUseDown()
     {
-        if (_localHold != HoldHand || !HeldLocally())
-        {
-            _useArmed = false;
-            return;
-        }
-        VRCPlayerApi player = Networking.LocalPlayer;
-        int hand = args.handType == HandType.LEFT ? GloveBehaviour.HandLeft : GloveBehaviour.HandRight;
-        if (Utilities.IsValid(player) && player.IsUserInVR() && hand != LocalThrowHand()) return;
-        if (value)
-        {
-            _useArmed = true;
-            return;
-        }
+        _useArmed = _localHold == HoldHand && HeldLocally();
+    }
+
+    public override void OnPickupUseUp()
+    {
         if (!_useArmed) return;
         _useArmed = false;
-        ReleaseThrow();
+        TryReleaseBall(ManualPitchBehaviour.InputTrigger);
+    }
+
+    // The single release gate: one launch per hand hold, whichever event comes first.
+    private void TryReleaseBall(int input)
+    {
+        if (_localHold != HoldHand || !HeldLocally()) return;
+        if (_releasedHandSession == _handSession) return;
+        _releasedHandSession = _handSession;
+        releaseCount++;
+        ReleaseThrow(input);
+    }
+
+    // The current hand hold (incremented when the ball is taken into the hand). The mound ties
+    // its release-plate crossing and its auto release to it.
+    public int HandSession() { return _handSession; }
+
+    // The mound's auto release after a release-plate crossing: the same single release gate as
+    // Use up and Drop, so it launches at most once per hold. A session other than the current
+    // hold (a stale reservation after a new hold, a lost ownership or the end of pitcher mode)
+    // or a hold already released does nothing. The pickup Drop it causes is suppressed, and a
+    // later Use up or Drop of the same hold finds the gate closed.
+    public bool AutoReleaseHand(int session)
+    {
+        if (manualPitcher == null || session != _handSession || _releasedHandSession == _handSession) return false;
+        TryReleaseBall(ManualPitchBehaviour.InputAuto);
+        return _releasedHandSession == session;
+    }
+
+    public void SetManualPitcher(ManualPitchBehaviour pitcher)
+    {
+        manualPitcher = pitcher;
+        UpdateAimPitcherMode();
+    }
+
+    public void ClearManualPitcher(ManualPitchBehaviour pitcher)
+    {
+        if (manualPitcher == pitcher) manualPitcher = null;
+        UpdateAimPitcherMode();
+    }
+
+    // ThrowAim offers only the targets allowed in pitcher mode (no throw home) while a mound
+    // has this Ball. Passed while aiming; BeginAim and the release pass it again.
+    private void UpdateAimPitcherMode()
+    {
+        if (_aimActive && throwAim != null) throwAim.SetPitcherMode(manualPitcher != null);
     }
 
     // ---- Release ----
 
-    private void ReleaseThrow()
+    // Everything is read before ExitHold drops the pickup. A recognized pitch launches as a
+    // HandPitch with its wake from the mound's release point (the solver's, never the ball
+    // centre); anything else is the existing throw from the ball centre.
+    private void ReleaseThrow(int input)
     {
-        if (_localHold != HoldHand || !HeldLocally() || body == null) return;
+        if (body == null) return;
         Vector3 position = transform.position;
         Vector3 forward = Vector3.forward;
         VRCPlayerApi player = Networking.LocalPlayer;
@@ -501,11 +581,29 @@ public partial class BallBehaviour
             forward = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head).rotation * Vector3.forward;
         Vector3 velocity;
         Vector3 spin;
-        if (throwAim != null && _aimActive)
+        WakeProfile wake = new WakeProfile();
+        bool aiming = throwAim != null && _aimActive;
+        // The throwing controller's motion (never the ball's Transform) is sampled once more.
+        if (aiming) throwAim.SampleController(Time.time);
+        bool pitched = manualPitcher != null && manualPitcher.ResolveRelease(position, input, _handSession);
+        if (pitched)
         {
-            throwAim.Sample(Time.time, position);
+            position = manualPitcher.releasePosition;
+            velocity = manualPitcher.releaseVelocity;
+            spin = manualPitcher.releaseSpin;
+            wake.mode = manualPitcher.releaseWakeMode;
+            wake.coefficient = manualPitcher.releaseWakeCoefficient;
+            wake.direction = manualPitcher.releaseWakeDirection;
+            wake.coneAngle = manualPitcher.releaseWakeConeAngle;
+            wake.initialPhase = manualPitcher.releaseWakePhase;
+            PrepareReleaseLineage(manualPitcher.releasePitchNumber);
+        }
+        else if (aiming)
+        {
+            // A recognition that failed in pitcher mode falls back to a throw without HomePlate.
+            throwAim.SetPitcherMode(manualPitcher != null);
             throwAim.RefreshMarkers();
-            throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, battedSpinHalfLife,
+            throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, ThrowSpinHalfLife,
                 -Physics.gravity.y, Time.fixedDeltaTime, Random.Range(0f, 2f * Mathf.PI), Random.value);
             velocity = throwAim.releaseVelocity;
             spin = throwAim.releaseSpin;
@@ -517,33 +615,88 @@ public partial class BallBehaviour
             velocity = direction * (fallbackThrowSpeedKmh / 3.6f);
             spin = Vector3.zero;
         }
+        // The mound shows the point and speed this release is launched with, pitch or throw.
+        if (manualPitcher != null) manualPitcher.RecordLaunch(position, velocity);
+        LaunchRelease(position, velocity, spin, pitched, wake, Networking.GetServerTimeInSeconds(), Time.time);
+    }
+
+    // position is where the flight starts, here and in the snapshot: the ball centre for a
+    // throw, the mound's fixed release point P0 for a pitch. now is Time.time.
+    private void LaunchRelease(Vector3 position, Vector3 velocity, Vector3 spin, bool pitched, WakeProfile wake, double serverTime, float now)
+    {
         ExitHold();
-        _catchBlockedUntil = Time.time + Mathf.Max(0f, selfCatchDelay);
-        StartFlight(position, velocity, spin, false);
-        _flightOrigin = ThrowState;
+        _catchBlockedUntil = now + Mathf.Max(0f, selfCatchDelay);
+        if (pitched)
+        {
+            LaunchPitch(position, velocity, spin, wake, 0f);
+            _lineage = _releaseLineage;
+            MarkHandPitchApplied(_lineage);
+            if (pitchSyncDiagnostics) PitchDiagRelease(position, velocity, spin, wake, serverTime);
+        }
+        else
+        {
+            StartFlight(position, velocity, spin, false);
+            _flightOrigin = ThrowState;
+        }
         _releaseReassert = true;
         _releaseFlight = flightSequence;
-        _releaseTime = Time.time;
+        _releaseTime = now;
         _releasePosition = position;
         _releaseVelocity = velocity;
         _releaseSpin = spin;
-        QueueSnapshot(ThrowState, position, velocity, spin, Networking.GetServerTimeInSeconds(), -1, 0f, HoldFree, 0);
+        _releasePitch = pitched;
+        _releaseWake = pitched ? wake : new WakeProfile();
+        QueueSnapshot(pitched ? HandPitchState : ThrowState, position, velocity, spin, serverTime, -1, 0f, HoldFree, 0, _releaseWake);
     }
 
-    // The SDK may apply its own throw velocity or restore kinematic state after OnDrop;
-    // the first fixed step after a release restores the decided flight.
+    // The SDK may apply its own throw velocity, restore kinematic state or move the body back
+    // to the hand after OnDrop; the first fixed step after a release restores the decided
+    // flight. Runs once per release, never during the flight.
     private void ReassertRelease()
     {
         _releaseReassert = false;
         if (body == null || !flying || _releaseFlight != flightSequence) return;
-        if (!body.isKinematic && (body.velocity - _releaseVelocity).sqrMagnitude <= 1f) return;
         float elapsed = Mathf.Max(0f, Time.fixedTime - _releaseTime);
+        // A hand pitch leaves from the solver's release point, away from the hand, so its
+        // position is checked too; a throw keeps the existing velocity-only check.
+        bool kept = ReleaseStateKept(body.isKinematic, body.position, body.velocity, _releasePosition, _releaseVelocity,
+            elapsed + Time.fixedDeltaTime, _releasePitch);
+        if (pitchSyncDiagnostics && _releasePitch) FlightDiagReassert(kept, elapsed);
+        if (kept) return;
+        // A hand pitch keeps its spin (a pitch has no spin damping) and its wake, as receivers' catch-up does.
         BallFlightState state = AdvanceSnapshot(_releasePosition, _releaseVelocity, _releaseSpin, Physics.gravity,
-            dragCoefficient, magnusCoefficient, elapsed, Time.fixedDeltaTime, battedSpinHalfLife);
+            dragCoefficient, magnusCoefficient, _releasePitch ? BallAerodynamics.PrepareWake(_releaseWake, _releaseSpin) : new BallWake(),
+            elapsed, Time.fixedDeltaTime, _releasePitch ? 0f : ThrowSpinHalfLife);
+        if (_releasePitch && _wake.mode != BallAerodynamics.WakeNone)
+        {
+            _wakeTime = state.time;
+            _wakeSampleTime = state.time;
+        }
         body.isKinematic = false;
         body.position = state.position;
         body.velocity = state.velocity;
         body.angularVelocity = state.spin;
+        if (pitchSyncDiagnostics && _releasePitch) FlightDiagLog("reassert applied pos=" + body.position.ToString("F3") +
+            " v=" + body.velocity.ToString("F3") + " w=" + body.angularVelocity.ToString("F2"));
+    }
+
+    // Largest distance of the body from the released path still taken as the release's own.
+    private const float ReleasePositionTolerance = 0.05f;
+
+    // Whether the body still holds the decided release: not kinematic, the velocity within
+    // 1 m/s and, when checkPosition, the position within ReleasePositionTolerance of the
+    // straight path from the release point over at most `span` seconds (no physics step has
+    // to have run yet, so the release point itself is kept).
+    public static bool ReleaseStateKept(bool kinematic, Vector3 position, Vector3 velocity, Vector3 releasePosition,
+        Vector3 releaseVelocity, float span, bool checkPosition)
+    {
+        if (kinematic || (velocity - releaseVelocity).sqrMagnitude > 1f) return false;
+        if (!checkPosition) return true;
+        Vector3 path = releaseVelocity * Mathf.Max(0f, span);
+        Vector3 offset = position - releasePosition;
+        float lengthSquared = path.sqrMagnitude;
+        float t = lengthSquared > 0.000001f ? Mathf.Clamp01(Vector3.Dot(offset, path) / lengthSquared) : 0f;
+        return (offset - path * t).sqrMagnitude <= ReleasePositionTolerance * ReleasePositionTolerance;
     }
 
     private void BeginAim()
@@ -553,7 +706,8 @@ public partial class BallBehaviour
         if (throwAim == null) return;
         _aimActive = true;
         throwAim.gameObject.SetActive(true);
-        throwAim.BeginHold(transform);
+        throwAim.SetPitcherMode(manualPitcher != null);
+        throwAim.BeginHold(transform, LocalThrowHand());
     }
 
     // ThrowAim deactivates itself, after any release feedback it shows.

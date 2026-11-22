@@ -19,31 +19,10 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     public const int ReachHighAtLimit = FieldingMath.ReachHighAtLimit;
     public const int ReachApproximate = FieldingMath.ReachApproximate;
     private const int Capacity = 16;
-    private const int DefaultTargetCount = 4;
 
-    // Every array below is read at the same index as baseTargets; a missing entry takes
-    // the default named in its tooltip, so a target can be added by growing baseTargets.
-    [Header("Targets (one entry per index)")]
-    [Tooltip("Target Transform per target: the point a throw is aimed at, placed at receiving height. Any number of targets (bases, relay points). An empty entry is skipped.")]
-    public Transform[] baseTargets = new Transform[DefaultTargetCount];
-    [Tooltip("Display name per target, written to its Label and used by the release feedback. Missing or empty: the target Transform's name.")]
-    public string[] targetNames = { "FirstBase", "SecondBase", "ThirdBase", "HomePlate" };
-    [Tooltip("Marker Root per target (with Reticle and Label children): positioned, turned toward the player and shown or hidden by ThrowAim.")]
-    public Transform[] markers = new Transform[DefaultTargetCount];
-    [Tooltip("Reticle MeshRenderer per target (a quad with the shared reticle material). Its colour comes from Marker Colors.")]
-    public MeshRenderer[] reticleRenderers = new MeshRenderer[DefaultTargetCount];
-    // TextMeshPro rather than TextMesh: Udon exposes no UnityEngine.TextMesh member, so a TextMesh
-    // label could neither be referenced nor given the target name at runtime.
-    [Tooltip("Label TextMeshPro per target; its text is set to the target name once. Its own colour is kept.")]
-    public TextMeshPro[] labelTexts = new TextMeshPro[DefaultTargetCount];
-    [Tooltip("Reticle colour per target, applied once with a MaterialPropertyBlock (the material is shared). Missing: white.")]
-    public Color[] markerColors = new Color[0];
-    [Tooltip("Shortest horizontal (XZ) distance from the thrower at which the target is shown and selectable, in metres. 0 or missing: no minimum.")]
-    public float[] minDistances = new float[DefaultTargetCount];
-    [Tooltip("Longest horizontal (XZ) distance from the thrower at which the target is shown and selectable, in metres. 0 or missing: no maximum. Must not be below the minimum when both are set.")]
-    public float[] maxDistances = new float[DefaultTargetCount];
-    [Tooltip("Whether each target is used at all. Missing: enabled.")]
-    public bool[] targetEnabled = { true, true, true, true };
+    [Header("Targets")]
+    [Tooltip("Throw targets: one TargetBehaviour per target (on the target's own object, for example Targets/FirstBase), holding its point, marker and selection settings. Any number (bases, relay points). An empty entry is skipped. Read once, at the first hold.")]
+    public TargetBehaviour[] targets = new TargetBehaviour[0];
 
     [Header("Aim Markers")]
     [Tooltip("Distance of the markers from the thrower's eye point, in metres. Default 1.5.")]
@@ -81,11 +60,9 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     [Tooltip("Largest error cone, in degrees. Default 0 (no random error); 8 was the earlier tuning.")]
     public float maxErrorDegrees = 0f;
 
-    [Header("Arm Tracking")]
-    [Tooltip("Newest span of hand samples used for the arm velocity, in seconds. Default 0.08.")]
-    public float velocityWindowSeconds = 0.08f;
-    [Tooltip("Sample-to-sample speed treated as a tracking jump and discarded, in m/s. Default 40.")]
-    public float maxTrackingSpeed = 40f;
+    [Header("Arm Tracking (throwing controller)")]
+    [Tooltip("Longest gap between two throwing-controller samples still joined into one motion, in seconds; a longer gap starts the motion again. Samples are never discarded for their speed. Default 0.1.")]
+    public float maxSampleGapSeconds = 0.1f;
     [Tooltip("Below this arm speed the aim ray uses the head direction, in m/s. Default 1.")]
     public float minDirectionSpeed = 1f;
 
@@ -132,34 +109,59 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     private readonly float[] _times = new float[Capacity];
     private readonly Vector3[] _positions = new Vector3[Capacity];
-    private int _next;
-    private int _count;
-    private int _rejected;
+    // { next, count } of the ring above (FieldingMath.Motion*): throwing-controller positions.
+    private readonly int[] _sampleState = new int[FieldingMath.MotionStateLength];
     private Transform _ball;
+    // The hand holding the ball (GloveBehaviour.HandLeft / HandRight); its controller is sampled.
+    private int _hand = GloveBehaviour.HandRight;
     private float _eyeHeight = 1.5f;
     private Vector3 _origin;
     private bool _hasOrigin;
-    // Per-target runtime data, sized to baseTargets once (EnsureTargets).
+    // Per-target runtime data, read from targets once (EnsureTargets), so no call into a
+    // TargetBehaviour is made per frame.
     private int _targetCount = -1;
+    private Transform[] _targetPoints = new Transform[0];
+    private Transform[] _markers = new Transform[0];
+    private string[] _targetNames = new string[0];
+    private bool[] _allowDuringPitcherMode = new bool[0];
     private Vector3[] _markerPositions = new Vector3[0];
     private Vector3[] _markerDirections = new Vector3[0];
     private Vector3[] _targetPositions = new Vector3[0];
-    // A target exists (Transform set, enabled, valid range) and its position is known.
+    // A target exists (Target Point set, enabled, valid range) and its position is known.
     private bool[] _targetPresent = new bool[0];
-    // Shown and selectable: present and inside its distance range. One flag for both, so a
-    // hidden target can never be chosen.
+    // Shown and selectable: present, allowed in the current mode and inside its distance
+    // range. One flag for both, so a hidden target can never be chosen.
     private bool[] _markerValid = new bool[0];
+    // Enabled with a valid distance range (the mode is applied separately).
     private bool[] _targetUsable = new bool[0];
     private float[] _minDistanceSquared = new float[0];
     private float[] _maxDistanceSquared = new float[0];
     private bool _feedbackVisible;
     private float _feedbackHideTime;
+    // Local pitcher mode, set by the Ball from its mound; not synced. A change marks the
+    // markers stale so they are placed again even if the eye point did not move.
+    private bool _pitcherMode;
+    private bool _markersStale;
 
-    public void BeginHold(Transform ball)
+    // Called by the Ball before each hold, whenever its mound enters or leaves pitcher mode
+    // during a hold, and before each release.
+    public void SetPitcherMode(bool pitcherMode)
+    {
+        if (pitcherMode == _pitcherMode) return;
+        _pitcherMode = pitcherMode;
+        _markersStale = true;
+    }
+
+    public bool PitcherMode() { return _pitcherMode; }
+
+    // hand is the throwing hand holding the ball: the arm motion is read from its controller
+    // (VRChat tracking data), never from the ball's Transform.
+    public void BeginHold(Transform ball, int hand)
     {
         HideReleaseFeedback();
         EnsureTargets();
         _ball = ball;
+        _hand = hand;
         ResetSamples();
         _hasOrigin = false;
         VRCPlayerApi player = Networking.LocalPlayer;
@@ -181,7 +183,7 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     public override void PostLateUpdate()
     {
         if (_ball == null) return;
-        Sample(Time.time, _ball.position);
+        SampleController(Time.time);
         UpdateMarkers();
     }
 
@@ -200,32 +202,54 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         PlaceMarkers(player.GetPosition() + Vector3.up * _eyeHeight, true);
     }
 
-    // Recomputed only when the eye point moved more than 2 cm.
+    // Recomputed only when the eye point moved more than 2 cm or the pitcher mode changed.
     public void PlaceMarkers(Vector3 origin, bool force)
     {
-        if (!force && _hasOrigin && (origin - _origin).sqrMagnitude < 0.0004f) return;
+        if (!force && !_markersStale && _hasOrigin && (origin - _origin).sqrMagnitude < 0.0004f) return;
         EnsureTargets();
         ReadTargetPositions();
         PlaceMarkersAt(origin);
     }
 
-    // Sizes the per-target data to baseTargets, validates the settings and applies the label
-    // texts and reticle colours. Runs once; the arrays are not resized while playing. A missing
-    // (null) array is read as empty, so an incomplete setup still throws without targets.
+    // Reads the targets' settings into the per-target data, validates them and applies the
+    // label texts and reticle colours. Runs once; the array is not resized while playing. A
+    // missing (null) array is read as empty, so an incomplete setup still throws without targets.
     public void EnsureTargets()
     {
-        int count = baseTargets != null ? baseTargets.Length : 0;
+        int count = targets != null ? targets.Length : 0;
         if (count == _targetCount) return;
+        if (targets == null) targets = new TargetBehaviour[0];
+        AllocateTargets(count);
+        MaterialPropertyBlock block = null;
+        for (int i = 0; i < count; i++)
+        {
+            TargetBehaviour target = targets[i];
+            if (target == null)
+            {
+                ConfigureTarget(i, null, "", null, false, false, 0f, 0f);
+                continue;
+            }
+            ConfigureTarget(i, target.targetPoint, target.displayName, target.marker, target.targetEnabled,
+                target.allowDuringPitcherMode, target.minDistance, target.maxDistance);
+            TextMeshPro label = target.labelText;
+            if (label != null) label.text = _targetNames[i];
+            MeshRenderer reticle = target.reticleRenderer;
+            if (reticle != null)
+            {
+                if (block == null) block = new MaterialPropertyBlock();
+                block.SetColor("_Color", target.markerColor);
+                reticle.SetPropertyBlock(block);
+            }
+        }
+    }
+
+    private void AllocateTargets(int count)
+    {
         _targetCount = count;
-        if (baseTargets == null) baseTargets = new Transform[0];
-        if (targetNames == null) targetNames = new string[0];
-        if (markers == null) markers = new Transform[0];
-        if (reticleRenderers == null) reticleRenderers = new MeshRenderer[0];
-        if (labelTexts == null) labelTexts = new TextMeshPro[0];
-        if (markerColors == null) markerColors = new Color[0];
-        if (minDistances == null) minDistances = new float[0];
-        if (maxDistances == null) maxDistances = new float[0];
-        if (targetEnabled == null) targetEnabled = new bool[0];
+        _targetPoints = new Transform[count];
+        _markers = new Transform[count];
+        _targetNames = new string[count];
+        _allowDuringPitcherMode = new bool[count];
         _markerPositions = new Vector3[count];
         _markerDirections = new Vector3[count];
         _targetPositions = new Vector3[count];
@@ -234,38 +258,16 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         _targetUsable = new bool[count];
         _minDistanceSquared = new float[count];
         _maxDistanceSquared = new float[count];
-        WarnLength("targetNames", targetNames.Length, count);
-        WarnLength("markers", markers.Length, count);
-        WarnLength("reticleRenderers", reticleRenderers.Length, count);
-        WarnLength("labelTexts", labelTexts.Length, count);
-        WarnLength("markerColors", markerColors.Length, count);
-        WarnLength("minDistances", minDistances.Length, count);
-        WarnLength("maxDistances", maxDistances.Length, count);
-        WarnLength("targetEnabled", targetEnabled.Length, count);
-        MaterialPropertyBlock block = null;
-        for (int i = 0; i < count; i++)
-        {
-            ConfigureTarget(i);
-            TextMeshPro label = i < labelTexts.Length ? labelTexts[i] : null;
-            if (label != null) label.text = TargetName(i);
-            MeshRenderer reticle = i < reticleRenderers.Length ? reticleRenderers[i] : null;
-            if (reticle != null)
-            {
-                if (block == null) block = new MaterialPropertyBlock();
-                block.SetColor("_Color", i < markerColors.Length ? markerColors[i] : Color.white);
-                reticle.SetPropertyBlock(block);
-            }
-        }
+        _markersStale = true;
     }
 
-    // Distance range and enabled flag of one target; an invalid range disables it with a warning.
-    private void ConfigureTarget(int index)
+    // One target's settings. An invalid distance range disables it with a warning; an empty
+    // entry or Target Point is skipped.
+    private void ConfigureTarget(int index, Transform point, string displayName, Transform marker, bool enabled,
+        bool allowDuringPitcherMode, float rawMin, float rawMax)
     {
-        float rawMin = index < minDistances.Length ? minDistances[index] : 0f;
-        float rawMax = index < maxDistances.Length ? maxDistances[index] : 0f;
         float min = DistanceLimit(rawMin);
         float max = DistanceLimit(rawMax);
-        bool enabled = index >= targetEnabled.Length || targetEnabled[index];
         if (min != rawMin || max != rawMax)
             Debug.LogWarning("ThrowAim: target " + index + " has a negative or invalid distance; it is treated as no limit.");
         if (!DistanceRangeValid(min, max))
@@ -273,9 +275,19 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
             Debug.LogWarning("ThrowAim: target " + index + " has maxDistance below minDistance; it is disabled.");
             enabled = false;
         }
+        _targetPoints[index] = point;
+        _markers[index] = marker;
+        _targetNames[index] = !string.IsNullOrEmpty(displayName) ? displayName : point != null ? point.name : "Target" + index;
         _targetUsable[index] = enabled;
+        _allowDuringPitcherMode[index] = allowDuringPitcherMode;
         _minDistanceSquared[index] = min * min;
         _maxDistanceSquared[index] = max > 0f ? max * max : -1f;
+    }
+
+    // Whether a present target may be shown and chosen in the current mode.
+    private bool TargetAllowed(int index)
+    {
+        return _targetPresent[index] && FieldingMath.TargetUsable(_targetUsable[index], _allowDuringPitcherMode[index], _pitcherMode);
     }
 
     // A distance limit in metres; 0 means none, and a negative or non-finite value is read as 0.
@@ -290,35 +302,31 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         return !(max > 0f && max < min);
     }
 
-    private void WarnLength(string field, int length, int count)
-    {
-        if (length != 0 && length != count)
-            Debug.LogWarning("ThrowAim: " + field + " has " + length + " entries for " + count + " targets; missing entries use defaults.");
-    }
-
     // Target position acquisition, kept apart from culling and selection: fixed targets are
-    // read from their Transforms.
+    // read from their Target Points.
     private void ReadTargetPositions()
     {
         for (int i = 0; i < _targetCount; i++)
         {
-            Transform target = baseTargets[i];
+            Transform target = _targetPoints[i];
             bool present = _targetUsable[i] && target != null;
             _targetPresent[i] = present;
             if (present) _targetPositions[i] = target.position;
         }
     }
 
-    // Distance culling, marker placement and marker visibility from the known target positions.
+    // Mode and distance culling, marker placement and marker visibility from the known target
+    // positions.
     public void PlaceMarkersAt(Vector3 origin)
     {
         _origin = origin;
         _hasOrigin = true;
+        _markersStale = false;
         float referenceSpeed = referenceSpeedKmh / 3.6f;
         for (int i = 0; i < _targetCount; i++)
         {
             bool valid = false;
-            if (_targetPresent[i])
+            if (TargetAllowed(i))
             {
                 Vector3 horizontal = _targetPositions[i] - origin;
                 horizontal.y = 0f;
@@ -333,7 +341,7 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
                 }
             }
             _markerValid[i] = valid;
-            Transform marker = i < markers.Length ? markers[i] : null;
+            Transform marker = _markers[i];
             if (marker == null) continue;
             if (marker.gameObject.activeSelf != valid) marker.gameObject.SetActive(valid);
             if (!valid) continue;
@@ -361,58 +369,35 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     public void ResetSamples()
     {
-        _next = 0;
-        _count = 0;
-        _rejected = 0;
+        FieldingMath.ResetMotion(_sampleState);
     }
 
-    // A single implausible jump is discarded; two in a row mean the hand really moved
-    // (for example a respawn), so the buffer restarts there.
+    // One sample of the throwing controller (the hand holding the ball) at `time`.
+    public void SampleController(float time)
+    {
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (!Utilities.IsValid(player)) return;
+        Sample(time, player.GetTrackingData(_hand == GloveBehaviour.HandLeft
+            ? VRCPlayerApi.TrackingDataType.LeftHand : VRCPlayerApi.TrackingDataType.RightHand).position);
+    }
+
+    // One controller position (FieldingMath.SampleMotion): never discarded for its speed; a gap
+    // longer than maxSampleGapSeconds starts the motion again.
     public void Sample(float time, Vector3 position)
     {
-        if (_count > 0)
-        {
-            int last = (_next - 1 + Capacity) % Capacity;
-            float dt = time - _times[last];
-            if (dt <= 0f)
-            {
-                if (dt == 0f) _positions[last] = position;
-                return;
-            }
-            if ((position - _positions[last]).magnitude > maxTrackingSpeed * dt)
-            {
-                _rejected++;
-                if (_rejected < 2) return;
-                ResetSamples();
-            }
-        }
-        _rejected = 0;
-        _times[_next] = time;
-        _positions[_next] = position;
-        _next = (_next + 1) % Capacity;
-        if (_count < Capacity) _count++;
+        FieldingMath.SampleMotion(_times, _positions, _sampleState, time, position, maxSampleGapSeconds);
     }
 
-    // Average velocity over the newest window; zero when the window holds one sample.
+    // The arm motion of the newest three segments (FieldingMath.EstimateArmMotion).
+    public ArmMotion ArmMotionNow()
+    {
+        return FieldingMath.EstimateArmMotion(_times, _positions, _sampleState);
+    }
+
+    // Weighted mean velocity of the newest segments; zero when not measured.
     public Vector3 ArmVelocity()
     {
-        if (_count < 2) return Vector3.zero;
-        int last = (_next - 1 + Capacity) % Capacity;
-        int oldest = last;
-        for (int i = 1; i < _count; i++)
-        {
-            int index = (last - i + Capacity) % Capacity;
-            if (_times[last] - _times[index] > velocityWindowSeconds) break;
-            oldest = index;
-        }
-        if (oldest == last)
-        {
-            // Window shorter than one frame: use the newest pair.
-            oldest = (last - 1 + Capacity) % Capacity;
-        }
-        float span = _times[last] - _times[oldest];
-        if (!(span > 0.0001f)) return Vector3.zero;
-        return (_positions[last] - _positions[oldest]) / span;
+        return ArmMotionNow().velocity;
     }
 
     // Decides the release once from the markers placed last (call RefreshMarkers first).
@@ -424,15 +409,18 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
         float spinHalfLife, float gravity, float fixedStep, float randomAngle, float randomRadius)
     {
         EnsureTargets();
-        Vector3 arm = ArmVelocity();
-        releaseArmSpeed = arm.magnitude;
-        Vector3 ray = releaseArmSpeed >= minDirectionSpeed ? arm / releaseArmSpeed : FlatForward(headForward);
+        // Speed and direction are read separately (FieldingMath.EstimateArmMotion).
+        ArmMotion arm = ArmMotionNow();
+        releaseArmSpeed = arm.speed;
+        Vector3 ray = releaseArmSpeed >= minDirectionSpeed && arm.direction != Vector3.zero ? arm.direction : FlatForward(headForward);
         selectedTarget = NoTarget;
         releaseMiss = 0f;
         float best = float.MaxValue;
         for (int i = 0; i < _targetCount; i++)
         {
-            if (!_markerValid[i]) continue;
+            // The mode is checked again here, so a target not allowed in pitcher mode is never
+            // chosen even if the markers were last placed in the other mode.
+            if (!_markerValid[i] || !TargetAllowed(i)) continue;
             float miss = FieldingMath.RayDistance(releasePosition, ray, _markerPositions[i]);
             if (miss >= best) continue;
             best = miss;
@@ -508,11 +496,8 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     public string TargetName(int index)
     {
-        if (baseTargets == null || index < 0 || index >= baseTargets.Length) return "NoTarget";
-        string name = targetNames != null && index < targetNames.Length ? targetNames[index] : "";
-        if (!string.IsNullOrEmpty(name)) return name;
-        Transform target = baseTargets[index];
-        return target != null ? target.name : "Target" + index;
+        if (index < 0 || index >= TargetCount()) return "NoTarget";
+        return _targetNames[index];
     }
 
     public static string ReachName(int reach)

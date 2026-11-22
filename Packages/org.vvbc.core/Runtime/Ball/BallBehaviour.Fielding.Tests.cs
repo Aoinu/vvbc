@@ -89,9 +89,9 @@ public partial class BallBehaviour
         _sequence = 4;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = y.playerId;
+        _batterOrHolderId = y.playerId;
         _publisherId = y.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(3, _acceptedSequence, "y is not the owner");
         Assert.IsFalse(IsHeld());
         Networking.SetOwner(y, gameObject);
@@ -114,14 +114,14 @@ public partial class BallBehaviour
         _sequence = 4;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = x.playerId;
+        _batterOrHolderId = x.playerId;
         _publisherId = x.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.IsFalse(HasCandidates(), "an old snapshot of the owner is dropped, not kept");
         _sequence = 9;
         _publisherId = y.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence, "a higher sequence from a non-owner does not win");
     }
 
@@ -142,9 +142,9 @@ public partial class BallBehaviour
         _sequence = 5;
         _kind = ThrowState;
         _hold = HoldFree;
-        _holderId = 0;
+        _batterOrHolderId = -1;
         _publisherId = winner.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(5, _acceptedSequence);
         Assert.AreEqual(ThrowState, _acceptedKind);
         Assert.IsFalse(IsHeld());
@@ -160,9 +160,9 @@ public partial class BallBehaviour
         _sequence = 12;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = x.playerId;
+        _batterOrHolderId = x.playerId;
         _publisherId = x.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(12, _acceptedSequence);
         Assert.AreEqual(x.playerId, LocalHolderId());
     }
@@ -186,9 +186,9 @@ public partial class BallBehaviour
         _sequence = 1;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = winner.playerId;
+        _batterOrHolderId = winner.playerId;
         _publisherId = winner.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(me.playerId, LocalHolderId());
         CheckPendingOwnership();
         Assert.AreEqual(winner.playerId, LocalHolderId(), "the owner's catch is shown");
@@ -211,9 +211,9 @@ public partial class BallBehaviour
         _sequence = 1;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = winner.playerId;
+        _batterOrHolderId = winner.playerId;
         _publisherId = winner.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.AreEqual(winner.playerId, LocalHolderId());
         Assert.AreEqual(HoldGlove, LocalHoldState());
     }
@@ -242,8 +242,8 @@ public partial class BallBehaviour
         ExitHold();
         QueueSnapshot(ThrowState, Vector3.one, new Vector3(0f, 2f, 30f), Vector3.zero, 2.0, -1, 0f, HoldFree, 0);
         Assert.IsFalse(IsHeld());
-        Assert.AreEqual(ThrowState, _kind);
-        Assert.AreEqual(-1, _batterId, "no batter for a throw");
+        Assert.AreEqual((byte)ThrowState, _kind);
+        Assert.AreEqual(-1, SyncedBatterId(), "no batter for a throw");
         Mimic.Deliver();
         Mimic.Become(other);
         Assert.AreEqual(ThrowState, _acceptedKind);
@@ -261,16 +261,16 @@ public partial class BallBehaviour
         _sequence = 3;
         _kind = PossessionState;
         _hold = HoldGlove;
-        _holderId = rival.playerId;
+        _batterOrHolderId = rival.playerId;
         _publisherId = rival.playerId;
-        OnDeserialization();
+        ReceiveSnapshot();
         Assert.IsTrue(HasCandidates(), "the rival's catch is held back");
         Assert.AreEqual(1, _acceptedSequence);
         ResolveOwnershipConflict();
         Assert.AreEqual(4, _acceptedSequence, "republished above every sequence seen");
         Assert.AreEqual(4, _sequence);
         Assert.AreEqual(me.playerId, _publisherId);
-        Assert.AreEqual(me.playerId, _holderId, "the owner's own state is sent again");
+        Assert.AreEqual(me.playerId, SyncedHolderId(), "the owner's own state is sent again");
         Assert.AreEqual(1, _conflictRepublishes);
         Assert.IsTrue(CanRepublishConflict());
         _conflictRepublishes = maximumSerializationRetries;
@@ -286,6 +286,25 @@ public partial class BallBehaviour
         ResolveThrowAim();
         Assert.IsTrue(throwAim == assigned, "the Inspector reference wins");
         Assert.AreEqual(0, _throwAimSearches, "no scene search");
+    }
+
+    // While aiming, a mound entering or leaving pitcher mode reaches ThrowAim at once (the
+    // targets it offers change); while not aiming, BeginAim and the release pass it instead.
+    [TsukimiTest]
+    public void PitcherModeReachesThrowAimWhileAiming()
+    {
+        Assert.IsNotNull(throwAim);
+        ManualPitchBehaviour mound = manualPitcher;
+        Assert.IsNotNull(mound, "the runner wires the mound of this folder");
+        manualPitcher = null;
+        _aimActive = true;
+        SetManualPitcher(mound);
+        Assert.IsTrue(throwAim.PitcherMode(), "entered while holding");
+        ClearManualPitcher(mound);
+        Assert.IsFalse(throwAim.PitcherMode(), "left while holding");
+        _aimActive = false;
+        SetManualPitcher(mound);
+        Assert.IsFalse(throwAim.PitcherMode(), "not aiming: nothing is sent");
     }
 
     [TsukimiTest]
@@ -341,7 +360,7 @@ public partial class BallBehaviour
             for (int h = 0; h < heights.Length; h++)
             {
                 Vector4 solved = FieldingMath.SolveLaunchElevation(speed, distances[d], heights[h], dragCoefficient,
-                    magnusCoefficient, 1500f, battedSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
+                    magnusCoefficient, 1500f, ThrowSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
                 if ((int)solved.z != FieldingMath.ReachExact) continue;
                 reached++;
                 Vector3 direction = FieldingMath.LaunchDirection(heading, solved.x, 0f);
@@ -360,7 +379,7 @@ public partial class BallBehaviour
         Vector3 direction = FieldingMath.LaunchDirection(new Vector3(-0.3f, 0f, -0.9f), 7f, 0f);
         float speed = 35f;
         float predicted = FieldingMath.PredictThrowHeight(speed, 7f, 40f, dragCoefficient, magnusCoefficient,
-            1500f * 2f * Mathf.PI / 60f, Mathf.Pow(0.5f, 0.02f / battedSpinHalfLife), 9.81f, 0.02f, -100f, 512);
+            1500f * 2f * Mathf.PI / 60f, Mathf.Pow(0.5f, 0.02f / ThrowSpinHalfLife), 9.81f, 0.02f, -100f, 512);
         float flown = FlyThrow(direction * speed, FieldingMath.Backspin(direction, 1500f), 40f);
         Assert.IsTrue(Mathf.Abs(predicted - flown) < 0.002f, "planar " + predicted + " vs 3D " + flown);
     }
@@ -376,7 +395,7 @@ public partial class BallBehaviour
         Vector3 oldDirection = FieldingMath.LaunchDirection(heading, old, 0f);
         float oldHeight = FlyThrow(oldDirection * speed, FieldingMath.Backspin(oldDirection, 1500f), 38.8f) + 0.7f;
         Vector4 solved = FieldingMath.SolveLaunchElevation(speed, 38.8f, -0.7f, dragCoefficient, magnusCoefficient,
-            1500f, battedSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
+            1500f, ThrowSpinHalfLife, 9.81f, 0.02f, 12f, float.NaN);
         Vector3 newDirection = FieldingMath.LaunchDirection(heading, solved.x, 0f);
         float newHeight = FlyThrow(newDirection * speed, FieldingMath.Backspin(newDirection, 1500f), 38.8f) + 0.7f;
         Assert.IsTrue(oldHeight > 0.5f, "old: " + oldHeight + " m above the target");
@@ -394,7 +413,7 @@ public partial class BallBehaviour
         {
             Vector3 previous = state.position;
             state = BallFlightModel.Step(state, spin, gravity, dragCoefficient, magnusCoefficient, 0.02f);
-            spin = BallFlightModel.DecaySpin(spin, battedSpinHalfLife, 0.02f);
+            spin = BallFlightModel.DecaySpin(spin, ThrowSpinHalfLife, 0.02f);
             float before = new Vector2(previous.x, previous.z).magnitude;
             float after = new Vector2(state.position.x, state.position.z).magnitude;
             if (after >= distance) return previous.y + (state.position.y - previous.y) * ((distance - before) / (after - before));

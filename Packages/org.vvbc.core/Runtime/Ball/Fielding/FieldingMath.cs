@@ -27,6 +27,13 @@ public static class FieldingMath
         return !float.IsNaN(value) && value <= float.MaxValue && value >= -float.MaxValue;
     }
 
+    // Enable rule of a throw target (TargetBehaviour settings) in the local mode: an enabled
+    // target is offered outside pitcher mode, and in pitcher mode only when it allows it.
+    public static bool TargetUsable(bool enabled, bool allowDuringPitcherMode, bool pitcherMode)
+    {
+        return enabled && (!pitcherMode || allowDuringPitcherMode);
+    }
+
     // Fitting limits: offset distance from the hand bone and uniform scale.
     public static bool FittingValid(Vector3 offset, float scale, float maxDistance, float minScale, float maxScale)
     {
@@ -301,6 +308,129 @@ public static class FieldingMath
         return flat * Mathf.Cos(radians) + Vector3.up * Mathf.Sin(radians);
     }
 
+    // ---- Arm motion samples ----
+    // A ring of timed positions owned by the caller: times and positions of one length (the
+    // capacity) and state = { next, count }. ThrowAim samples the throwing controller with it for
+    // throws, the manual pitch the same controller for pitches; both share these rules.
+    //
+    // A sample is never discarded for its speed: an arm really moves faster than any fixed
+    // "tracking jump" limit in a pitch, and discarding those samples made the arm read slow or
+    // still. Only data integrity is checked: a non-finite position or time is not stored, time
+    // never runs backwards (an older sample is ignored, one at the newest time replaces it), and
+    // a gap longer than maxGap starts the ring again at the new sample so an old motion is never
+    // joined to a new one.
+    public const int MotionNext = 0;
+    public const int MotionCount = 1;
+    public const int MotionStateLength = 2;
+    // Newest segments read by EstimateArmMotion, with their weights (oldest first).
+    public const int ArmSegments = 3;
+
+    public static void ResetMotion(int[] state)
+    {
+        state[MotionNext] = 0;
+        state[MotionCount] = 0;
+    }
+
+    // Index the sample was stored at, or -1 when it was ignored. After a restart (a long gap)
+    // the ring holds only this sample (state[MotionCount] == 1).
+    public static int SampleMotion(float[] times, Vector3[] positions, int[] state, float time, Vector3 position, float maxGap)
+    {
+        if (!Finite(time) || !Finite(position.x) || !Finite(position.y) || !Finite(position.z)) return -1;
+        int capacity = times.Length;
+        if (state[MotionCount] > 0)
+        {
+            int last = (state[MotionNext] - 1 + capacity) % capacity;
+            float dt = time - times[last];
+            if (dt < 0f) return -1;
+            if (dt == 0f)
+            {
+                positions[last] = position;
+                return last;
+            }
+            if (Finite(maxGap) && maxGap > 0f && dt > maxGap) ResetMotion(state);
+        }
+        int next = state[MotionNext];
+        times[next] = time;
+        positions[next] = position;
+        state[MotionNext] = (next + 1) % capacity;
+        if (state[MotionCount] < capacity) state[MotionCount]++;
+        return next;
+    }
+
+    // Index of the sample `age` steps before the newest (0 = newest).
+    public static int MotionIndex(int[] state, int capacity, int age)
+    {
+        return ((state[MotionNext] - 1 - age) % capacity + capacity) % capacity;
+    }
+
+    // Arm motion from the newest ArmSegments segments (four positions, three segments; fewer
+    // when fewer samples exist). Each segment's velocity is (p_i - p_{i-1}) / (t_i - t_{i-1})
+    // with the real sample times. The speed is the weighted mean of the segment speeds |v_i|
+    // and the direction the normalized weighted mean of the velocity vectors, weights 1, 2, 3
+    // from the oldest segment to the newest. The two are separate on purpose: averaging the
+    // vectors first would read a turning arm as slower than it is. segments == 0 means not
+    // measured (fewer than two samples), which is not a measured speed of 0.
+    public static ArmMotion EstimateArmMotion(float[] times, Vector3[] positions, int[] state)
+    {
+        ArmMotion motion = new ArmMotion();
+        motion.newestSpeed = -1f;
+        motion.middleSpeed = -1f;
+        motion.oldestSpeed = -1f;
+        int count = state[MotionCount];
+        int capacity = times.Length;
+        int segments = Mathf.Min(count - 1, ArmSegments);
+        if (segments < 1) return motion;
+        float weightSum = 0f;
+        float speedSum = 0f;
+        Vector3 velocitySum = Vector3.zero;
+        int used = 0;
+        float newestTime = times[MotionIndex(state, capacity, 0)];
+        float oldestTime = newestTime;
+        for (int age = 0; age < segments; age++)
+        {
+            int newer = MotionIndex(state, capacity, age);
+            int older = MotionIndex(state, capacity, age + 1);
+            float dt = times[newer] - times[older];
+            if (!(dt > 0f)) break;
+            Vector3 v = (positions[newer] - positions[older]) / dt;
+            float speed = v.magnitude;
+            if (!Finite(speed)) break;
+            float weight = ArmSegments - age;
+            weightSum += weight;
+            speedSum += weight * speed;
+            velocitySum += v * weight;
+            if (age == 0) motion.newestSpeed = speed;
+            else if (age == 1) motion.middleSpeed = speed;
+            else motion.oldestSpeed = speed;
+            oldestTime = times[older];
+            used++;
+        }
+        if (used == 0) return motion;
+        motion.segments = used;
+        motion.span = newestTime - oldestTime;
+        motion.speed = speedSum / weightSum;
+        motion.velocity = velocitySum / weightSum;
+        float length = motion.velocity.magnitude;
+        motion.direction = length > 0.000001f ? motion.velocity / length : Vector3.zero;
+        return motion;
+    }
+
+    // A motion given directly as one velocity (tests and callers without samples): one segment.
+    public static ArmMotion GivenArmMotion(Vector3 velocity)
+    {
+        ArmMotion motion = new ArmMotion();
+        motion.newestSpeed = -1f;
+        motion.middleSpeed = -1f;
+        motion.oldestSpeed = -1f;
+        if (!Finite(velocity.x) || !Finite(velocity.y) || !Finite(velocity.z)) return motion;
+        motion.segments = 1;
+        motion.velocity = velocity;
+        motion.speed = velocity.magnitude;
+        motion.newestSpeed = motion.speed;
+        motion.direction = motion.speed > 0.000001f ? velocity / motion.speed : Vector3.zero;
+        return motion;
+    }
+
     // Backspin for a ball moving along direction: the top surface moves backward.
     public static Vector3 Backspin(Vector3 direction, float rpm)
     {
@@ -308,4 +438,22 @@ public static class FieldingMath
         if (axis.sqrMagnitude < 0.000001f) return Vector3.zero;
         return axis.normalized * (Mathf.Max(0f, rpm) * 2f * Mathf.PI / 60f);
     }
+}
+
+// The arm motion read from the newest controller samples (FieldingMath.EstimateArmMotion).
+// speed and direction are separate measurements; segments == 0 means not measured.
+public struct ArmMotion
+{
+    public int segments;
+    // Weighted mean of the segment speeds, m/s.
+    public float speed;
+    // Weighted mean of the segment velocity vectors, and its direction (zero when it cancels).
+    public Vector3 velocity;
+    public Vector3 direction;
+    // Seconds covered by the segments used.
+    public float span;
+    // Speed of each segment, newest first; -1 when that segment was not used.
+    public float newestSpeed;
+    public float middleSpeed;
+    public float oldestSpeed;
 }

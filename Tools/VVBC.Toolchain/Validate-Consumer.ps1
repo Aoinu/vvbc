@@ -54,6 +54,13 @@ try {
     # no compiler binaries are copied, and this does not prove VPM feed resolution.
     $worlds = Get-Content -LiteralPath (Join-Path $project 'Packages/com.vrchat.worlds/package.json') -Raw | ConvertFrom-Json
     if ($worlds.version -ne '3.10.5') { throw 'VPM did not install the pinned Worlds SDK.' }
+    # The UI theme is a formal VPM dependency of core, resolved from its author's official listing.
+    $vrcuiRepository = 'https://kurone-kito.github.io/vpm/index.json'
+    $repositories = (& $script:vpmExecutable list repos 2>&1) -join "`n"
+    if ($repositories -notmatch [regex]::Escape('black.kit.vpm-catalog')) { Invoke-Vpm @('add', 'repo', $vrcuiRepository) }
+    Invoke-Vpm @('add', 'package', 'black.kit.vrcui@0.14.2', '-p', $project)
+    $vrcui = Get-Content -LiteralPath (Join-Path $project 'Packages/black.kit.vrcui/package.json') -Raw | ConvertFrom-Json
+    if ($vrcui.version -ne '0.14.2') { throw 'VPM did not install the pinned black.kit.vrcui.' }
     & $Python (Join-Path $PSScriptRoot 'toolchain.py') consumer-prepare --project $project --scope $Scope --tsukimi-package $TsukimiPackagePath
     if ($LASTEXITCODE -ne 0) { throw 'Consumer validation setup failed.' }
     $log = Join-Path $runRoot 'Editor.log'

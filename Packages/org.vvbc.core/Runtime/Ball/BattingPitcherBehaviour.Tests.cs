@@ -66,13 +66,11 @@ public partial class BattingPitcherBehaviour
     {
         Mimic.Join();
         _stateKnown = false;
-        _pendingSpeed = 150f;
-        _settingsPending = true;
-        CommitPendingSettings();
+        SubmitSettings(150f, 2500f, 3f, false);
         Assert.IsTrue(_settingsPending);
         Assert.AreEqual(120f, speedKmh);
         _stateKnown = true;
-        CommitPendingSettings();
+        ApplyPendingEdits();
         Assert.IsFalse(_settingsPending);
         Assert.AreEqual(150f, speedKmh);
     }
@@ -146,50 +144,59 @@ public partial class BattingPitcherBehaviour
         SetSyncedPitch(2, 10.0);
         Assert.IsTrue(AcceptPitch(1f));
         _stateKnown = true;
-        SubmitSettings(150f, 3000f, 6f, 5, 2);
+        SubmitSettings(150f, 3000f, 6f, true);
         Assert.AreEqual(150f, speedKmh);
-        Assert.AreEqual(5, courseMask);
-        Assert.AreEqual(2, pitchType);
+        Assert.AreEqual(3000f, spinRpm);
+        Assert.AreEqual(6f, resetSeconds);
+        Assert.IsTrue(IsResetOnTimer());
         Assert.AreEqual(Vector3.forward, _appliedVelocity);
+        Assert.IsFalse(_appliedOnTimer, "the committed pitch keeps its own reset rule");
         Assert.AreEqual(1, _appliedId);
         Assert.AreEqual(10.0, _appliedStart);
         Assert.AreEqual(2, _pitchId);
     }
 
     [TsukimiTest]
-    public void CourseMaskSelectsOnlyEnabledEntriesAndEmptyMeansCenter()
+    public void SettingsAreClampedToTheirRanges()
     {
-        int mask = (1 << 0) | (1 << 3) | (1 << 8);
-        Assert.AreEqual(3, CountCourses(mask));
-        Assert.AreEqual(0, SelectCourse(mask, 0));
-        Assert.AreEqual(3, SelectCourse(mask, 1));
-        Assert.AreEqual(8, SelectCourse(mask, 2));
-        Assert.AreEqual(0, CountCourses(0));
-        Assert.AreEqual(4, SelectCourse(0, 0));
-        Assert.AreEqual(0, CountCourses(1 << 12));
+        Mimic.Join();
+        _stateKnown = true;
+        SubmitSettings(500f, -10f, 1f, false);
+        Assert.AreEqual(MaxSpeedKmh, speedKmh);
+        Assert.AreEqual(MinSpinRpm, spinRpm);
+        Assert.AreEqual(MinResetSeconds, resetSeconds);
+        SubmitSettings(10f, 9000f, 60f, false);
+        Assert.AreEqual(MinSpeedKmh, speedKmh);
+        Assert.AreEqual(MaxSpinRpm, spinRpm);
+        Assert.AreEqual(MaxResetSeconds, resetSeconds);
     }
 
     [TsukimiTest]
-    public void AHeldBallPausesTheCycleUntilItIsReleased()
+    public void CourseMaskSelectsOnlyEnabledEntriesAndEmptyMeansCenter()
+    {
+        int mask = (1 << 0) | (1 << 3) | (1 << 8);
+        Assert.AreEqual(3, PitchPlaylist.CountCourses(mask));
+        Assert.AreEqual(0, PitchPlaylist.SelectCourse(mask, 0));
+        Assert.AreEqual(3, PitchPlaylist.SelectCourse(mask, 1));
+        Assert.AreEqual(8, PitchPlaylist.SelectCourse(mask, 2));
+        Assert.AreEqual(0, PitchPlaylist.CountCourses(0));
+        Assert.AreEqual(4, PitchPlaylist.SelectCourse(0, 0));
+        Assert.AreEqual(0, PitchPlaylist.CountCourses(1 << 12));
+    }
+
+    [TsukimiTest]
+    public void AHeldBallBlocksThePreparationUntilItIsReleased()
     {
         Mimic.Join();
         _initialized = true;
         _ownerReady = true;
+        _stateKnown = true;
+        _playlistState = PitchPlaylist.WithFlag(0, PitchPlaylist.RunningFlag, true);
         ball.SetProgramVariable("_localHold", BallBehaviour.HoldGlove);
+        TryAdvanceCycle();
+        Assert.IsFalse(_preparing, "a held ball is not staged");
+        Assert.AreEqual(PhaseBallHeld, CyclePhaseAt(100.0));
         BeginPreparation();
-        Assert.IsTrue(_waitingForBall, "a held ball is not staged");
-        Assert.IsFalse(_preparing);
-        ball.SetProgramVariable("_localHold", BallBehaviour.HoldFree);
-        ScheduleResume(100.0);
-        Assert.IsFalse(_waitingForBall);
-        Assert.IsTrue(_resumePending);
-        Assert.AreEqual(100.0 + resetSeconds, _resumeAt);
-        ResumeIfDue(-1f);
-        Assert.IsTrue(_resumePending, "an early event re-arms instead of resuming");
-        ball.SetProgramVariable("_localHold", BallBehaviour.HoldHand);
-        ResumeIfDue(0f);
-        Assert.IsFalse(_resumePending);
-        Assert.IsTrue(_waitingForBall, "caught again before the reset: keep waiting");
-        Assert.IsFalse(_preparing);
+        Assert.IsFalse(_preparing, "the preparation itself also refuses a held ball");
     }
 }

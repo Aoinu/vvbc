@@ -41,7 +41,8 @@ class DirectPackageTests(unittest.TestCase):
 
     def test_declared_dependencies(self):
         self.assertEqual(self.tool.check()['vpmDependencies'], {
-            MODULE.TSUKIMI: '0.10.1', 'com.vrchat.worlds': '3.10.5', 'org.vvbc.assets': '0.0.1'})
+            MODULE.TSUKIMI: '0.10.1', 'com.vrchat.worlds': '3.10.5', 'org.vvbc.assets': '0.0.1',
+            MODULE.VRCUI: '0.14.2'})
 
     def test_runtime_baseline_references_pass(self):
         path = self.root / MODULE.RUNTIME / 'VVBC.Runtime.asmdef'

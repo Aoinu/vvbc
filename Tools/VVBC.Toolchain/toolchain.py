@@ -13,6 +13,7 @@ RUNTIME = CORE + '/Runtime'
 FIXTURE = 'Tools/VVBC.Toolchain/Fixtures'
 TSUKIMI = 'com.tsukimicode.udon-tools'
 ASSETS = 'Packages/org.vvbc.assets'
+VRCUI = 'black.kit.vrcui'
 REQUIRED_RUNTIME_REFERENCES = {'TsukimiCode.UdonTools.Runtime', 'UdonSharp.Runtime', 'VRC.Udon', 'Unity.TextMeshPro'}
 
 
@@ -37,8 +38,8 @@ class Toolchain:
     def check(self):
         metadata = read_json(self.root / CORE / 'package.json')
         if metadata['name'] != 'org.vvbc.core' or metadata['vpmDependencies'] != {
-                'com.vrchat.worlds': '3.10.5', TSUKIMI: '0.10.1', 'org.vvbc.assets': '0.0.1'}:
-            raise ValueError('Core must declare exactly the verified Worlds/Tsukimi/assets dependencies')
+                'com.vrchat.worlds': '3.10.5', TSUKIMI: '0.10.1', 'org.vvbc.assets': '0.0.1', VRCUI: '0.14.2'}:
+            raise ValueError('Core must declare exactly the verified Worlds/Tsukimi/assets/VRCUI dependencies')
         if metadata.get('dependencies'):
             raise ValueError('Core dependencies are resolved through its reviewed VPM declarations')
         asmdef = read_json(self.root / RUNTIME / 'VVBC.Runtime.asmdef')
