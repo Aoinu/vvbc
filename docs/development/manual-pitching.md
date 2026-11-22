@@ -3,7 +3,7 @@
 A VR player standing on a mound pitches any of the ten pitch types with a real throwing motion.
 The right stick picks the type, the throwing controller passing the **release plate** decides
 whether a release is a pitch and where on the plate gives the control score, its speed decides
-how fast (times the type's multiplier), its palm direction against the type's ideal palm and
+how fast (times the type's multiplier), its forearm twist against the type's ideal twist and
 the release timing decide the quality, and the HMD forward picks the course. Every pitch leaves
 from the mound's fixed release point `P0`, the point the solver aimed from, never from the held
 ball or the player's body. Phase 2 pitches every type with its default build: no pitch builder,
@@ -14,7 +14,8 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 | Code | Responsibility |
 |---|---|
 | `Ball/ManualPitchMath.cs` | Pure math: pitching frame, the fixed release point `P0` (`FixedReleasePoint`), the fixed 4-Seam axis, the smoothstep, arm direction, control direction, HMD ray and smoothing, and written-out quaternion helpers (the T# test runner does not model Unity's quaternion externs). |
-| `Ball/ManualPitchQuality.cs` | Pure functions of the types: ideal flight per hand, common failure mode, arm slot, ideal palm, pose and final quality, blend (Knuckle wake included); `PitchQuality` (one release's quality) and `ManualPitchCourse` (a solved course with its type). |
+| `Ball/ManualPitchQuality.cs` | Pure functions of the types: ideal flight per hand, common failure mode, arm slot (form display), forearm twist about the finger axis, pose and final quality, blend (Knuckle wake included); `PitchQuality` (one release's quality) and `ManualPitchCourse` (a solved course with its type). |
+| `Ball/ManualPitchBehaviour.PoseFeedback.cs` | The twist protractor of a release and its live diagnostic. |
 | `Ball/ManualPitchBehaviour.PitchTypes.cs` | The mound's type selection (right stick), label above the plate, per-type builds and quality settings, courses per type. |
 | `Ball/PitchPropertiesCalculator.cs` | The physical definition of every type (shared with the batting pitcher): also `SpeedMultiplier` and `MirrorForLeftHand`. |
 | `Ball/ReleasePlateMath.cs` | Pure math of the release plate: plate frame, segment crossing, early-release prediction, position score, binary timing cap, maximum and random control error. |
@@ -79,7 +80,7 @@ ball. Every release (pitch or throw) returns to `Targeting` while the mode holds
 ## Calibration
 
 The calibration records **positions only**: where the throwing hand releases the ball. It
-gives the **arm slot** (the rotation of every type's ideal palm, see [Pose quality](#pose-quality))
+gives the **arm slot** (shown as the form only; the twist needs no slot, see [Pose quality](#pose-quality-forearm-twist))
 and the **depth, height and side of the fixed release point `P0`** (and so of the release plate
 centred on it): the controller's position relative to the mound's `ReleaseAnchor`, toward the
 plate, up and toward the throwing arm's side, stored as measured and limited to the
@@ -208,52 +209,73 @@ the whole force (Magnus and SSW, Knuckle included) is the mirror image at every 
 (`ALeftHandersFlightIsTheMirrorImageForEveryType`). The 4-Seam axis gives the left-hander's
 `(-0.8660254, -0.5, 0)`, 11-5 o'clock.
 
-### Pose quality
+### Pose quality (forearm twist)
 
-Each type has an **ideal palm normal** for a right-hander throwing straight overhand, in the
-pitching frame (x the pitcher's right, y up, z toward the plate). Inspector arrays on the mound,
-indexed by `PitchType` id (their header lists the ids): `poseEvaluation`, `idealPalmDirections`,
-`poseGoodAngles`, `poseBadAngles` (Udon-serializable plain arrays; a missing entry evaluates
-nothing, a missing or zero palm uses `ManualPitchQuality.DefaultIdealPalm`).
+Only the **forearm twist** is judged: how far the palm is turned about the **finger axis**.
+Bending the wrist (about the thumb axis) and turning it sideways (about the palm normal) are not
+judged. Each type has an **ideal twist** in degrees; Inspector arrays on the mound, indexed by
+`PitchType` id (their header lists the ids): `poseEvaluation`, `idealTwistAngles`,
+`poseGoodAngles`, `poseBadAngles` (plain arrays; a missing entry evaluates nothing or reads 0).
 
 ```text
-slot       = atan2(|x|, y) of the calibrated r (chest-relative)   0 above, 90 beside, >90 below; z ignored
-turn       = slot - referenceSlotAngle (0)
-ideal'     = ideal palm turned in the x-y plane from up toward the arm side (+x) by turn,
-             then mirrored (x negated) for a left-hander
-actual     = inverse(Qframe) * (Q * palmLocal)       Q: the throwing controller's tracking rotation
-             palmLocal = rightPalmLocal / leftPalmLocal (0, -1, 0), provisional, to check per headset
-error      = Angle(actual, ideal')
-t          = clamp01((error - good) / (bad - good));  pose = 1 - (3t^2 - 2t^3)    (1 when evaluation is off)
+finger  = inverse(Qframe) * (Q * fingerLocal)        Q: the throwing controller's tracking rotation
+palm    = inverse(Qframe) * (Q * palmLocal), made perpendicular to the finger axis
+          fingerLocal = right/leftFingerLocal (0, 0, 1), palmLocal = right/leftPalmLocal (0, -1, 0)
+          (provisional per headset; read them with showLivePalm)
+zero    = normalize(F - (F . finger) finger),  F = (0, 0, 1) toward the plate
+          the palm as close to facing the plate as the fingers allow
+twist   = signed angle from zero to palm about the finger axis, in degrees
+          pronation (the palm toward the arm side) positive, supination (toward the glove side)
+          negative; a left-hander's is mirrored, so the same number is the same hand shape
+error   = |twist - ideal| wrapped to 0..180
+t       = clamp01((error - good) / (bad - good));  pose = 1 - (3t^2 - 2t^3)    (1 when not evaluated)
 ```
 
-Only the palm direction is judged: a roll about the palm normal changes nothing. Mirroring the
-turned palm equals turning the mirrored palm the other way, so the two hands ask for mirror-image
-poses at every slot. The slot turns only the ideal palm, never the type's spin axis. A bad angle
-not above the good one is a step at the good angle; an unknown palm (non-finite) is quality 0.
-The rotation judged is the one recorded **at the plate crossing** (an early release: the rotation
-at the release); the follow-through before an auto release is never judged.
+**No arm-slot correction.** The zero is built from the fingers at the judged moment, so it turns
+with the arm: the same twist is the same hand shape overhand, sidearm or underhand, although the
+palm faces another way in the world (an overhand Slider's palm faces the glove side, a sidearm
+Slider's faces up; both read -45, `TheSameTwistIsJudgedTheSameAtEveryArmSlot`). The calibrated
+arm slot is shown as the form only. Difference from the first Phase 2 version (changed on
+purpose, after a real-client test): the palm normal was compared with a per-type ideal palm
+vector turned by the calibrated slot (`idealPalmDirections`, `referenceSlotAngle`, both removed);
+that judged the wrist bend too, and the ideal could not be read as a hand shape.
 
-Provisional (game balance, to be tuned): the 4-Seam is not evaluated, the others are; good 25 deg,
-bad 60 deg for every type; palms (right-hander, overhand):
+A twist that cannot be measured (the fingers within about 11.5 deg of the plate direction, so no
+zero; `ManualPitchQuality.MinReferenceLength`) gives an evaluated type pose quality 0 (never
+rewarded). The rotation judged is the one recorded **at the plate crossing** (an early release:
+the rotation at the release); the follow-through before an auto release is never judged.
 
-| Type | Palm | Type | Palm |
+Provisional ideal twists (game balance, to be tuned; good 35 deg, bad 45 deg for every type: a
+narrow band, so the quality falls steeply past about 40 deg and seldom stops in between, where the
+aim is only approximate, see [Aim for the quality](#aim-for-the-quality); the
+4-Seam is not evaluated):
+
+| Type | Twist | Type | Twist |
 |---|---|---|---|
-| 4-Seam | (0, 0, 1) | Sweeper | (-0.866, 0, 0.5) |
-| 2-Seam | (0.342, 0, 0.94) | Curve | (-0.707, 0.5, 0.5) |
-| Sinker | (0.5, -0.174, 0.848) | Split | (0, -0.259, 0.966) |
-| Cutter | (-0.342, 0, 0.94) | Change | (0.5, 0, 0.866) |
-| Slider | (-0.707, 0, 0.707) | Knuckle | (0, 0, 1) |
+| 4-Seam | 0 | Sweeper | -60 (supination) |
+| 2-Seam | +20 (pronation) | Curve | -75 |
+| Sinker | +35 | Split | 0 |
+| Cutter | -20 | Change | +30 |
+| Slider | -45 | Knuckle | 0 |
+
+**Record Pose** (panel, for tuning): after `recordPoseDelaySeconds` (3) to take the pose, the
+throwing hand's twist (rounded to a degree) becomes the selected type's ideal for this session,
+and the status and the log give `idealTwistAngles[<id>] = <value>` to copy into the Inspector.
+Nothing is saved to PlayerData or synced; refused outside pitcher mode, while calibrating, or with
+the fingers at the plate. The panel names twists 回内 +30° / 回外 -45°; the 3D labels, whose
+font has no Japanese, Pro +30° / Sup -45°.
 
 ### Timing and final quality
 
 ```text
 timing ideal = Ideal or Auto (ReleasePlateMath.QualityTimingIdeal)    Early and Late are outside
-quality      = min(pose, timing ideal ? 1 : qualityTimingCap)          qualityTimingCap 0.6, provisional
+quality      = min(pose, timing ideal ? 1 : qualityTimingCap)          qualityTimingCap 1 (off)
 ```
 
-Binary, never graded by how early. It applies to every type, the 4-Seam included, so an early
-4-Seam loses spin toward the failure mode even with its pose not evaluated. It shares only the
+Binary, never graded by how early. It applies to every type, the 4-Seam included, when set below
+1 (an early 4-Seam then loses spin toward the failure mode even with its pose not evaluated). The
+default is 1 (off): a cap between 0 and 1 gives every early release that in-between quality, whose
+aim is only approximate (an early Curve at 0.6 missed by about 43 cm). It shares only the
 timing classification with the control score: the control score caps Auto too, the quality does
 not, and the two caps are separate settings. `diagnosticIdealSpin` makes the quality 1.
 
@@ -270,8 +292,26 @@ q = 1: the type's ideal;  q = 0: the failure;  between:
 
 The rpm and the axis are blended separately, so two far-apart axes never cancel the spin; the
 great-circle turn never gives NaN, zero or a flip (opposite axes turn about a fixed
-perpendicular). The speed and the launch direction never depend on the quality: nothing is
-aimed again for it, so a failed breaking ball misses the course by its changed movement.
+perpendicular). The speed never depends on the quality; the launch direction does, so that the
+course stays as precise as the control score (below).
+
+### Aim for the quality
+
+Every course (a lock and the default course) is solved twice in the background: first for the
+type's ideal flight (quality 1, `D1`), then from the same `P0` at the same target and speed for
+the common failure flight (quality 0, `D0`). The release turns its aim between them by its
+quality, `slerp(D0, D1, q)`, and only then applies the control offsets, so the control score alone
+decides how far a pitch misses its course and the failure mode only changes the pitch itself
+(speed, spin, movement). Exact at quality 0 and 1 (within the solver's tolerance, every type,
+`EveryTypeIsAimedWithItsOwnFlightAndArrives`); in between only approximately, because the blended
+spin axis passes through other breaks (estimated with the shared model, aim from the default
+course at 126 km/h: up to about 40 cm for the Slider, 55 cm for the Sweeper and 58 cm for the Curve
+at q 0.3-0.6, under 10 cm for the 2-Seam, Sinker, Split and Change). The narrow good-bad band keeps
+in-between releases rare. Until the failure solve has finished (a few frames after the ideal one)
+a release uses the ideal aim for every quality; the panel's `AIM` says which aim was used
+(`aimed for quality ...`). Difference from the first Phase 2 version (changed on purpose, after a
+real-client test): nothing was aimed for the quality, and a failed breaking ball missed its course
+by 0.4-2.6 m whatever the control score.
 
 **Knuckle.** Its ideal wake is Rotating, the failure's Fixed. The blend keeps it Rotating, turns
 its axis toward the failure's direction, narrows the cone to `q x cone` and blends the
@@ -337,7 +377,9 @@ x `solverSpeedRatio` x the type's multiplier, 140 x 0.97 = 135.8 km/h for the 4-
 `Physics.gravity` and the fixed step. The mound advances it in `Update` (64 steps per frame).
 A converged solve, or the best one within `solverAcceptMeters` (0.10 m), gives `LockedReady`
 with direction `D0`; anything else returns to `Targeting`. Pressing the trigger again unlocks.
-The solver is never run at the release.
+The solver is never run at the release. After the ideal solve the lock is ready and the same
+target is solved for the failure flight (see [Aim for the quality](#aim-for-the-quality)); the
+default course waits for it, and unlocking drops it.
 
 **Switching the type** while `Solving` or `LockedReady` solves the same target and `P0` again for
 the new type (`Solving`, the lock kept); the default course is marked stale and solved again once
@@ -625,8 +667,8 @@ crossing measurement (`ArrivalStep` interpolates between frames).
 `diagnosticIdealSpin` (off; diagnostics only) keeps the type's ideal spin, axis and SSW the solver
 aimed with (quality 1), whatever the pose and timing, so that (1) the solver's own error, (2) the
 speed difference and (3) the quality-made ball change can be separated. Every type is aimed and
-flown the same way (`EveryTypeIsAimedWithItsOwnFlightAndArrives`); a failed pose is not aimed
-again for (`ASwitchSolvesTheLockAgainAndQualityIsNeverReaimed`). The 4-Seam SSW at 90 deg (arm
+flown the same way (`EveryTypeIsAimedWithItsOwnFlightAndArrives`), the ideal and the failure
+flight, and the aim follows the quality (`ASwitchSolvesTheLockAgainAndTheAimFollowsTheQuality`). The 4-Seam SSW at 90 deg (arm
 side) or at 0 deg (up) is aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`).
 With the control penalty strength above 0 the drawn control error also separates the flight from
 the solver's crossing, by design.
@@ -660,8 +702,8 @@ target. The mound follows a pitched ball in its loop only until that crossing; a
 a hit, a ground touch, another flight, a stopped flight, `arrivalTimeoutSeconds` (3 s) or leaving
 the mound ends it as **not measured** with that reason. The `Detail` text (analysis): `TYPE`
 (selected now; pitched type, its build and speed multiplier), `ARM`, `FORM` (arm-direction error,
-shown only; pose evaluation on/off, arm slot and its turn, ideal palm, palm for this slot and hand,
-actual palm, error, good/bad angles, pose quality, timing, quality cap and final quality), `PLATE`
+shown only; pose evaluation on/off, ideal and measured twist (回内 / 回外), error, good/bad angles,
+pose quality, finger axis and palm, timing, quality cap and final quality), `PLATE`
 (Actual / Predicted / None or the miss reason, crossing right/up and distance from the centre in
 cm, frames from the crossing to the release with the auto frame, or the predicted path against
 its maximum, position score, cap, final score), `CONTROL` (arm-direction penalty, strength, the
@@ -669,7 +711,34 @@ error limit at this score and after the strength, the drawn
 distance, angle and right/up components, labelled as an aimed offset, and the launch direction),
 `LAUNCH`, `SPEED` (the type's speed), `SPIN / SSW` (ideal and final rpm, axis and SSW, Rotating
 cone and phase), and the aim (target, solver crossing, actual crossing and its error). Nothing of
-the quality (palms, scores) is synced. No palm gizmo is drawn: the text is the only palm display.
+the quality (palms, scores) is synced.
+
+**Twist protractor** (`showPoseFeedback`, on; drawn only with `showReleaseFeedback`, kept until
+the next hold like the trail), about the finger axis from where the twist was judged (the actual
+crossing point, or the hand at an early release):
+- `Feedback/IdealPalm`: the ideal palm (the zero turned by the ideal twist), a thin line in one
+  fixed colour (`idealPalmColor`, cyan; grey `unevaluatedPalmColor` when not evaluated);
+- `Feedback/ActualPalm`: the measured palm, a thick line coloured by the pose quality
+  (`goodPalmColor` at 1, `warnPalmColor` at 0.5, `badPalmColor` at 0; grey when not evaluated);
+- `Feedback/GoodAngleRing`: the arc of ideal +- good (`goodArcColor`) at the line length;
+  `BadAngleRing`: the arc of ideal +- bad (`badArcColor`) at 0.8 of it (evaluated types only);
+- `Feedback/PoseLabel` (TextMeshPro): `Ideal Sup -45° / Actual Sup -20° / Error 25° Pose 80%`,
+  or why no twist was measured.
+Lines `poseArrowLength` (0.25 m) long, the measured line `poseArrowWidth` (0.008 m) wide, the
+ideal half, the arcs 0.4 of it; label `poseLabelFontSize` (0.5). A throw draws none.
+
+**Diagnostics** (off; local, nothing synced, nothing per frame while off):
+- `showLivePalm`: every frame in pitcher mode, from the throwing controller's tracking point, the
+  selected type's protractor live (`Feedback/LivePalm`, `LiveIdealPalm`, `LivePoseLabel` with the
+  numbers) and `LiveAxisX/Y/Z` (the controller's own axes, red, green, blue, 0.4 x the line
+  length), to take a pose before Record Pose or to read which controller axes are the palm and
+  the fingers (`right/leftPalmLocal`, `right/leftFingerLocal`). Off, it costs nothing per frame.
+- `showTrackingPoint`: `Feedback/TrackingPoint`, a 3 cm sphere on the tracking point every frame
+  (the point the samples, the plate check and the trail use).
+- With `showDebug`, each release also logs the held ball's centre from the tracking point in the
+  controller's axes (also on the panel's `LAUNCH` line) and every sample of the hold: time from
+  the release, position, distance past the plate plane and plate offset, with the holds the
+  samples and the release belong to.
 
 ## Recalling the ball
 
@@ -736,11 +805,14 @@ ManualPitchMound (ManualPitchBehaviour, BoxCollider trigger 3 x 2.5 x 3 m; Defau
 │   ├── CrossingMarker (0.01 m sphere)
 │   ├── HandTrail (LineRenderer)
 │   ├── PredictionLine (LineRenderer)
-│   └── PitchTypeLabel (TextMeshPro, no collider: the selected type above the plate)
+│   ├── PitchTypeLabel (TextMeshPro, no collider: the selected type above the plate)
+│   ├── IdealPalm, ActualPalm, GoodAngleRing, BadAngleRing (LineRenderers), PoseLabel (TextMeshPro): twist protractor
+│   ├── LivePalm, LiveIdealPalm, LiveAxisX/Y/Z (LineRenderers), LivePoseLabel (TextMeshPro): showLivePalm diagnostics
+│   └── TrackingPoint (3 cm sphere, no collider: showTrackingPoint diagnostics)
 ├── Panel (world-space Canvas, VRC_UiShape, ManualPitchPanelBehaviour)
 │   ├── Title, Status (Text), Result (Text, summary), Detail (Text, analysis; detailLabel)
 │   ├── DebugLabel (Text, inactive; ManualPitchBehaviour.debugLabel)
-│   ├── Buttons: Start Calibration, Cancel, Ball → Glove
+│   ├── Buttons: Start Calibration, Cancel, Ball → Glove, Record Pose
 │   └── ControlSettings (ManualPitchControlSettingsBehaviour; three sliders with labels)
 ├── MoundCenter (the pitcher's plate on the mound surface: extension and height origin)
 └── ReleaseAnchor (local 0, 1.8, 1.5: origin of the calibrated release and of the release range)

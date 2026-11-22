@@ -129,31 +129,77 @@ public partial struct PitchQuality
         Assert.AreEqual(0f, ManualPitchQuality.SlotAngle(new Vector3(float.NaN, 0f, 0f)));
     }
 
+    // 0 deg is the palm as close to facing the plate as the fingers allow; none when the fingers
+    // point (almost) at the plate.
     [TsukimiTest]
-    public void TheIdealPalmTurnsWithTheArmSlotAndIsMirroredForALeftHander()
+    public void TheZeroTwistIsThePalmClosestToThePlate()
     {
-        Vector3 slider = new Vector3(-0.707f, 0f, 0.707f).normalized;
-        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.CorrectedPalm(slider, 0f, false), slider) < 0.00001f, "overhand: as set");
-        // The arm turns from up toward the arm side: up becomes the arm side at 90 deg.
-        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.CorrectedPalm(Vector3.up, 90f, false), Vector3.right) < 0.00001f, "sidearm");
-        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.CorrectedPalm(Vector3.up, 180f, false), Vector3.down) < 0.00001f, "underhand");
-        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.CorrectedPalm(Vector3.forward, 70f, false), Vector3.forward) < 0.00001f,
-            "a palm toward the plate is the axis itself");
-        Vector3 side = ManualPitchQuality.CorrectedPalm(slider, 90f, false);
-        Assert.IsTrue(Vector3.Distance(side, new Vector3(0f, 0.707f, 0.707f).normalized) < 0.001f, "a sidearm slider's palm faces up " + side);
-        float[] slots = { 0f, 30f, 90f, 135f };
-        Vector3[] palms = { slider, Vector3.up, new Vector3(0.5f, -0.17f, 0.85f) };
-        for (int s = 0; s < slots.Length; s++)
-            for (int p = 0; p < palms.Length; p++)
-            {
-                Vector3 r = ManualPitchQuality.CorrectedPalm(palms[p], slots[s], false);
-                Vector3 l = ManualPitchQuality.CorrectedPalm(palms[p], slots[s], true);
-                Assert.IsTrue(Vector3.Distance(Mirror(r), l) < 0.00001f, "mirror images at slot " + slots[s]);
-            }
-        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.CorrectedPalm(Vector3.up, 90f, true), Vector3.left) < 0.00001f,
-            "a left-hander's sidearm turns toward its own arm side");
-        Assert.AreEqual(Vector3.zero, ManualPitchQuality.CorrectedPalm(Vector3.zero, 30f, false));
-        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.CorrectedPalm(slider, float.NaN, false), slider) < 0.00001f);
+        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.ReferencePalm(Vector3.up), Vector3.forward) < 0.00001f, "overhand");
+        Assert.IsTrue(Vector3.Distance(ManualPitchQuality.ReferencePalm(Vector3.right), Vector3.forward) < 0.00001f, "sidearm");
+        Vector3 tilted = ManualPitchQuality.ReferencePalm(new Vector3(0f, 0.8f, 0.6f));
+        Assert.IsTrue(Vector3.Distance(tilted, new Vector3(0f, -0.6f, 0.8f)) < 0.0001f, "fingers tilted toward the plate " + tilted);
+        Assert.AreEqual(Vector3.zero, ManualPitchQuality.ReferencePalm(Vector3.forward), "fingers at the plate");
+        Assert.AreEqual(Vector3.zero, ManualPitchQuality.ReferencePalm(new Vector3(0.1f, 0f, 1f)), "within about 11.5 deg");
+        Assert.AreNotEqual(Vector3.zero, ManualPitchQuality.ReferencePalm(new Vector3(0.3f, 0f, 1f)), "beyond it");
+        Assert.AreEqual(Vector3.zero, ManualPitchQuality.ReferencePalm(Vector3.zero));
+    }
+
+    // Pronation (the palm toward the arm side) is positive for both hands; the palm at a twist
+    // and the twist of a palm are each other's inverse at every finger direction.
+    [TsukimiTest]
+    public void PronationIsPositiveAndTheTwistRoundTrips()
+    {
+        Vector3 up = Vector3.up;
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(up, Vector3.forward, Vector3.right, false) - 90f) < 0.001f,
+            "a right-hander's palm to the arm side is pronation");
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(up, Vector3.forward, Vector3.left, false) + 90f) < 0.001f, "glove side: supination");
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(up, Vector3.forward, Vector3.left, true) - 90f) < 0.001f,
+            "a left-hander's arm side is pronation too");
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(up, Vector3.forward, new Vector3(0.3f, 0.5f, 1f), false) - 16.7f) < 0.1f,
+            "the tilt along the fingers is removed");
+        Vector3[] fingers = { up, Vector3.right, new Vector3(0.6f, -0.6f, 0.2f), new Vector3(-0.2f, 0.9f, -0.3f) };
+        bool[] hands = { false, true };
+        for (int f = 0; f < fingers.Length; f++)
+            for (int h = 0; h < hands.Length; h++)
+                for (int t = -170; t <= 170; t += 34)
+                {
+                    Vector3 finger = fingers[f].normalized;
+                    Vector3 reference = ManualPitchQuality.ReferencePalm(finger);
+                    Vector3 palm = ManualPitchQuality.PalmAtTwist(finger, reference, t, hands[h]);
+                    Assert.IsTrue(Mathf.Abs(Vector3.Dot(palm, finger)) < 0.0001f && Mathf.Abs(palm.magnitude - 1f) < 0.0001f);
+                    Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(finger, reference, palm, hands[h]) - t) < 0.01f, "fingers " + f + " twist " + t);
+                }
+        Assert.IsTrue(float.IsNaN(ManualPitchQuality.Twist(up, Vector3.zero, Vector3.right, false)), "no reference");
+        Assert.IsTrue(float.IsNaN(ManualPitchQuality.Twist(up, Vector3.forward, up, false)), "a palm along the fingers");
+    }
+
+    // The same twist is the same hand shape at every arm slot, and a left-hander's mirror image
+    // reads the same twist.
+    [TsukimiTest]
+    public void TheTwistNeedsNoArmSlotAndMirrorsForALeftHander()
+    {
+        // A supinated Slider palm (45 deg toward the glove side) overhand and sidearm.
+        Vector3 overhand = new Vector3(-0.7071068f, 0f, 0.7071068f);
+        Vector3 sidearm = new Vector3(0f, 0.7071068f, 0.7071068f);
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(Vector3.up, ManualPitchQuality.ReferencePalm(Vector3.up), overhand, false) + 45f) < 0.01f);
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(Vector3.right, ManualPitchQuality.ReferencePalm(Vector3.right), sidearm, false) + 45f) < 0.01f,
+            "sidearm: the same -45 though the palm faces up, not to the glove side");
+        Vector3 finger = new Vector3(0.5f, 0.8f, -0.2f).normalized;
+        Vector3 palm = ManualPitchQuality.PalmAtTwist(finger, ManualPitchQuality.ReferencePalm(finger), -30f, false);
+        Vector3 mirroredFinger = new Vector3(-finger.x, finger.y, finger.z);
+        Vector3 mirroredPalm = new Vector3(-palm.x, palm.y, palm.z);
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.Twist(mirroredFinger, ManualPitchQuality.ReferencePalm(mirroredFinger), mirroredPalm, true) + 30f) < 0.01f,
+            "the mirror image reads the same twist");
+    }
+
+    [TsukimiTest]
+    public void TheTwistErrorWrapsAround()
+    {
+        Assert.AreEqual(25f, ManualPitchQuality.TwistError(-20f, -45f));
+        Assert.AreEqual(25f, ManualPitchQuality.TwistError(-70f, -45f));
+        Assert.IsTrue(Mathf.Abs(ManualPitchQuality.TwistError(170f, -170f) - 20f) < 0.001f, "across 180");
+        Assert.AreEqual(180f, ManualPitchQuality.TwistError(0f, 180f));
+        Assert.AreEqual(180f, ManualPitchQuality.TwistError(float.NaN, 0f));
     }
 
     // ---- Pose and final quality ----

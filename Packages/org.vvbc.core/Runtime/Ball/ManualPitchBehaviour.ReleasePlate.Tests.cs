@@ -48,6 +48,27 @@ public partial class ManualPitchBehaviour
         return ResolveTrackedReleaseWithCurveOutputAt(frame * FrameSeconds, hand, IdealHand(TestChest), hand, TestPlate, TestNormal, input, 1f);
     }
 
+    // Diagnostics: the held ball against the tracking point, in the controller's own axes, and
+    // the hold's samples (with their side of the plate) for the debug log.
+    [TsukimiTest]
+    public void TheReleaseRecordsTheBallAgainstTheTrackingPoint()
+    {
+        Mimic.Join();
+        Assert.IsTrue(PlateReadyForTest());
+        showDebug = true;
+        SwingForTest(Vector2.zero, 10f, 0.05f, 3, 61);
+        Vector3 hand = PlatePointForTest(Vector2.zero, 0.2f);
+        Quaternion rotation = ManualPitchMath.AxisAngle(Vector3.up, 90f);
+        Vector3 local = new Vector3(0.02f, -0.05f, 0.08f);
+        Vector3 ball = hand + ManualPitchMath.Rotate(rotation, local);
+        SetReleaseFrame(4, 61);
+        Assert.IsTrue(ResolveTrackedReleaseWithCurveOutputAt(4 * FrameSeconds, hand, rotation, ball, TestPlate, TestNormal, InputTrigger, 1f));
+        Assert.IsTrue(Vector3.Distance(_resultBallFromTracking, local) < 0.0001f, "controller axes " + _resultBallFromTracking);
+        Assert.IsTrue(_debugSamples.StartsWith("samples 4 session release 61 plate 61"), _debugSamples);
+        Assert.IsTrue(_debugSamples.Contains("side -0.050") && _debugSamples.Contains("side 0.200"), _debugSamples);
+        Assert.IsTrue(LaunchText().Contains("ball centre from the tracking point (controller axes)"), LaunchText());
+    }
+
     // ---- Crossing and the release that follows ----
 
     // A manual release after the crossing is an Ideal pitch with the crossing's arm speed:

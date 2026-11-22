@@ -27,22 +27,26 @@ public partial class ManualPitchBehaviour
     public float pitchTypeLabelOffset = 0.06f;
 
     [Header("Pitch quality (each array is indexed by PitchType id: 0 4-Seam, 1 2-Seam, 2 Sinker, 3 Cutter, 4 Slider, 5 Sweeper, 6 Curve, 7 Split, 8 Change, 9 Knuckle)")]
-    [Tooltip("Whether the type's palm direction is evaluated, by PitchType id. Off: pose quality 1. Default: off for the 4-Seam, on for the others.")]
+    [Tooltip("Whether the type's forearm twist is evaluated, by PitchType id. Off: pose quality 1. Default: off for the 4-Seam, on for the others.")]
     public bool[] poseEvaluation = { false, true, true, true, true, true, true, true, true, true };
-    [Tooltip("Ideal palm normal at the release, by PitchType id, for a right-hander throwing straight overhand (pitching frame: x the pitcher's right, y up, z toward the plate). Turned by the arm slot and mirrored for a left-hander. An entry missing here (or zero) uses the provisional default.")]
-    public Vector3[] idealPalmDirections;
-    [Tooltip("Palm error with full quality, in degrees, by PitchType id. Provisional.")]
-    public float[] poseGoodAngles = { 25f, 25f, 25f, 25f, 25f, 25f, 25f, 25f, 25f, 25f };
-    [Tooltip("Palm error with no quality left (the common failure mode), in degrees, by PitchType id. Provisional.")]
-    public float[] poseBadAngles = { 60f, 60f, 60f, 60f, 60f, 60f, 60f, 60f, 60f, 60f };
-    [Tooltip("Arm slot the ideal palms are written for, in degrees (0 straight up, 90 to the side). The ideal palm turns by the calibrated slot minus this. Default 0.")]
-    public float referenceSlotAngle = 0f;
-    [Tooltip("Palm normal in the right controller's tracking rotation (VRChat RightHand tracking data). Provisional: check on each headset.")]
+    [Tooltip("Ideal forearm twist at the release, in degrees, by PitchType id: the palm turned about the finger axis from 0 (the palm facing the plate as far as the fingers allow); pronation (toward the arm side) positive, supination (toward the glove side) negative, the same for both hands and every arm slot. Record one in VR with the panel's Record Pose. Provisional.")]
+    public float[] idealTwistAngles = { 0f, 20f, 35f, -20f, -45f, -60f, -75f, 0f, 30f, 0f };
+    [Tooltip("Twist error with full quality, in degrees, by PitchType id. Keep it close to the bad angle: the quality then falls steeply and seldom stops in between (the aim is exact only at 0 and 1). Provisional.")]
+    public float[] poseGoodAngles = { 35f, 35f, 35f, 35f, 35f, 35f, 35f, 35f, 35f, 35f };
+    [Tooltip("Twist error with no quality left (the common failure mode), in degrees, by PitchType id. Provisional.")]
+    public float[] poseBadAngles = { 45f, 45f, 45f, 45f, 45f, 45f, 45f, 45f, 45f, 45f };
+    [Tooltip("Palm normal in the right controller's tracking rotation (VRChat RightHand tracking data). Check with showLivePalm.")]
     public Vector3 rightPalmLocal = new Vector3(0f, -1f, 0f);
-    [Tooltip("Palm normal in the left controller's tracking rotation (VRChat LeftHand tracking data). Provisional: check on each headset.")]
+    [Tooltip("Palm normal in the left controller's tracking rotation (VRChat LeftHand tracking data). Check with showLivePalm.")]
     public Vector3 leftPalmLocal = new Vector3(0f, -1f, 0f);
-    [Range(0f, 1f), Tooltip("Quality cap of a release outside the ideal timing (early, late), every type. Independent of the control timing cap. Provisional default 0.6.")]
-    public float qualityTimingCap = 0.6f;
+    [Tooltip("Finger direction (wrist to fingertips) in the right controller's tracking rotation: the axis the twist is measured about. Provisional: check with showLivePalm (blue is Z).")]
+    public Vector3 rightFingerLocal = new Vector3(0f, 0f, 1f);
+    [Tooltip("Finger direction in the left controller's tracking rotation. Provisional: check with showLivePalm.")]
+    public Vector3 leftFingerLocal = new Vector3(0f, 0f, 1f);
+    [Tooltip("Seconds between the panel's Record Pose and the recording, to take the pose. Default 3.")]
+    public float recordPoseDelaySeconds = 3f;
+    [Range(0f, 1f), Tooltip("Quality cap of a release outside the ideal timing (early, late), every type. Independent of the control timing cap. Default 1 (off): a cap between 0 and 1 gives an in-between quality, whose aim is only approximate.")]
+    public float qualityTimingCap = 1f;
     [Range(0f, 1f), Tooltip("Spin of the common failure mode, as a fraction of the 4-Seam rpm (fourSeamSpinRpm). Default 0.7.")]
     public float failureSpinRatio = 0.7f;
 
@@ -202,6 +206,8 @@ public partial class ManualPitchBehaviour
         course.target = centre ? _defaultTarget : _lockTarget;
         course.release = centre ? _defaultRelease : _lockRelease;
         course.direction = centre ? _defaultDirection : _lockDirection;
+        course.failureReady = centre ? _defaultFailureReady : _lockFailureReady;
+        course.failureDirection = centre ? _defaultFailureDirection : _lockFailureDirection;
         course.predicted = centre ? _defaultPredicted : debugPredictedTarget;
         course.solverError = centre ? _defaultSolverError : debugSolverError;
         course.converged = centre ? _defaultConverged : _lockConverged;
@@ -231,11 +237,10 @@ public partial class ManualPitchBehaviour
         return poseEvaluation != null && type >= 0 && type < poseEvaluation.Length && poseEvaluation[type];
     }
 
-    public Vector3 IdealPalm(int type)
+    public float IdealTwist(int type)
     {
-        int safe = PitchType.Safe(type);
-        Vector3 palm = idealPalmDirections != null && safe < idealPalmDirections.Length ? idealPalmDirections[safe] : Vector3.zero;
-        return ManualPitchQuality.Unit(palm) != Vector3.zero ? palm : ManualPitchQuality.DefaultIdealPalm(safe);
+        float value = idealTwistAngles != null && type >= 0 && type < idealTwistAngles.Length ? idealTwistAngles[type] : 0f;
+        return ManualPitchMath.Finite(value) ? value : 0f;
     }
 
     public float PoseGoodAngle(int type)
@@ -255,19 +260,101 @@ public partial class ManualPitchBehaviour
         PitchQuality q = new PitchQuality();
         bool left = _activeHand == GloveBehaviour.HandLeft;
         q.poseEvaluated = PoseEvaluated(type);
-        q.idealPalm = ManualPitchQuality.Unit(IdealPalm(type));
-        q.slotAngle = ManualPitchQuality.SlotAngle(_calPosition);
-        q.slotRotation = q.slotAngle - (ManualPitchMath.Finite(referenceSlotAngle) ? referenceSlotAngle : 0f);
-        q.correctedPalm = ManualPitchQuality.CorrectedPalm(q.idealPalm, q.slotRotation, left);
+        Quaternion toFrame = ManualPitchMath.Inverse(frame);
         Vector3 palmLocal = ManualPitchQuality.Unit(left ? leftPalmLocal : rightPalmLocal);
-        q.actualPalm = ManualPitchQuality.Unit(ManualPitchMath.Rotate(ManualPitchMath.Inverse(frame), ManualPitchMath.Rotate(handRotation, palmLocal)));
-        q.poseAngle = ManualPitchMath.VectorAngle(q.actualPalm, q.correctedPalm);
+        Vector3 fingerLocal = ManualPitchQuality.Unit(left ? leftFingerLocal : rightFingerLocal);
+        q.fingerAxis = ManualPitchQuality.Unit(ManualPitchMath.Rotate(toFrame, ManualPitchMath.Rotate(handRotation, fingerLocal)));
+        q.actualPalm = ManualPitchQuality.PalmAroundFingers(q.fingerAxis,
+            ManualPitchMath.Rotate(toFrame, ManualPitchMath.Rotate(handRotation, palmLocal)));
+        q.referencePalm = ManualPitchQuality.ReferencePalm(q.fingerAxis);
+        q.twistDefined = q.referencePalm != Vector3.zero && q.actualPalm != Vector3.zero;
+        q.idealTwist = IdealTwist(type);
+        q.actualTwist = q.twistDefined ? ManualPitchQuality.Twist(q.fingerAxis, q.referencePalm, q.actualPalm, left) : 0f;
+        q.idealPalm = q.twistDefined ? ManualPitchQuality.PalmAtTwist(q.fingerAxis, q.referencePalm, q.idealTwist, left) : Vector3.zero;
+        q.poseAngle = q.twistDefined ? ManualPitchQuality.TwistError(q.actualTwist, q.idealTwist) : 180f;
         q.goodAngle = PoseGoodAngle(type);
         q.badAngle = PoseBadAngle(type);
-        q.poseQuality = ManualPitchQuality.PoseQuality(q.poseEvaluated, q.poseAngle, q.goodAngle, q.badAngle);
+        // A twist that cannot be measured (fingers at the plate) is never rewarded.
+        q.poseQuality = ManualPitchQuality.PoseQuality(q.poseEvaluated, q.twistDefined ? q.poseAngle : float.NaN, q.goodAngle, q.badAngle);
         q.timingIdeal = ReleasePlateMath.QualityTimingIdeal(timing);
         q.timingCap = ManualPitchMath.Finite(qualityTimingCap) ? Mathf.Clamp01(qualityTimingCap) : 0f;
         q.finalQuality = ManualPitchQuality.FinalQuality(q.poseQuality, q.timingIdeal, q.timingCap);
         return q;
+    }
+
+    // ---- Recording an ideal twist in VR (tuning; this session only) ----
+
+    private float _recordDue;
+
+    // Panel button: after recordPoseDelaySeconds, the current twist of the throwing hand becomes
+    // the selected type's ideal twist for this session and is logged, to be copied into
+    // idealTwistAngles in the Inspector. Only in pitcher mode and not while calibrating.
+    public void RecordIdealTwist()
+    {
+        if (state == StateInactive || _calibrating)
+        {
+            statusText = state == StateInactive ? "Stand on the mound in VR with the glove on." : "Not while calibrating.";
+            Notify();
+            return;
+        }
+        float delay = ManualPitchMath.Finite(recordPoseDelaySeconds) ? Mathf.Clamp(recordPoseDelaySeconds, 0f, 10f) : 3f;
+        _recordDue = Time.time + delay;
+        statusText = "Take your " + SelectedPitchTypeName() + " release pose: recording in " + delay.ToString("F0") + " s.";
+        Notify();
+        SendCustomEventDelayedSeconds(nameof(_RecordIdealTwistNow), delay);
+    }
+
+    public void _RecordIdealTwistNow()
+    {
+        if (Time.time + 0.05f < _recordDue) return;
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (!Utilities.IsValid(player) || strikeZone == null || state == StateInactive) return;
+        Quaternion frame = ManualPitchMath.Frame(ManualPitchMath.HorizontalDirection(Vector3.zero,
+            -StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward)));
+        RecordIdealTwistAt(player.GetTrackingData(HandTracking()).rotation, frame);
+    }
+
+    // The recording itself, from an explicit controller rotation and pitching frame (tested).
+    public bool RecordIdealTwistAt(Quaternion handRotation, Quaternion frame)
+    {
+        int type = _selectedType;
+        PitchQuality q = EvaluateQuality(type, handRotation, frame, ReleasePlateMath.TimingIdeal);
+        if (!q.twistDefined)
+        {
+            statusText = "Not recorded: the fingers point at the plate (no twist).";
+            Notify();
+            return false;
+        }
+        if (idealTwistAngles == null || idealTwistAngles.Length < PitchType.Count)
+        {
+            float[] grown = new float[PitchType.Count];
+            for (int i = 0; i < grown.Length; i++) grown[i] = IdealTwist(i);
+            idealTwistAngles = grown;
+        }
+        float twist = Mathf.Round(q.actualTwist);
+        idealTwistAngles[type] = twist;
+        statusText = PitchType.Name(type) + " ideal twist set to " + TwistName(twist) +
+            " (this session only: set idealTwistAngles[" + type + "] = " + twist.ToString("F0") + " in the Inspector).";
+        Debug.Log("ManualPitch: recorded ideal twist " + PitchType.Name(type) + " idealTwistAngles[" + type + "] = " + twist.ToString("F0"));
+        Notify();
+        return true;
+    }
+
+    // A twist for the panel: pronation (回内) positive, supination (回外) negative.
+    public static string TwistName(float degrees)
+    {
+        if (!ManualPitchMath.Finite(degrees)) return "-";
+        float rounded = Mathf.Round(degrees);
+        if (rounded == 0f) return "0°";
+        return (rounded > 0f ? "回内 +" : "回外 ") + rounded.ToString("F0") + "°";
+    }
+
+    // The same for the 3D label, whose font has no Japanese: Pro +30° / Sup -45°.
+    public static string TwistLabel(float degrees)
+    {
+        if (!ManualPitchMath.Finite(degrees)) return "-";
+        float rounded = Mathf.Round(degrees);
+        if (rounded == 0f) return "0°";
+        return (rounded > 0f ? "Pro +" : "Sup ") + rounded.ToString("F0") + "°";
     }
 }

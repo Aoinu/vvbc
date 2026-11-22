@@ -140,6 +140,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public float crossingMarkerDiameter = 0.01f;
     [Tooltip("Length of the hand trail before the release, in seconds (at most 32 samples). Default 0.2.")]
     public float handTrailSeconds = 0.2f;
+    [Tooltip("Diagnostics: show the throwing-controller tracking point (the point every sample, the plate check and the hand trail use) as a small sphere every frame in pitcher mode. Default off.")]
+    public bool showTrackingPoint;
+    [Tooltip("Sphere placed on the tracking point when showTrackingPoint is on. When empty, the child Feedback/TrackingPoint is used.")]
+    public Transform trackingPointMarker;
     [Tooltip("Longest time the pitch is followed to measure where it crosses the plate plane, in seconds. Default 3.")]
     public float arrivalTimeoutSeconds = 3f;
     // Release result shown by the panel: the summary and the analysis.
@@ -305,6 +309,12 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // multiplier at the lock), in km/h.
     private float _lockSolverSpeedKmh;
     private bool _lockConverged;
+    // The lock's aim for the failure flight (quality 0), solved after the ideal one.
+    private Vector3 _lockFailureDirection;
+    private bool _lockFailureReady, _lockFailureSolving;
+    // Gravity and fixed step of the solve in progress, for its failure solve.
+    private Vector3 _solveGravity = new Vector3(0f, -9.81f, 0f);
+    private float _solveStep = 0.02f;
     // Default course (the strike zone's centre), used by a release with no locked course
     // (Targeting or Solving). Solved in the background with the same solver while no lock is
     // being solved, and solved again when the centre moves, the calibration or throwing hand
@@ -317,11 +327,21 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private PitchBuild _defaultBuild;
     private float _defaultSpeedMultiplier = 1f;
     private PitchProperties _defaultIdeal;
+    // The default course's failure aim (quality 0), solved after the ideal one.
+    private Vector3 _defaultFailureDirection, _defaultPlaneNormal;
+    private bool _defaultFailureReady, _defaultFailurePhase;
+    // The aim of the last release: blended between the two solves, and for which quality.
+    private bool _resultAimBlended;
+    private float _resultAimQuality = 1f;
     private bool _defaultReady, _defaultSolving, _defaultConverged;
     private bool _defaultDirty = true;
     private float _nextDefaultCheck;
     private bool _resultDefaultCourse;
     private int _debugToken;
+    // Diagnostics of the last release: the held ball against the tracking point (controller
+    // axes) and the hold's samples as text (only with showDebug).
+    private Vector3 _resultBallFromTracking;
+    private string _debugSamples = "";
 
     // Release result: a snapshot taken at each release and kept until the next one. Nothing
     // here is read back from the lock, the cursor or the settings after the release. The
@@ -409,6 +429,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             if (line != null) predictionLine = line.GetComponent<LineRenderer>();
         }
         if (controlSettings == null) controlSettings = GetComponentInChildren<ManualPitchControlSettingsBehaviour>(true);
+        if (trackingPointMarker == null) trackingPointMarker = transform.Find("Feedback/TrackingPoint");
+        FindPoseFeedbackChildren();
     }
 
     // Plain colour and size of the release point marker, set once with a MaterialPropertyBlock.
@@ -458,7 +480,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         SampleThrowingController();
         if (state == StateTargeting) UpdateCursorFromHead();
         else if (state == StateSolving) AdvanceSolve();
-        if (state != StateSolving && state != StateInactive) UpdateDefaultCourse();
+        else if (_lockFailureSolving) AdvanceLockFailure();
+        // The solver is shared: the default course waits while a lock (either solve) uses it.
+        if (state != StateSolving && state != StateInactive && !_lockFailureSolving) UpdateDefaultCourse();
         // The marker follows the controller while calibrating, whatever the feedback setting.
         if (_calibrating) FollowCalibrationMarker();
         if (_trackingArrival) FollowArrival();
@@ -602,6 +626,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             if (cursor != null) cursor.gameObject.SetActive(false);
             SetActive(idealMarker, false);
             SetActive(releasePlate, false);
+            SetActive(trackingPointMarker, false);
+            HideLivePalm();
             ShowPitchTypeLabel();
             _markerPlaced = false;
             ClearCrossing();
@@ -825,6 +851,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // again. Also used when the type changes while locked (the target is kept).
     private void StartLockSolve(Vector3 gravity, float fixedStep)
     {
+        _lockFailureReady = false;
+        _lockFailureSolving = false;
+        _solveGravity = gravity;
+        _solveStep = fixedStep;
         _lockType = _selectedType;
         _lockBuild = BuildFor(_lockType);
         _lockSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_lockBuild);
@@ -891,6 +921,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     {
         _defaultReady = false;
         _defaultSolving = false;
+        _defaultFailurePhase = false;
+        _defaultFailureReady = false;
         _defaultDirty = true;
         _nextDefaultCheck = 0f;
     }
@@ -903,7 +935,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (_defaultSolving)
         {
             aimSolver.Advance();
-            if (!aimSolver.solving) CompleteDefaultCourse(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
+            if (aimSolver.solving) return;
+            if (_defaultFailurePhase) CompleteDefaultFailure(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection);
+            else CompleteDefaultCourse(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection, aimSolver.predictedCrossing);
             return;
         }
         if (Time.time < _nextDefaultCheck) return;
@@ -925,6 +959,11 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (!ManualPitchMath.ValidPoint(release) || aimSolver == null || _ball == null) return false;
         _defaultReady = false;
         _defaultDirty = false;
+        _defaultFailurePhase = false;
+        _defaultFailureReady = false;
+        _defaultPlaneNormal = planeNormal;
+        _solveGravity = gravity;
+        _solveStep = fixedStep;
         _defaultTarget = target;
         _defaultRelease = release;
         _defaultType = _selectedType;
@@ -945,14 +984,62 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // solve leaves no default course until the centre moves or the inputs change.
     public void CompleteDefaultCourse(bool converged, float error, Vector3 direction, Vector3 crossing)
     {
-        if (!_defaultSolving) return;
+        if (!_defaultSolving || _defaultFailurePhase) return;
         _defaultSolving = false;
         _defaultConverged = converged;
         _defaultSolverError = error;
         _defaultPredicted = crossing;
-        _defaultReady = (converged || (ManualPitchMath.Finite(error) && error <= solverAcceptMeters)) &&
+        _defaultReady = SolveAccepted(converged, error, direction);
+        if (!_defaultReady) return;
+        _defaultDirection = direction.normalized;
+        // Then the same course for the failure flight (quality 0), with the same solver inputs.
+        if (aimSolver == null || _ball == null) return;
+        _defaultFailurePhase = true;
+        _defaultSolving = true;
+        BeginFailureSolve(_defaultRelease, _defaultTarget, _defaultPlaneNormal, _defaultSolverSpeedKmh);
+        if (!aimSolver.solving) CompleteDefaultFailure(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection);
+    }
+
+    // The default course's failure aim; refused, the course keeps the ideal aim for every quality.
+    public void CompleteDefaultFailure(bool converged, float error, Vector3 direction)
+    {
+        if (!_defaultSolving || !_defaultFailurePhase) return;
+        _defaultSolving = false;
+        _defaultFailurePhase = false;
+        _defaultFailureReady = SolveAccepted(converged, error, direction);
+        if (_defaultFailureReady) _defaultFailureDirection = direction.normalized;
+    }
+
+    // Converged, or the best solve within solverAcceptMeters, with a usable direction.
+    private bool SolveAccepted(bool converged, float error, Vector3 direction)
+    {
+        return (converged || (ManualPitchMath.Finite(error) && error <= solverAcceptMeters)) &&
             ManualPitchMath.FiniteVector(direction) && direction.sqrMagnitude > 0.5f;
-        if (_defaultReady) _defaultDirection = direction.normalized;
+    }
+
+    // The common failure flight (the type's own speed) aimed at the same target from the same P0.
+    private void BeginFailureSolve(Vector3 release, Vector3 target, Vector3 planeNormal, float solverSpeedKmh)
+    {
+        PitchProperties failure = FailureFlight();
+        WakeProfile wake = failure.wakeLocal;
+        aimSolver.BeginSolveRelativeSpin(release, target, -planeNormal, solverSpeedKmh / 3.6f, PitchPropertiesCalculator.LocalSpin(failure),
+            wake.mode, wake.coefficient, wake.direction, wake.coneAngle, wake.initialPhase, _solveGravity,
+            _ball.dragCoefficient, _ball.magnusCoefficient, _solveStep);
+    }
+
+    private void AdvanceLockFailure()
+    {
+        aimSolver.Advance();
+        if (!aimSolver.solving) CompleteLockFailure(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection);
+    }
+
+    // The lock's failure aim; refused, the lock keeps the ideal aim for every quality.
+    public void CompleteLockFailure(bool converged, float error, Vector3 direction)
+    {
+        if (!_lockFailureSolving) return;
+        _lockFailureSolving = false;
+        _lockFailureReady = state == StateLockedReady && SolveAccepted(converged, error, direction);
+        if (_lockFailureReady) _lockFailureDirection = direction.normalized;
     }
 
     private void AdvanceSolve()
@@ -969,10 +1056,18 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         debugSolverError = error;
         debugPredictedTarget = crossing;
         _lockConverged = converged;
-        if ((converged || (ManualPitchMath.Finite(error) && error <= solverAcceptMeters)) && ManualPitchMath.FiniteVector(direction) && direction.sqrMagnitude > 0.5f)
+        if (SolveAccepted(converged, error, direction))
         {
             _lockDirection = direction.normalized;
             state = StateLockedReady;
+            // Then the same target for the failure flight (quality 0); the lock is ready meanwhile
+            // with the ideal aim for every quality.
+            if (aimSolver != null && _ball != null)
+            {
+                _lockFailureSolving = true;
+                BeginFailureSolve(_lockRelease, _lockTarget, _lockPlaneNormal, _lockSolverSpeedKmh);
+                if (!aimSolver.solving) CompleteLockFailure(aimSolver.converged, aimSolver.errorMeters, aimSolver.launchDirection);
+            }
         }
         else state = StateTargeting;
         PlaceCursorLocked();
@@ -986,6 +1081,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             state = StateTargeting;
             _lockEpoch++;
         }
+        // An unfinished failure solve of the lock is dropped; the default course may use the solver again.
+        _lockFailureSolving = false;
         PlaceCursorLocked();
     }
 
@@ -1100,8 +1197,19 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         VRCPlayerApi.TrackingData hand = player.GetTrackingData(HandTracking());
         _frameController = hand.position;
         _frameValid = true;
+        ShowTrackingPoint(hand.position, hand.rotation);
+        ShowLivePalm(hand.position, hand.rotation);
         SampleArmAt(Time.time, _frameController);
         TrackPlateThisFrame(_frameController, hand.rotation);
+    }
+
+    // Diagnostics: the tracking point itself, with its rotation, every frame while switched on.
+    private void ShowTrackingPoint(Vector3 position, Quaternion rotation)
+    {
+        if (trackingPointMarker == null) return;
+        bool shown = showTrackingPoint && state != StateInactive;
+        if (shown) trackingPointMarker.SetPositionAndRotation(position, rotation);
+        if (trackingPointMarker.gameObject.activeSelf != shown) trackingPointMarker.gameObject.SetActive(shown);
     }
 
     // Stores one controller sample (FieldingMath.SampleMotion: never discarded for its speed;
@@ -1223,6 +1331,10 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         ArmMotion motion = ControllerMotion();
         bool result = ResolveReleaseCore(handPosition, handRotation, ballPosition, motion, planePoint, planeNormal,
             input, curveGiven, curveOutput);
+        // Where the held ball sat against the tracking point, in the controller's own axes.
+        _resultBallFromTracking = ManualPitchMath.FiniteVector(ballPosition) && ManualPitchMath.ValidRotation(handRotation)
+            ? ManualPitchMath.Rotate(ManualPitchMath.Inverse(handRotation), ballPosition - handPosition) : Vector3.zero;
+        _debugSamples = showDebug ? SamplesText(time) : "";
         ShowCrossingFeedback(handPosition, TrailFromSamples());
         ResetArmSamples();
         ClearCrossing();
@@ -1364,23 +1476,32 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _penaltyDirection = directionMiss == 0f ? Vector2.zero
             : ManualPitchMath.PlaneDirection(arm.direction == Vector3.zero ? Vector3.zero : ManualPitchMath.Rotate(toFrame, arm.direction) - idealLocal) * directionMiss;
 
-        // The pitch leaves from the course's fixed release point P0 along the solved direction,
-        // turned by the control offsets at the plate's front edge (no new solve). Both zero:
-        // the solved direction itself.
+        // Quality: the forearm twist (from the rotation the release is judged by) against the
+        // type's ideal twist, capped outside the ideal timing. It blends the type's ideal flight
+        // toward the common failure mode; it never changes the speed or the control. The
+        // diagnostic setting keeps the ideal flight.
+        _resultQuality = EvaluateQuality(type, handRotation, frame, _resultTiming);
+        // Where the pose was judged: the crossing (its rotation) or, early, the release itself.
+        _resultPoseValid = true;
+        _resultPoseFrame = frame;
+        _resultPoseOrigin = actual ? _crossPoint : handPosition;
+        float quality = diagnosticIdealSpin ? 1f : _resultQuality.finalQuality;
+
+        // The aim for this quality: the course was solved for the ideal flight (quality 1) and
+        // for the failure flight (quality 0), and the direction is turned between the two by the
+        // quality, so the course stays as precise as the control score whatever the quality
+        // (exact at 0 and 1; in between only approximately). Without the failure solve (not
+        // finished yet) the ideal aim. Then the control offsets at the plate's front edge turn it
+        // (no new solve); both zero: that aim itself.
+        _resultAimBlended = course.failureReady;
+        _resultAimQuality = quality;
+        Vector3 aim = course.failureReady ? ManualPitchQuality.SlerpUnit(course.failureDirection, courseDirection, quality) : courseDirection;
         float distance = Vector3.Dot(courseRelease - planePoint, planeNormal);
-        Vector3 direction = ManualPitchMath.ControlDirection(courseDirection, _penaltyDirection.x + _resultDrawError.x,
+        Vector3 direction = ManualPitchMath.ControlDirection(aim, _penaltyDirection.x + _resultDrawError.x,
             _penaltyDirection.y + _resultDrawError.y, 1f, 1f, distance);
         _resultLaunchDirection = direction;
         releasePosition = courseRelease;
         releasePitchNumber = _releaseHandSession;
-
-        // Quality: the palm (from the rotation the release is judged by) against the type's
-        // ideal palm turned by the arm slot, capped outside the ideal timing. It blends the
-        // type's ideal flight (the one the solver aimed with) toward the common failure mode;
-        // it never changes the speed or the control, and nothing is aimed again for it. The
-        // diagnostic setting keeps the ideal flight.
-        _resultQuality = EvaluateQuality(type, handRotation, frame, _resultTiming);
-        float quality = diagnosticIdealSpin ? 1f : _resultQuality.finalQuality;
         _resultIdeal = course.ideal;
         _resultFinal = ManualPitchQuality.Blend(course.ideal, FailureFlight(), quality);
         Vector3 spinLocal = PitchPropertiesCalculator.LocalSpin(_resultFinal);
@@ -1469,6 +1590,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultFinal = new PitchProperties();
         _resultQuality = new PitchQuality();
         _resultSpeedMultiplier = 1f;
+        _resultPoseValid = false;
         _resultCross = ReleasePlateMath.CrossNone;
         _resultTiming = ReleasePlateMath.TimingNone;
         _resultMiss = ReleasePlateMath.MissNone;
@@ -1528,6 +1650,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         SetActive(crossingMarker, false);
         if (handTrail != null) handTrail.positionCount = 0;
         if (predictionLine != null) predictionLine.positionCount = 0;
+        HidePoseFeedback();
     }
 
     // Shown when the release is decided and kept until the next hold: the actual or predicted
@@ -1570,6 +1693,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
                 predictionLine.SetPositions(_predictPoints);
             }
         }
+        ShowPoseFeedback();
     }
 
     // The controller samples of the last handTrailSeconds before the release, oldest first, in
@@ -1586,6 +1710,23 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     }
 
     public Vector3 TrailPoint(int index) { return _trailPoints[index]; }
+
+    // Diagnostics: the hold's controller samples, oldest first: time from the release, position,
+    // distance past the plate plane (negative: the pitcher's side) and the plate offset.
+    public string SamplesText(float releaseTime)
+    {
+        int count = _armState[FieldingMath.MotionCount];
+        string text = "samples " + count + " session release " + _releaseHandSession + " plate " + _platePrevSession +
+            " crossed " + _crossed + " plateValid " + _plate.valid;
+        for (int k = count - 1; k >= 0; k--)
+        {
+            int i = FieldingMath.MotionIndex(_armState, ArmHistory, k);
+            Vector3 p = _armWorld[i];
+            text += " | " + ((_armTimes[i] - releaseTime) * 1000f).ToString("F0") + "ms " + p.ToString("F3") +
+                " side " + ReleasePlateMath.Side(_plate, p).ToString("F3") + " off " + ReleasePlateMath.Offset(_plate, p).ToString("F3");
+        }
+        return text;
+    }
 
     // While calibrating the marker follows the throwing controller: every position can be saved.
     private void FollowCalibrationMarker()
@@ -1799,19 +1940,20 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return (value * 100f).ToString("F0") + "%";
     }
 
-    // Form: the arm-motion direction (shown only) and, for a pitch, the palm against the type's
-    // ideal palm turned by the arm slot, the angles and the quality made from it.
+    // Form: the arm-motion direction (shown only) and, for a pitch, the forearm twist against
+    // the type's ideal twist, the angles and the quality made from it.
     public string FormText()
     {
         string text = "\nFORM  arm direction error " + debugDirectionError.ToString("F0") + " deg";
         if (!_resultPitched) return text;
         PitchQuality q = _resultQuality;
         text += "\n  pose evaluation " + (q.poseEvaluated ? "on" : "off (quality 100%)") +
-            "   arm slot " + q.slotAngle.ToString("F0") + " deg (turn " + q.slotRotation.ToString("F0") + " from " +
-            (ManualPitchMath.Finite(referenceSlotAngle) ? referenceSlotAngle : 0f).ToString("F0") + ")" +
-            "\n  palm ideal " + q.idealPalm.ToString("F2") + "  for this slot and hand " + q.correctedPalm.ToString("F2") +
-            "\n  palm actual " + q.actualPalm.ToString("F2") + "   error " + q.poseAngle.ToString("F0") + " deg (good " +
-            q.goodAngle.ToString("F0") + ", bad " + q.badAngle.ToString("F0") + ")   pose " + Percent(q.poseQuality) +
+            (q.twistDefined
+                ? "\n  twist ideal " + TwistName(q.idealTwist) + "   actual " + TwistName(q.actualTwist) + "   error " +
+                    q.poseAngle.ToString("F0") + " deg"
+                : "\n  twist not measured: the fingers pointed at the plate") +
+            " (good " + q.goodAngle.ToString("F0") + ", bad " + q.badAngle.ToString("F0") + ")   pose " + Percent(q.poseQuality) +
+            "\n  finger axis " + q.fingerAxis.ToString("F2") + "   palm " + q.actualPalm.ToString("F2") +
             "\n  timing " + (q.timingIdeal ? "ideal" : "outside the ideal: cap " + Percent(q.timingCap)) +
             "   final quality " + Percent(debugQuality) + (_resultIdealSpin ? " (diagnostic: ideal flight)" : "");
         return text;
@@ -1889,6 +2031,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         text += "\nAIM  (pitcher view, from the plate's front-edge centre)";
         if (!_resultHasTarget) return text + "\n  no locked target";
         text += "\n  target   " + PlaneText(_resultTarget) + (_resultDefaultCourse ? "   (centre: no course locked)" : "");
+        if (_resultPitched)
+            text += "\n  aimed for quality " + Percent(_resultAimQuality) +
+                (_resultAimBlended ? " (between the ideal and the failure solve)" : " (failure solve not ready: the ideal aim)");
         if (_resultSolverError >= 0f)
         {
             Vector2 solver = PlaneError(_resultPredicted);
@@ -1930,6 +2075,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             text += "  (throw: from the ball centre)";
             if (_resultLaunched) text += "\n  applied " + _resultLaunchPoint.ToString("F2");
         }
+        if (_releaseHasPoints)
+            text += "\n  ball centre from the tracking point (controller axes) " + _resultBallFromTracking.ToString("F3") + " m";
         if (_releaseHasPoints && _resultHasTarget)
             text += "\n  ball centre vs P0   right " + Cm(_releaseBallOffset.x) + "  up " + Cm(_releaseBallOffset.y) +
                 "  forward " + Cm(_releaseBallOffset.z) + " cm";
@@ -1986,7 +2133,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     {
         return "PitcherMode: " + (state != StateInactive) + "  PitchState: " + ManualPitchMath.StateName(state) +
             "\nType: selected " + SelectedPitchTypeName() + "  pitched " + PitchType.Name(_resultType) + "  Quality: " +
-            (debugQuality * 100f).ToString("F0") + "% (pose " + (debugPoseQuality * 100f).ToString("F0") + "%, palm error " +
+            (debugQuality * 100f).ToString("F0") + "% (pose " + (debugPoseQuality * 100f).ToString("F0") + "%, twist error " +
             debugPoseAngle.ToString("F1") + " deg)" +
             "\nReleaseInput: " + ManualPitchMath.InputName(debugInput) + "  Recognized: " + debugRecognized + " (" + debugReason + ")" +
             "\nPlate: " + ReleasePlateMath.CrossName(_resultCross) + "  Timing: " + ReleasePlateMath.TimingName(_resultTiming) +
@@ -2007,6 +2154,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (!showDebug) return;
         string text = DebugText();
         Debug.Log("ManualPitch: " + text.Replace("\n", " | "));
+        Debug.Log("ManualPitch: ball from tracking point (controller axes) " + _resultBallFromTracking.ToString("F3") +
+            "  tracking at release " + _resultHand.ToString("F3") + "  " + _debugSamples);
         ShowDebugText(text);
         _debugToken++;
         SendCustomEventDelayedSeconds(nameof(HideReleaseDebug), Mathf.Max(0.1f, debugSeconds));

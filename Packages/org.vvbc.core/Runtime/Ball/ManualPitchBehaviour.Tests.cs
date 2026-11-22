@@ -520,7 +520,7 @@ public partial class ManualPitchBehaviour
         Assert.AreEqual(1f, debugPoseQuality, "the 4-Seam's pose is not evaluated");
         SelectPitchTypeAt(PitchType.Slider, TestGravity, 0.02f);
         LockForTest(new Vector3(0f, 0.75f, 0f));
-        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, PalmHand(new Vector3(0f, -1f, 0f)), TowardPlate()), "a failed Slider is still a pitch");
+        Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, TwistHand(IdealTwist(PitchType.Slider) + 120f), TowardPlate()), "a failed Slider is still a pitch");
         Assert.AreEqual(0f, debugPoseQuality);
     }
 
@@ -1343,6 +1343,9 @@ public partial class ManualPitchBehaviour
         for (int i = 0; i < 200 && state == StateSolving; i++) AdvanceSolve();
         Assert.AreEqual(StateLockedReady, state);
         Assert.IsTrue(Near(_lockSolverSpeedKmh, 135.8f, 0.001f), "setting changes after the lock are not used");
+        // The failure flight's aim follows in the background, before the pitch.
+        FinishLockFailureForTest();
+        Assert.IsTrue(_lockFailureReady);
         Vector3 lockDirection = _lockDirection;
         int iterations = aimSolver.iterations;
         Vector3 hand = HandAt(TestChest, Overhand);

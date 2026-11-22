@@ -29,6 +29,8 @@ public partial class ManualPitchPanelBehaviour : TsukimiBehaviour
     public void StartCalibration() { if (Clicked()) pitcher.BeginCalibration(); }
     public void CancelCalibration() { if (Clicked()) pitcher.CancelCalibration(); }
     public void RecallBall() { if (Clicked()) pitcher.RecallBall(); }
+    // Records the throwing hand's twist as the selected type's ideal after a short countdown.
+    public void RecordPose() { if (Clicked()) pitcher.RecordIdealTwist(); }
 
     private bool Clicked()
     {

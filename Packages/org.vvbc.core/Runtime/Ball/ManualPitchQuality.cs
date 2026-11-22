@@ -1,20 +1,27 @@
 using UnityEngine;
 
-// The quality of one manual pitch (Phase 2): how far the throwing hand's palm was from the
-// type's ideal palm direction (turned by the calibrated arm slot), whether the release came at
-// the ideal timing, and the final quality the release blends the type's ideal flight with the
-// common failure mode by. A snapshot of one release: nothing here is synced or recomputed.
+// The quality of one manual pitch (Phase 2): how far the forearm twist of the throwing hand
+// (its palm turned about the finger axis) was from the type's ideal twist, whether the release
+// came at the ideal timing, and the final quality the release blends the type's ideal flight
+// with the common failure mode by. A snapshot of one release: nothing here is synced or recomputed.
 public partial struct PitchQuality
 {
     public bool poseEvaluated;
-    // The type's ideal palm (right-hander, overhand reference), the ideal after the arm slot and
-    // the hand's mirror, and the measured palm; all pitch-local (x right, y up, z toward the plate).
+    // False when the fingers pointed (almost) at the plate: no 0-degree reference, no twist.
+    public bool twistDefined;
+    // At the judged moment, pitch-local (x right, y up, z toward the plate), unit: the finger
+    // axis, the 0-degree palm (the palm around the finger axis closest to the plate), the ideal
+    // palm (the reference turned by the ideal twist) and the measured palm (made perpendicular
+    // to the finger axis).
+    public Vector3 fingerAxis;
+    public Vector3 referencePalm;
     public Vector3 idealPalm;
-    public Vector3 correctedPalm;
     public Vector3 actualPalm;
-    // Calibrated arm slot (0 straight up, 90 to the side, more below) and the rotation applied.
-    public float slotAngle;
-    public float slotRotation;
+    // Twists in degrees from the reference: pronation (toward the arm side) positive, supination
+    // (toward the glove side) negative, the same for both hands.
+    public float idealTwist;
+    public float actualTwist;
+    // |actual - ideal| wrapped to 0..180; 180 when the twist is not defined.
     public float poseAngle;
     public float goodAngle;
     public float badAngle;
@@ -35,6 +42,10 @@ public struct ManualPitchCourse
     public Vector3 target;
     public Vector3 release;
     public Vector3 direction;
+    // The aim for the failure flight (quality 0), when it has been solved too; a release turns
+    // the aim between it and `direction` by its quality.
+    public bool failureReady;
+    public Vector3 failureDirection;
     public Vector3 predicted;
     public float solverError;
     public bool converged;
@@ -112,19 +123,61 @@ public static class ManualPitchQuality
         return Mathf.Atan2(x, relative.y) * Mathf.Rad2Deg;
     }
 
-    // The ideal palm for this release: the type's right-handed overhand palm turned about the
-    // pitching direction (z) by the slot rotation, the way the arm turns from straight up toward
-    // the arm side (+x), then mirrored for a left-hander (whose arm side is -x). Mirroring the
-    // turned palm equals turning the mirrored palm the other way, so both hands ask for mirror
-    // images. Unit length; zero when the palm given is zero or not finite.
-    public static Vector3 CorrectedPalm(Vector3 idealRight, float slotRotationDegrees, bool leftHanded)
+    // ---- Forearm twist about the finger axis ----
+
+    // Shortest length the plate direction keeps perpendicular to the finger axis for a 0-degree
+    // reference: fingers within about 11.5 deg of the plate direction have no twist.
+    public const float MinReferenceLength = 0.2f;
+
+    // The 0-degree palm for a finger axis: the direction perpendicular to the fingers that is
+    // closest to the plate (pitch-local +z). It turns with the arm, so the same twist means the
+    // same hand shape at every arm slot and whatever the wrist's bend. Zero when undefined.
+    public static Vector3 ReferencePalm(Vector3 finger)
     {
-        Vector3 v = Unit(idealRight);
-        if (v == Vector3.zero) return v;
-        float r = ManualPitchMath.Finite(slotRotationDegrees) ? slotRotationDegrees * Mathf.Deg2Rad : 0f;
-        float c = Mathf.Cos(r), s = Mathf.Sin(r);
-        Vector3 turned = new Vector3(v.x * c + v.y * s, -v.x * s + v.y * c, v.z);
-        return leftHanded ? new Vector3(-turned.x, turned.y, turned.z) : turned;
+        Vector3 f = Unit(finger);
+        if (f == Vector3.zero) return f;
+        Vector3 r = Vector3.forward - f * f.z;
+        float length = r.magnitude;
+        return length >= MinReferenceLength ? r / length : Vector3.zero;
+    }
+
+    // The palm made perpendicular to the finger axis (its tilt along the fingers removed).
+    public static Vector3 PalmAroundFingers(Vector3 finger, Vector3 palm)
+    {
+        Vector3 f = Unit(finger);
+        if (f == Vector3.zero) return f;
+        return Unit(palm - f * Vector3.Dot(palm, f));
+    }
+
+    // The palm's signed twist from the reference about the finger axis, in degrees (-180..180):
+    // pronation (the palm turning toward the arm side) positive. A left-hander's is mirrored, so
+    // the same number is the same hand shape for both hands. NaN when undefined.
+    public static float Twist(Vector3 finger, Vector3 reference, Vector3 palm, bool leftHanded)
+    {
+        Vector3 f = Unit(finger);
+        Vector3 n = PalmAroundFingers(f, palm);
+        if (f == Vector3.zero || n == Vector3.zero || reference == Vector3.zero) return float.NaN;
+        float a = Mathf.Atan2(Vector3.Dot(Vector3.Cross(reference, n), f), Vector3.Dot(reference, n)) * Mathf.Rad2Deg;
+        return leftHanded ? -a : a;
+    }
+
+    // The palm at a twist (degrees, pronation positive) from the reference about the finger axis.
+    public static Vector3 PalmAtTwist(Vector3 finger, Vector3 reference, float twistDegrees, bool leftHanded)
+    {
+        Vector3 f = Unit(finger);
+        if (f == Vector3.zero || reference == Vector3.zero) return Vector3.zero;
+        float t = (ManualPitchMath.Finite(twistDegrees) ? twistDegrees : 0f) * Mathf.Deg2Rad;
+        return Unit(ManualPitchMath.RotateAbout(reference, f, leftHanded ? -t : t));
+    }
+
+    // |actual - ideal| wrapped into 0..180 degrees; 180 when either is not finite.
+    public static float TwistError(float actual, float ideal)
+    {
+        if (!ManualPitchMath.Finite(actual) || !ManualPitchMath.Finite(ideal)) return 180f;
+        float d = (actual - ideal) % 360f;
+        if (d > 180f) d -= 360f;
+        if (d < -180f) d += 360f;
+        return Mathf.Abs(d);
     }
 
     // 1 when the type is not evaluated; otherwise 1 - smoothstep between good and bad angles
@@ -217,20 +270,6 @@ public static class ManualPitchQuality
         return Unit(ManualPitchMath.RotateAbout(from, axis, angle * s));
     }
 
-    // Provisional ideal palm of each type (right-hander, overhand, pitching frame): the default
-    // of the mound's idealPalmDirections entry. Game balance, not final.
-    public static Vector3 DefaultIdealPalm(int type)
-    {
-        if (type == PitchType.TwoSeam) return new Vector3(0.342f, 0f, 0.940f);
-        if (type == PitchType.Sinker) return new Vector3(0.500f, -0.174f, 0.848f);
-        if (type == PitchType.Cutter) return new Vector3(-0.342f, 0f, 0.940f);
-        if (type == PitchType.Slider) return new Vector3(-0.707f, 0f, 0.707f);
-        if (type == PitchType.Sweeper) return new Vector3(-0.866f, 0f, 0.500f);
-        if (type == PitchType.Curve) return new Vector3(-0.707f, 0.500f, 0.500f);
-        if (type == PitchType.Split) return new Vector3(0f, -0.259f, 0.966f);
-        if (type == PitchType.Change) return new Vector3(0.500f, 0f, 0.866f);
-        return Vector3.forward;
-    }
 
     public static Vector3 Unit(Vector3 v)
     {
