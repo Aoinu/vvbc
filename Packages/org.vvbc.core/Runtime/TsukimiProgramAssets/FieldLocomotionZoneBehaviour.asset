@@ -1,0 +1,2054 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7afd11a42d14b72b998b0778cf2c3e6, type: 3}
+  m_Name: FieldLocomotionZoneBehaviour
+  m_EditorClassIdentifier: 
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 721cd887f90438047a811ec9afd25de9,
+    type: 2}
+  udonAssembly: ".data_start\n    maxResolveRetries: %SystemInt32, 10\n    retryIntervalFrames:
+    %SystemInt32, 15\n    _controller: %VRCUdonUdonBehaviour, null\n    _retries:
+    %SystemInt32, 0\n    _retryPending: %SystemBoolean, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"VVBC.Locomotion.FieldLocomotionZoneBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    onPlayerTriggerEnterPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerTriggerEnter___t0: %SystemBoolean, null\n    __OnPlayerTriggerEnter___inl0__controller:
+    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerEnter___inl0____t0: %SystemInt32,
+    0\n    __OnPlayerTriggerEnter___inl0____t1: %VRCUdonUdonBehaviour, null\n   
+    __OnPlayerTriggerEnter___inl0____t2: %SystemBoolean, null\n    __OnPlayerTriggerEnter_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    onPlayerJoinedPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerJoined___t0: %SystemBoolean, null\n    __OnPlayerJoined___inl1__player:
+    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerJoined___inl1__when: %SystemString,
+    null\n    __OnPlayerJoined___inl1__zone: %UnityEngineCollider, null\n    __OnPlayerJoined___inl1____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    onPlayerRespawnPlayer: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerRespawn___t0:
+    %SystemBoolean, null\n    __OnPlayerRespawn___inl2__player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerRespawn___inl2__when: %SystemString, null\n    __OnPlayerRespawn___inl2__zone:
+    %UnityEngineCollider, null\n    __OnPlayerRespawn___inl2____t0: %SystemBoolean,
+    null\n    __OnPlayerRespawn_retjump: %SystemUInt32, 0xFFFFFFFC\n    ___RetryAssign___inl3__controller:
+    %VRCUdonUdonBehaviour, null\n    ___RetryAssign___inl3____t0: %SystemInt32, 0\n   
+    ___RetryAssign___inl3____t1: %VRCUdonUdonBehaviour, null\n    ___RetryAssign___inl3____t2:
+    %SystemBoolean, null\n    ___RetryAssign_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __ResolveController_player: %VRCSDKBaseVRCPlayerApi, null\n    __ResolveController_objects:
+    %UnityEngineGameObjectArray, null\n    __ResolveController_i: %SystemInt32, 0\n   
+    __ResolveController_candidate: %VRCUdonUdonBehaviour, null\n    __ResolveController___t0:
+    %UnityEngineGameObject, null\n    __ResolveController___t1: %UnityEngineTransform,
+    null\n    __ResolveController___t2: %UnityEngineComponentArray, null\n    __ResolveController___t3:
+    %VRCUdonUdonBehaviour, null\n    __ResolveController___t4: %SystemBoolean, null\n   
+    __ResolveController_ret: %VRCUdonUdonBehaviour, null\n    __ResolveController_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    ____typeid__has_p_0: %VRCUdonUdonBehaviour, null\n   
+    ____typeid__has_p_1: %SystemInt64, null\n    ____typeid__has_p_2: %SystemBoolean,
+    null\n    ____typeid__has_ty: %SystemType, null\n    ____typeid__has_raw: %SystemObject,
+    null\n    ____typeid__has_ids: %SystemInt64Array, null\n    ____typeid__has_boxed:
+    %SystemObject, null\n    ____typeid__has_scalar: %SystemInt64, null\n    ____typeid__has_ret:
+    %SystemBoolean, null\n    ____typeid__has_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    ____typeid__first_p_0: %UnityEngineComponentArray, null\n    ____typeid__first_p_1:
+    %SystemInt64, null\n    ____typeid__first_p_2: %SystemBoolean, null\n    ____typeid__first_n:
+    %SystemInt32, 0\n    ____typeid__first_i: %SystemInt32, 0\n    ____typeid__first_recv:
+    %VRCUdonUdonBehaviour, null\n    ____typeid__first_ret: %VRCUdonUdonBehaviour,
+    null\n    ____typeid__first_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack:
+    %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __const_0: %SystemBoolean,
+    null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2: %SystemInt32,
+    0\n    __OnPlayerTriggerEnter_intnl_0: %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_1:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_2: %SystemBoolean, null\n   
+    __OnPlayerTriggerEnter_intnl_3: %SystemBoolean, null\n    __const_3: %SystemInt32,
+    1\n    __retaddr_0: %SystemUInt32, 0x000003D0\n    __OnPlayerTriggerEnter_intnl_4:
+    %VRCUdonUdonBehaviour, null\n    __const_4: %UnityEngineObject, null\n    __OnPlayerTriggerEnter_intnl_5:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_6: %SystemBoolean, null\n   
+    __const_5: %SystemString, \"[VVBC Locomotion] local LocomotionPlayerObject not
+    found; Station not assigned\"\n    __OnPlayerTriggerEnter_intnl_7: %SystemInt32,
+    0\n    __const_6: %SystemBoolean, null\n    __const_7: %VRCUdonUdonBehaviour,
+    this\n    __const_8: %SystemString, \"_RetryAssign\"\n    __const_9: %VRCUdonCommonEnumsEventTiming,
+    null\n    __OnPlayerTriggerEnter_intnl_8: %VRCUdonUdonBehaviour, null\n    __const_10:
+    %SystemString, \"RequestEnter\"\n    __const_11: %SystemString, \"__RequestEnter_ret\"\n   
+    __OnPlayerTriggerEnter_intnl_9: %SystemObject, null\n    __OnPlayerTriggerEnter_intnl_10:
+    %SystemBoolean, null\n    __const_12: %VRCSDKBaseVRCPlayerApi, null\n    __const_13:
+    %SystemString, null\n    __const_14: %UnityEngineCollider, null\n    __const_15:
+    %SystemString, \"join\"\n    __const_16: %SystemType, null\n    __OnPlayerJoined_intnl_4:
+    %UnityEngineBounds, null\n    __OnPlayerJoined_intnl_5: %UnityEngineVector3,
+    null\n    __OnPlayerJoined_intnl_6: %SystemBoolean, null\n    __const_17: %SystemString,
+    \"[VVBC Locomotion] player is inside FieldLocomotionZone at \"\n    __OnPlayerJoined_intnl_8:
+    %SystemString, null\n    __const_18: %SystemString, \"; every spawn point must
+    be outside it\"\n    __OnPlayerJoined_intnl_9: %SystemString, null\n    __const_19:
+    %SystemString, \"respawn\"\n    __OnPlayerRespawn_intnl_4: %UnityEngineBounds,
+    null\n    __OnPlayerRespawn_intnl_5: %UnityEngineVector3, null\n    __OnPlayerRespawn_intnl_6:
+    %SystemBoolean, null\n    __OnPlayerRespawn_intnl_8: %SystemString, null\n   
+    __OnPlayerRespawn_intnl_9: %SystemString, null\n    __retaddr_1: %SystemUInt32,
+    0x00001508\n    ___RetryAssign_intnl_0: %VRCUdonUdonBehaviour, null\n    ___RetryAssign_intnl_1:
+    %SystemBoolean, null\n    ___RetryAssign_intnl_2: %SystemBoolean, null\n    ___RetryAssign_intnl_3:
+    %SystemInt32, 0\n    ___RetryAssign_intnl_4: %VRCUdonUdonBehaviour, null\n   
+    ___RetryAssign_intnl_5: %SystemObject, null\n    ___RetryAssign_intnl_6: %SystemBoolean,
+    null\n    __const_20: %UnityEngineGameObjectArray, null\n    __const_21: %UnityEngineGameObject,
+    null\n    __const_22: %UnityEngineTransform, null\n    __const_23: %UnityEngineComponentArray,
+    null\n    __ResolveController_intnl_0: %SystemBoolean, null\n    __ResolveController_intnl_2:
+    %SystemBoolean, null\n    __const_24: %SystemObject, null\n    __ResolveController_intnl_4:
+    %SystemBoolean, null\n    __ResolveController_intnl_5: %SystemInt32, 0\n    __ResolveController_intnl_6:
+    %SystemBoolean, null\n    __ResolveController_intnl_7: %UnityEngineGameObject,
+    null\n    __ResolveController_intnl_8: %SystemBoolean, null\n    __const_25:
+    %SystemType, null\n    __const_26: %SystemInt64, null\n    __retaddr_2: %SystemUInt32,
+    0x00001F40\n    __ResolveController_intnl_12: %VRCUdonUdonBehaviour, null\n   
+    __ResolveController_intnl_14: %UnityEngineGameObject, null\n    __ResolveController_intnl_15:
+    %SystemBoolean, null\n    __const_27: %SystemType, null\n    __const_28: %SystemInt64Array,
+    null\n    __const_29: %SystemInt64, null\n    __const_30: %SystemString, \"__refl_typeid\"\n   
+    ____typeid__has_intnl_0: %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean,
+    null\n    __const_31: %SystemString, \"__refl_typeids\"\n    ____typeid__has_intnl_3:
+    %SystemType, null\n    ____typeid__has_intnl_4: %SystemBoolean, null\n    ____typeid__has_intnl_5:
+    %SystemObject, null\n    ____typeid__has_intnl_6: %SystemBoolean, null\n    ____typeid__has_intnl_7:
+    %SystemInt32, 0\n    __const_32: %SystemInt32, -1\n    ____typeid__has_intnl_9:
+    %SystemType, null\n    ____typeid__has_intnl_10: %SystemBoolean, null\n    ____typeid__has_intnl_11:
+    %SystemObject, null\n    ____typeid__has_intnl_12: %SystemBoolean, null\n   
+    ____typeid__first_intnl_1: %SystemBoolean, null\n    __retaddr_3: %SystemUInt32,
+    0x000023F8\n    ____typeid__first_intnl_3: %SystemBoolean, null\n.data_end\n.code_start\n   
+    .export _onPlayerTriggerEnter\n    _onPlayerTriggerEnter:\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerTriggerEnter___inl0__controller\n        COPY\n        PUSH,
+    __const_2\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n        COPY\n       
+    PUSH, onPlayerTriggerEnterPlayer\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_0\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_1\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L0\n       
+    JUMP, __OnPlayerTriggerEnter_L1\n    __OnPlayerTriggerEnter_L0:\n        PUSH,
+    onPlayerTriggerEnterPlayer\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_2\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_3\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n    __OnPlayerTriggerEnter_L1:\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    JUMP_IF_FALSE, __OnPlayerTriggerEnter_L3\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    __OnPlayerTriggerEnter_L3:\n        PUSH, _retryPending\n        JUMP_IF_FALSE,
+    __OnPlayerTriggerEnter_L5\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    __OnPlayerTriggerEnter_L5:\n        PUSH, __const_2\n        PUSH, _retries\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __retaddr_0\n        PUSH, __ResolveController_retjump\n        COPY\n       
+    JUMP, ResolveController\n        PUSH, __recSp\n        PUSH, __const_3\n       
+    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ResolveController_ret\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    COPY\n        PUSH, __ResolveController_ret\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    COPY\n        PUSH, __ResolveController_ret\n        PUSH, __const_4\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_5\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_5\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L6\n       
+    PUSH, _retries\n        PUSH, maxResolveRetries\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_6\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L8\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n       
+    JUMP, __OnPlayerTriggerEnter_L9\n    __OnPlayerTriggerEnter_L8:\n        PUSH,
+    _retries\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n        COPY\n       
+    PUSH, _retries\n        PUSH, __const_3\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_7\n        PUSH, _retries\n        COPY\n       
+    PUSH, __const_6\n        PUSH, _retryPending\n        COPY\n        PUSH, __const_7\n       
+    PUSH, __const_8\n        PUSH, retryIntervalFrames\n        PUSH, __const_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEventDelayedFrames__SystemString_SystemInt32_VRCUdonCommonEnumsEventTiming__SystemVoid\"\n   
+    __OnPlayerTriggerEnter_L9:\n        JUMP, __OnPlayerTriggerEnter_L7\n    __OnPlayerTriggerEnter_L6:\n       
+    PUSH, __OnPlayerTriggerEnter___inl0__controller\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_8\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_8\n        PUSH, __const_10\n        EXTERN,
+    \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_8\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __OnPlayerTriggerEnter___inl0____t1\n        PUSH, __const_11\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_9\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_9\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    COPY\n    __OnPlayerTriggerEnter_L7:\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    .export _onPlayerJoined\n    _onPlayerJoined:\n        PUSH, __const_12\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        COPY\n        PUSH, __const_13\n       
+    PUSH, __OnPlayerJoined___inl1__when\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __OnPlayerJoined___inl1__zone\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerJoined___inl1____t0\n        COPY\n        PUSH, onPlayerJoinedPlayer\n       
+    PUSH, __OnPlayerJoined___t0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L1\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___t0\n        EXTERN,
+    \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n    __OnPlayerJoined_L1:\n       
+    PUSH, __OnPlayerJoined___t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L7\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, __const_15\n        PUSH, __OnPlayerJoined___inl1__when\n       
+    COPY\n        PUSH, __const_7\n        PUSH, __const_16\n        PUSH, __OnPlayerJoined___inl1__zone\n       
+    EXTERN, \"UnityEngineComponent.__GetComponent__SystemType__UnityEngineComponent\"\n       
+    PUSH, __OnPlayerJoined___inl1__zone\n        PUSH, __const_4\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___inl1____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L4\n       
+    JUMP, __OnPlayerJoined_L5\n    __OnPlayerJoined_L4:\n        PUSH, __OnPlayerJoined___inl1__zone\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        EXTERN, \"UnityEngineCollider.__get_bounds__UnityEngineBounds\"\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__GetPosition__UnityEngineVector3\"\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        EXTERN, \"UnityEngineBounds.__Contains__UnityEngineVector3__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __OnPlayerJoined_L5:\n        PUSH, __OnPlayerJoined___inl1____t0\n        JUMP_IF_FALSE,
+    __OnPlayerJoined_L6\n        JUMP, __OnPlayerJoined_L7\n    __OnPlayerJoined_L6:\n       
+    PUSH, __const_17\n        PUSH, __OnPlayerJoined___inl1__when\n        PUSH,
+    __OnPlayerJoined_intnl_8\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerJoined_intnl_8\n        PUSH, __const_18\n        PUSH, __OnPlayerJoined_intnl_9\n       
+    EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerJoined_intnl_9\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n   
+    __OnPlayerJoined_L7:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n    .export
+    _onPlayerRespawn\n    _onPlayerRespawn:\n        PUSH, __const_12\n        PUSH,
+    __OnPlayerRespawn___inl2__player\n        COPY\n        PUSH, __const_13\n       
+    PUSH, __OnPlayerRespawn___inl2__when\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __OnPlayerRespawn___inl2__zone\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerRespawn___inl2____t0\n        COPY\n        PUSH, onPlayerRespawnPlayer\n       
+    PUSH, __OnPlayerRespawn___t0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn___t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L1\n       
+    PUSH, onPlayerRespawnPlayer\n        PUSH, __OnPlayerRespawn___t0\n        EXTERN,
+    \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n    __OnPlayerRespawn_L1:\n       
+    PUSH, __OnPlayerRespawn___t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L7\n       
+    PUSH, onPlayerRespawnPlayer\n        PUSH, __OnPlayerRespawn___inl2__player\n       
+    COPY\n        PUSH, __const_19\n        PUSH, __OnPlayerRespawn___inl2__when\n       
+    COPY\n        PUSH, __const_7\n        PUSH, __const_16\n        PUSH, __OnPlayerRespawn___inl2__zone\n       
+    EXTERN, \"UnityEngineComponent.__GetComponent__SystemType__UnityEngineComponent\"\n       
+    PUSH, __OnPlayerRespawn___inl2__zone\n        PUSH, __const_4\n        PUSH,
+    __OnPlayerRespawn___inl2____t0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn___inl2____t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L4\n       
+    JUMP, __OnPlayerRespawn_L5\n    __OnPlayerRespawn_L4:\n        PUSH, __OnPlayerRespawn___inl2__zone\n       
+    PUSH, __OnPlayerRespawn_intnl_4\n        EXTERN, \"UnityEngineCollider.__get_bounds__UnityEngineBounds\"\n       
+    PUSH, __OnPlayerRespawn___inl2__player\n        PUSH, __OnPlayerRespawn_intnl_5\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__GetPosition__UnityEngineVector3\"\n       
+    PUSH, __OnPlayerRespawn_intnl_4\n        PUSH, __OnPlayerRespawn_intnl_5\n       
+    PUSH, __OnPlayerRespawn_intnl_6\n        EXTERN, \"UnityEngineBounds.__Contains__UnityEngineVector3__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn_intnl_6\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __OnPlayerRespawn_L5:\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    JUMP_IF_FALSE, __OnPlayerRespawn_L6\n        JUMP, __OnPlayerRespawn_L7\n   
+    __OnPlayerRespawn_L6:\n        PUSH, __const_17\n        PUSH, __OnPlayerRespawn___inl2__when\n       
+    PUSH, __OnPlayerRespawn_intnl_8\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerRespawn_intnl_8\n        PUSH, __const_18\n        PUSH, __OnPlayerRespawn_intnl_9\n       
+    EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerRespawn_intnl_9\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n   
+    __OnPlayerRespawn_L7:\n        JUMP_INDIRECT, __OnPlayerRespawn_retjump\n   
+    .export _RetryAssign\n    _RetryAssign:\n        PUSH, __const_1\n        PUSH,
+    ___RetryAssign___inl3__controller\n        COPY\n        PUSH, __const_2\n       
+    PUSH, ___RetryAssign___inl3____t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, ___RetryAssign___inl3____t1\n        COPY\n        PUSH, __const_0\n       
+    PUSH, ___RetryAssign___inl3____t2\n        COPY\n        PUSH, _retryPending\n       
+    JUMP_IF_FALSE, ___RetryAssign_L0\n        JUMP, ___RetryAssign_L1\n    ___RetryAssign_L0:\n       
+    JUMP_INDIRECT, ___RetryAssign_retjump\n    ___RetryAssign_L1:\n        PUSH,
+    __const_0\n        PUSH, _retryPending\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __retaddr_1\n        PUSH, __ResolveController_retjump\n        COPY\n       
+    JUMP, ResolveController\n        PUSH, __recSp\n        PUSH, __const_3\n       
+    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ResolveController_ret\n        PUSH, ___RetryAssign_intnl_0\n        COPY\n       
+    PUSH, __ResolveController_ret\n        PUSH, ___RetryAssign___inl3__controller\n       
+    COPY\n        PUSH, __ResolveController_ret\n        PUSH, __const_4\n       
+    PUSH, ___RetryAssign_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, ___RetryAssign_intnl_1\n        JUMP_IF_FALSE, ___RetryAssign_L2\n       
+    PUSH, _retries\n        PUSH, maxResolveRetries\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ___RetryAssign_intnl_2\n        JUMP_IF_FALSE, ___RetryAssign_L4\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n       
+    JUMP, ___RetryAssign_L5\n    ___RetryAssign_L4:\n        PUSH, _retries\n       
+    PUSH, ___RetryAssign___inl3____t0\n        COPY\n        PUSH, _retries\n       
+    PUSH, __const_3\n        PUSH, ___RetryAssign_intnl_3\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ___RetryAssign_intnl_3\n        PUSH, _retries\n        COPY\n        PUSH,
+    __const_6\n        PUSH, _retryPending\n        COPY\n        PUSH, __const_7\n       
+    PUSH, __const_8\n        PUSH, retryIntervalFrames\n        PUSH, __const_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEventDelayedFrames__SystemString_SystemInt32_VRCUdonCommonEnumsEventTiming__SystemVoid\"\n   
+    ___RetryAssign_L5:\n        JUMP, ___RetryAssign_L3\n    ___RetryAssign_L2:\n       
+    PUSH, ___RetryAssign___inl3__controller\n        PUSH, ___RetryAssign___inl3____t1\n       
+    COPY\n        PUSH, ___RetryAssign___inl3__controller\n        PUSH, ___RetryAssign_intnl_4\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ___RetryAssign_intnl_4\n        PUSH, __const_10\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    ___RetryAssign___inl3____t1\n        PUSH, __const_11\n        PUSH, ___RetryAssign_intnl_5\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ___RetryAssign_intnl_5\n        PUSH, ___RetryAssign___inl3____t2\n       
+    COPY\n    ___RetryAssign_L3:\n        JUMP_INDIRECT, ___RetryAssign_retjump\n   
+    ResolveController:\n        PUSH, __const_12\n        PUSH, __ResolveController_player\n       
+    COPY\n        PUSH, __const_20\n        PUSH, __ResolveController_objects\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __ResolveController_i\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_candidate\n        COPY\n       
+    PUSH, __const_21\n        PUSH, __ResolveController___t0\n        COPY\n       
+    PUSH, __const_22\n        PUSH, __ResolveController___t1\n        COPY\n       
+    PUSH, __const_23\n        PUSH, __ResolveController___t2\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __ResolveController___t4\n        COPY\n       
+    PUSH, _controller\n        PUSH, __const_4\n        PUSH, __ResolveController_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_0\n        JUMP_IF_FALSE, __ResolveController_L1\n       
+    PUSH, _controller\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L1:\n       
+    PUSH, __ResolveController_player\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
+    PUSH, __ResolveController_player\n        PUSH, __ResolveController_intnl_2\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_2\n        JUMP_IF_FALSE, __ResolveController_L2\n       
+    JUMP, __ResolveController_L3\n    __ResolveController_L2:\n        PUSH, __const_1\n       
+    PUSH, __ResolveController_ret\n        COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n   
+    __ResolveController_L3:\n        PUSH, __ResolveController_player\n        PUSH,
+    __ResolveController_objects\n        EXTERN, \"VRCSDKBaseNetworking.__GetPlayerObjects__VRCSDKBaseVRCPlayerApi__UnityEngineGameObjectArray\"\n       
+    PUSH, __ResolveController_objects\n        PUSH, __const_24\n        PUSH, __ResolveController_intnl_4\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_4\n        JUMP_IF_FALSE, __ResolveController_L5\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L5:\n       
+    PUSH, __const_2\n        PUSH, __ResolveController_i\n        COPY\n    __ResolveController_L6:\n       
+    PUSH, __ResolveController_objects\n        PUSH, __ResolveController_intnl_5\n       
+    EXTERN, \"SystemArray.__get_Length__SystemInt32\"\n        PUSH, __ResolveController_i\n       
+    PUSH, __ResolveController_intnl_5\n        PUSH, __ResolveController_intnl_6\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_6\n        JUMP_IF_FALSE, __ResolveController_L7\n       
+    PUSH, __ResolveController_objects\n        PUSH, __ResolveController_i\n       
+    PUSH, __ResolveController_intnl_7\n        EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, __ResolveController_intnl_7\n        PUSH, __const_4\n        PUSH, __ResolveController_intnl_8\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_8\n        JUMP_IF_FALSE, __ResolveController_L9\n       
+    JUMP, __ResolveController_L10\n    __ResolveController_L9:\n        PUSH, __ResolveController_objects\n       
+    PUSH, __ResolveController_i\n        PUSH, __ResolveController___t0\n       
+    EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, __ResolveController___t0\n        PUSH, __ResolveController___t1\n       
+    EXTERN, \"UnityEngineGameObject.__get_transform__UnityEngineTransform\"\n       
+    PUSH, __ResolveController___t1\n        PUSH, __const_25\n        PUSH, __ResolveController___t2\n       
+    EXTERN, \"UnityEngineComponent.__GetComponentsInChildren__SystemType__UnityEngineComponentArray\"\n       
+    PUSH, __ResolveController___t2\n        PUSH, ____typeid__first_p_0\n       
+    COPY\n        PUSH, __const_26\n        PUSH, ____typeid__first_p_1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ____typeid__first_p_2\n        COPY\n       
+    PUSH, __retaddr_2\n        PUSH, ____typeid__first_retjump\n        COPY\n       
+    JUMP, __typeid__first\n        PUSH, ____typeid__first_ret\n        PUSH, __ResolveController_candidate\n       
+    COPY\n        PUSH, ____typeid__first_ret\n        PUSH, __const_4\n        PUSH,
+    __ResolveController___t4\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController___t4\n        JUMP_IF_FALSE, __ResolveController_L11\n       
+    JUMP, __ResolveController_L12\n    __ResolveController_L11:\n        PUSH, __ResolveController_candidate\n       
+    PUSH, __ResolveController_intnl_14\n        EXTERN, \"UnityEngineComponent.__get_gameObject__UnityEngineGameObject\"\n       
+    PUSH, __ResolveController_player\n        PUSH, __ResolveController_intnl_14\n       
+    PUSH, __ResolveController_intnl_15\n        EXTERN, \"VRCSDKBaseNetworking.__IsOwner__VRCSDKBaseVRCPlayerApi_UnityEngineGameObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_15\n        PUSH, __ResolveController___t4\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __ResolveController_L12:\n        PUSH, __ResolveController___t4\n        JUMP_IF_FALSE,
+    __ResolveController_L14\n        JUMP, __ResolveController_L10\n    __ResolveController_L14:\n       
+    PUSH, __ResolveController_candidate\n        PUSH, _controller\n        COPY\n       
+    PUSH, __ResolveController_candidate\n        PUSH, __ResolveController_ret\n       
+    COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L10:\n       
+    PUSH, __ResolveController_i\n        PUSH, __const_3\n        PUSH, __ResolveController_i\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    JUMP, __ResolveController_L6\n    __ResolveController_L7:\n        PUSH, __const_1\n       
+    PUSH, __ResolveController_ret\n        COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __typeid__has:\n        PUSH,
+    __const_24\n        PUSH, ____typeid__has_raw\n        COPY\n        PUSH, ____typeid__has_p_2\n       
+    JUMP_IF_FALSE, ____typeid__has_L1\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_30\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_0\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_1\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
+    \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        JUMP_INDIRECT,
+    ____typeid__has_retjump\n    ____typeid__has_L1:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_31\n        PUSH, ____typeid__has_intnl_3\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_3\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_4\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_4\n        JUMP_IF_FALSE, ____typeid__has_L2\n       
+    JUMP, ____typeid__has_L5\n    ____typeid__has_L2:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_31\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_6\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_6\n        JUMP_IF_FALSE, ____typeid__has_L4\n       
+    JUMP, ____typeid__has_L5\n    ____typeid__has_L4:\n        PUSH, ____typeid__has_raw\n       
+    PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_intnl_7\n        EXTERN,
+    \"SystemArray.__IndexOf__SystemArray_SystemObject__SystemInt32\"\n        PUSH,
+    ____typeid__has_intnl_7\n        PUSH, __const_32\n        PUSH, ____typeid__has_ret\n       
+    EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L5:\n        PUSH,
+    ____typeid__has_p_0\n        PUSH, __const_30\n        PUSH, ____typeid__has_intnl_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_9\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_10\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_10\n        JUMP_IF_FALSE, ____typeid__has_L6\n       
+    JUMP, ____typeid__has_L9\n    ____typeid__has_L6:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_30\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_12\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_12\n        JUMP_IF_FALSE, ____typeid__has_L8\n       
+    JUMP, ____typeid__has_L9\n    ____typeid__has_L8:\n        PUSH, ____typeid__has_raw\n       
+    PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
+    \"SystemInt64.__op_Equality__SystemInt64_SystemInt64__SystemBoolean\"\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L9:\n        PUSH,
+    __const_0\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
+    ____typeid__has_retjump\n        JUMP_INDIRECT, ____typeid__has_retjump\n   
+    __typeid__first:\n        PUSH, __const_1\n        PUSH, ____typeid__first_recv\n       
+    COPY\n        PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_n\n       
+    EXTERN, \"UnityEngineComponentArray.__get_Length__SystemInt32\"\n        PUSH,
+    __const_2\n        PUSH, ____typeid__first_i\n        COPY\n    ____typeid__first_L0:\n       
+    PUSH, ____typeid__first_i\n        PUSH, ____typeid__first_n\n        PUSH, ____typeid__first_intnl_1\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ____typeid__first_intnl_1\n        JUMP_IF_FALSE, ____typeid__first_L1\n       
+    PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_i\n        PUSH,
+    ____typeid__first_recv\n        EXTERN, \"UnityEngineComponentArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, ____typeid__first_recv\n        PUSH, ____typeid__has_p_0\n        COPY\n       
+    PUSH, ____typeid__first_p_1\n        PUSH, ____typeid__has_p_1\n        COPY\n       
+    PUSH, ____typeid__first_p_2\n        PUSH, ____typeid__has_p_2\n        COPY\n       
+    PUSH, __retaddr_3\n        PUSH, ____typeid__has_retjump\n        COPY\n       
+    JUMP, __typeid__has\n        PUSH, ____typeid__has_ret\n        JUMP_IF_FALSE,
+    ____typeid__first_L3\n        PUSH, ____typeid__first_recv\n        PUSH, ____typeid__first_ret\n       
+    COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n    ____typeid__first_L3:\n       
+    PUSH, ____typeid__first_i\n        PUSH, __const_3\n        PUSH, ____typeid__first_i\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_1\n       
+    PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
+    JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
+  assemblyError: 
+  sourceCsScript: {fileID: 11500000, guid: 27d539c6daaa8a240a9bb29b803bc3a2, type: 3}
+  unresolvedCompileErrors: []
+  sourceFingerprint: c81ed5533e6ab429461d148c416b47a7ad7adb8988946ca4ee4da114246ade98
+  compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
+  generatedGpuAssets: []
+  gpuLoadSourceFields: []
+  generatedGpuMaterials: []
+  declaredBehaviourSyncMode: 1
+  fieldLabels:
+  - symbol: maxResolveRetries
+    header: 
+    tooltip: Retries when the local PlayerObject is not created yet at the entry.
+    hidden: 0
+    space: 0
+    hasRange: 0
+    rangeMin: 0
+    rangeMax: 0
+  inspectorFields:
+  - maxResolveRetries
+  - retryIntervalFrames
+  inspectorPaths:
+  - 
+  - 
+  optBeforeUasm: ".data_start\n    maxResolveRetries: %SystemInt32, 10\n    retryIntervalFrames:
+    %SystemInt32, 15\n    _controller: %VRCUdonUdonBehaviour, null\n    _retries:
+    %SystemInt32, 0\n    _retryPending: %SystemBoolean, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"VVBC.Locomotion.FieldLocomotionZoneBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    onPlayerTriggerEnterPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerTriggerEnter___t0: %SystemBoolean, null\n    __OnPlayerTriggerEnter___inl0__controller:
+    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerEnter___inl0____t0: %SystemInt32,
+    0\n    __OnPlayerTriggerEnter___inl0____t1: %VRCUdonUdonBehaviour, null\n   
+    __OnPlayerTriggerEnter___inl0____t2: %SystemBoolean, null\n    __OnPlayerTriggerEnter_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    onPlayerJoinedPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerJoined___t0: %SystemBoolean, null\n    __OnPlayerJoined___inl1__player:
+    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerJoined___inl1__when: %SystemString,
+    null\n    __OnPlayerJoined___inl1__zone: %UnityEngineCollider, null\n    __OnPlayerJoined___inl1____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    onPlayerRespawnPlayer: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerRespawn___t0:
+    %SystemBoolean, null\n    __OnPlayerRespawn___inl2__player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerRespawn___inl2__when: %SystemString, null\n    __OnPlayerRespawn___inl2__zone:
+    %UnityEngineCollider, null\n    __OnPlayerRespawn___inl2____t0: %SystemBoolean,
+    null\n    __OnPlayerRespawn_retjump: %SystemUInt32, 0xFFFFFFFC\n    ___RetryAssign___inl3__controller:
+    %VRCUdonUdonBehaviour, null\n    ___RetryAssign___inl3____t0: %SystemInt32, 0\n   
+    ___RetryAssign___inl3____t1: %VRCUdonUdonBehaviour, null\n    ___RetryAssign___inl3____t2:
+    %SystemBoolean, null\n    ___RetryAssign_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __ResolveController_player: %VRCSDKBaseVRCPlayerApi, null\n    __ResolveController_objects:
+    %UnityEngineGameObjectArray, null\n    __ResolveController_i: %SystemInt32, 0\n   
+    __ResolveController_candidate: %VRCUdonUdonBehaviour, null\n    __ResolveController___t0:
+    %UnityEngineGameObject, null\n    __ResolveController___t1: %UnityEngineTransform,
+    null\n    __ResolveController___t2: %UnityEngineComponentArray, null\n    __ResolveController___t3:
+    %VRCUdonUdonBehaviour, null\n    __ResolveController___t4: %SystemBoolean, null\n   
+    __ResolveController_ret: %VRCUdonUdonBehaviour, null\n    __ResolveController_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    ____typeid__has_p_0: %VRCUdonUdonBehaviour, null\n   
+    ____typeid__has_p_1: %SystemInt64, null\n    ____typeid__has_p_2: %SystemBoolean,
+    null\n    ____typeid__has_ty: %SystemType, null\n    ____typeid__has_raw: %SystemObject,
+    null\n    ____typeid__has_ids: %SystemInt64Array, null\n    ____typeid__has_boxed:
+    %SystemObject, null\n    ____typeid__has_scalar: %SystemInt64, null\n    ____typeid__has_ret:
+    %SystemBoolean, null\n    ____typeid__has_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    ____typeid__first_p_0: %UnityEngineComponentArray, null\n    ____typeid__first_p_1:
+    %SystemInt64, null\n    ____typeid__first_p_2: %SystemBoolean, null\n    ____typeid__first_n:
+    %SystemInt32, 0\n    ____typeid__first_i: %SystemInt32, 0\n    ____typeid__first_recv:
+    %VRCUdonUdonBehaviour, null\n    ____typeid__first_ret: %VRCUdonUdonBehaviour,
+    null\n    ____typeid__first_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack:
+    %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __const_0: %SystemBoolean,
+    null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2: %SystemInt32,
+    0\n    __OnPlayerTriggerEnter_intnl_0: %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_1:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_2: %SystemBoolean, null\n   
+    __OnPlayerTriggerEnter_intnl_3: %SystemBoolean, null\n    __const_3: %SystemInt32,
+    1\n    __retaddr_0: %SystemUInt32, 0x000003E4\n    __OnPlayerTriggerEnter_intnl_4:
+    %VRCUdonUdonBehaviour, null\n    __const_4: %UnityEngineObject, null\n    __OnPlayerTriggerEnter_intnl_5:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_6: %SystemBoolean, null\n   
+    __const_5: %SystemString, \"[VVBC Locomotion] local LocomotionPlayerObject not
+    found; Station not assigned\"\n    __OnPlayerTriggerEnter_intnl_7: %SystemInt32,
+    0\n    __const_6: %SystemBoolean, null\n    __const_7: %VRCUdonUdonBehaviour,
+    this\n    __const_8: %SystemString, \"_RetryAssign\"\n    __const_9: %VRCUdonCommonEnumsEventTiming,
+    null\n    __OnPlayerTriggerEnter_intnl_8: %VRCUdonUdonBehaviour, null\n    __const_10:
+    %SystemString, \"RequestEnter\"\n    __const_11: %SystemString, \"__RequestEnter_ret\"\n   
+    __OnPlayerTriggerEnter_intnl_9: %SystemObject, null\n    __OnPlayerTriggerEnter_intnl_10:
+    %SystemBoolean, null\n    __const_12: %VRCSDKBaseVRCPlayerApi, null\n    __const_13:
+    %SystemString, null\n    __const_14: %UnityEngineCollider, null\n    __OnPlayerJoined_intnl_0:
+    %SystemBoolean, null\n    __OnPlayerJoined_intnl_1: %SystemBoolean, null\n   
+    __const_15: %SystemString, \"join\"\n    __const_16: %SystemType, null\n    __OnPlayerJoined_intnl_2:
+    %UnityEngineCollider, null\n    __OnPlayerJoined_intnl_3: %SystemBoolean, null\n   
+    __OnPlayerJoined_intnl_4: %UnityEngineBounds, null\n    __OnPlayerJoined_intnl_5:
+    %UnityEngineVector3, null\n    __OnPlayerJoined_intnl_6: %SystemBoolean, null\n   
+    __OnPlayerJoined_intnl_7: %SystemBoolean, null\n    __const_17: %SystemString,
+    \"[VVBC Locomotion] player is inside FieldLocomotionZone at \"\n    __OnPlayerJoined_intnl_8:
+    %SystemString, null\n    __const_18: %SystemString, \"; every spawn point must
+    be outside it\"\n    __OnPlayerJoined_intnl_9: %SystemString, null\n    __OnPlayerRespawn_intnl_0:
+    %SystemBoolean, null\n    __OnPlayerRespawn_intnl_1: %SystemBoolean, null\n   
+    __const_19: %SystemString, \"respawn\"\n    __OnPlayerRespawn_intnl_2: %UnityEngineCollider,
+    null\n    __OnPlayerRespawn_intnl_3: %SystemBoolean, null\n    __OnPlayerRespawn_intnl_4:
+    %UnityEngineBounds, null\n    __OnPlayerRespawn_intnl_5: %UnityEngineVector3,
+    null\n    __OnPlayerRespawn_intnl_6: %SystemBoolean, null\n    __OnPlayerRespawn_intnl_7:
+    %SystemBoolean, null\n    __OnPlayerRespawn_intnl_8: %SystemString, null\n   
+    __OnPlayerRespawn_intnl_9: %SystemString, null\n    __retaddr_1: %SystemUInt32,
+    0x00001620\n    ___RetryAssign_intnl_0: %VRCUdonUdonBehaviour, null\n    ___RetryAssign_intnl_1:
+    %SystemBoolean, null\n    ___RetryAssign_intnl_2: %SystemBoolean, null\n    ___RetryAssign_intnl_3:
+    %SystemInt32, 0\n    ___RetryAssign_intnl_4: %VRCUdonUdonBehaviour, null\n   
+    ___RetryAssign_intnl_5: %SystemObject, null\n    ___RetryAssign_intnl_6: %SystemBoolean,
+    null\n    __const_20: %UnityEngineGameObjectArray, null\n    __const_21: %UnityEngineGameObject,
+    null\n    __const_22: %UnityEngineTransform, null\n    __const_23: %UnityEngineComponentArray,
+    null\n    __ResolveController_intnl_0: %SystemBoolean, null\n    __ResolveController_intnl_1:
+    %VRCSDKBaseVRCPlayerApi, null\n    __ResolveController_intnl_2: %SystemBoolean,
+    null\n    __ResolveController_intnl_3: %UnityEngineGameObjectArray, null\n   
+    __const_24: %SystemObject, null\n    __ResolveController_intnl_4: %SystemBoolean,
+    null\n    __ResolveController_intnl_5: %SystemInt32, 0\n    __ResolveController_intnl_6:
+    %SystemBoolean, null\n    __ResolveController_intnl_7: %UnityEngineGameObject,
+    null\n    __ResolveController_intnl_8: %SystemBoolean, null\n    __ResolveController_intnl_9:
+    %UnityEngineGameObject, null\n    __ResolveController_intnl_10: %UnityEngineTransform,
+    null\n    __const_25: %SystemType, null\n    __ResolveController_intnl_11: %UnityEngineComponentArray,
+    null\n    __const_26: %SystemInt64, null\n    __retaddr_2: %SystemUInt32, 0x000020EC\n   
+    __ResolveController_intnl_12: %VRCUdonUdonBehaviour, null\n    __ResolveController_intnl_13:
+    %SystemBoolean, null\n    __ResolveController_intnl_14: %UnityEngineGameObject,
+    null\n    __ResolveController_intnl_15: %SystemBoolean, null\n    __ResolveController_intnl_16:
+    %SystemBoolean, null\n    __ResolveController_intnl_17: %SystemInt32, 0\n   
+    __const_27: %SystemType, null\n    __const_28: %SystemInt64Array, null\n    __const_29:
+    %SystemInt64, null\n    __const_30: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
+    %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean, null\n    ____typeid__has_intnl_2:
+    %SystemBoolean, null\n    __const_31: %SystemString, \"__refl_typeids\"\n   
+    ____typeid__has_intnl_3: %SystemType, null\n    ____typeid__has_intnl_4: %SystemBoolean,
+    null\n    ____typeid__has_intnl_5: %SystemObject, null\n    ____typeid__has_intnl_6:
+    %SystemBoolean, null\n    ____typeid__has_intnl_7: %SystemInt32, 0\n    __const_32:
+    %SystemInt32, -1\n    ____typeid__has_intnl_8: %SystemBoolean, null\n    ____typeid__has_intnl_9:
+    %SystemType, null\n    ____typeid__has_intnl_10: %SystemBoolean, null\n    ____typeid__has_intnl_11:
+    %SystemObject, null\n    ____typeid__has_intnl_12: %SystemBoolean, null\n   
+    ____typeid__has_intnl_13: %SystemBoolean, null\n    ____typeid__first_intnl_0:
+    %SystemInt32, 0\n    ____typeid__first_intnl_1: %SystemBoolean, null\n    ____typeid__first_intnl_2:
+    %UnityEngineComponent, null\n    __retaddr_3: %SystemUInt32, 0x0000275C\n   
+    ____typeid__first_intnl_3: %SystemBoolean, null\n    ____typeid__first_intnl_4:
+    %SystemInt32, 0\n.data_end\n.code_start\n    .export _onPlayerTriggerEnter\n   
+    _onPlayerTriggerEnter:\n        PUSH, __const_0\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    COPY\n        PUSH, __const_1\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    COPY\n        PUSH, onPlayerTriggerEnterPlayer\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_0\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_1\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter___t0\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L0\n       
+    JUMP, __OnPlayerTriggerEnter_L1\n    __OnPlayerTriggerEnter_L0:\n        PUSH,
+    onPlayerTriggerEnterPlayer\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_2\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_3\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n    __OnPlayerTriggerEnter_L1:\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    JUMP_IF_FALSE, __OnPlayerTriggerEnter_L3\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    __OnPlayerTriggerEnter_L3:\n        PUSH, _retryPending\n        JUMP_IF_FALSE,
+    __OnPlayerTriggerEnter_L5\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    __OnPlayerTriggerEnter_L5:\n        PUSH, __const_2\n        PUSH, _retries\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __retaddr_0\n        PUSH, __ResolveController_retjump\n        COPY\n       
+    JUMP, ResolveController\n        PUSH, __recSp\n        PUSH, __const_3\n       
+    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ResolveController_ret\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n        PUSH,
+    __const_4\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_5\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L6\n       
+    PUSH, _retries\n        PUSH, maxResolveRetries\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_6\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L8\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n       
+    JUMP, __OnPlayerTriggerEnter_L9\n    __OnPlayerTriggerEnter_L8:\n        PUSH,
+    _retries\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n        COPY\n       
+    PUSH, __OnPlayerTriggerEnter___inl0____t0\n        PUSH, __const_3\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_7\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_7\n        PUSH, _retries\n        COPY\n       
+    PUSH, __const_6\n        PUSH, _retryPending\n        COPY\n        PUSH, __const_7\n       
+    PUSH, __const_8\n        PUSH, retryIntervalFrames\n        PUSH, __const_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEventDelayedFrames__SystemString_SystemInt32_VRCUdonCommonEnumsEventTiming__SystemVoid\"\n   
+    __OnPlayerTriggerEnter_L9:\n        JUMP, __OnPlayerTriggerEnter_L7\n    __OnPlayerTriggerEnter_L6:\n       
+    PUSH, __OnPlayerTriggerEnter___inl0__controller\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n        PUSH, __OnPlayerTriggerEnter_intnl_8\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_8\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_8\n        PUSH, __const_10\n        EXTERN,
+    \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_8\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __OnPlayerTriggerEnter___inl0____t1\n        PUSH, __const_11\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_9\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_9\n        PUSH, __OnPlayerTriggerEnter_intnl_10\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter_intnl_10\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    COPY\n    __OnPlayerTriggerEnter_L7:\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    .export _onPlayerJoined\n    _onPlayerJoined:\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerJoined___t0\n        COPY\n        PUSH, __const_12\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        COPY\n        PUSH, __const_13\n       
+    PUSH, __OnPlayerJoined___inl1__when\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __OnPlayerJoined___inl1__zone\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerJoined___inl1____t0\n        COPY\n        PUSH, onPlayerJoinedPlayer\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_0\n        PUSH, __OnPlayerJoined___t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L1\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined_intnl_1\n        EXTERN,
+    \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH, __OnPlayerJoined_intnl_1\n       
+    PUSH, __OnPlayerJoined___t0\n        COPY\n    __OnPlayerJoined_L1:\n       
+    PUSH, __OnPlayerJoined___t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L7\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, __const_15\n        PUSH, __OnPlayerJoined___inl1__when\n       
+    COPY\n        PUSH, __const_7\n        PUSH, __const_16\n        PUSH, __OnPlayerJoined_intnl_2\n       
+    EXTERN, \"UnityEngineComponent.__GetComponent__SystemType__UnityEngineComponent\"\n       
+    PUSH, __OnPlayerJoined_intnl_2\n        PUSH, __OnPlayerJoined___inl1__zone\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl1__zone\n        PUSH, __const_4\n       
+    PUSH, __OnPlayerJoined_intnl_3\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_3\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    COPY\n        PUSH, __OnPlayerJoined___inl1____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L4\n       
+    JUMP, __OnPlayerJoined_L5\n    __OnPlayerJoined_L4:\n        PUSH, __OnPlayerJoined___inl1__zone\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        EXTERN, \"UnityEngineCollider.__get_bounds__UnityEngineBounds\"\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__GetPosition__UnityEngineVector3\"\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        EXTERN, \"UnityEngineBounds.__Contains__UnityEngineVector3__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        PUSH, __OnPlayerJoined_intnl_7\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_7\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    COPY\n    __OnPlayerJoined_L5:\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    JUMP_IF_FALSE, __OnPlayerJoined_L6\n        JUMP, __OnPlayerJoined_L7\n    __OnPlayerJoined_L6:\n       
+    PUSH, __const_17\n        PUSH, __OnPlayerJoined___inl1__when\n        PUSH,
+    __OnPlayerJoined_intnl_8\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerJoined_intnl_8\n        PUSH, __const_18\n        PUSH, __OnPlayerJoined_intnl_9\n       
+    EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerJoined_intnl_9\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n   
+    __OnPlayerJoined_L7:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n    .export
+    _onPlayerRespawn\n    _onPlayerRespawn:\n        PUSH, __const_0\n        PUSH,
+    __OnPlayerRespawn___t0\n        COPY\n        PUSH, __const_12\n        PUSH,
+    __OnPlayerRespawn___inl2__player\n        COPY\n        PUSH, __const_13\n       
+    PUSH, __OnPlayerRespawn___inl2__when\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __OnPlayerRespawn___inl2__zone\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerRespawn___inl2____t0\n        COPY\n        PUSH, onPlayerRespawnPlayer\n       
+    PUSH, __OnPlayerRespawn_intnl_0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn_intnl_0\n        PUSH, __OnPlayerRespawn___t0\n       
+    COPY\n        PUSH, __OnPlayerRespawn___t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L1\n       
+    PUSH, onPlayerRespawnPlayer\n        PUSH, __OnPlayerRespawn_intnl_1\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerRespawn_intnl_1\n        PUSH, __OnPlayerRespawn___t0\n        COPY\n   
+    __OnPlayerRespawn_L1:\n        PUSH, __OnPlayerRespawn___t0\n        JUMP_IF_FALSE,
+    __OnPlayerRespawn_L7\n        PUSH, onPlayerRespawnPlayer\n        PUSH, __OnPlayerRespawn___inl2__player\n       
+    COPY\n        PUSH, __const_19\n        PUSH, __OnPlayerRespawn___inl2__when\n       
+    COPY\n        PUSH, __const_7\n        PUSH, __const_16\n        PUSH, __OnPlayerRespawn_intnl_2\n       
+    EXTERN, \"UnityEngineComponent.__GetComponent__SystemType__UnityEngineComponent\"\n       
+    PUSH, __OnPlayerRespawn_intnl_2\n        PUSH, __OnPlayerRespawn___inl2__zone\n       
+    COPY\n        PUSH, __OnPlayerRespawn___inl2__zone\n        PUSH, __const_4\n       
+    PUSH, __OnPlayerRespawn_intnl_3\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn_intnl_3\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    COPY\n        PUSH, __OnPlayerRespawn___inl2____t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L4\n       
+    JUMP, __OnPlayerRespawn_L5\n    __OnPlayerRespawn_L4:\n        PUSH, __OnPlayerRespawn___inl2__zone\n       
+    PUSH, __OnPlayerRespawn_intnl_4\n        EXTERN, \"UnityEngineCollider.__get_bounds__UnityEngineBounds\"\n       
+    PUSH, __OnPlayerRespawn___inl2__player\n        PUSH, __OnPlayerRespawn_intnl_5\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__GetPosition__UnityEngineVector3\"\n       
+    PUSH, __OnPlayerRespawn_intnl_4\n        PUSH, __OnPlayerRespawn_intnl_5\n       
+    PUSH, __OnPlayerRespawn_intnl_6\n        EXTERN, \"UnityEngineBounds.__Contains__UnityEngineVector3__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn_intnl_6\n        PUSH, __OnPlayerRespawn_intnl_7\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn_intnl_7\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    COPY\n    __OnPlayerRespawn_L5:\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    JUMP_IF_FALSE, __OnPlayerRespawn_L6\n        JUMP, __OnPlayerRespawn_L7\n   
+    __OnPlayerRespawn_L6:\n        PUSH, __const_17\n        PUSH, __OnPlayerRespawn___inl2__when\n       
+    PUSH, __OnPlayerRespawn_intnl_8\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerRespawn_intnl_8\n        PUSH, __const_18\n        PUSH, __OnPlayerRespawn_intnl_9\n       
+    EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerRespawn_intnl_9\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n   
+    __OnPlayerRespawn_L7:\n        JUMP_INDIRECT, __OnPlayerRespawn_retjump\n   
+    .export _RetryAssign\n    _RetryAssign:\n        PUSH, __const_1\n        PUSH,
+    ___RetryAssign___inl3__controller\n        COPY\n        PUSH, __const_2\n       
+    PUSH, ___RetryAssign___inl3____t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, ___RetryAssign___inl3____t1\n        COPY\n        PUSH, __const_0\n       
+    PUSH, ___RetryAssign___inl3____t2\n        COPY\n        PUSH, _retryPending\n       
+    JUMP_IF_FALSE, ___RetryAssign_L0\n        JUMP, ___RetryAssign_L1\n    ___RetryAssign_L0:\n       
+    JUMP_INDIRECT, ___RetryAssign_retjump\n    ___RetryAssign_L1:\n        PUSH,
+    __const_0\n        PUSH, _retryPending\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __retaddr_1\n        PUSH, __ResolveController_retjump\n        COPY\n       
+    JUMP, ResolveController\n        PUSH, __recSp\n        PUSH, __const_3\n       
+    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ResolveController_ret\n        PUSH, ___RetryAssign_intnl_0\n        COPY\n       
+    PUSH, ___RetryAssign_intnl_0\n        PUSH, ___RetryAssign___inl3__controller\n       
+    COPY\n        PUSH, ___RetryAssign___inl3__controller\n        PUSH, __const_4\n       
+    PUSH, ___RetryAssign_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, ___RetryAssign_intnl_1\n        JUMP_IF_FALSE, ___RetryAssign_L2\n       
+    PUSH, _retries\n        PUSH, maxResolveRetries\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ___RetryAssign_intnl_2\n        JUMP_IF_FALSE, ___RetryAssign_L4\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n       
+    JUMP, ___RetryAssign_L5\n    ___RetryAssign_L4:\n        PUSH, _retries\n       
+    PUSH, ___RetryAssign___inl3____t0\n        COPY\n        PUSH, ___RetryAssign___inl3____t0\n       
+    PUSH, __const_3\n        PUSH, ___RetryAssign_intnl_3\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ___RetryAssign_intnl_3\n        PUSH, _retries\n        COPY\n        PUSH,
+    __const_6\n        PUSH, _retryPending\n        COPY\n        PUSH, __const_7\n       
+    PUSH, __const_8\n        PUSH, retryIntervalFrames\n        PUSH, __const_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEventDelayedFrames__SystemString_SystemInt32_VRCUdonCommonEnumsEventTiming__SystemVoid\"\n   
+    ___RetryAssign_L5:\n        JUMP, ___RetryAssign_L3\n    ___RetryAssign_L2:\n       
+    PUSH, ___RetryAssign___inl3__controller\n        PUSH, ___RetryAssign___inl3____t1\n       
+    COPY\n        PUSH, ___RetryAssign___inl3____t1\n        PUSH, ___RetryAssign_intnl_4\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ___RetryAssign_intnl_4\n        PUSH, __const_10\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    ___RetryAssign___inl3____t1\n        PUSH, __const_11\n        PUSH, ___RetryAssign_intnl_5\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ___RetryAssign_intnl_5\n        PUSH, ___RetryAssign_intnl_6\n        COPY\n       
+    PUSH, ___RetryAssign_intnl_6\n        PUSH, ___RetryAssign___inl3____t2\n       
+    COPY\n    ___RetryAssign_L3:\n        JUMP_INDIRECT, ___RetryAssign_retjump\n   
+    ResolveController:\n        PUSH, __const_12\n        PUSH, __ResolveController_player\n       
+    COPY\n        PUSH, __const_20\n        PUSH, __ResolveController_objects\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __ResolveController_i\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_candidate\n        COPY\n       
+    PUSH, __const_21\n        PUSH, __ResolveController___t0\n        COPY\n       
+    PUSH, __const_22\n        PUSH, __ResolveController___t1\n        COPY\n       
+    PUSH, __const_23\n        PUSH, __ResolveController___t2\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __ResolveController___t3\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __ResolveController___t4\n        COPY\n       
+    PUSH, _controller\n        PUSH, __const_4\n        PUSH, __ResolveController_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_0\n        JUMP_IF_FALSE, __ResolveController_L1\n       
+    PUSH, _controller\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L1:\n       
+    PUSH, __ResolveController_intnl_1\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
+    PUSH, __ResolveController_intnl_1\n        PUSH, __ResolveController_player\n       
+    COPY\n        PUSH, __ResolveController_player\n        PUSH, __ResolveController_intnl_2\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_2\n        JUMP_IF_FALSE, __ResolveController_L2\n       
+    JUMP, __ResolveController_L3\n    __ResolveController_L2:\n        PUSH, __const_1\n       
+    PUSH, __ResolveController_ret\n        COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n   
+    __ResolveController_L3:\n        PUSH, __ResolveController_player\n        PUSH,
+    __ResolveController_intnl_3\n        EXTERN, \"VRCSDKBaseNetworking.__GetPlayerObjects__VRCSDKBaseVRCPlayerApi__UnityEngineGameObjectArray\"\n       
+    PUSH, __ResolveController_intnl_3\n        PUSH, __ResolveController_objects\n       
+    COPY\n        PUSH, __ResolveController_objects\n        PUSH, __const_24\n       
+    PUSH, __ResolveController_intnl_4\n        EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_4\n        JUMP_IF_FALSE, __ResolveController_L5\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L5:\n       
+    PUSH, __const_2\n        PUSH, __ResolveController_i\n        COPY\n        ANNOTATION,
+    \"@tsukimi loop trip=unknown no-computed-jump\"\n    __ResolveController_L6:\n       
+    PUSH, __ResolveController_objects\n        PUSH, __ResolveController_intnl_5\n       
+    EXTERN, \"SystemArray.__get_Length__SystemInt32\"\n        PUSH, __ResolveController_i\n       
+    PUSH, __ResolveController_intnl_5\n        PUSH, __ResolveController_intnl_6\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_6\n        JUMP_IF_FALSE, __ResolveController_L7\n       
+    PUSH, __ResolveController_objects\n        PUSH, __ResolveController_i\n       
+    PUSH, __ResolveController_intnl_7\n        EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, __ResolveController_intnl_7\n        PUSH, __const_4\n        PUSH, __ResolveController_intnl_8\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_8\n        JUMP_IF_FALSE, __ResolveController_L9\n       
+    JUMP, __ResolveController_L10\n    __ResolveController_L9:\n        PUSH, __ResolveController_objects\n       
+    PUSH, __ResolveController_i\n        PUSH, __ResolveController_intnl_9\n       
+    EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, __ResolveController_intnl_9\n        PUSH, __ResolveController___t0\n       
+    COPY\n        PUSH, __ResolveController___t0\n        PUSH, __ResolveController_intnl_10\n       
+    EXTERN, \"UnityEngineGameObject.__get_transform__UnityEngineTransform\"\n       
+    PUSH, __ResolveController_intnl_10\n        PUSH, __ResolveController___t1\n       
+    COPY\n        PUSH, __ResolveController___t1\n        PUSH, __const_25\n       
+    PUSH, __ResolveController_intnl_11\n        EXTERN, \"UnityEngineComponent.__GetComponentsInChildren__SystemType__UnityEngineComponentArray\"\n       
+    PUSH, __ResolveController_intnl_11\n        PUSH, __ResolveController___t2\n       
+    COPY\n        PUSH, __ResolveController___t2\n        PUSH, ____typeid__first_p_0\n       
+    COPY\n        PUSH, __const_26\n        PUSH, ____typeid__first_p_1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ____typeid__first_p_2\n        COPY\n       
+    PUSH, __retaddr_2\n        PUSH, ____typeid__first_retjump\n        COPY\n       
+    JUMP, __typeid__first\n        PUSH, ____typeid__first_ret\n        PUSH, __ResolveController_intnl_12\n       
+    COPY\n        PUSH, __ResolveController_intnl_12\n        PUSH, __ResolveController___t3\n       
+    COPY\n        PUSH, __ResolveController___t3\n        PUSH, __ResolveController_candidate\n       
+    COPY\n        PUSH, __ResolveController_candidate\n        PUSH, __const_4\n       
+    PUSH, __ResolveController_intnl_13\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_13\n        PUSH, __ResolveController___t4\n       
+    COPY\n        PUSH, __ResolveController___t4\n        JUMP_IF_FALSE, __ResolveController_L11\n       
+    JUMP, __ResolveController_L12\n    __ResolveController_L11:\n        PUSH, __ResolveController_candidate\n       
+    PUSH, __ResolveController_intnl_14\n        EXTERN, \"UnityEngineComponent.__get_gameObject__UnityEngineGameObject\"\n       
+    PUSH, __ResolveController_player\n        PUSH, __ResolveController_intnl_14\n       
+    PUSH, __ResolveController_intnl_15\n        EXTERN, \"VRCSDKBaseNetworking.__IsOwner__VRCSDKBaseVRCPlayerApi_UnityEngineGameObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_15\n        PUSH, __ResolveController_intnl_16\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_16\n        PUSH, __ResolveController___t4\n       
+    COPY\n    __ResolveController_L12:\n        PUSH, __ResolveController___t4\n       
+    JUMP_IF_FALSE, __ResolveController_L14\n        JUMP, __ResolveController_L10\n   
+    __ResolveController_L14:\n        PUSH, __ResolveController_candidate\n       
+    PUSH, _controller\n        COPY\n        PUSH, __ResolveController_candidate\n       
+    PUSH, __ResolveController_ret\n        COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n   
+    __ResolveController_L10:\n        PUSH, __ResolveController_i\n        PUSH,
+    __const_3\n        PUSH, __ResolveController_intnl_17\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __ResolveController_intnl_17\n        PUSH, __ResolveController_i\n       
+    COPY\n        JUMP, __ResolveController_L6\n    __ResolveController_L7:\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n        JUMP_INDIRECT, __ResolveController_retjump\n   
+    __typeid__has:\n        PUSH, __const_27\n        PUSH, ____typeid__has_ty\n       
+    COPY\n        PUSH, __const_24\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, __const_28\n        PUSH, ____typeid__has_ids\n        COPY\n        PUSH,
+    __const_24\n        PUSH, ____typeid__has_boxed\n        COPY\n        PUSH,
+    __const_29\n        PUSH, ____typeid__has_scalar\n        COPY\n        PUSH,
+    ____typeid__has_p_2\n        JUMP_IF_FALSE, ____typeid__has_L1\n        PUSH,
+    ____typeid__has_p_0\n        PUSH, __const_30\n        PUSH, ____typeid__has_intnl_0\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_0\n        PUSH, ____typeid__has_ty\n        COPY\n       
+    PUSH, ____typeid__has_ty\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_1\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_1\n        PUSH, ____typeid__has_intnl_2\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_2\n        PUSH, ____typeid__has_ret\n        COPY\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L1:\n        PUSH,
+    ____typeid__has_p_0\n        PUSH, __const_31\n        PUSH, ____typeid__has_intnl_3\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_3\n        PUSH, ____typeid__has_ty\n        COPY\n       
+    PUSH, ____typeid__has_ty\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_4\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_4\n        JUMP_IF_FALSE, ____typeid__has_L2\n       
+    JUMP, ____typeid__has_L5\n    ____typeid__has_L2:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_31\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, ____typeid__has_raw\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_6\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_6\n        JUMP_IF_FALSE, ____typeid__has_L4\n       
+    JUMP, ____typeid__has_L5\n    ____typeid__has_L4:\n        PUSH, ____typeid__has_raw\n       
+    PUSH, ____typeid__has_ids\n        COPY\n        PUSH, ____typeid__has_p_1\n       
+    PUSH, ____typeid__has_boxed\n        COPY\n        PUSH, ____typeid__has_ids\n       
+    PUSH, ____typeid__has_boxed\n        PUSH, ____typeid__has_intnl_7\n        EXTERN,
+    \"SystemArray.__IndexOf__SystemArray_SystemObject__SystemInt32\"\n        PUSH,
+    ____typeid__has_intnl_7\n        PUSH, __const_32\n        PUSH, ____typeid__has_intnl_8\n       
+    EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_8\n        PUSH, ____typeid__has_ret\n        COPY\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L5:\n        PUSH,
+    ____typeid__has_p_0\n        PUSH, __const_30\n        PUSH, ____typeid__has_intnl_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_9\n        PUSH, ____typeid__has_ty\n        COPY\n       
+    PUSH, ____typeid__has_ty\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_10\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_10\n        JUMP_IF_FALSE, ____typeid__has_L6\n       
+    JUMP, ____typeid__has_L9\n    ____typeid__has_L6:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_30\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, ____typeid__has_raw\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_12\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_12\n        JUMP_IF_FALSE, ____typeid__has_L8\n       
+    JUMP, ____typeid__has_L9\n    ____typeid__has_L8:\n        PUSH, ____typeid__has_raw\n       
+    PUSH, ____typeid__has_scalar\n        COPY\n        PUSH, ____typeid__has_scalar\n       
+    PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_intnl_13\n        EXTERN,
+    \"SystemInt64.__op_Equality__SystemInt64_SystemInt64__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_13\n        PUSH, ____typeid__has_ret\n        COPY\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L9:\n        PUSH,
+    __const_0\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
+    ____typeid__has_retjump\n        JUMP_INDIRECT, ____typeid__has_retjump\n   
+    __typeid__first:\n        PUSH, __const_2\n        PUSH, ____typeid__first_n\n       
+    COPY\n        PUSH, __const_2\n        PUSH, ____typeid__first_i\n        COPY\n       
+    PUSH, __const_1\n        PUSH, ____typeid__first_recv\n        COPY\n       
+    PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_intnl_0\n       
+    EXTERN, \"UnityEngineComponentArray.__get_Length__SystemInt32\"\n        PUSH,
+    ____typeid__first_intnl_0\n        PUSH, ____typeid__first_n\n        COPY\n       
+    PUSH, __const_2\n        PUSH, ____typeid__first_i\n        COPY\n    ____typeid__first_L0:\n       
+    PUSH, ____typeid__first_i\n        PUSH, ____typeid__first_n\n        PUSH, ____typeid__first_intnl_1\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ____typeid__first_intnl_1\n        JUMP_IF_FALSE, ____typeid__first_L1\n       
+    PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_i\n        PUSH,
+    ____typeid__first_intnl_2\n        EXTERN, \"UnityEngineComponentArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, ____typeid__first_intnl_2\n        PUSH, ____typeid__first_recv\n       
+    COPY\n        PUSH, ____typeid__first_recv\n        PUSH, ____typeid__has_p_0\n       
+    COPY\n        PUSH, ____typeid__first_p_1\n        PUSH, ____typeid__has_p_1\n       
+    COPY\n        PUSH, ____typeid__first_p_2\n        PUSH, ____typeid__has_p_2\n       
+    COPY\n        PUSH, __retaddr_3\n        PUSH, ____typeid__has_retjump\n       
+    COPY\n        JUMP, __typeid__has\n        PUSH, ____typeid__has_ret\n       
+    PUSH, ____typeid__first_intnl_3\n        COPY\n        PUSH, ____typeid__first_intnl_3\n       
+    JUMP_IF_FALSE, ____typeid__first_L3\n        PUSH, ____typeid__first_recv\n       
+    PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n   
+    ____typeid__first_L3:\n        PUSH, ____typeid__first_i\n        PUSH, __const_3\n       
+    PUSH, ____typeid__first_intnl_4\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ____typeid__first_intnl_4\n        PUSH, ____typeid__first_i\n        COPY\n       
+    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_1\n       
+    PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
+    JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
+  optAfterUasm: ".data_start\n    maxResolveRetries: %SystemInt32, 10\n    retryIntervalFrames:
+    %SystemInt32, 15\n    _controller: %VRCUdonUdonBehaviour, null\n    _retries:
+    %SystemInt32, 0\n    _retryPending: %SystemBoolean, null\n    __refl_typeid:
+    %SystemInt64, null\n    __refl_typename: %SystemString, \"VVBC.Locomotion.FieldLocomotionZoneBehaviour\"\n   
+    __refl_typeids: %SystemInt64Array, null\n    onPlayerTriggerEnterPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerTriggerEnter___t0: %SystemBoolean, null\n    __OnPlayerTriggerEnter___inl0__controller:
+    %VRCUdonUdonBehaviour, null\n    __OnPlayerTriggerEnter___inl0____t0: %SystemInt32,
+    0\n    __OnPlayerTriggerEnter___inl0____t1: %VRCUdonUdonBehaviour, null\n   
+    __OnPlayerTriggerEnter___inl0____t2: %SystemBoolean, null\n    __OnPlayerTriggerEnter_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    onPlayerJoinedPlayer: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerJoined___t0: %SystemBoolean, null\n    __OnPlayerJoined___inl1__player:
+    %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerJoined___inl1__when: %SystemString,
+    null\n    __OnPlayerJoined___inl1__zone: %UnityEngineCollider, null\n    __OnPlayerJoined___inl1____t0:
+    %SystemBoolean, null\n    __OnPlayerJoined_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    onPlayerRespawnPlayer: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerRespawn___t0:
+    %SystemBoolean, null\n    __OnPlayerRespawn___inl2__player: %VRCSDKBaseVRCPlayerApi,
+    null\n    __OnPlayerRespawn___inl2__when: %SystemString, null\n    __OnPlayerRespawn___inl2__zone:
+    %UnityEngineCollider, null\n    __OnPlayerRespawn___inl2____t0: %SystemBoolean,
+    null\n    __OnPlayerRespawn_retjump: %SystemUInt32, 0xFFFFFFFC\n    ___RetryAssign___inl3__controller:
+    %VRCUdonUdonBehaviour, null\n    ___RetryAssign___inl3____t0: %SystemInt32, 0\n   
+    ___RetryAssign___inl3____t1: %VRCUdonUdonBehaviour, null\n    ___RetryAssign___inl3____t2:
+    %SystemBoolean, null\n    ___RetryAssign_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __ResolveController_player: %VRCSDKBaseVRCPlayerApi, null\n    __ResolveController_objects:
+    %UnityEngineGameObjectArray, null\n    __ResolveController_i: %SystemInt32, 0\n   
+    __ResolveController_candidate: %VRCUdonUdonBehaviour, null\n    __ResolveController___t0:
+    %UnityEngineGameObject, null\n    __ResolveController___t1: %UnityEngineTransform,
+    null\n    __ResolveController___t2: %UnityEngineComponentArray, null\n    __ResolveController___t3:
+    %VRCUdonUdonBehaviour, null\n    __ResolveController___t4: %SystemBoolean, null\n   
+    __ResolveController_ret: %VRCUdonUdonBehaviour, null\n    __ResolveController_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    ____typeid__has_p_0: %VRCUdonUdonBehaviour, null\n   
+    ____typeid__has_p_1: %SystemInt64, null\n    ____typeid__has_p_2: %SystemBoolean,
+    null\n    ____typeid__has_ty: %SystemType, null\n    ____typeid__has_raw: %SystemObject,
+    null\n    ____typeid__has_ids: %SystemInt64Array, null\n    ____typeid__has_boxed:
+    %SystemObject, null\n    ____typeid__has_scalar: %SystemInt64, null\n    ____typeid__has_ret:
+    %SystemBoolean, null\n    ____typeid__has_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    ____typeid__first_p_0: %UnityEngineComponentArray, null\n    ____typeid__first_p_1:
+    %SystemInt64, null\n    ____typeid__first_p_2: %SystemBoolean, null\n    ____typeid__first_n:
+    %SystemInt32, 0\n    ____typeid__first_i: %SystemInt32, 0\n    ____typeid__first_recv:
+    %VRCUdonUdonBehaviour, null\n    ____typeid__first_ret: %VRCUdonUdonBehaviour,
+    null\n    ____typeid__first_retjump: %SystemUInt32, 0xFFFFFFFC\n    __recStack:
+    %SystemObjectArray, null\n    __recSp: %SystemInt32, 0\n    __const_0: %SystemBoolean,
+    null\n    __const_1: %VRCUdonUdonBehaviour, null\n    __const_2: %SystemInt32,
+    0\n    __OnPlayerTriggerEnter_intnl_0: %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_1:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_2: %SystemBoolean, null\n   
+    __OnPlayerTriggerEnter_intnl_3: %SystemBoolean, null\n    __const_3: %SystemInt32,
+    1\n    __retaddr_0: %SystemUInt32, 0x000003D0\n    __OnPlayerTriggerEnter_intnl_4:
+    %VRCUdonUdonBehaviour, null\n    __const_4: %UnityEngineObject, null\n    __OnPlayerTriggerEnter_intnl_5:
+    %SystemBoolean, null\n    __OnPlayerTriggerEnter_intnl_6: %SystemBoolean, null\n   
+    __const_5: %SystemString, \"[VVBC Locomotion] local LocomotionPlayerObject not
+    found; Station not assigned\"\n    __OnPlayerTriggerEnter_intnl_7: %SystemInt32,
+    0\n    __const_6: %SystemBoolean, null\n    __const_7: %VRCUdonUdonBehaviour,
+    this\n    __const_8: %SystemString, \"_RetryAssign\"\n    __const_9: %VRCUdonCommonEnumsEventTiming,
+    null\n    __OnPlayerTriggerEnter_intnl_8: %VRCUdonUdonBehaviour, null\n    __const_10:
+    %SystemString, \"RequestEnter\"\n    __const_11: %SystemString, \"__RequestEnter_ret\"\n   
+    __OnPlayerTriggerEnter_intnl_9: %SystemObject, null\n    __OnPlayerTriggerEnter_intnl_10:
+    %SystemBoolean, null\n    __const_12: %VRCSDKBaseVRCPlayerApi, null\n    __const_13:
+    %SystemString, null\n    __const_14: %UnityEngineCollider, null\n    __const_15:
+    %SystemString, \"join\"\n    __const_16: %SystemType, null\n    __OnPlayerJoined_intnl_4:
+    %UnityEngineBounds, null\n    __OnPlayerJoined_intnl_5: %UnityEngineVector3,
+    null\n    __OnPlayerJoined_intnl_6: %SystemBoolean, null\n    __const_17: %SystemString,
+    \"[VVBC Locomotion] player is inside FieldLocomotionZone at \"\n    __OnPlayerJoined_intnl_8:
+    %SystemString, null\n    __const_18: %SystemString, \"; every spawn point must
+    be outside it\"\n    __OnPlayerJoined_intnl_9: %SystemString, null\n    __const_19:
+    %SystemString, \"respawn\"\n    __OnPlayerRespawn_intnl_4: %UnityEngineBounds,
+    null\n    __OnPlayerRespawn_intnl_5: %UnityEngineVector3, null\n    __OnPlayerRespawn_intnl_6:
+    %SystemBoolean, null\n    __OnPlayerRespawn_intnl_8: %SystemString, null\n   
+    __OnPlayerRespawn_intnl_9: %SystemString, null\n    __retaddr_1: %SystemUInt32,
+    0x00001508\n    ___RetryAssign_intnl_0: %VRCUdonUdonBehaviour, null\n    ___RetryAssign_intnl_1:
+    %SystemBoolean, null\n    ___RetryAssign_intnl_2: %SystemBoolean, null\n    ___RetryAssign_intnl_3:
+    %SystemInt32, 0\n    ___RetryAssign_intnl_4: %VRCUdonUdonBehaviour, null\n   
+    ___RetryAssign_intnl_5: %SystemObject, null\n    ___RetryAssign_intnl_6: %SystemBoolean,
+    null\n    __const_20: %UnityEngineGameObjectArray, null\n    __const_21: %UnityEngineGameObject,
+    null\n    __const_22: %UnityEngineTransform, null\n    __const_23: %UnityEngineComponentArray,
+    null\n    __ResolveController_intnl_0: %SystemBoolean, null\n    __ResolveController_intnl_2:
+    %SystemBoolean, null\n    __const_24: %SystemObject, null\n    __ResolveController_intnl_4:
+    %SystemBoolean, null\n    __ResolveController_intnl_5: %SystemInt32, 0\n    __ResolveController_intnl_6:
+    %SystemBoolean, null\n    __ResolveController_intnl_7: %UnityEngineGameObject,
+    null\n    __ResolveController_intnl_8: %SystemBoolean, null\n    __const_25:
+    %SystemType, null\n    __const_26: %SystemInt64, null\n    __retaddr_2: %SystemUInt32,
+    0x00001F40\n    __ResolveController_intnl_12: %VRCUdonUdonBehaviour, null\n   
+    __ResolveController_intnl_14: %UnityEngineGameObject, null\n    __ResolveController_intnl_15:
+    %SystemBoolean, null\n    __const_27: %SystemType, null\n    __const_28: %SystemInt64Array,
+    null\n    __const_29: %SystemInt64, null\n    __const_30: %SystemString, \"__refl_typeid\"\n   
+    ____typeid__has_intnl_0: %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean,
+    null\n    __const_31: %SystemString, \"__refl_typeids\"\n    ____typeid__has_intnl_3:
+    %SystemType, null\n    ____typeid__has_intnl_4: %SystemBoolean, null\n    ____typeid__has_intnl_5:
+    %SystemObject, null\n    ____typeid__has_intnl_6: %SystemBoolean, null\n    ____typeid__has_intnl_7:
+    %SystemInt32, 0\n    __const_32: %SystemInt32, -1\n    ____typeid__has_intnl_9:
+    %SystemType, null\n    ____typeid__has_intnl_10: %SystemBoolean, null\n    ____typeid__has_intnl_11:
+    %SystemObject, null\n    ____typeid__has_intnl_12: %SystemBoolean, null\n   
+    ____typeid__first_intnl_1: %SystemBoolean, null\n    __retaddr_3: %SystemUInt32,
+    0x000023F8\n    ____typeid__first_intnl_3: %SystemBoolean, null\n.data_end\n.code_start\n   
+    .export _onPlayerTriggerEnter\n    _onPlayerTriggerEnter:\n        PUSH, __const_1\n       
+    PUSH, __OnPlayerTriggerEnter___inl0__controller\n        COPY\n        PUSH,
+    __const_2\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n        COPY\n       
+    PUSH, onPlayerTriggerEnterPlayer\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_0\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_1\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L0\n       
+    JUMP, __OnPlayerTriggerEnter_L1\n    __OnPlayerTriggerEnter_L0:\n        PUSH,
+    onPlayerTriggerEnterPlayer\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_2\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_3\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    COPY\n    __OnPlayerTriggerEnter_L1:\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    JUMP_IF_FALSE, __OnPlayerTriggerEnter_L3\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    __OnPlayerTriggerEnter_L3:\n        PUSH, _retryPending\n        JUMP_IF_FALSE,
+    __OnPlayerTriggerEnter_L5\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    __OnPlayerTriggerEnter_L5:\n        PUSH, __const_2\n        PUSH, _retries\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __retaddr_0\n        PUSH, __ResolveController_retjump\n        COPY\n       
+    JUMP, ResolveController\n        PUSH, __recSp\n        PUSH, __const_3\n       
+    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ResolveController_ret\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    COPY\n        PUSH, __ResolveController_ret\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    COPY\n        PUSH, __ResolveController_ret\n        PUSH, __const_4\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_5\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_5\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L6\n       
+    PUSH, _retries\n        PUSH, maxResolveRetries\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_6\n        JUMP_IF_FALSE, __OnPlayerTriggerEnter_L8\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n       
+    JUMP, __OnPlayerTriggerEnter_L9\n    __OnPlayerTriggerEnter_L8:\n        PUSH,
+    _retries\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n        COPY\n       
+    PUSH, _retries\n        PUSH, __const_3\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_7\n        PUSH, _retries\n        COPY\n       
+    PUSH, __const_6\n        PUSH, _retryPending\n        COPY\n        PUSH, __const_7\n       
+    PUSH, __const_8\n        PUSH, retryIntervalFrames\n        PUSH, __const_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEventDelayedFrames__SystemString_SystemInt32_VRCUdonCommonEnumsEventTiming__SystemVoid\"\n   
+    __OnPlayerTriggerEnter_L9:\n        JUMP, __OnPlayerTriggerEnter_L7\n    __OnPlayerTriggerEnter_L6:\n       
+    PUSH, __OnPlayerTriggerEnter___inl0__controller\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    COPY\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_8\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_8\n        PUSH, __const_10\n        EXTERN,
+    \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_8\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_7\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_6\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_5\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___inl0__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnPlayerTriggerEnter___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onPlayerTriggerEnterPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __OnPlayerTriggerEnter___inl0____t1\n        PUSH, __const_11\n        PUSH,
+    __OnPlayerTriggerEnter_intnl_9\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __OnPlayerTriggerEnter_intnl_9\n        PUSH, __OnPlayerTriggerEnter___inl0____t2\n       
+    COPY\n    __OnPlayerTriggerEnter_L7:\n        JUMP_INDIRECT, __OnPlayerTriggerEnter_retjump\n   
+    .export _onPlayerJoined\n    _onPlayerJoined:\n        PUSH, __const_12\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        COPY\n        PUSH, __const_13\n       
+    PUSH, __OnPlayerJoined___inl1__when\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __OnPlayerJoined___inl1__zone\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerJoined___inl1____t0\n        COPY\n        PUSH, onPlayerJoinedPlayer\n       
+    PUSH, __OnPlayerJoined___t0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L1\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___t0\n        EXTERN,
+    \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n    __OnPlayerJoined_L1:\n       
+    PUSH, __OnPlayerJoined___t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L7\n       
+    PUSH, onPlayerJoinedPlayer\n        PUSH, __OnPlayerJoined___inl1__player\n       
+    COPY\n        PUSH, __const_15\n        PUSH, __OnPlayerJoined___inl1__when\n       
+    COPY\n        PUSH, __const_7\n        PUSH, __const_16\n        PUSH, __OnPlayerJoined___inl1__zone\n       
+    EXTERN, \"UnityEngineComponent.__GetComponent__SystemType__UnityEngineComponent\"\n       
+    PUSH, __OnPlayerJoined___inl1__zone\n        PUSH, __const_4\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined___inl1____t0\n        JUMP_IF_FALSE, __OnPlayerJoined_L4\n       
+    JUMP, __OnPlayerJoined_L5\n    __OnPlayerJoined_L4:\n        PUSH, __OnPlayerJoined___inl1__zone\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        EXTERN, \"UnityEngineCollider.__get_bounds__UnityEngineBounds\"\n       
+    PUSH, __OnPlayerJoined___inl1__player\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__GetPosition__UnityEngineVector3\"\n       
+    PUSH, __OnPlayerJoined_intnl_4\n        PUSH, __OnPlayerJoined_intnl_5\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        EXTERN, \"UnityEngineBounds.__Contains__UnityEngineVector3__SystemBoolean\"\n       
+    PUSH, __OnPlayerJoined_intnl_6\n        PUSH, __OnPlayerJoined___inl1____t0\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __OnPlayerJoined_L5:\n        PUSH, __OnPlayerJoined___inl1____t0\n        JUMP_IF_FALSE,
+    __OnPlayerJoined_L6\n        JUMP, __OnPlayerJoined_L7\n    __OnPlayerJoined_L6:\n       
+    PUSH, __const_17\n        PUSH, __OnPlayerJoined___inl1__when\n        PUSH,
+    __OnPlayerJoined_intnl_8\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerJoined_intnl_8\n        PUSH, __const_18\n        PUSH, __OnPlayerJoined_intnl_9\n       
+    EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerJoined_intnl_9\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n   
+    __OnPlayerJoined_L7:\n        JUMP_INDIRECT, __OnPlayerJoined_retjump\n    .export
+    _onPlayerRespawn\n    _onPlayerRespawn:\n        PUSH, __const_12\n        PUSH,
+    __OnPlayerRespawn___inl2__player\n        COPY\n        PUSH, __const_13\n       
+    PUSH, __OnPlayerRespawn___inl2__when\n        COPY\n        PUSH, __const_14\n       
+    PUSH, __OnPlayerRespawn___inl2__zone\n        COPY\n        PUSH, __const_0\n       
+    PUSH, __OnPlayerRespawn___inl2____t0\n        COPY\n        PUSH, onPlayerRespawnPlayer\n       
+    PUSH, __OnPlayerRespawn___t0\n        EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn___t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L1\n       
+    PUSH, onPlayerRespawnPlayer\n        PUSH, __OnPlayerRespawn___t0\n        EXTERN,
+    \"VRCSDKBaseVRCPlayerApi.__get_isLocal__SystemBoolean\"\n    __OnPlayerRespawn_L1:\n       
+    PUSH, __OnPlayerRespawn___t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L7\n       
+    PUSH, onPlayerRespawnPlayer\n        PUSH, __OnPlayerRespawn___inl2__player\n       
+    COPY\n        PUSH, __const_19\n        PUSH, __OnPlayerRespawn___inl2__when\n       
+    COPY\n        PUSH, __const_7\n        PUSH, __const_16\n        PUSH, __OnPlayerRespawn___inl2__zone\n       
+    EXTERN, \"UnityEngineComponent.__GetComponent__SystemType__UnityEngineComponent\"\n       
+    PUSH, __OnPlayerRespawn___inl2__zone\n        PUSH, __const_4\n        PUSH,
+    __OnPlayerRespawn___inl2____t0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn___inl2____t0\n        JUMP_IF_FALSE, __OnPlayerRespawn_L4\n       
+    JUMP, __OnPlayerRespawn_L5\n    __OnPlayerRespawn_L4:\n        PUSH, __OnPlayerRespawn___inl2__zone\n       
+    PUSH, __OnPlayerRespawn_intnl_4\n        EXTERN, \"UnityEngineCollider.__get_bounds__UnityEngineBounds\"\n       
+    PUSH, __OnPlayerRespawn___inl2__player\n        PUSH, __OnPlayerRespawn_intnl_5\n       
+    EXTERN, \"VRCSDKBaseVRCPlayerApi.__GetPosition__UnityEngineVector3\"\n       
+    PUSH, __OnPlayerRespawn_intnl_4\n        PUSH, __OnPlayerRespawn_intnl_5\n       
+    PUSH, __OnPlayerRespawn_intnl_6\n        EXTERN, \"UnityEngineBounds.__Contains__UnityEngineVector3__SystemBoolean\"\n       
+    PUSH, __OnPlayerRespawn_intnl_6\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __OnPlayerRespawn_L5:\n        PUSH, __OnPlayerRespawn___inl2____t0\n       
+    JUMP_IF_FALSE, __OnPlayerRespawn_L6\n        JUMP, __OnPlayerRespawn_L7\n   
+    __OnPlayerRespawn_L6:\n        PUSH, __const_17\n        PUSH, __OnPlayerRespawn___inl2__when\n       
+    PUSH, __OnPlayerRespawn_intnl_8\n        EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerRespawn_intnl_8\n        PUSH, __const_18\n        PUSH, __OnPlayerRespawn_intnl_9\n       
+    EXTERN, \"SystemString.__op_Addition__SystemString_SystemString__SystemString\"\n       
+    PUSH, __OnPlayerRespawn_intnl_9\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n   
+    __OnPlayerRespawn_L7:\n        JUMP_INDIRECT, __OnPlayerRespawn_retjump\n   
+    .export _RetryAssign\n    _RetryAssign:\n        PUSH, __const_1\n        PUSH,
+    ___RetryAssign___inl3__controller\n        COPY\n        PUSH, __const_2\n       
+    PUSH, ___RetryAssign___inl3____t0\n        COPY\n        PUSH, __const_1\n       
+    PUSH, ___RetryAssign___inl3____t1\n        COPY\n        PUSH, __const_0\n       
+    PUSH, ___RetryAssign___inl3____t2\n        COPY\n        PUSH, _retryPending\n       
+    JUMP_IF_FALSE, ___RetryAssign_L0\n        JUMP, ___RetryAssign_L1\n    ___RetryAssign_L0:\n       
+    JUMP_INDIRECT, ___RetryAssign_retjump\n    ___RetryAssign_L1:\n        PUSH,
+    __const_0\n        PUSH, _retryPending\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __retaddr_1\n        PUSH, __ResolveController_retjump\n        COPY\n       
+    JUMP, ResolveController\n        PUSH, __recSp\n        PUSH, __const_3\n       
+    PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ResolveController_ret\n        PUSH, ___RetryAssign_intnl_0\n        COPY\n       
+    PUSH, __ResolveController_ret\n        PUSH, ___RetryAssign___inl3__controller\n       
+    COPY\n        PUSH, __ResolveController_ret\n        PUSH, __const_4\n       
+    PUSH, ___RetryAssign_intnl_1\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, ___RetryAssign_intnl_1\n        JUMP_IF_FALSE, ___RetryAssign_L2\n       
+    PUSH, _retries\n        PUSH, maxResolveRetries\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemInt32.__op_GreaterThanOrEqual__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ___RetryAssign_intnl_2\n        JUMP_IF_FALSE, ___RetryAssign_L4\n       
+    PUSH, __const_5\n        EXTERN, \"UnityEngineDebug.__LogWarning__SystemObject__SystemVoid\"\n       
+    JUMP, ___RetryAssign_L5\n    ___RetryAssign_L4:\n        PUSH, _retries\n       
+    PUSH, ___RetryAssign___inl3____t0\n        COPY\n        PUSH, _retries\n       
+    PUSH, __const_3\n        PUSH, ___RetryAssign_intnl_3\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ___RetryAssign_intnl_3\n        PUSH, _retries\n        COPY\n        PUSH,
+    __const_6\n        PUSH, _retryPending\n        COPY\n        PUSH, __const_7\n       
+    PUSH, __const_8\n        PUSH, retryIntervalFrames\n        PUSH, __const_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEventDelayedFrames__SystemString_SystemInt32_VRCUdonCommonEnumsEventTiming__SystemVoid\"\n   
+    ___RetryAssign_L5:\n        JUMP, ___RetryAssign_L3\n    ___RetryAssign_L2:\n       
+    PUSH, ___RetryAssign___inl3__controller\n        PUSH, ___RetryAssign___inl3____t1\n       
+    COPY\n        PUSH, ___RetryAssign___inl3__controller\n        PUSH, ___RetryAssign_intnl_4\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, ___RetryAssign_intnl_4\n        PUSH, __const_10\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_4\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_3\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3____t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_3\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ___RetryAssign___inl3__controller\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    ___RetryAssign___inl3____t1\n        PUSH, __const_11\n        PUSH, ___RetryAssign_intnl_5\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ___RetryAssign_intnl_5\n        PUSH, ___RetryAssign___inl3____t2\n       
+    COPY\n    ___RetryAssign_L3:\n        JUMP_INDIRECT, ___RetryAssign_retjump\n   
+    ResolveController:\n        PUSH, __const_12\n        PUSH, __ResolveController_player\n       
+    COPY\n        PUSH, __const_20\n        PUSH, __ResolveController_objects\n       
+    COPY\n        PUSH, __const_2\n        PUSH, __ResolveController_i\n        COPY\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_candidate\n        COPY\n       
+    PUSH, __const_21\n        PUSH, __ResolveController___t0\n        COPY\n       
+    PUSH, __const_22\n        PUSH, __ResolveController___t1\n        COPY\n       
+    PUSH, __const_23\n        PUSH, __ResolveController___t2\n        COPY\n       
+    PUSH, __const_0\n        PUSH, __ResolveController___t4\n        COPY\n       
+    PUSH, _controller\n        PUSH, __const_4\n        PUSH, __ResolveController_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_0\n        JUMP_IF_FALSE, __ResolveController_L1\n       
+    PUSH, _controller\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L1:\n       
+    PUSH, __ResolveController_player\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
+    PUSH, __ResolveController_player\n        PUSH, __ResolveController_intnl_2\n       
+    EXTERN, \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_2\n        JUMP_IF_FALSE, __ResolveController_L2\n       
+    JUMP, __ResolveController_L3\n    __ResolveController_L2:\n        PUSH, __const_1\n       
+    PUSH, __ResolveController_ret\n        COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n   
+    __ResolveController_L3:\n        PUSH, __ResolveController_player\n        PUSH,
+    __ResolveController_objects\n        EXTERN, \"VRCSDKBaseNetworking.__GetPlayerObjects__VRCSDKBaseVRCPlayerApi__UnityEngineGameObjectArray\"\n       
+    PUSH, __ResolveController_objects\n        PUSH, __const_24\n        PUSH, __ResolveController_intnl_4\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_4\n        JUMP_IF_FALSE, __ResolveController_L5\n       
+    PUSH, __const_1\n        PUSH, __ResolveController_ret\n        COPY\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L5:\n       
+    PUSH, __const_2\n        PUSH, __ResolveController_i\n        COPY\n    __ResolveController_L6:\n       
+    PUSH, __ResolveController_objects\n        PUSH, __ResolveController_intnl_5\n       
+    EXTERN, \"SystemArray.__get_Length__SystemInt32\"\n        PUSH, __ResolveController_i\n       
+    PUSH, __ResolveController_intnl_5\n        PUSH, __ResolveController_intnl_6\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_6\n        JUMP_IF_FALSE, __ResolveController_L7\n       
+    PUSH, __ResolveController_objects\n        PUSH, __ResolveController_i\n       
+    PUSH, __ResolveController_intnl_7\n        EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, __ResolveController_intnl_7\n        PUSH, __const_4\n        PUSH, __ResolveController_intnl_8\n       
+    EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_8\n        JUMP_IF_FALSE, __ResolveController_L9\n       
+    JUMP, __ResolveController_L10\n    __ResolveController_L9:\n        PUSH, __ResolveController_objects\n       
+    PUSH, __ResolveController_i\n        PUSH, __ResolveController___t0\n       
+    EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, __ResolveController___t0\n        PUSH, __ResolveController___t1\n       
+    EXTERN, \"UnityEngineGameObject.__get_transform__UnityEngineTransform\"\n       
+    PUSH, __ResolveController___t1\n        PUSH, __const_25\n        PUSH, __ResolveController___t2\n       
+    EXTERN, \"UnityEngineComponent.__GetComponentsInChildren__SystemType__UnityEngineComponentArray\"\n       
+    PUSH, __ResolveController___t2\n        PUSH, ____typeid__first_p_0\n       
+    COPY\n        PUSH, __const_26\n        PUSH, ____typeid__first_p_1\n       
+    COPY\n        PUSH, __const_0\n        PUSH, ____typeid__first_p_2\n        COPY\n       
+    PUSH, __retaddr_2\n        PUSH, ____typeid__first_retjump\n        COPY\n       
+    JUMP, __typeid__first\n        PUSH, ____typeid__first_ret\n        PUSH, __ResolveController_candidate\n       
+    COPY\n        PUSH, ____typeid__first_ret\n        PUSH, __const_4\n        PUSH,
+    __ResolveController___t4\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ResolveController___t4\n        JUMP_IF_FALSE, __ResolveController_L11\n       
+    JUMP, __ResolveController_L12\n    __ResolveController_L11:\n        PUSH, __ResolveController_candidate\n       
+    PUSH, __ResolveController_intnl_14\n        EXTERN, \"UnityEngineComponent.__get_gameObject__UnityEngineGameObject\"\n       
+    PUSH, __ResolveController_player\n        PUSH, __ResolveController_intnl_14\n       
+    PUSH, __ResolveController_intnl_15\n        EXTERN, \"VRCSDKBaseNetworking.__IsOwner__VRCSDKBaseVRCPlayerApi_UnityEngineGameObject__SystemBoolean\"\n       
+    PUSH, __ResolveController_intnl_15\n        PUSH, __ResolveController___t4\n       
+    EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n   
+    __ResolveController_L12:\n        PUSH, __ResolveController___t4\n        JUMP_IF_FALSE,
+    __ResolveController_L14\n        JUMP, __ResolveController_L10\n    __ResolveController_L14:\n       
+    PUSH, __ResolveController_candidate\n        PUSH, _controller\n        COPY\n       
+    PUSH, __ResolveController_candidate\n        PUSH, __ResolveController_ret\n       
+    COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n    __ResolveController_L10:\n       
+    PUSH, __ResolveController_i\n        PUSH, __const_3\n        PUSH, __ResolveController_i\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    JUMP, __ResolveController_L6\n    __ResolveController_L7:\n        PUSH, __const_1\n       
+    PUSH, __ResolveController_ret\n        COPY\n        JUMP_INDIRECT, __ResolveController_retjump\n       
+    JUMP_INDIRECT, __ResolveController_retjump\n    __typeid__has:\n        PUSH,
+    __const_24\n        PUSH, ____typeid__has_raw\n        COPY\n        PUSH, ____typeid__has_p_2\n       
+    JUMP_IF_FALSE, ____typeid__has_L1\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_30\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_0\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_1\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
+    \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        JUMP_INDIRECT,
+    ____typeid__has_retjump\n    ____typeid__has_L1:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_31\n        PUSH, ____typeid__has_intnl_3\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_3\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_4\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_4\n        JUMP_IF_FALSE, ____typeid__has_L2\n       
+    JUMP, ____typeid__has_L5\n    ____typeid__has_L2:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_31\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_6\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_6\n        JUMP_IF_FALSE, ____typeid__has_L4\n       
+    JUMP, ____typeid__has_L5\n    ____typeid__has_L4:\n        PUSH, ____typeid__has_raw\n       
+    PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_intnl_7\n        EXTERN,
+    \"SystemArray.__IndexOf__SystemArray_SystemObject__SystemInt32\"\n        PUSH,
+    ____typeid__has_intnl_7\n        PUSH, __const_32\n        PUSH, ____typeid__has_ret\n       
+    EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L5:\n        PUSH,
+    ____typeid__has_p_0\n        PUSH, __const_30\n        PUSH, ____typeid__has_intnl_9\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_9\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_10\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_10\n        JUMP_IF_FALSE, ____typeid__has_L6\n       
+    JUMP, ____typeid__has_L9\n    ____typeid__has_L6:\n        PUSH, ____typeid__has_p_0\n       
+    PUSH, __const_30\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, ____typeid__has_raw\n        COPY\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, __const_24\n        PUSH, ____typeid__has_intnl_12\n       
+    EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
+    PUSH, ____typeid__has_intnl_12\n        JUMP_IF_FALSE, ____typeid__has_L8\n       
+    JUMP, ____typeid__has_L9\n    ____typeid__has_L8:\n        PUSH, ____typeid__has_raw\n       
+    PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
+    \"SystemInt64.__op_Equality__SystemInt64_SystemInt64__SystemBoolean\"\n       
+    JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L9:\n        PUSH,
+    __const_0\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
+    ____typeid__has_retjump\n        JUMP_INDIRECT, ____typeid__has_retjump\n   
+    __typeid__first:\n        PUSH, __const_1\n        PUSH, ____typeid__first_recv\n       
+    COPY\n        PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_n\n       
+    EXTERN, \"UnityEngineComponentArray.__get_Length__SystemInt32\"\n        PUSH,
+    __const_2\n        PUSH, ____typeid__first_i\n        COPY\n    ____typeid__first_L0:\n       
+    PUSH, ____typeid__first_i\n        PUSH, ____typeid__first_n\n        PUSH, ____typeid__first_intnl_1\n       
+    EXTERN, \"SystemInt32.__op_LessThan__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, ____typeid__first_intnl_1\n        JUMP_IF_FALSE, ____typeid__first_L1\n       
+    PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_i\n        PUSH,
+    ____typeid__first_recv\n        EXTERN, \"UnityEngineComponentArray.__GetValue__SystemInt32__SystemObject\"\n       
+    PUSH, ____typeid__first_recv\n        PUSH, ____typeid__has_p_0\n        COPY\n       
+    PUSH, ____typeid__first_p_1\n        PUSH, ____typeid__has_p_1\n        COPY\n       
+    PUSH, ____typeid__first_p_2\n        PUSH, ____typeid__has_p_2\n        COPY\n       
+    PUSH, __retaddr_3\n        PUSH, ____typeid__has_retjump\n        COPY\n       
+    JUMP, __typeid__has\n        PUSH, ____typeid__has_ret\n        JUMP_IF_FALSE,
+    ____typeid__first_L3\n        PUSH, ____typeid__first_recv\n        PUSH, ____typeid__first_ret\n       
+    COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n    ____typeid__first_L3:\n       
+    PUSH, ____typeid__first_i\n        PUSH, __const_3\n        PUSH, ____typeid__first_i\n       
+    EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_1\n       
+    PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
+    JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
+  optBeforeInject:
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=8433611758959843851\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=8433611758959843851"
+  - "=____typeid__has_p_1\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  - "=____typeid__has_scalar\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  - "=____typeid__first_p_1\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
+  - "=__const_6\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__const_9\tEnumConst\t=VRCUdonCommonEnumsEventTiming\t0\t\tInt32:=0\t\t\t"
+  - "=__const_16\tTypeConst\t=UnityEngineCollider\t0\t\t\t\t\t"
+  - "=__const_25\tTypeConst\t=VRCUdonUdonBehaviour\t0\t\t\t\t\t"
+  - "=__const_26\tPrimConst\t=SystemInt64\t0\tInt64:=-1045622545121497788\t\t\t\t"
+  - "=__const_29\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  optAfterInject:
+  - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=8433611758959843851\t\t\t\t"
+  - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=8433611758959843851"
+  - "=____typeid__has_p_1\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  - "=____typeid__has_scalar\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  - "=____typeid__first_p_1\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
+  - "=__const_6\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__const_9\tEnumConst\t=VRCUdonCommonEnumsEventTiming\t0\t\tInt32:=0\t\t\t"
+  - "=__const_16\tTypeConst\t=UnityEngineCollider\t0\t\t\t\t\t"
+  - "=__const_25\tTypeConst\t=VRCUdonUdonBehaviour\t0\t\t\t\t\t"
+  - "=__const_26\tPrimConst\t=SystemInt64\t0\tInt64:=-1045622545121497788\t\t\t\t"
+  - "=__const_29\tPrimConst\t=SystemInt64\t0\tInt64:=0\t\t\t\t"
+  networkCallableSlots: []
+  optExternBefore: 227
+  optExternAfter: 227
+  optInsnBefore: 1339
+  optInsnAfter: 1203
+  optBytesBefore: 10236
+  optBytesAfter: 9328
+  optStage: ran
