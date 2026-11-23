@@ -1,12 +1,15 @@
 # Dynamic Speed locomotion validation
 
-Open `Scenes/DynamicSpeedLocomotionTest.unity`. At the spawn, choose **Native**,
-**Acceleration Only**, or **Directional Braking** on the panel, then walk into
-the field. Leaving the field does not stop the experiment; respawning restores the
-three speeds saved on entry. All spawn points must remain outside the trigger.
-The panel remains usable after entering the field, including for mode changes.
+Open `Scenes/DynamicSpeedLocomotionTest.unity`. The default is **Directional
+Braking**. After the local player joins, control activates throughout the scene,
+including the spawn area, and remains active after respawning. Use the panel to
+select **Native**, **Acceleration Only**, or **Directional Braking**. Native
+restores the settings saved after WorldSettings ran; selecting a dynamic mode
+starts its model again from idle. The field trigger only emits a diagnostic log.
+The panel uses `VRC_UIShape` on the `Walkthrough` layer so it can receive UI
+interaction without blocking a player walking from the spawn into the field.
 
-The trigger prefab's Inspector exposes the model parameters. The defaults are
+The controller prefab's Inspector exposes the model parameters. The defaults are
 4 m/s maximum, 8 m/s² acceleration, 6 m/s² turn braking, 8 m/s² reacceleration,
 0.15 deadzone, 45 degrees, 0.1 m/s minimum applied speed, and 0.5 walk ratio.
 The maximum is clamped to 0.1–5 m/s for the SDK's documented approximate
@@ -22,6 +25,19 @@ the first return to at least 95% of the configured maximum after cruising resume
 If recovery never reaches that threshold the display remains pending. Reset the
 measurements by switching modes. These values are observations, not proof that
 the client followed the speed limit.
+
+`[VVBC Dynamic Speed]` messages in the VRChat output log record activation,
+mode changes, field entry, respawn, input start/release, and control state
+transitions. Each snapshot includes input, limit, speed settings, measured speed,
+and position. There is no per-frame logging. On Windows the output logs are in
+`%USERPROFILE%\AppData\LocalLow\VRChat\VRChat`; search the latest `output_log_*.txt`
+for `[VVBC Dynamic Speed]`. To record a summary after a run, select any mode,
+including the current one. The `measurement summary before mode selection` line
+includes both `peakVelocity` and `peakPositionSpeed` before measurements reset.
+
+The speed settings affect standard controller locomotion. They do not impose an
+absolute limit on room-scale movement, so physical walking can make the position
+delta exceed the configured maximum. This experiment does not counteract that.
 
 Compare T01–T10 on actual VRChat clients, including controller and HMD turning,
 diagonal movement, jumping, respawn, and measured frame rate. ClientSim and the

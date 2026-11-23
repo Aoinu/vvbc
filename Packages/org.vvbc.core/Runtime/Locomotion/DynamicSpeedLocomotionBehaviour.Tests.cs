@@ -6,6 +6,18 @@ namespace VVBC.Locomotion
     public partial class DynamicSpeedLocomotionBehaviour
     {
         [TsukimiTest]
+        public void LocalJoinSchedulesActivationOnceAndDefaultsToDirectionalBraking()
+        {
+            Assert.AreEqual(2, _mode);
+            VRCPlayerApi local = Mimic.Join();
+            Assert.IsTrue(_activationPending);
+            Assert.IsFalse(_active);
+            OnPlayerJoined(local);
+            Assert.IsTrue(_activationPending);
+            Assert.IsFalse(_active);
+        }
+
+        [TsukimiTest]
         public void DeadzoneAndReleaseResetTheModel()
         {
             _mode = 2;
@@ -85,6 +97,20 @@ namespace VVBC.Locomotion
         }
 
         [TsukimiTest]
+        public void ResetClearsBothSpeedMeasurements()
+        {
+            _positionSpeed = 3f;
+            _velocitySpeed = 2f;
+            _peakPositionSpeed = 4f;
+            _peakSpeed = 3f;
+            ResetModel();
+            Assert.AreEqual(0f, _positionSpeed);
+            Assert.AreEqual(0f, _velocitySpeed);
+            Assert.AreEqual(0f, _peakPositionSpeed);
+            Assert.AreEqual(0f, _peakSpeed);
+        }
+
+        [TsukimiTest]
         public void InvalidAndRemotePlayerEventsAreIgnored()
         {
             OnPlayerTriggerEnter(null);
@@ -93,6 +119,9 @@ namespace VVBC.Locomotion
             VRCPlayerApi local = Mimic.Join();
             VRCPlayerApi remote = Mimic.Join();
             Mimic.Become(local);
+            _activationPending = false;
+            OnPlayerJoined(remote);
+            Assert.IsFalse(_activationPending);
             OnPlayerTriggerEnter(remote);
             OnPlayerRespawn(remote);
             Assert.IsFalse(_active);
