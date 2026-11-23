@@ -37,10 +37,9 @@ warning when the local player is inside it at join or respawn.
 
 ```text
 Idle --RequestEnter--> Entering --OnStationEntered--> Active
-Active --re-seat--> Reseating --OnStationEntered--> Active   (same session)
-Active --OnStationExited (not a re-seat's own)--> Idle
+Active --OnStationExited--> Idle
 any --OnPlayerRespawn--> Idle
-Entering / Reseating --no entry within enterTimeoutFrames--> Idle
+Entering --no entry within enterTimeoutFrames--> Idle
 ```
 
 - `RequestEnter` (owner only, Idle only) starts the session; one frame later
@@ -50,54 +49,45 @@ Entering / Reseating --no entry within enterTimeoutFrames--> Idle
   and using the Station right there pulled it back to its old position on the second
   run (7.15 m view jump; `OnStationEntered` runs inside `UseStation`). The entry log
   reports any pull-back left ("entry Station pulled X m").
-- The stick applies horizontal translation only. The Station turns only by the smooth turn
-  or a re-seat (below).
 - Exited and Respawn may arrive in either order: the first stops the session, the
   second finds Idle. An Exited while Entering is stale and ignored. An entry after the
   timeout still takes control, since the player would otherwise be held without it.
-  The exit a re-seat causes is swallowed whichever side of the new entry it arrives on.
 - Respawn never re-enters; the next zone entry does. Velocity, input and the commanded
   distance reset on every stop.
 - The movement loop runs only while Active (`SendCustomEventDelayedFrames` each frame,
-  stopping itself on any other state); it also drives the smooth turn and the re-seat check.
+  stopping itself on any other state); it also drives translation and turning.
 
 ## Turning and real-body movement
 
-First real-client run (VR, one client): the playspace is carried rigidly with the
-Station. Stick movement leaves every Station-local tracking value unchanged; real
-walking moves only Head (and hands) while Origin, AvatarRoot and GetPosition stay
-on the Station, so the avatar's feet stay put and the body stretches toward the head.
-VRChat's own snap/smooth turn has no effect inside the Station, and real-body turning
-leaves the avatar facing the Station. Consequence: moving or turning the Station
-cannot reduce the head's offset; only leaving and re-entering it can change it. The
-avatar's locomotion animation also stops (it sees no velocity inside the Station, and
-Udon cannot drive avatar parameters); that is a limit of the approach, not handled here.
+Real-client experiments showed that the playspace can be carried with the Station.
+This implementation intentionally tries continuous correction while remaining seated,
+so the new behaviour must be evaluated on real clients; it does not assume convergence.
 
-- **Smooth turn (VR):** the right stick (`InputLookHorizontal`) turns the Station
-  about the head every frame, so the view turns in place: nothing inside a 0.15
-  deadzone, then linear up to `turnSpeed` (90°/s) at full deflection. Continuous, so
-  ObjectSync interpolates it (no discontinuity flag). Desktop is unchanged.
-- **Re-seat works** (second run, 15 of 15): after `ExitStation`, moving the Station and
-  `UseStation`, the head stays put (0.05–0.15 m world jump) and the avatar's feet land
-  on the Station, so the head's offset drops to about 0.1 m. A single re-seat of
-  0.5 m reads as the feet snapping under the player.
-- **Stepped follow:** each re-seat is a discrete snap, so following is done in small
-  steps. Following starts when the head is more than `recenterDistance` (0.3 m,
-  horizontal) from the Station and continues until it is within `followStopDistance`
-  (0.08 m). Each step moves the Station at most `followStepDistance` (0.15 m) toward the
-  head, every `followStepFrames` (6) frames. Turning works the same way: start past
-  `recenterYaw` (60°), stop within `followStopYaw` (10°), at most `followStepYaw`
-  (20°) per step. The first follow waits `recenterCooldownFrames` (45) after a session
-  entry. Steps do not flag a discontinuity, so ObjectSync interpolates them. Velocity
-  carries over; the stick and smooth turn pause during the one-frame exit.
-- **Self-check:** `measureDelayFrames` (3) after every entry the controller measures
-  the head's world jump and offset, and after a re-seat the playspace Origin's world
-  jump. A working re-seat leaves the Origin in place. If it moves with the Station
-  (summed over the current follow: at least half of the Station's total move, once
-  that reaches 0.1 m), re-seating cannot close the gap, so it is turned off for the session ("re-seat disabled"). The Origin is used
-  because, unlike the head, it does not move when the player walks. Entries, failures
-  and the end of each follow ("follow done: N re-seats, X m, Y deg") are logged;
-  individual working steps are not.
+The horizontal head offset is measured in Station-local coordinates. The default bounds
+are left/right 0.5 m, forward 1 m and backward 0.3 m, independently adjustable. Only
+the excess outside the rectangle is requested as correction. A frame's translation
+budget is `maximumSpeed * deltaTime`: head correction spends it first, and model movement
+is limited to the remainder. Model velocity still evolves normally; suppressed distance
+is not queued. Head-centred rotation displacement is separate from that budget.
+
+The controller samples excess on the next frame. An episode that moves at least 1 m
+and has at least 0.5 m of samples without rotation stops correction for the session when
+net improvement in those comparable samples is below 0.05 m. Rotating changes the axes
+of the envelope, so samples following a turn do not count as convergence evidence. If
+rotation prevents enough comparable samples for 2 m of correction, correction also
+stops for the session. After a successful 1 m check, another observation interval
+begins, so an early improvement cannot hide a subsequent stall. Stick movement continues
+in both cases. The reason is logged.
+Real walking during measurement can affect the result. Respawn and the next entry
+reset the session; no correction or turn exits and re-enters the Station.
+
+VR right-stick smooth turn takes priority while outside the 0.15 deadzone. Otherwise,
+the controller turns toward the horizontal model velocity above 0.2 m/s, at up to
+90 degrees/s by default. Auto-turn is clipped to avoid placing the observed head behind
+the Station. A head already behind it is not independently corrected. Both turns pivot
+about the head. The diagnostic panel compares the sampled relative yaw and the yaw
+predicted immediately after the preceding turn, so whether the head follows a Station
+rotation remains observable. No snap turn or automatic head-yaw recenter is implemented.
 
 ## Motion model
 
@@ -114,17 +104,15 @@ Maximum speed 4 m/s. Provisional reading of "Reverse Acceleration": the whole ch
 toward the opposite target (braking, then building the reverse velocity) runs at that
 rate. The values are validation placeholders.
 
-The movement budget `S = max(0, D − R)` is **not** applied: R (real walking) is only
-observed until a reliable measurement exists.
-
 ## Diagnostics
 
-`LocomotionDiagnostics` (world-space text, ~7 Hz) shows the Station state, session,
-event counts, MovementRoot/Station/GameplayAnchor positions, stick, model and Station
-speed, measured player speed, commanded distance against the player's path,
-Origin/AvatarRoot/Head/GetPosition in world and Station-local coordinates, and for
-each remote player the gap between `GetPosition` and their MovementRoot. Interact
-writes the same snapshot to the log.
+`LocomotionDiagnostics` (world-space text, ~7 Hz) shows the Station lifecycle,
+tracking positions, envelope limits and excess, correction request and applied motion,
+convergence observations, model and actual root speeds, translation budget and its
+allocation, rotation displacement, manual turn, auto-turn target and limit state. It
+also shows remote player-to-root gaps. Interact writes a snapshot to the log. A warning
+is emitted when the actual root speed first exceeds the configured speed due to the
+separately measured turn displacement.
 
 ## Using the scene
 
@@ -135,8 +123,8 @@ writes the same snapshot to the log.
 
 ## Verification status and open items
 
-Checked in the Editor: Unity compilation, T# inspect, and the model and state
-transition tests. Everything below needs ClientSim or real VRChat clients.
+The current changes require the local toolchain gates and the real-client checks below.
+The latter cannot be inferred from model tests or Editor compilation.
 
 Real-client checks:
 

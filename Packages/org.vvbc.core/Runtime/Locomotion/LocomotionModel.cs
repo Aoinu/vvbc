@@ -6,6 +6,53 @@ namespace VVBC.Locomotion
     // given values so the controller can swap how the result is applied to the Station.
     public static class LocomotionModel
     {
+        // Horizontal distance outside the asymmetric Station-local head envelope.
+        public static Vector3 HeadExcess(Vector3 head, float left, float right, float back, float forward)
+        {
+            float x = Mathf.Clamp(head.x, -Mathf.Max(0f, left), Mathf.Max(0f, right));
+            float z = Mathf.Clamp(head.z, -Mathf.Max(0f, back), Mathf.Max(0f, forward));
+            return new Vector3(head.x - x, 0f, head.z - z);
+        }
+
+        public static Vector3 LimitDistance(Vector3 displacement, float budget)
+        {
+            float limit = Mathf.Max(0f, budget);
+            float length = displacement.magnitude;
+            return length > limit ? displacement * (limit / length) : displacement;
+        }
+
+        public static Vector3 BudgetedStick(Vector3 displacement, float budget, float correctionDistance)
+        {
+            return LimitDistance(displacement, Mathf.Max(0f, budget - correctionDistance));
+        }
+
+        public static float AutoTurn(float rootYaw, float headYaw, Vector3 velocity, float maxDegrees)
+        {
+            float target = Mathf.Atan2(velocity.x, velocity.z) * Mathf.Rad2Deg;
+            float desired = Mathf.Clamp(Mathf.DeltaAngle(rootYaw, target), -Mathf.Max(0f, maxDegrees), Mathf.Max(0f, maxDegrees));
+            return LimitAutoTurn(Mathf.DeltaAngle(rootYaw, headYaw), desired);
+        }
+
+        public static bool ShouldAutoTurn(bool inVR, float look, float deadzone, float speed, float minimumSpeed)
+        {
+            return (!inVR || Mathf.Abs(look) <= deadzone) && speed >= Mathf.Max(0.001f, minimumSpeed);
+        }
+
+        public static bool CorrectionFailed(float distance, float reliableDistance, float improvement)
+        {
+            return distance >= 1f && reliableDistance >= 0.5f && improvement < 0.05f;
+        }
+
+        // Do not create a new behind-the-Station head orientation. If the head is
+        // already behind, allow only a turn that moves toward the nearest boundary.
+        public static float LimitAutoTurn(float relativeHeadYaw, float turn)
+        {
+            float relative = Mathf.DeltaAngle(0f, relativeHeadYaw);
+            if (relative > 90f) return Mathf.Clamp(turn, 0f, relative - 90f);
+            if (relative < -90f) return Mathf.Clamp(turn, relative + 90f, 0f);
+            return Mathf.Clamp(turn, relative - 90f, relative + 90f);
+        }
+
         // The stick as a vector of length at most 1, so a diagonal does not exceed the
         // maximum speed. A non-finite axis counts as released.
         public static Vector2 ClampStick(float horizontal, float vertical)
@@ -34,13 +81,6 @@ namespace VVBC.Locomotion
             Vector3 turned = pivot + Quaternion.Euler(0f, degrees, 0f) * offset;
             turned.y = rootPosition.y;
             return turned;
-        }
-
-        // from moved horizontally toward target by at most maxStep, keeping from's height.
-        public static Vector3 StepToward(Vector3 from, Vector3 target, float maxStep)
-        {
-            Vector3 to = new Vector3(target.x, from.y, target.z);
-            return Vector3.MoveTowards(from, to, maxStep > 0f ? maxStep : 0f);
         }
 
         // One step of the horizontal velocity toward target (m/s), over dt seconds.

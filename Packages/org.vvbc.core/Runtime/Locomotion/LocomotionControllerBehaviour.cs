@@ -6,33 +6,13 @@ using VRC.Udon.Common;
 
 namespace VVBC.Locomotion
 {
-    // Station locomotion validation: one per player, on the MovementRoot of the
-    // LocomotionPlayerObject, next to its VRCStation (whose events arrive here), its
-    // kinematic Rigidbody and its VRCObjectSync (the only position sync). Only the owner's
-    // local instance enters, moves or resets; remote copies only follow ObjectSync.
-    //
-    //   Idle --RequestEnter--> Entering --OnStationEntered--> Active
-    //   Active --re-seat--> Reseating --OnStationEntered--> Active   (same session)
-    //   Active / Reseating --OnPlayerRespawn--> Idle   (Respawn: from any state)
-    //   Active --OnStationExited (not one a re-seat caused)--> Idle
-    //   Entering / Reseating --no entry within enterTimeoutFrames--> Idle
-    //
-    // A stale OnStationExited (from an earlier session) is ignored while Entering, and the
-    // second of Exited/Respawn finds Idle and does nothing, so their order does not matter.
-    // Respawn never re-enters: the next FieldLocomotionZone entry does.
-    //
-    // The playspace is carried with the Station, so moving or turning the Station never
-    // changes where the head is relative to it. Smooth turn rotates the Station about the
-    // head (the view turns, the head stays put). A re-seat (exit, move, enter again) is the
-    // only way to change the head's offset; it is tried when the head drifts or turns too
-    // far from the Station, measured, and given up for the session when it does not help.
+    // One owner-controlled Station; ObjectSync distributes the MovementRoot pose.
     [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
     public partial class LocomotionControllerBehaviour : TsukimiBehaviour
     {
         public const int StateIdle = 0;
         public const int StateEntering = 1;
         public const int StateActive = 2;
-        public const int StateReseating = 3;
 
         [Header("Motion model (provisional validation values)")]
         [Tooltip("Maximum horizontal speed, in m/s.")] public float maximumSpeed = 4f;
@@ -40,25 +20,15 @@ namespace VVBC.Locomotion
         [Tooltip("Deceleration with the stick released or eased, in m/s².")] public float deceleration = 10f;
         [Tooltip("Rate while the stick opposes the current velocity, in m/s².")] public float reverseAcceleration = 6f;
 
-        [Header("Turning and re-seat (validation)")]
-        [Tooltip("VR smooth turn at full right-stick deflection, in degrees per second. 0 disables it.")]
+        [Header("Head envelope (meters)")]
+        public float allowedLeft = 0.5f;
+        public float allowedRight = 0.5f;
+        public float allowedForward = 1f;
+        public float allowedBackward = 0.3f;
+        [Header("Turning")]
         public float turnSpeed = 90f;
-        [Tooltip("Start following the head once it is this far (m, horizontal) from the Station. 0 disables it.")]
-        public float recenterDistance = 0.3f;
-        [Tooltip("Stop following once the head is this close (m).")]
-        public float followStopDistance = 0.08f;
-        [Tooltip("Largest Station move per re-seat while following (m).")]
-        public float followStepDistance = 0.15f;
-        [Tooltip("Start turning to the head once its yaw is this far (degrees) from the Station. 0 disables it.")]
-        public float recenterYaw = 60f;
-        [Tooltip("Stop turning once the yaw is this close (degrees).")]
-        public float followStopYaw = 10f;
-        [Tooltip("Largest Station turn per re-seat while following (degrees).")]
-        public float followStepYaw = 20f;
-        [Tooltip("Frames after a session entry before following may start.")]
-        public int recenterCooldownFrames = 45;
-        [Tooltip("Frames between re-seats while following.")]
-        public int followStepFrames = 6;
+        public float autoTurnSpeed = 90f;
+        public float autoTurnMinimumSpeed = 0.2f;
 
         [Header("References")]
         [SerializeField] private VRC.SDK3.Components.VRCStation station;
@@ -87,32 +57,64 @@ namespace VVBC.Locomotion
         private int _exitedCount;
         private int _respawnCount;
         private float _turnedDegrees;
-        private int _reseatCount;
         private string _lastEvent = "none";
 
-        // Re-seat bookkeeping. _reseatExitPending swallows the exit the re-seat itself
-        // causes, whichever side of the new entry it arrives on.
-        private bool _recenterUsable = true;
-        private int _nextRecenterFrame;
-        private bool _followingDrift;
-        private bool _followingYaw;
-        private int _followSteps;
-        private float _followMoved;
-        private float _followTurned;
-        private float _followOriginMoved;
-        private bool _reseatExitPending;
-        private Vector3 _reseatPosition;
-        private float _reseatYaw;
-        private float _seatMoved;
-        private Vector3 _originBeforeSeat;
+        private bool _correctionEnabled = true;
+        private bool _observing;
+        private bool _lastFrameTurned;
+        private float _baselineExcess;
+        private float _lastExcess;
+        private float _previousExcess;
+        private float _correctionDistance;
+        private float _checkpointDistance;
+        private float _reliableDistance;
+        private float _previousCorrection;
+        private float _improvement;
+        private float _correctionTime;
+        private Vector3 _headLocal;
+        private Vector3 _correctionRequest;
+        private Vector3 _correctionApplied;
+        private float _budget;
+        private float _stickDistance;
+        private float _rotationDistance;
+        private float _headYaw;
+        private float _relativeYawBefore;
+        private float _relativeYawAfter;
+        private float _relativeYawObserved;
+        private float _previousPredictedYaw;
+        private float _manualRate;
+        private float _targetYaw;
+        private bool _autoTurning;
+        private bool _autoLimited;
+        private bool _speedWarning;
         private Vector3 _placedPosition;
         private Rigidbody _body;
         private bool _measurePending;
-        private bool _measuringReseat;
         private Vector3 _headBeforeSeat;
         private float _distanceBeforeSeat;
         private float _yawBeforeSeat;
         private string _lastSeatReport = "none";
+
+        // Built only when the diagnostics panel refreshes.
+        public string DiagnosticMotion => MotionReport();
+
+        private string MotionReport()
+        {
+            string text = "<b>Head correction</b> local " + V(_headLocal);
+            text += " limits L/R/B/F " + F(allowedLeft) + "/" + F(allowedRight) + "/" + F(allowedBackward) + "/" + F(allowedForward) + "\n";
+            text += "excess start/previous/current " + F(_baselineExcess) + "/" + F(_previousExcess) + "/" + F(_lastExcess);
+            text += " improvement " + F(_improvement) + " m " + (_correctionEnabled ? "enabled" : "STOPPED") + "\n";
+            text += "request " + V(_correctionRequest) + " applied " + V(_correctionApplied);
+            text += " total " + F(_correctionDistance) + " m / " + F(_correctionTime) + " s\n";
+            text += "<b>Budget</b> max " + F(maximumSpeed) + " m/s frame " + F(_budget) + " m";
+            text += " head " + F(_correctionApplied.magnitude) + " stick " + F(_stickDistance) + " turn offset " + F(_rotationDistance) + " m\n";
+            text += "<b>Turn</b> station/head " + F(transform.eulerAngles.y) + "/" + F(_headYaw);
+            text += " relative previous predicted/observed " + F(_previousPredictedYaw) + "/" + F(_relativeYawObserved);
+            text += " current before/predicted " + F(_relativeYawBefore) + "/" + F(_relativeYawAfter) + "\n";
+            text += "manual " + F(_manualRate) + " deg/s target " + F(_targetYaw);
+            text += " auto " + _autoTurning + " head limit " + _autoLimited + "\n";
+            return text;
+        }
 
         public int State => _state;
         public int Session => _session;
@@ -124,8 +126,6 @@ namespace VVBC.Locomotion
         public int ExitedCount => _exitedCount;
         public int RespawnCount => _respawnCount;
         public float TurnedDegrees => _turnedDegrees;
-        public int ReseatCount => _reseatCount;
-        public bool RecenterUsable => _recenterUsable;
         public string LastEvent => _lastEvent;
         public string LastSeatReport => _lastSeatReport;
         public Vector3 StationPosition => station != null ? station.transform.position : transform.position;
@@ -160,7 +160,7 @@ namespace VVBC.Locomotion
             if (!Utilities.IsValid(player) || station == null) return;
             VRCPlayerApi.TrackingData headData = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
             PlaceAt(player.GetPosition(), player.GetRotation().eulerAngles.y, true);
-            RememberHeadBeforeSeat(headData.position, false);
+            RememberHeadBeforeSeat(headData.position);
             _yawBeforeSeat = Mathf.DeltaAngle(transform.eulerAngles.y, headData.rotation.eulerAngles.y);
             station.UseStation(player);
         }
@@ -168,23 +168,19 @@ namespace VVBC.Locomotion
         public override void OnStationEntered(VRCPlayerApi player)
         {
             if (!IsLocal(player)) return;
-            bool reseat = _state == StateReseating;
             if (HandleEntered(Time.frameCount))
             {
                 StartTicking();
                 _measurePending = true;
                 SendCustomEventDelayedFrames(nameof(_MeasureSeat), measureDelayFrames);
             }
-            if (reseat) return;
             Debug.Log("[VVBC Locomotion] OnStationEntered, state " + _state + ", session " + _session);
         }
 
         public override void OnStationExited(VRCPlayerApi player)
         {
             if (!IsLocal(player)) return;
-            bool reseat = _reseatExitPending;
             HandleExited();
-            if (reseat) return;
             Debug.Log("[VVBC Locomotion] OnStationExited, state " + _state + ", session " + _session
                 + " (" + _lastEvent + ")");
         }
@@ -216,63 +212,27 @@ namespace VVBC.Locomotion
             {
                 VRCPlayerApi.TrackingData head = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
                 float yaw = head.rotation.eulerAngles.y;
-                // Checked before this frame's move, so the head and the Station it is
-                // measured against are from the same frame.
-                TryRecenter(player, head.position, yaw);
-                if (_state == StateActive)
-                {
-                    float dt = Time.deltaTime;
-                    if (_inVR && dt > 0f && dt < 1f) ApplyTurn(TurnRate(_lookHorizontal) * dt, head.position);
-                    Advance(LocomotionModel.WorldInput(Stick, yaw), dt);
-                }
+                TickMotion(head.position, yaw, Time.deltaTime);
             }
             if (_state == StateActive) SendCustomEventDelayedFrames(nameof(_Tick), 1);
             else _ticking = false;
         }
 
-        // Second half of a re-seat, one frame after ExitStation.
-        public void _ReseatEnter()
-        {
-            if (_state != StateReseating) return;
-            VRCPlayerApi player = Networking.LocalPlayer;
-            if (!Utilities.IsValid(player) || station == null) return;
-            // Follow steps are small and continuous, so ObjectSync may interpolate them.
-            PlaceAt(_reseatPosition, _reseatYaw, false);
-            station.UseStation(player);
-        }
-
-        // Logs how far the head moved in the world and where it sits relative to the
-        // Station after an entry; after a re-seat also decides whether re-seating works.
         public void _MeasureSeat()
         {
-            if (!_measurePending) return;
+            if (!_measurePending || _state != StateActive) return;
             _measurePending = false;
-            if (_state != StateActive) return;
             VRCPlayerApi player = Networking.LocalPlayer;
             if (!Utilities.IsValid(player)) return;
             VRCPlayerApi.TrackingData head = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-            Vector3 origin = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin).position;
             Vector3 rel = transform.InverseTransformPoint(head.position);
-            float distance = new Vector2(rel.x, rel.z).magnitude;
-            float yaw = Mathf.DeltaAngle(transform.eulerAngles.y, head.rotation.eulerAngles.y);
             Vector3 jump = head.position - _headBeforeSeat;
             jump.y = 0f;
-            Vector3 originJump = origin - _originBeforeSeat;
-            originJump.y = 0f;
-            bool reseat = _measuringReseat;
-            bool kept = EvaluateSeat(originJump.magnitude);
-            // Entry: how far the Station is from where it was placed, beyond what the stick
-            // moved it. Anything left is the pull-back seen on the first runs.
             float pulled = Mathf.Max(0f, (transform.position - _placedPosition).magnitude - _commandedDistance);
-            _lastSeatReport = (reseat ? "re-seat step " + F(_seatMoved) + " m, origin moved " + F(originJump.magnitude) + " m, "
-                    : "entry Station pulled " + F(pulled) + " m, ")
-                + "head jump " + F(jump.magnitude)
-                + " m, head rel " + F(_distanceBeforeSeat) + " -> " + F(distance) + " m, yaw "
-                + F(_yawBeforeSeat) + " -> " + F(yaw) + (reseat ? (kept ? ", re-seat works" : ", re-seat disabled") : "");
-            // Every follow step is measured, but only entries and failures are logged.
-            if (reseat && kept) return;
-            Debug.Log("[VVBC Locomotion] " + _lastSeatReport + ", head rel " + V(rel)
-                + ", origin rel " + V(transform.InverseTransformPoint(origin)) + ", session " + _session);
+            _lastSeatReport = "entry Station pulled " + F(pulled) + " m, head jump " + F(jump.magnitude)
+                + " m, head rel " + F(_distanceBeforeSeat) + " -> " + F(new Vector2(rel.x, rel.z).magnitude)
+                + " m, yaw " + F(_yawBeforeSeat) + " -> " + F(Mathf.DeltaAngle(transform.eulerAngles.y, head.rotation.eulerAngles.y));
+            Debug.Log("[VVBC Locomotion] " + _lastSeatReport + ", session " + _session);
         }
 
         private void StartTicking()
@@ -289,37 +249,24 @@ namespace VVBC.Locomotion
             _session++;
             _state = StateEntering;
             _enterDeadlineFrame = frame + enterTimeoutFrames;
-            _recenterUsable = true;
-            _reseatExitPending = false;
-            StopFollowing();
             _lastEvent = "enter requested";
             return true;
         }
 
-        // True when this entry starts (or, after a re-seat, resumes) an Active session. An
-        // entry while Idle (one that came after the timeout) is still taken: the player is
-        // in the Station and would otherwise be held there without control.
+        // A late entry after timeout still takes control of the occupied Station.
         private bool HandleEntered(int frame)
         {
             _enteredCount++;
             if (_state == StateActive) { _lastEvent = "entered (duplicate)"; return false; }
-            bool reseat = _state == StateReseating;
-            if (reseat) { _reseatCount++; _lastEvent = "re-seated"; }
-            else
-            {
-                _lastEvent = "entered";
-                _measuringReseat = false;
-                if (_state == StateIdle) { ResetMotion(); _session++; _recenterUsable = true; StopFollowing(); }
-            }
+            _lastEvent = "entered";
+            if (_state == StateIdle) { ResetMotion(); _session++; }
             _state = StateActive;
-            _nextRecenterFrame = frame + (reseat ? followStepFrames : recenterCooldownFrames);
             return true;
         }
 
         private void HandleExited()
         {
             _exitedCount++;
-            if (_reseatExitPending) { _reseatExitPending = false; _lastEvent = "exited (re-seat)"; return; }
             if (_state != StateActive) { _lastEvent = "exited (ignored)"; return; }
             _lastEvent = "exited";
             StopSession();
@@ -334,9 +281,9 @@ namespace VVBC.Locomotion
 
         private bool HandleEnterTimeout(int frame)
         {
-            if (_state != StateEntering && _state != StateReseating) return false;
+            if (_state != StateEntering) return false;
             if (frame < _enterDeadlineFrame) return false;
-            _lastEvent = _state == StateReseating ? "re-seat timed out" : "enter timed out";
+            _lastEvent = "enter timed out";
             StopSession();
             return true;
         }
@@ -344,20 +291,8 @@ namespace VVBC.Locomotion
         private void StopSession()
         {
             _state = StateIdle;
-            _reseatExitPending = false;
             _measurePending = false;
-            StopFollowing();
             ResetMotion();
-        }
-
-        private void StopFollowing()
-        {
-            _followingDrift = false;
-            _followingYaw = false;
-            _followSteps = 0;
-            _followMoved = 0f;
-            _followTurned = 0f;
-            _followOriginMoved = 0f;
         }
 
         private void ResetMotion()
@@ -369,18 +304,137 @@ namespace VVBC.Locomotion
             _lastDisplacement = Vector3.zero;
             _lastDeltaTime = 0f;
             _commandedDistance = 0f;
+            _correctionEnabled = true;
+            _observing = false;
+            _lastFrameTurned = false;
+            _correctionDistance = 0f;
+            _checkpointDistance = 0f;
+            _reliableDistance = 0f;
+            _previousCorrection = 0f;
+            _improvement = 0f;
+            _correctionTime = 0f;
+            _lastExcess = 0f;
+            _previousExcess = 0f;
+            _previousPredictedYaw = 0f;
+            _relativeYawAfter = 0f;
+            _correctionRequest = Vector3.zero;
+            _correctionApplied = Vector3.zero;
+            _budget = 0f;
+            _stickDistance = 0f;
+            _rotationDistance = 0f;
+            _autoTurning = false;
+            _autoLimited = false;
+            _speedWarning = false;
         }
 
-        // Applies one model step to the MovementRoot: horizontal translation only.
-        private void Advance(Vector3 worldInput, float dt)
+        // Observe the previous frame before issuing a new command: tracking can update
+        // only after the Station moved. Rotation changes the envelope axes, so samples
+        // following a turn do not count as convergence evidence.
+        private void ObserveCorrection(float excess)
         {
-            _velocity = LocomotionModel.Step(_velocity, worldInput * maximumSpeed, dt,
-                maximumSpeed, acceleration, deceleration, reverseAcceleration);
-            Vector3 displacement = dt > 0f && dt < 1f ? _velocity * dt : Vector3.zero;
-            _lastDisplacement = displacement;
+            if (_observing && !_lastFrameTurned && _previousCorrection > 0f)
+            {
+                _improvement += _lastExcess - excess;
+                _reliableDistance += _previousCorrection;
+            }
+            _previousExcess = _lastExcess;
+            _lastExcess = excess;
+            if (!_correctionEnabled) return;
+            if (_observing && LocomotionModel.CorrectionFailed(_checkpointDistance, _reliableDistance, _improvement))
+                DisableCorrection("no convergence after 1 m");
+            // A constantly rotating frame may never yield enough comparable samples.
+            // Bound that case too, without interpreting rotation as convergence.
+            else if (_observing && _checkpointDistance >= 2f && _reliableDistance < 0.5f)
+                DisableCorrection("rotation prevented convergence measurement after 2 m");
+            else if (_observing && _checkpointDistance >= 1f && _reliableDistance >= 0.5f)
+            {
+                // Keep checking long corrections, so an early improvement cannot mask
+                // a later stall indefinitely.
+                _baselineExcess = excess;
+                _checkpointDistance = 0f;
+                _reliableDistance = 0f;
+                _improvement = 0f;
+            }
+            if (excess <= 0f && _correctionEnabled)
+            {
+                _observing = false;
+            }
+        }
+
+        private void DisableCorrection(string reason)
+        {
+            _correctionEnabled = false;
+            _lastEvent = "head correction stopped: " + reason;
+        }
+
+        private void TickMotion(Vector3 head, float headYaw, float dt)
+        {
+            if (!(dt > 0f && dt < 1f)) return;
+            Vector3 start = transform.position;
+            _previousPredictedYaw = _relativeYawAfter;
+            _relativeYawObserved = Mathf.DeltaAngle(transform.eulerAngles.y, headYaw);
+            _headLocal = transform.InverseTransformPoint(head);
+            Vector3 excess = LocomotionModel.HeadExcess(_headLocal, allowedLeft, allowedRight, allowedBackward, allowedForward);
+            float distance = excess.magnitude;
+            bool correctionWasEnabled = _correctionEnabled;
+            ObserveCorrection(distance);
+            if (correctionWasEnabled && !_correctionEnabled)
+                Debug.LogWarning("[VVBC Locomotion] " + _lastEvent + ", session " + _session);
+            _correctionRequest = transform.TransformDirection(excess);
+            _budget = Mathf.Max(0f, maximumSpeed) * dt;
+            _correctionApplied = _correctionEnabled ? LocomotionModel.LimitDistance(_correctionRequest, _budget) : Vector3.zero;
+            float correction = _correctionApplied.magnitude;
+            if (correction > 0f)
+            {
+                if (!_observing)
+                {
+                    _observing = true;
+                    _baselineExcess = distance;
+                    _correctionDistance = 0f;
+                    _checkpointDistance = 0f;
+                    _reliableDistance = 0f;
+                    _improvement = 0f;
+                    _correctionTime = 0f;
+                }
+                _correctionDistance += correction;
+                _checkpointDistance += correction;
+                _correctionTime += dt;
+            }
+            _previousCorrection = correction;
+            _velocity = LocomotionModel.Step(_velocity, LocomotionModel.WorldInput(Stick, headYaw) * maximumSpeed,
+                dt, maximumSpeed, acceleration, deceleration, reverseAcceleration);
+            Vector3 stick = LocomotionModel.BudgetedStick(_velocity * dt, _budget, correction);
+            _stickDistance = stick.magnitude;
+            Vector3 translation = _correctionApplied + stick;
+            _commandedDistance += correction + _stickDistance;
+
+            float rootYaw = transform.eulerAngles.y;
+            _headYaw = headYaw;
+            _relativeYawBefore = Mathf.DeltaAngle(rootYaw, headYaw);
+            _manualRate = _inVR ? TurnRate(_lookHorizontal) : 0f;
+            _autoTurning = false;
+            _autoLimited = false;
+            _targetYaw = rootYaw;
+            float turn = _manualRate * dt;
+            if (LocomotionModel.ShouldAutoTurn(_inVR, _lookHorizontal, TurnDeadzone, _velocity.magnitude, autoTurnMinimumSpeed))
+            {
+                _targetYaw = Mathf.Atan2(_velocity.x, _velocity.z) * Mathf.Rad2Deg;
+                float desired = Mathf.Clamp(Mathf.DeltaAngle(rootYaw, _targetYaw), -Mathf.Max(0f, autoTurnSpeed) * dt, Mathf.Max(0f, autoTurnSpeed) * dt);
+                turn = LocomotionModel.AutoTurn(rootYaw, headYaw, _velocity, Mathf.Max(0f, autoTurnSpeed) * dt);
+                _autoLimited = Mathf.Abs(turn - desired) > 0.0001f;
+                _autoTurning = Mathf.Abs(turn) > 0.0001f;
+            }
+            Vector3 beforeTurn = transform.position;
+            ApplyTurn(turn, head);
+            _rotationDistance = (transform.position - beforeTurn).magnitude;
+            transform.position += translation;
+            _lastFrameTurned = Mathf.Abs(turn) > 0.0001f;
+            _relativeYawAfter = Mathf.DeltaAngle(transform.eulerAngles.y, headYaw);
+            _lastDisplacement = transform.position - start;
             _lastDeltaTime = dt;
-            _commandedDistance += displacement.magnitude;
-            if (displacement.sqrMagnitude > 0f) transform.position = transform.position + displacement;
+            bool over = StationSpeed > Mathf.Max(0f, maximumSpeed) + 0.01f;
+            if (over && !_speedWarning) Debug.LogWarning("[VVBC Locomotion] root speed " + F(StationSpeed) + " m/s; rotation move " + F(_rotationDistance) + " m");
+            _speedWarning = over;
         }
 
         // Right-stick x to a yaw rate in degrees per second: nothing inside TurnDeadzone,
@@ -405,58 +459,6 @@ namespace VVBC.Locomotion
             _turnedDegrees += Mathf.Abs(degrees);
         }
 
-        // Follows the head in small re-seats: each step moves the Station at most
-        // followStepDistance toward the head and turns it at most followStepYaw toward
-        // the head's yaw, so the feet catch up in short hops instead of one long jump.
-        private void TryRecenter(VRCPlayerApi player, Vector3 head, float headYaw)
-        {
-            Vector3 rel = transform.InverseTransformPoint(head);
-            float distance = new Vector2(rel.x, rel.z).magnitude;
-            float yaw = Mathf.DeltaAngle(transform.eulerAngles.y, headYaw);
-            bool wasFollowing = _followingDrift || _followingYaw;
-            int reason = RecenterReason(distance, yaw, Time.frameCount);
-            if (wasFollowing && !_followingDrift && !_followingYaw)
-            {
-                Debug.Log("[VVBC Locomotion] follow done: " + _followSteps + " re-seats, "
-                    + F(_followMoved) + " m, " + F(_followTurned) + " deg, session " + _session);
-                StopFollowing();
-            }
-            if (reason == 0 || station == null) return;
-            Vector3 target = (reason & 1) != 0
-                ? LocomotionModel.StepToward(transform.position, head, followStepDistance)
-                : transform.position;
-            float targetYaw = (reason & 2) != 0
-                ? Mathf.MoveTowardsAngle(transform.eulerAngles.y, headYaw, followStepYaw)
-                : transform.eulerAngles.y;
-            if (!BeginReseat(Time.frameCount, target, targetYaw)) return;
-            RememberHeadBeforeSeat(head, true);
-            _originBeforeSeat = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin).position;
-            _distanceBeforeSeat = distance;
-            _yawBeforeSeat = yaw;
-            _seatMoved = (target - transform.position).magnitude;
-            _followSteps++;
-            _followMoved += _seatMoved;
-            _followTurned += Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetYaw));
-            station.ExitStation(player);
-            SendCustomEventDelayedFrames(nameof(_ReseatEnter), 1);
-            SendCustomEventDelayedFrames(nameof(_CheckEnterTimeout), enterTimeoutFrames + 1);
-        }
-
-        // 0 = stay; bit 1 = follow the head's position; bit 2 = turn to the head's yaw.
-        // Each starts past its recenter limit and keeps going until inside its stop limit.
-        private int RecenterReason(float distance, float yaw, int frame)
-        {
-            if (_state != StateActive || !_recenterUsable || frame < _nextRecenterFrame) return 0;
-            if (!(recenterDistance > 0f)) _followingDrift = false;
-            else if (distance > recenterDistance) _followingDrift = true;
-            else if (distance <= followStopDistance) _followingDrift = false;
-            float turn = Mathf.Abs(yaw);
-            if (!(recenterYaw > 0f)) _followingYaw = false;
-            else if (turn > recenterYaw) _followingYaw = true;
-            else if (turn <= followStopYaw) _followingYaw = false;
-            return (_followingDrift ? 1 : 0) | (_followingYaw ? 2 : 0);
-        }
-
         // Discontinuous or step placement of the Station. The kinematic Rigidbody is set
         // too, so physics and ObjectSync see the same pose as the Transform.
         private void PlaceAt(Vector3 position, float yaw, bool discontinuous)
@@ -469,41 +471,11 @@ namespace VVBC.Locomotion
             _placedPosition = position;
         }
 
-        private bool BeginReseat(int frame, Vector3 position, float yaw)
-        {
-            if (_state != StateActive) return false;
-            _state = StateReseating;
-            _reseatExitPending = true;
-            _reseatPosition = position;
-            _reseatYaw = yaw;
-            _enterDeadlineFrame = frame + enterTimeoutFrames;
-            _lastEvent = "re-seat requested";
-            return true;
-        }
-
-        private void RememberHeadBeforeSeat(Vector3 head, bool reseat)
+        private void RememberHeadBeforeSeat(Vector3 head)
         {
             _headBeforeSeat = head;
-            _measuringReseat = reseat;
-            if (reseat) return;
             Vector3 rel = transform.InverseTransformPoint(head);
             _distanceBeforeSeat = new Vector2(rel.x, rel.z).magnitude;
-        }
-
-        // After a re-seat: a working one leaves the playspace where it was in the world
-        // (only the feet move to the Station). If the playspace origin instead moved with
-        // the Station, re-seating cannot close the gap and would repeat forever, so it
-        // stays off for this session. The origin, unlike the head, does not move when
-        // the player walks, so walking during the step cannot fake either result.
-        // Judged over the whole follow so far, so steps too small to judge alone still
-        // add up to a verdict.
-        private bool EvaluateSeat(float originJump)
-        {
-            if (!_measuringReseat) return _recenterUsable;
-            _followOriginMoved += originJump;
-            bool works = _followMoved < 0.1f || _followOriginMoved < 0.5f * _followMoved;
-            if (!works) { _recenterUsable = false; StopFollowing(); }
-            return works;
         }
 
         private static bool IsLocal(VRCPlayerApi player)

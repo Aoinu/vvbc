@@ -40,9 +40,8 @@ namespace VVBC.Locomotion
         private float _stationSpeed;
         private float _commanded;
         private float _turned;
-        private int _reseats;
-        private bool _recenterUsable;
         private string _seatReport = "";
+        private string _motionReport = "";
 
         private void Start()
         {
@@ -84,8 +83,7 @@ namespace VVBC.Locomotion
                 + "  in/out/respawn " + _entered + "/" + _exited + "/" + _respawned + "\n";
             text += "root " + V(root.position) + "  station " + V(_stationPosition)
                 + "  anchor " + V(_anchorPosition) + "\n";
-            text += "turned " + _turned.ToString("F0") + " deg  re-seats " + _reseats
-                + (_recenterUsable ? "" : " (off)") + "  last seat: " + _seatReport + "\n";
+            text += "turned " + _turned.ToString("F0") + " deg  last seat: " + _seatReport + "\n";
 
             text += "<b>Movement</b>  stick " + F(_stick.x) + "," + F(_stick.y)
                 + "  model " + F(_modelSpeed) + " m/s"
@@ -93,6 +91,7 @@ namespace VVBC.Locomotion
                 + "  player " + F(_measuredSpeed) + " m/s\n";
             text += "commanded " + F(_commanded) + " m  player path " + F(_measuredPath)
                 + " m  net " + F(Horizontal(playerPosition - _sessionStartPosition).magnitude) + " m\n";
+            text += _motionReport;
 
             VRCPlayerApi.TrackingData origin = local.GetTrackingData(VRCPlayerApi.TrackingDataType.Origin);
             VRCPlayerApi.TrackingData avatarRoot = local.GetTrackingData(VRCPlayerApi.TrackingDataType.AvatarRoot);
@@ -130,9 +129,8 @@ namespace VVBC.Locomotion
             _stationSpeed = controller.StationSpeed;
             _commanded = controller.CommandedDistance;
             _turned = controller.TurnedDegrees;
-            _reseats = controller.ReseatCount;
-            _recenterUsable = controller.RecenterUsable;
             _seatReport = controller.LastSeatReport;
+            _motionReport = controller.DiagnosticMotion;
         }
 
         private void Sample(Vector3 position)
@@ -198,7 +196,6 @@ namespace VVBC.Locomotion
         {
             if (state == LocomotionControllerBehaviour.StateActive) return "Active";
             if (state == LocomotionControllerBehaviour.StateEntering) return "Entering";
-            if (state == LocomotionControllerBehaviour.StateReseating) return "Reseating";
             return "Idle";
         }
 

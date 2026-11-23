@@ -7,6 +7,83 @@ namespace VVBC.Locomotion
     {
         private const float Dt = 1f / 72f;
 
+        [TsukimiTest]
+        public void HeadEnvelopeAndSharedBudget()
+        {
+            Assert.AreEqual(Vector3.zero, LocomotionModel.HeadExcess(new Vector3(-0.5f, 3f, 1f), 0.5f, 0.5f, 0.3f, 1f));
+            Vector3 excess = LocomotionModel.HeadExcess(new Vector3(0.7f, 9f, -0.5f), 0.5f, 0.5f, 0.3f, 1f);
+            Assert.IsTrue((excess - new Vector3(0.2f, 0f, -0.2f)).magnitude < 1e-5f);
+            Assert.IsTrue((LocomotionModel.HeadExcess(new Vector3(-0.8f, 0f, 1.3f), 0.5f, 0.5f, 0.3f, 1f) - new Vector3(-0.3f, 0f, 0.3f)).magnitude < 1e-5f);
+            Vector3 correction = LocomotionModel.LimitDistance(excess, 0.1f);
+            Vector3 stick = LocomotionModel.LimitDistance(Vector3.forward, 0.2f - correction.magnitude);
+            Assert.IsTrue(Mathf.Abs(correction.magnitude - 0.1f) < 1e-5f);
+            Assert.IsTrue(correction.magnitude + stick.magnitude <= 0.20001f);
+        }
+
+        [TsukimiTest]
+        public void AutoTurnDoesNotCreateBehindHeadOrientation()
+        {
+            Assert.AreEqual(-10f, LocomotionModel.LimitAutoTurn(80f, -30f));
+            Assert.AreEqual(10f, LocomotionModel.LimitAutoTurn(100f, 30f));
+            Assert.AreEqual(0f, LocomotionModel.LimitAutoTurn(100f, -10f));
+            Assert.AreEqual(-10f, LocomotionModel.LimitAutoTurn(-80f, -10f));
+        }
+
+        [TsukimiTest]
+        public void CorrectionBudgetHasPriorityAndNoExtraDistance()
+        {
+            Vector3 stick = LocomotionModel.BudgetedStick(Vector3.forward, 0.4f, 0.3f);
+            Assert.IsTrue(Mathf.Abs(stick.magnitude - 0.1f) < 0.0001f);
+            Assert.AreEqual(Vector3.zero, LocomotionModel.BudgetedStick(Vector3.forward, 0.4f, 0.4f));
+            Assert.AreEqual(Vector3.forward * 0.1f, LocomotionModel.BudgetedStick(Vector3.forward * 0.1f, 0.4f, 0f));
+        }
+
+        [TsukimiTest]
+        public void AutoTurnUsesVelocityAndRespectsHeadBoundary()
+        {
+            Assert.IsTrue(Mathf.Abs(LocomotionModel.AutoTurn(0f, 0f, Vector3.right, 9f) - 9f) < 0.001f);
+            Assert.IsTrue(Mathf.Abs(LocomotionModel.AutoTurn(0f, -89f, Vector3.right, 9f) - 1f) < 0.001f);
+            Assert.AreEqual(0f, LocomotionModel.AutoTurn(0f, -100f, Vector3.right, 9f));
+            Assert.IsFalse(LocomotionModel.ShouldAutoTurn(true, 0.16f, 0.15f, 1f, 0.2f));
+            Assert.IsTrue(LocomotionModel.ShouldAutoTurn(true, 0f, 0.15f, 1f, 0.2f));
+            Assert.IsFalse(LocomotionModel.ShouldAutoTurn(true, 0f, 0.15f, 0.19f, 0.2f));
+        }
+
+        [TsukimiTest]
+        public void ConvergenceDecisionAndRespawnReset()
+        {
+            Assert.IsFalse(LocomotionModel.CorrectionFailed(0.99f, 0.8f, 0f));
+            Assert.IsFalse(LocomotionModel.CorrectionFailed(1f, 0.4f, 0f));
+            Assert.IsTrue(LocomotionModel.CorrectionFailed(1f, 0.5f, 0.049f));
+            Assert.IsFalse(LocomotionModel.CorrectionFailed(1f, 0.5f, 0.05f));
+            BeginEnter(0); HandleEntered(0);
+            _observing = true;
+            _checkpointDistance = 1f;
+            _reliableDistance = 0.5f;
+            _lastExcess = 0.5f;
+            ObserveCorrection(0.5f);
+            Assert.IsFalse(_correctionEnabled);
+            _correctionDistance = 1f;
+            HandleRespawn();
+            Assert.IsTrue(_correctionEnabled);
+            Assert.AreEqual(0f, _correctionDistance);
+            Assert.IsTrue(BeginEnter(10));
+        }
+
+        [TsukimiTest]
+        public void RotationSamplesAreExcludedFromConvergenceEvidence()
+        {
+            _observing = true;
+            _lastExcess = 0.5f;
+            _previousCorrection = 0.1f;
+            _lastFrameTurned = true;
+            ObserveCorrection(0.3f);
+            Assert.AreEqual(0f, _improvement);
+            _lastFrameTurned = false;
+            ObserveCorrection(0.2f);
+            Assert.IsTrue(Mathf.Abs(_improvement - 0.1f) < 0.0001f);
+        }
+
         private static Vector3 Run(Vector3 velocity, Vector3 target, int frames)
         {
             for (int i = 0; i < frames; i++)
@@ -82,16 +159,6 @@ namespace VVBC.Locomotion
         }
 
         [TsukimiTest]
-        public void AdvanceMovesTheRootHorizontallyOnly()
-        {
-            transform.position = new Vector3(1f, 2f, 3f);
-            for (int i = 0; i < 72; i++) Advance(Vector3.forward, Dt);
-            Assert.AreEqual(2f, transform.position.y, "height kept");
-            Assert.IsTrue(transform.position.z > 3f + 2.9f, "moved about 3 m forward");
-            Assert.IsTrue(Mathf.Abs(CommandedDistance - (transform.position.z - 3f)) < 1e-3f, "commanded matches");
-        }
-
-        [TsukimiTest]
         public void ARunningSessionRefusesASecondRequest()
         {
             Assert.IsTrue(BeginEnter(100), "first request");
@@ -109,7 +176,7 @@ namespace VVBC.Locomotion
             BeginEnter(0);
             HandleEntered(0);
             _inputVertical = 1f;
-            Advance(Vector3.forward, Dt);
+            _velocity = LocomotionModel.Step(_velocity, Vector3.forward, Dt, maximumSpeed, acceleration, deceleration, reverseAcceleration);
             HandleRespawn();
             Assert.AreEqual(StateIdle, State);
             Assert.AreEqual(Vector3.zero, ModelVelocity);
@@ -197,130 +264,5 @@ namespace VVBC.Locomotion
             Assert.IsTrue((root - new Vector3(-0.5f, 0f, 0.5f)).magnitude < 1e-3f, "90 one-degree steps swing the root a quarter round the head");
         }
 
-        [TsukimiTest]
-        public void RecenterWaitsForTheLimitsAndTheCooldown()
-        {
-            BeginEnter(0);
-            HandleEntered(100);
-            Assert.AreEqual(0, RecenterReason(1f, 0f, 100 + recenterCooldownFrames - 1), "cooldown");
-            int frame = 100 + recenterCooldownFrames;
-            Assert.AreEqual(0, RecenterReason(0.25f, 50f, frame), "inside both start limits");
-            Assert.AreEqual(1, RecenterReason(0.4f, 0f, frame), "drift");
-            StopFollowing();
-            Assert.AreEqual(2, RecenterReason(0.05f, -70f, frame), "yaw either way");
-            StopFollowing();
-            Assert.AreEqual(3, RecenterReason(0.4f, 70f, frame), "both");
-            StopFollowing();
-            recenterDistance = 0f;
-            recenterYaw = 0f;
-            Assert.AreEqual(0, RecenterReason(5f, 170f, frame), "zero disables");
-        }
-
-        [TsukimiTest]
-        public void FollowingKeepsGoingUntilInsideTheStopLimits()
-        {
-            BeginEnter(0);
-            HandleEntered(0);
-            int frame = recenterCooldownFrames;
-            Assert.AreEqual(1, RecenterReason(0.35f, 0f, frame), "starts past 0.3 m");
-            Assert.AreEqual(1, RecenterReason(0.2f, 0f, frame), "keeps following below the start limit");
-            Assert.AreEqual(0, RecenterReason(0.05f, 0f, frame), "stops inside 0.08 m");
-            Assert.AreEqual(0, RecenterReason(0.2f, 0f, frame), "does not restart below the start limit");
-            Assert.AreEqual(2, RecenterReason(0f, 65f, frame), "turn starts past 60 degrees");
-            Assert.AreEqual(2, RecenterReason(0f, 30f, frame), "keeps turning");
-            Assert.AreEqual(0, RecenterReason(0f, 8f, frame), "stops inside 10 degrees");
-        }
-
-        [TsukimiTest]
-        public void FollowStepsUseTheShortCooldown()
-        {
-            BeginEnter(0);
-            HandleEntered(0);
-            BeginReseat(100, Vector3.zero, 0f);
-            HandleEntered(101);
-            Assert.AreEqual(0, RecenterReason(0.4f, 0f, 101 + followStepFrames - 1), "between steps");
-            Assert.AreEqual(1, RecenterReason(0.4f, 0f, 101 + followStepFrames), "next step");
-        }
-
-        [TsukimiTest]
-        public void AFollowStepMovesAtMostOneStepTowardTheHead()
-        {
-            Vector3 from = new Vector3(0f, 0.5f, 0f);
-            Vector3 step = LocomotionModel.StepToward(from, new Vector3(0f, 1.7f, 1f), 0.15f);
-            Assert.IsTrue((step - new Vector3(0f, 0.5f, 0.15f)).magnitude < 1e-5f, "one step, height kept");
-            Vector3 near = LocomotionModel.StepToward(from, new Vector3(0.05f, 1.7f, 0f), 0.15f);
-            Assert.IsTrue((near - new Vector3(0.05f, 0.5f, 0f)).magnitude < 1e-5f, "a short gap closes exactly");
-        }
-
-        [TsukimiTest]
-        public void AReseatKeepsTheSessionAndSwallowsItsOwnExit()
-        {
-            BeginEnter(0);
-            HandleEntered(0);
-            _velocity = Vector3.forward;
-            Assert.IsTrue(BeginReseat(100, Vector3.one, 90f));
-            Assert.AreEqual(StateReseating, State);
-            Assert.IsFalse(BeginReseat(101, Vector3.one, 90f), "one at a time");
-            HandleExited();
-            Assert.AreEqual(StateReseating, State, "its own exit does not stop it");
-            Assert.IsTrue(HandleEntered(102));
-            Assert.AreEqual(StateActive, State);
-            Assert.AreEqual(1, Session, "same session");
-            Assert.AreEqual(1, ReseatCount);
-            Assert.AreEqual(Vector3.forward, ModelVelocity, "motion carries over");
-        }
-
-        [TsukimiTest]
-        public void AReseatExitArrivingAfterTheEntryIsAlsoSwallowed()
-        {
-            BeginEnter(0);
-            HandleEntered(0);
-            BeginReseat(100, Vector3.zero, 0f);
-            HandleEntered(101);
-            HandleExited();
-            Assert.AreEqual(StateActive, State, "late re-seat exit ignored");
-            HandleExited();
-            Assert.AreEqual(StateIdle, State, "a later exit still stops");
-        }
-
-        [TsukimiTest]
-        public void RespawnOrTimeoutDuringAReseatStops()
-        {
-            BeginEnter(0);
-            HandleEntered(0);
-            BeginReseat(100, Vector3.zero, 0f);
-            HandleRespawn();
-            Assert.AreEqual(StateIdle, State, "respawn");
-            HandleExited();
-            Assert.AreEqual("exited (ignored)", LastEvent, "pending exit cleared by the stop");
-
-            BeginEnter(200);
-            HandleEntered(200);
-            BeginReseat(300, Vector3.zero, 0f);
-            Assert.IsFalse(HandleEnterTimeout(300 + enterTimeoutFrames - 1));
-            Assert.IsTrue(HandleEnterTimeout(300 + enterTimeoutFrames));
-            Assert.AreEqual(StateIdle, State, "timeout");
-        }
-
-        [TsukimiTest]
-        public void AReseatThatDoesNotSettleIsGivenUp()
-        {
-            BeginEnter(0);
-            HandleEntered(0);
-            RememberHeadBeforeSeat(Vector3.zero, true);
-            _followMoved = 0.15f;
-            Assert.IsTrue(EvaluateSeat(0.02f), "playspace stayed: works");
-            Assert.IsTrue(RecenterUsable);
-            StopFollowing();
-            _followMoved = 0.06f;
-            Assert.IsTrue(EvaluateSeat(0.06f), "one small step is too little to judge");
-            _followMoved = 0.12f;
-            Assert.IsFalse(EvaluateSeat(0.06f), "small steps add up: the playspace moved with the Station");
-            Assert.IsFalse(RecenterUsable);
-            Assert.AreEqual(0, RecenterReason(2f, 0f, 100000), "no further re-seat this session");
-            HandleRespawn();
-            BeginEnter(0);
-            Assert.IsTrue(RecenterUsable, "a new session tries again");
-        }
     }
 }
