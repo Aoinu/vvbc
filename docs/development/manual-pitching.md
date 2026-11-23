@@ -625,14 +625,13 @@ T# cannot read `Keyframe` members and the T# test runner does not model `Animati
 `ResolveReleaseWithCurveOutputAt` takes the curve's output directly in tests, and the curve's
 own evaluation is checked in the Editor.
 
-Provisional curve (not final balance; `ManualPitchMound.prefab` and every scene instance):
-monotone cubic (PCHIP) tangents, so it rises monotonically without overshoot. Its breakpoints
-were chosen for the ball's speed; the controller's speed at the same release is not the same,
-so they have to be checked against controller speeds on a client.
+Provisional curve (not final balance; `ManualPitchMound.prefab` and every scene instance),
+tuned against controller speeds on a client (it replaced an earlier 8-key curve whose
+breakpoints were chosen for the ball's speed). The last key's 1.03 is clamped to 1:
 
-| Arm speed m/s | 0 | 1 | 2 | 3 | 4 | 5 | 8 | 12 |
-|---|---|---|---|---|---|---|---|---|
-| Normalized speed | 0.00 | 0.30 | 0.65 | 0.88 | 0.96 | 0.97 | 0.98 | 1.00 |
+| Arm speed m/s | 0 | 13 | 20 | 45 |
+|---|---|---|---|---|
+| Normalized speed | 0.00 | 0.93 | 1.00 | 1.03 |
 
 The solver aims with the single speed `Vsolver` fixed at the lock (setting changes during or
 after the solve are not read), runs to its own end once (`maxIterations`, `tolerance`,
@@ -829,6 +828,25 @@ it by themselves: `moundCenter`, `releaseAnchor`, the feedback objects (`Feedbac
 `CrossingMarker`, `HandTrail`, `PredictionLine`) and the child `ManualPitchControlSettingsBehaviour`
 are therefore also found at `Start`. Value fields not in an instance table take the program's defaults (the release range). `armSpeedCurve` has no program default and is set in the prefab's table **and** in every
 instance's table.
+
+The prefab's table overrides these program defaults (provisional tuning from client tests),
+and every instance in `Bullpen.unity`, `PracticeSpace.unity` and the local stadium scene
+(main mound and bullpens) carries the same values in its own table, since a changed prefab
+table does not reach an instance that overrides it:
+
+| Field | Program default | Prefab and instances |
+|---|---:|---:|
+| `releasePlateWidth` / `releasePlateHeight` | 0.5 / 0.5 m | 1.0 / 1.0 m |
+| `releaseSideMax` | 0.6 m | 1.0 m |
+| `maxPredictionDistance` | 0.30 m | 0.50 m |
+| `cursorSize` | 0.12 m | 1.0 m |
+| `poseGoodAngles` / `poseBadAngles` (every type) | 35° / 45° | 25° / 60° |
+| `qualityTimingCap` | 1 (off) | 0.6 |
+| `idealPalmColor` | (0.2, 0.85, 1, 1) | (0.2, 1, 0.4, 0.9) |
+| `armSpeedCurve` | none | the curve above |
+
+`MoundCenter`'s height stays per instance (it follows each mound's surface). The debug switches
+(`showDebug`, `showTrackingPoint`, `showLivePalm`) are scene settings, not prefab values.
 
 ## Debug
 
