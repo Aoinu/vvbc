@@ -10,8 +10,13 @@ using VRC.Udon;
 // the local player to the team's dugout after a respawn.
 //
 // Nothing here is synced. Presses become RosterManagerBehaviour submissions; the display is
-// rebuilt only from the manager's tables when it reports a change (or a request times out),
-// and a pressed button shows Pending until the Owner's result arrives.
+// rebuilt only from the manager's tables when it reports a change. The manager keeps the local
+// player's one outstanding request, so a pressed button shows Pending (and every button of both
+// panels waits) until the Owner's decision shows in the roster, a rejection arrives or the
+// request times out. Changes by other players do not end it.
+//
+// Batting order: a player gets a row automatically with their role. Tapping an empty row moves
+// their own row there; their own row cannot be released on its own.
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public partial class RosterPanelBehaviour : TsukimiBehaviour
 {
@@ -21,11 +26,6 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
     public const int StateOther = 3;
     public const int StateOtherOperable = 4;
     public const int StatePending = 5;
-
-    private const int PendingNone = 0;
-    private const int PendingRole = 1;
-    private const int PendingOrder = 2;
-    private const int PendingMove = 3;
 
     public RosterManagerBehaviour manager;
     [Tooltip("0 = Away (bats first), 1 = Home.")]
@@ -70,8 +70,6 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
     public string syncingText = "Syncing…";
     [Tooltip("Longest name shown before it is cut with an ellipsis; TMP auto-size shrinks it further.")]
     public int nameLimit = 18;
-    [Tooltip("Seconds to wait for the Owner before a pressed button is released again.")]
-    public float pendingTimeoutSeconds = 4f;
     public Color emptyColor = new Color(0.97f, 0.97f, 0.93f, 1f);
     public Color mineColor = new Color(1f, 0.82f, 0.25f, 1f);
     public Color otherColor = new Color(0.78f, 0.82f, 0.8f, 1f);
@@ -81,10 +79,6 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
     public Color rowColor = new Color(0.97f, 0.97f, 0.93f, 1f);
     public Color rowAltColor = new Color(0.9f, 0.92f, 0.88f, 1f);
 
-    private int _pendingKind;
-    private int _pendingIndex = -1;
-    private int _pendingRevision;
-    private float _pendingDeadline;
     private bool _registered;
 
     void Start()
@@ -110,23 +104,6 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
 
     public void _OnRosterChanged()
     {
-        if (_pendingKind != PendingNone && manager != null && manager.GetRevision() != _pendingRevision)
-            ClearPending();
-        Refresh();
-    }
-
-    public void _PendingTimeout()
-    {
-        if (_pendingKind == PendingNone) return;
-        // A timer left by an earlier press fires early: wait for the rest of this one.
-        float remaining = _pendingDeadline - Time.time;
-        if (remaining > 0.05f)
-        {
-            SendCustomEventDelayedSeconds(nameof(_PendingTimeout), remaining);
-            return;
-        }
-        // No change arrived: the Owner rejected the request or it was lost. Show the state again.
-        ClearPending();
         Refresh();
     }
 
@@ -154,54 +131,40 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
     public void _Down3() { PressMove(3, 1); } public void _Down4() { PressMove(4, 1); } public void _Down5() { PressMove(5, 1); }
     public void _Down6() { PressMove(6, 1); } public void _Down7() { PressMove(7, 1); } public void _Down8() { PressMove(8, 1); }
 
+    // The manager refuses a submission while another request of this client is outstanding,
+    // and reports the change (Pending) to every panel itself.
     private void PressRole(int role)
     {
-        if (_pendingKind != PendingNone || manager == null) return;
-        int local = LocalId();
-        if (RoleState(manager.GetPlayerAtRole(team, role), local, manager.IsLocalOperator(), manager.IsRosterReady(), false) == StateOther) return;
-        int before = manager.GetRevision();
-        if (!manager.SubmitRole(team, role)) return;
-        BeginPending(PendingRole, role, before);
+        if (manager == null || manager.HasPendingRequest()) return;
+        int state = RoleState(manager.GetPlayerAtRole(team, role), LocalId(), manager.IsLocalOperator(), manager.IsRosterReady(), false);
+        if (state != StateEmpty && state != StateMine && state != StateOtherOperable) return;
+        manager.SubmitRole(team, role);
     }
 
     private void PressOrder(int row)
     {
-        if (_pendingKind != PendingNone || manager == null) return;
-        int order = row + RosterRules.FirstOrder;
-        if (!OrderPressAllowed(manager.GetBattingKeyAtOrder(team, order), manager.GetBattingKeyOf(team, LocalId()), manager.IsRosterReady())) return;
-        int before = manager.GetRevision();
-        if (!manager.SubmitOrder(team, order)) return;
-        BeginPending(PendingOrder, row, before);
+        if (manager == null || manager.HasPendingRequest()) return;
+        int localKey = manager.GetBattingKeyOf(team, LocalId());
+        if (!OrderPressAllowed(manager.GetBattingKeyAtOrder(team, row + RosterRules.FirstOrder), localKey, FindRow(localKey), manager.IsRosterReady())) return;
+        manager.SubmitOrder(team, row + RosterRules.FirstOrder);
     }
 
     private void PressMove(int row, int direction)
     {
-        if (_pendingKind != PendingNone || manager == null) return;
+        if (manager == null || manager.HasPendingRequest() || !RosterRules.ValidRow(row + direction)) return;
         int order = row + RosterRules.FirstOrder;
-        if (!MoveAllowed(row, direction, manager.GetBattingKeyAtOrder(team, order), manager.GetBattingKeyOf(team, LocalId()), manager.IsLocalOperator(), manager.IsRosterReady())) return;
-        int before = manager.GetRevision();
-        if (!manager.SubmitOrderMove(team, order, direction)) return;
-        BeginPending(PendingMove, row, before);
+        int rowKey = manager.GetBattingKeyAtOrder(team, order);
+        int targetKey = manager.GetBattingKeyAtOrder(team, order + direction);
+        if (!MoveAllowed(row, direction, rowKey, targetKey, manager.GetBattingKeyOf(team, LocalId()), manager.IsLocalOperator(), manager.IsRosterReady())) return;
+        manager.SubmitOrderMove(team, order, direction);
     }
 
-    // revisionBefore is read before the submission: the Owner's own request is applied on the
-    // spot, so its change may already have arrived when this runs.
-    private void BeginPending(int kind, int index, int revisionBefore)
+    private int FindRow(int key)
     {
-        _pendingKind = kind;
-        _pendingIndex = index;
-        _pendingRevision = revisionBefore;
-        float timeout = Mathf.Max(0.5f, pendingTimeoutSeconds);
-        _pendingDeadline = Time.time + timeout;
-        SendCustomEventDelayedSeconds(nameof(_PendingTimeout), timeout);
-        if (manager.GetRevision() != _pendingRevision) ClearPending();
-        Refresh();
-    }
-
-    private void ClearPending()
-    {
-        _pendingKind = PendingNone;
-        _pendingIndex = -1;
+        if (key == RosterRules.NoPlayer) return -1;
+        for (int row = 0; row < RosterRules.OrderCount; row++)
+            if (manager.GetBattingKeyAtOrder(team, row + RosterRules.FirstOrder) == key) return row;
+        return -1;
     }
 
     // Moves the local player to the position's point. Registration and team are unchanged.
@@ -242,16 +205,19 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
         return isOperator ? StateOtherOperable : StateOther;
     }
 
-    // An order name can be pressed on an empty row (by a player who can bat) or on the local row.
-    public static bool OrderPressAllowed(int rowKey, int localKey, bool ready)
+    // An empty row can be pressed by a player who bats on this team and has a row (every such
+    // player has one): their row moves there. Their own row and other rows cannot be pressed.
+    public static bool OrderPressAllowed(int rowKey, int localKey, int localRow, bool ready)
     {
-        if (!ready || localKey == RosterRules.NoPlayer) return false;
-        return rowKey == RosterRules.NoPlayer || rowKey == localKey;
+        if (!ready || localKey == RosterRules.NoPlayer || localRow < 0) return false;
+        return rowKey == RosterRules.NoPlayer;
     }
 
-    public static bool MoveAllowed(int row, int direction, int rowKey, int localKey, bool isOperator, bool ready)
+    // Swapping with the neighbour: the local player's own row, or any row for an operator.
+    // Two empty rows have nothing to swap.
+    public static bool MoveAllowed(int row, int direction, int rowKey, int targetKey, int localKey, bool isOperator, bool ready)
     {
-        if (!ready || !RosterRules.ValidRow(row + direction)) return false;
+        if (!ready || !RosterRules.ValidRow(row + direction) || rowKey == targetKey) return false;
         if (isOperator) return true;
         return localKey != RosterRules.NoPlayer && rowKey == localKey;
     }
@@ -272,18 +238,22 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
         bool ready = manager.IsRosterReady();
         int local = LocalId();
         bool isOperator = manager.IsLocalOperator();
+        bool busy = manager.HasPendingRequest();
+        int pendingKind = busy && manager.GetPendingRequestTeam() == team ? manager.GetPendingRequestKind() : RosterRules.RequestNone;
+        int pendingIndex = manager.GetPendingRequestIndex();
         for (int role = 0; role < RosterRules.RoleCount; role++)
-            ShowRole(role, ready, local, isOperator);
+            ShowRole(role, ready, local, isOperator, busy, pendingKind == RosterRules.RequestRoleKind && pendingIndex == role);
         int localKey = manager.GetBattingKeyOf(team, local);
+        int localRow = FindRow(localKey);
+        bool orderPending = pendingKind == RosterRules.RequestRowKind || pendingKind == RosterRules.RequestMoveKind;
         for (int row = 0; row < RosterRules.OrderCount; row++)
-            ShowOrder(row, ready, localKey, isOperator);
-        ShowStatus(ready, local, isOperator);
+            ShowOrder(row, ready, localKey, localRow, isOperator, busy, orderPending && pendingIndex == row);
+        ShowStatus(ready, local, isOperator, busy);
     }
 
-    private void ShowRole(int role, bool ready, int local, bool isOperator)
+    private void ShowRole(int role, bool ready, int local, bool isOperator, bool busy, bool pending)
     {
         int occupant = manager.GetPlayerAtRole(team, role);
-        bool pending = _pendingKind == PendingRole && _pendingIndex == role;
         int state = RoleState(occupant, local, isOperator, ready, pending);
         string text;
         Color color;
@@ -298,14 +268,13 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
         if (role < roleNameTexts.Length && roleNameTexts[role] != null) roleNameTexts[role].text = text;
         if (role < roleButtonImages.Length && roleButtonImages[role] != null) roleButtonImages[role].color = color;
         if (role < roleButtons.Length && roleButtons[role] != null)
-            roleButtons[role].interactable = state == StateEmpty || state == StateMine || state == StateOtherOperable;
+            roleButtons[role].interactable = !busy && (state == StateEmpty || state == StateMine || state == StateOtherOperable);
     }
 
-    private void ShowOrder(int row, bool ready, int localKey, bool isOperator)
+    private void ShowOrder(int row, bool ready, int localKey, int localRow, bool isOperator, bool busy, bool pending)
     {
         int order = row + RosterRules.FirstOrder;
         int key = manager.GetBattingKeyAtOrder(team, order);
-        bool pending = (_pendingKind == PendingOrder || _pendingKind == PendingMove) && _pendingIndex == row;
         string name;
         string roleText = "";
         Color color = (row & 1) == 0 ? rowColor : rowAltColor;
@@ -323,21 +292,22 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
         if (row < orderNameTexts.Length && orderNameTexts[row] != null) orderNameTexts[row].text = name;
         if (row < orderRoleTexts.Length && orderRoleTexts[row] != null) orderRoleTexts[row].text = roleText;
         if (row < orderButtonImages.Length && orderButtonImages[row] != null) orderButtonImages[row].color = color;
-        bool idle = !pending && _pendingKind == PendingNone;
+        int above = row > 0 ? manager.GetBattingKeyAtOrder(team, order - 1) : RosterRules.NoPlayer;
+        int below = row < RosterRules.OrderCount - 1 ? manager.GetBattingKeyAtOrder(team, order + 1) : RosterRules.NoPlayer;
         if (row < orderButtons.Length && orderButtons[row] != null)
-            orderButtons[row].interactable = idle && OrderPressAllowed(key, localKey, ready);
+            orderButtons[row].interactable = !busy && OrderPressAllowed(key, localKey, localRow, ready);
         if (row < orderUpButtons.Length && orderUpButtons[row] != null)
-            orderUpButtons[row].interactable = idle && MoveAllowed(row, -1, key, localKey, isOperator, ready);
+            orderUpButtons[row].interactable = !busy && MoveAllowed(row, -1, key, above, localKey, isOperator, ready);
         if (row < orderDownButtons.Length && orderDownButtons[row] != null)
-            orderDownButtons[row].interactable = idle && MoveAllowed(row, 1, key, localKey, isOperator, ready);
+            orderDownButtons[row].interactable = !busy && MoveAllowed(row, 1, key, below, localKey, isOperator, ready);
     }
 
-    private void ShowStatus(bool ready, int local, bool isOperator)
+    private void ShowStatus(bool ready, int local, bool isOperator, bool busy)
     {
         if (statusText == null) return;
         string text;
         if (!ready) text = "Syncing roster…";
-        else if (_pendingKind != PendingNone) text = "Waiting for the roster owner…";
+        else if (busy) text = "Waiting for the roster owner…";
         else
         {
             int myTeam = manager.GetTeamOfPlayer(local);
@@ -345,11 +315,12 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
             {
                 int order = manager.GetOrderOfPlayer(local);
                 text = "You: " + RosterRules.RoleName(manager.GetRoleOfPlayer(local))
-                    + (order > 0 ? "  /  #" + order : "  /  no batting order");
+                    + (order > 0 ? "  /  #" + order + "  -  tap an empty row to move" : "  /  the DH bats for you");
             }
             else if (myTeam >= 0) text = "You are on the other team. Tap Entry here to transfer.";
-            else text = "Tap Entry to join this team.";
+            else text = "Tap Entry on a position to join. Your batting order is assigned.";
         }
+        if (manager.GetSerializationFailureStreak() > 0) text += "  (roster send retrying)";
         if (isOperator) text = "[Operator] " + text;
         statusText.text = text;
     }
