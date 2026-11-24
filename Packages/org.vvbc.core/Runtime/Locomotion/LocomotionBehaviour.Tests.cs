@@ -330,6 +330,292 @@ namespace VVBC.Locomotion
             Assert.AreEqual(8f, _applied);
         }
 
+        // ---- Jump limit ----------------------------------------------------------------
+
+        // Grounded and Ready at t = 1, then a press and a take-off at t = 1.05.
+        private void TakeOff()
+        {
+            ResetJump();
+            JumpStep(true, 1f);
+            JumpInput(true, 1.02f);
+            JumpInput(false, 1.03f);
+            JumpStep(false, 1.05f);
+        }
+
+        // Airborne for 0.5 s, landing at t = 1.55.
+        private void JumpAndLand()
+        {
+            TakeOff();
+            JumpStep(false, 1.3f);
+            JumpStep(true, 1.55f);
+        }
+
+        [TsukimiTest]
+        public void JumpDefaultsMatchTheSpecification()
+        {
+            Assert.AreEqual(0.5f, jumpCooldown);
+            Assert.AreEqual(0.7f, landingSpeedRatio);
+            SetLandingSpeedRatio(1.5f);
+            Assert.AreEqual(1f, landingSpeedRatio);
+            SetLandingSpeedRatio(-1f);
+            Assert.AreEqual(0f, landingSpeedRatio);
+            SetJumpCooldown(-2f);
+            Assert.AreEqual(0f, jumpCooldown);
+        }
+
+        [TsukimiTest]
+        public void APressedJumpThatLiftsOffStartsAirborne()
+        {
+            ResetJump();
+            JumpStep(true, 1f);
+            JumpInput(true, 1.02f);
+            JumpStep(true, 1.03f);
+            Assert.AreEqual(JumpReady, _jumpState, "the first jump is allowed: nothing is blocked at the press");
+            JumpStep(false, 1.05f);
+            Assert.AreEqual(JumpAirborne, _jumpState);
+        }
+
+        [TsukimiTest]
+        public void AirborneDoesNotStartTheCooldown()
+        {
+            TakeOff();
+            for (int i = 1; i <= 30; i++) JumpStep(false, 1.05f + i * Frame);
+            Assert.AreEqual(JumpAirborne, _jumpState);
+        }
+
+        [TsukimiTest]
+        public void LandingStartsTheCooldownAndItEndsAfterHalfASecond()
+        {
+            JumpAndLand();
+            Assert.AreEqual(JumpCooldown, _jumpState);
+            Assert.IsTrue(Mathf.Abs(_jumpUnlockTime - 2.05f) < 0.0001f, "landing + 0.5 s");
+            JumpStep(true, 2.04f);
+            Assert.AreEqual(JumpCooldown, _jumpState);
+            JumpStep(true, 2.05f);
+            Assert.AreEqual(JumpReady, _jumpState);
+        }
+
+        [TsukimiTest]
+        public void PressesDuringTheCooldownDoNotStartAJump()
+        {
+            JumpAndLand();
+            JumpInput(true, 1.6f);
+            JumpInput(false, 1.62f);
+            JumpStep(false, 1.65f);
+            JumpStep(true, 1.7f);
+            Assert.AreEqual(JumpCooldown, _jumpState, "grounded flicker with a press in the cooldown is not a jump");
+            Assert.IsTrue(Mathf.Abs(_jumpUnlockTime - 2.05f) < 0.0001f, "the cooldown is not restarted");
+            JumpStep(true, 2.1f);
+            JumpStep(false, 2.12f);
+            Assert.AreEqual(JumpReady, _jumpState, "a press from the cooldown does not count afterwards");
+        }
+
+        [TsukimiTest]
+        public void AHeldButtonJumpsAgainAfterTheCooldown()
+        {
+            JumpAndLand();
+            JumpInput(true, 1.6f);
+            JumpStep(true, 2.1f);
+            JumpStep(false, 2.12f);
+            Assert.AreEqual(JumpAirborne, _jumpState, "VRChat repeats jumps while the button is held");
+        }
+
+        [TsukimiTest]
+        public void TheCooldownWaitsForTheGroundIfItEndsInTheAir()
+        {
+            JumpAndLand();
+            JumpStep(false, 2.0f);
+            JumpStep(false, 2.2f);
+            Assert.AreEqual(JumpCooldown, _jumpState);
+            JumpStep(true, 2.4f);
+            Assert.AreEqual(JumpReady, _jumpState, "released on the next landing");
+        }
+
+        [TsukimiTest]
+        public void AZeroCooldownUnlocksOnTheLandingStep()
+        {
+            jumpCooldown = 0f;
+            JumpAndLand();
+            Assert.AreEqual(JumpReady, _jumpState);
+        }
+
+        [TsukimiTest]
+        public void LandingCapsTheAppliedSpeedAtSeventyPercentOfTheMaximum()
+        {
+            _applied = 8f;
+            Assert.IsTrue(Mathf.Abs(LandingCap() - 5.6f) < 0.0001f);
+            JumpAndLand();
+            Assert.IsTrue(Mathf.Abs(_applied - 5.6f) < 0.0001f);
+            Assert.AreEqual(8f, _landingFrom);
+            Assert.AreEqual(_applied, _landingTo);
+        }
+
+        [TsukimiTest]
+        public void LandingBelowTheCapDoesNotSpeedUp()
+        {
+            _applied = 3f;
+            JumpAndLand();
+            Assert.AreEqual(3f, _applied);
+        }
+
+        [TsukimiTest]
+        public void TheLandingCapFollowsTheSpeedMultiplier()
+        {
+            SetSpeedMultiplier(1.25f);
+            Assert.IsTrue(Mathf.Abs(LandingCap() - 7f) < 0.0001f, "8 x 1.25 x 0.7");
+            SetSpeedMultiplier(0.5f);
+            Assert.IsTrue(Mathf.Abs(LandingCap() - 2.8f) < 0.0001f);
+            minimumAppliedSpeed = 0.5f;
+            landingSpeedRatio = 0f;
+            Assert.AreEqual(0.5f, LandingCap(), "never below the floor");
+        }
+
+        [TsukimiTest]
+        public void LandingKeepsInertiaAndReacceleratesAtTheSpeedDependentRate()
+        {
+            ResetControl();
+            Simulate(Vector3.forward, Vector3.zero, SettleFrames, false);
+            Assert.AreEqual(8f, _applied);
+            Vector3 inertia = _inertial;
+            JumpAndLand();
+            Assert.IsTrue((inertia - _inertial).sqrMagnitude == 0f, "inertia is not reset on landing");
+            Assert.IsTrue(Mathf.Abs(_applied - 5.6f) < 0.0001f);
+            Simulate(Vector3.forward, Vector3.zero, 15, false);
+            // v(t) = max - (max - 5.6) e^(-a0 t / max) over 0.25 s.
+            float expected = 8f - 2.4f * Mathf.Exp(-10f * 15f * Frame / 8f);
+            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 6.69 m/s after 0.25 s");
+            Simulate(Vector3.forward, Vector3.zero, SettleFrames, false);
+            Assert.AreEqual(8f, _applied, "back to the maximum");
+        }
+
+        [TsukimiTest]
+        public void TheLandingCutIsAppliedOncePerJump()
+        {
+            _applied = 8f;
+            TakeOff();
+            JumpStep(true, 1.07f);
+            Assert.AreEqual(JumpAirborne, _jumpState, "grounded flicker right after take-off is not a landing");
+            Assert.AreEqual(8f, _applied);
+            JumpStep(true, 1.55f);
+            Assert.IsTrue(Mathf.Abs(_applied - 5.6f) < 0.0001f);
+            _applied = 7f;
+            JumpStep(false, 1.6f);
+            JumpStep(true, 1.62f);
+            JumpStep(false, 1.64f);
+            JumpStep(true, 1.66f);
+            Assert.AreEqual(7f, _applied, "flicker after landing does not cut again");
+            Assert.IsTrue(Mathf.Abs(_jumpUnlockTime - 2.05f) < 0.0001f, "nor restart the cooldown");
+        }
+
+        [TsukimiTest]
+        public void APressThatDidNotLiftOffExpires()
+        {
+            ResetJump();
+            JumpStep(true, 1f);
+            JumpInput(true, 1.02f);
+            JumpInput(false, 1.05f);
+            JumpStep(true, 1.2f);
+            JumpStep(false, 1.5f);
+            Assert.AreEqual(JumpReady, _jumpState, "a fall 0.48 s after the press is not a jump");
+        }
+
+        [TsukimiTest]
+        public void WalkingOffALedgeIsNotAJump()
+        {
+            _applied = 8f;
+            ResetJump();
+            JumpStep(true, 1f);
+            JumpStep(false, 1.05f);
+            JumpStep(false, 1.5f);
+            JumpStep(true, 1.8f);
+            Assert.AreEqual(JumpReady, _jumpState);
+            Assert.AreEqual(8f, _applied, "no landing cut after a fall");
+        }
+
+        [TsukimiTest]
+        public void AResetIgnoresATakeOffUntilTheGroundIsSeen()
+        {
+            JumpAndLand();
+            ResetJump();
+            Assert.AreEqual(JumpReady, _jumpState, "respawn and re-enable start Ready");
+            JumpInput(true, 1.6f);
+            JumpStep(false, 1.62f);
+            Assert.AreEqual(JumpReady, _jumpState, "no grounded step seen since the reset");
+        }
+
+        // What SyncJumpImpulse sets for the player's current value, or -1 for no call.
+        private float Sync(float current)
+        {
+            if ((_jumpState != JumpReady) == _jumpLocked) return -1f;
+            return ToggleJumpLock(current);
+        }
+
+        [TsukimiTest]
+        public void TheImpulseIsZeroedAfterTakeOffAndRestoredAfterTheCooldown()
+        {
+            _savedJumpImpulse = 3f;
+            ResetJump();
+            JumpStep(true, 1f);
+            Assert.AreEqual(-1f, Sync(3f), "the first jump is not blocked");
+            JumpInput(true, 1.02f);
+            JumpStep(true, 1.03f);
+            Assert.AreEqual(-1f, Sync(3f), "nor at the press, before take-off");
+            JumpStep(false, 1.05f);
+            Assert.AreEqual(0f, Sync(3f), "blocked once the take-off is seen");
+            Assert.AreEqual(-1f, Sync(0f), "set once, not every step");
+            JumpStep(false, 1.3f);
+            JumpStep(true, 1.55f);
+            Assert.AreEqual(-1f, Sync(0f), "still blocked in the cooldown");
+            JumpStep(true, 2.05f);
+            Assert.AreEqual(3f, Sync(0f), "restored after 0.5 s");
+            Assert.AreEqual(-1f, Sync(3f));
+        }
+
+        [TsukimiTest]
+        public void AnotherSystemsImpulseIsSavedAtTakeOff()
+        {
+            _savedJumpImpulse = 3f;
+            TakeOff();
+            Assert.AreEqual(0f, Sync(4.5f));
+            Assert.AreEqual(4.5f, _savedJumpImpulse, "the value at take-off, not a fixed 3");
+            JumpStep(true, 1.55f);
+            JumpStep(true, 2.05f);
+            Assert.AreEqual(4.5f, Sync(0f));
+        }
+
+        [TsukimiTest]
+        public void SetJumpImpulseDuringTheLockoutIsRestoredAfterIt()
+        {
+            Mimic.Become(Mimic.Join());
+            TakeOff();
+            Sync(3f);
+            SetJumpImpulse(5f);
+            Assert.AreEqual(5f, _savedJumpImpulse);
+            JumpStep(true, 1.55f);
+            JumpStep(true, 2.05f);
+            Assert.AreEqual(5f, Sync(0f));
+        }
+
+        [TsukimiTest]
+        public void RespawnAndDisableRestoreOnlyALockedImpulse()
+        {
+            // Respawn and OnDisable restore the saved impulse when ResetJump returns true.
+            _savedJumpImpulse = 3f;
+            TakeOff();
+            Sync(3f);
+            Assert.IsTrue(ResetJump(), "locked in the air: restore");
+            Assert.AreEqual(JumpReady, _jumpState, "jumping is available again");
+            Assert.AreEqual(-1f, Sync(3f), "no further change after the reset");
+            JumpAndLand();
+            Sync(3f);
+            Assert.IsTrue(ResetJump(), "locked in the cooldown: restore");
+            Assert.IsFalse(ResetJump(), "unlocked: another system's value is left alone");
+            JumpAndLand();
+            _active = true;
+            OnEnable();
+            Assert.AreEqual(JumpReady, _jumpState, "re-enabling starts Ready");
+        }
+
         [TsukimiTest]
         public void InvalidAndRemotePlayerEventsAreIgnored()
         {

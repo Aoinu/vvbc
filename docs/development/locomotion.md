@@ -2,9 +2,10 @@
 
 `VVBC.Locomotion.LocomotionBehaviour` limits the local player's **actual horizontal
 world speed** while keeping VRChat's standard locomotion. It only calls
-`SetRunSpeed`, `SetStrafeSpeed` and `SetWalkSpeed`; it never uses Stations,
-`SetVelocity` or repeated teleports, and never moves or turns the player. Turning,
-IK, animation, grounding, jumping and networking stay with VRChat. Releasing the
+`SetRunSpeed`, `SetStrafeSpeed`, `SetWalkSpeed` and, for the jump limit,
+`SetJumpImpulse`; it never uses Stations, `SetVelocity` or repeated teleports, and
+never moves or turns the player. Turning, IK, animation, grounding, jump physics
+and networking stay with VRChat. Releasing the
 stick stops the player at once as usual; no coasting is reproduced.
 
 The Behaviour is local only (`BehaviourSyncMode.None`), one per world
@@ -88,6 +89,8 @@ acceleration step of the target; lower the gain if real clients show oscillation
 | Input Deadzone | 0.15 |
 | Walk Speed Ratio | 0.5 |
 | Direction Minimum Speed | 0.05 m/s |
+| Jump Cooldown | 0.5 s |
+| Landing Speed Ratio | 0.70 (0–1) |
 | Speed Limit Enabled / Inertia Enabled | on / on |
 | Log Enabled / Log Interval | on / 0.2 s |
 
@@ -99,15 +102,50 @@ Every parameter can also be changed at runtime by another Behaviour (abilities,
 buffs, settings): `SetMaximumSpeed`, `SetAcceleration`, `SetDeceleration`,
 `SetSpeedMultiplier`, `SetAccelerationMultiplier`, `SetMinimumAppliedSpeed`,
 `SetFeedbackGain`, `SetInputDeadzone`, `SetWalkSpeedRatio`,
-`SetDirectionMinimumSpeed`, `SetLogInterval`, `SetLogEnabled`. Values are sanitised,
+`SetDirectionMinimumSpeed`, `SetJumpCooldown`, `SetLandingSpeedRatio`,
+`SetLogInterval`, `SetLogEnabled`. Values are sanitised,
 measurement and inertia are kept, and a `parameters changed` line is logged.
 `GetEffectiveMaximumSpeed` and `GetAppliedSpeed` read the current values.
+
+## Jump limit
+
+Repeated jumping in standard VRChat locomotion is slightly faster than running. The
+jump itself (height, gravity, take-off speed, air control) is left to VRChat; the
+Behaviour only blocks the next jump and cuts the applied speed once on landing.
+
+- **Ready → Airborne (take-off).** Grounded (`IsPlayerGrounded`) changes to airborne
+  while the jump button is held or was pressed within 0.3 s (`InputJump`). Nothing is
+  blocked at the press, so the first jump always happens; `SetJumpImpulse(0)` is called
+  once the take-off is seen. Walking off a ledge has no press and is not a jump; a
+  press that did not lift off expires after 0.3 s. Holding the button while walking
+  off a ledge is counted as a jump.
+- **Airborne → Cooldown (landing).** The first grounded step at least 0.1 s after
+  take-off, so grounded flicker cannot land early or twice. The applied Run/Strafe
+  speed is cut once to `min(u, max(u_min, Vmax × Landing Speed Ratio))` (8 → 5.6 m/s
+  by default; a lower speed is never raised), after `Step` in the same physics step so
+  it is what is applied. Inertia and measurement are kept, and the existing
+  acceleration `a(u)` brings the speed back; the cut is not held during the cooldown.
+- **Cooldown → Ready.** Jump Cooldown after landing, on a grounded step (if the
+  player is in the air then, it waits for the next grounded step). The saved
+  JumpImpulse is restored. A press during the cooldown does not count; a held button
+  jumps again, as VRChat repeats jumps while it is held.
+
+JumpImpulse is saved on activation (after `WorldSettingsBehaviour` has applied it)
+and again at each take-off, so a value another system set while jumping was allowed
+is kept. A system that changes JumpImpulse during a lockout calls `SetJumpImpulse`,
+which applies at once when allowed and otherwise after the lockout. Respawn and
+disabling restore the saved value only while the impulse is locked (an unlocked value
+is left alone); respawn, enabling and activation start from Ready and ignore a
+take-off until a grounded step is seen. Discontinuities do not reset the jump state.
 
 ## Diagnostics and logs
 
 `Samples/Scenes/Locomotion.unity` has a world-space panel (`LocomotionDiagnostics`)
 updated at 10 Hz with Position Speed, GetVelocity, inertial speed and direction,
-direction difference, both limits, the applied speed, both penalties and the maximum.
+direction difference, both limits, the applied speed, both penalties and the maximum,
+and for the jump limit: grounded, jump state (Ready / Airborne / Cooldown), cooldown
+remaining, current and saved JumpImpulse, landing ratio and cap, and the last landing
+cut (applied before -> after).
 
 Every line in the VRChat output log (`%USERPROFILE%\AppData\LocalLow\VRChat\VRChat\output_log_*.txt`)
 or the Unity Console starts with `[VVBC Locomotion]`:
@@ -121,6 +159,8 @@ or the Unity Console starts with `[VVBC Locomotion]`:
 | `base distance 27.43m covered; elapsed dist; …` | a push covers the home-to-first distance (checks the 4.5 s target) |
 | `parameters changed; …` | a `Set…` method changed a parameter |
 | `turn braking started/ended; …` | `B_turn` becomes non-zero / zero |
+| `jump started; …`, `jump landing; applied A -> B`, `jump cooldown started; Ns`, `jump cooldown ended; impulse restored N` | jump limit transitions |
+| `jump impulse set; …` | `SetJumpImpulse` was called |
 | `sample; …` | every Log Interval while input is active or the player or inertia is moving |
 | `position discontinuity; …`, `respawn; …`, `enabled; …`, `disabled; …`, `mode changed; …` | resets and restores |
 
@@ -128,7 +168,7 @@ Sample fields: `t` time, `input` stick x,y, `dt` sample interval (ms), `pos`
 position speed, `vel` GetVelocity, `inertial` and `inertialDir` (yaw, 0 = +Z,
 90 = +X), `dirDiff` angle between the two velocities, `fb`, `inertiaLim`,
 `target`, `applied`, `a` the current acceleration `a(applied)`, `Baccel`, `Bturn`, `max`, `rsw` the Run/Strafe/Walk values read
-back from the API, `grounded`, `p` position.
+back from the API, `grounded`, `jump` state, `p` position.
 
 ## Known behaviour
 
