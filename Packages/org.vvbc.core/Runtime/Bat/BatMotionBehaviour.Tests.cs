@@ -511,4 +511,64 @@ public partial class BatMotionBehaviour
         UnregisterContactListener(self);
         Assert.AreEqual(0, ContactListenerCount());
     }
+
+    // Three samples 10 ms apart; hand distances in metres (-1 = not a two-hand free pose).
+    private void SetGripHistory(float d0, float d1, float d2)
+    {
+        _contactCount = 3; _contactNext = 3;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.01f; _contactTimes[2] = 1.02f;
+        _contactHandDistances[0] = d0; _contactHandDistances[1] = d1; _contactHandDistances[2] = d2;
+        batLength = 1f;
+        _poseLowerGripY = 0.1f;
+    }
+
+    [TsukimiTest]
+    public void UpperGripFractionAddsLowerGripOffsetAndUsesContactTime()
+    {
+        SetGripHistory(0.40f, 0.50f, 0.60f);
+        // lower grip 0.10 + interpolated 0.45 m at t=1.005.
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.005f) - 0.55f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.01f) - 0.60f) < 0.0001f);
+        // Extrapolated tail keeps the latest recorded grip.
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.03f) - 0.70f) < 0.0001f);
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(0.99f)), "before the history");
+        batLength = 2f;
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.02f) - 0.35f) < 0.0001f, "fraction of Bat length");
+    }
+
+    [TsukimiTest]
+    public void UpperGripFractionIsUnavailableForLockOrOneHandSamples()
+    {
+        SetGripHistory(0.55f, -1f, 0.55f);
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.005f)));
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.015f)));
+        // A grip change after the contact time does not leak back into it.
+        SetGripHistory(0.55f, 0.55f, -1f);
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.005f) - 0.65f) < 0.0001f);
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.02f)));
+        ResetContactHistory();
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.005f)), "reset history has no grip");
+    }
+
+    [TsukimiTest]
+    public void HomingAndBuntSettingsValidateAndRestoreDefaults()
+    {
+        Assert.IsTrue(buntEnabled);
+        Assert.IsTrue(homingEnabled);
+        Assert.AreEqual(0.5f, EffectiveHomingRate());
+        CaptureBattingDefaults();
+        Assert.IsFalse(SetHoming(true, 1.1f));
+        Assert.IsFalse(SetHoming(true, float.NaN));
+        Assert.AreEqual(0.5f, homingRate);
+        Assert.IsTrue(SetHoming(true, 0.75f));
+        Assert.AreEqual(0.75f, EffectiveHomingRate());
+        Assert.IsTrue(SetHoming(false, 0.25f));
+        Assert.AreEqual(0f, EffectiveHomingRate(), "disabled Homing applies no correction");
+        SetBuntEnabled(false);
+        Assert.IsFalse(buntEnabled);
+        ResetBattingSettings();
+        Assert.IsTrue(buntEnabled);
+        Assert.IsTrue(homingEnabled);
+        Assert.AreEqual(0.5f, homingRate);
+    }
 }

@@ -40,6 +40,10 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
     private float _time, _speed, _angular, _rawPower, _powerCap, _power, _yaw, _planeX, _planeY, _normalizedX, _normalizedY;
     private float _peakSpeed, _peakAngular, _quality;
     private int _capReason;
+    // Bunt / Homing evaluation of the confirmed contact.
+    private int _buntPattern;
+    private bool _buntPulled;
+    private float _homingRate, _buntCap;
     private Vector3 _batPosition, _ballPosition, _resultVelocity, _resultSpin;
     private Quaternion _batRotation, _ballRotation;
     private bool _ballRotationValid;
@@ -165,6 +169,8 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         _angular = contact.snapshotBatAngularVelocity.magnitude * Mathf.Rad2Deg;
         _rawPower = contact.snapshotRawPower; _powerCap = contact.snapshotPowerCap;
         _capReason = contact.snapshotPowerCapReason; _power = contact.finalBatPower;
+        _buntPattern = contact.contactBuntPattern; _buntPulled = contact.snapshotPulled;
+        _homingRate = contact.snapshotHomingRate; _buntCap = contact.snapshotBuntPowerCap;
         _planeX = contact.snapshotPlaneX; _planeY = contact.snapshotPlaneY;
         _normalizedX = contact.snapshotNormalizedX; _normalizedY = contact.snapshotNormalizedY; _quality = contact.contactQuality;
         _yaw = TimingYaw(contact.snapshotX, contact.CenterDirection());
@@ -242,6 +248,17 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
         return "None";
     }
 
+    private string AssistText()
+    {
+        if (!_isContact) return "";
+        if (_buntPattern == BattingAssist.BuntNone)
+            return "\nType: Swing  Homing: " + (_homingRate * 100f).ToString("F0") + "%";
+        string pattern = _buntPattern == BattingAssist.BuntPatternBoth ? "A+B" :
+            (_buntPattern == BattingAssist.BuntPatternA ? "A" : "B");
+        return "\nType: Bunt " + pattern + "  Cap: " + (_buntCap * 100f).ToString("F0") + "%" +
+            (_buntPulled ? "  Pulled" : "");
+    }
+
     private float ExitKmh(Vector3 velocity) { return velocity.magnitude * 3.6f; }
     private float LaunchAngle(Vector3 velocity)
     {
@@ -279,7 +296,7 @@ public partial class BattingFeedbackBehaviour : TsukimiBehaviour
             _peakSpeed.ToString("F1") + " m/s\nAngular speed: " + _angular.ToString("F1") + " deg/s\nPeak angular: " +
             _peakAngular.ToString("F1") + " deg/s\n\nPOWER EVALUATION\nRaw: " + (_rawPower * 100f).ToString("F1") +
             "%\nCap: " + (_powerCap * 100f).ToString("F1") + "% (" + CapReason(_capReason) + ")\nFinal: " +
-            (_power * 100f).ToString("F1") + "%\n\nCONTACT\n" + result + "  Quality: " + quality +
+            (_power * 100f).ToString("F1") + "%\n\nCONTACT\n" + result + "  Quality: " + quality + AssistText() +
             "\nPlane X: " + (_planeX * 100f).ToString("F1") + " cm  Y: " + (_planeY * 100f).ToString("F1") +
             " cm\nNormalized X: " + FormatNormalizedX(_normalizedX) + "  Y: " + _normalizedY.ToString("F2") +
             "\nYaw: " + _yaw.ToString("F1") +

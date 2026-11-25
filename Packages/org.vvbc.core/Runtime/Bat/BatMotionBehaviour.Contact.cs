@@ -21,6 +21,11 @@ public partial class BatMotionBehaviour
     private readonly Quaternion[] _contactLeftRotations = new Quaternion[ContactHistoryCapacity];
     private readonly Quaternion[] _contactRightRotations = new Quaternion[ContactHistoryCapacity];
     private readonly bool[] _contactHandsValid = new bool[ContactHistoryCapacity];
+    // World distance between the two hands for a two-hand free pose, else -1.
+    private readonly float[] _contactHandDistances = new float[ContactHistoryCapacity];
+    // Written by SolveOwnerPose for the pose it has just applied.
+    private float _poseHandDistance = -1f;
+    private float _poseLowerGripY;
     private int _contactNext, _contactCount;
     // Keep frame differences separate from the velocities used for Hermite
     // reconstruction: that history backfills its first velocity.
@@ -222,6 +227,7 @@ public partial class BatMotionBehaviour
         _contactReferencePositions[_contactNext] = reference;
         _contactReferenceVelocities[_contactNext] = referenceVelocity;
         _contactHandsValid[_contactNext] = false;
+        _contactHandDistances[_contactNext] = _poseHandDistance;
         if (_owner != null)
         {
             VRCPlayerApi.TrackingData left = _owner.GetTrackingData(VRCPlayerApi.TrackingDataType.LeftHand);
@@ -344,6 +350,36 @@ public partial class BatMotionBehaviour
             : _contactRotations[lastIndex];
         contactSampleRootPosition = contactSamplePosition;
         return true;
+    }
+
+    // Bunt Pattern B: upper hand position as a fraction of Bat length at the
+    // given contact time, from the recorded grip of the bracketing samples.
+    // NaN when either sample was not a two-hand free (non-Lock) pose.
+    public float ContactUpperGripFraction(float time)
+    {
+        if (_contactCount < 1 || !ContactFinite(time)) return float.NaN;
+        int first = (_contactNext - _contactCount + ContactHistoryCapacity) % ContactHistoryCapacity;
+        int last = (_contactNext - 1 + ContactHistoryCapacity) % ContactHistoryCapacity;
+        if (time < _contactTimes[first]) return float.NaN;
+        float distance = _contactHandDistances[last];
+        if (time < _contactTimes[last])
+        {
+            distance = -1f;
+            for (int i = _contactCount - 1; i >= 1; i--)
+            {
+                int current = (first + i) % ContactHistoryCapacity;
+                int previous = (current - 1 + ContactHistoryCapacity) % ContactHistoryCapacity;
+                if (time < _contactTimes[previous]) continue;
+                float a = _contactHandDistances[previous];
+                float b = _contactHandDistances[current];
+                if (a < 0f || b < 0f) return float.NaN;
+                float span = _contactTimes[current] - _contactTimes[previous];
+                distance = span > 0f ? Mathf.Lerp(a, b, (time - _contactTimes[previous]) / span) : b;
+                break;
+            }
+        }
+        if (distance < 0f) return float.NaN;
+        return BattingAssist.UpperGripFraction(_poseLowerGripY, ContactPlaneDistanceToLocalY(distance), batLength);
     }
 
     private bool ContactFinite(float x) { return !float.IsNaN(x) && x <= float.MaxValue && x >= -float.MaxValue; }

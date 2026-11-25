@@ -221,6 +221,7 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
 
     private bool SolveOwnerPose()
     {
+        _poseHandDistance = -1f;
         if (lowerHand == BatGripConstants.HandNone)
         {
             if (debugGripTransitions && gripState == BatGripConstants.GripLocked && Time.time >= _nextLockedPoseLogTime)
@@ -257,9 +258,13 @@ public partial class BatMotionBehaviour : TsukimiBehaviour
             if (upperProxyTransform != null &&
                 (upperPosition - lowerPosition).sqrMagnitude >= minimumTwoHandSeparation * minimumTwoHandSeparation)
             {
+                Vector3 lowerAnchor = lowerGrip.localPosition;
                 Quaternion baseRotation = lowerRotation * BatPoseSolver.InvertRotation(lowerGrip.localRotation);
                 rootRotation = BatPoseSolver.AlignLocalYToAxis(baseRotation, upperPosition - lowerPosition);
-                rootPosition = lowerPosition - rootRotation * lowerGrip.localPosition;
+                rootPosition = lowerPosition - rootRotation * lowerAnchor;
+                // Two-hand free pose: the upper hand lies on the Bat axis (Bunt Pattern B).
+                _poseHandDistance = (upperPosition - lowerPosition).magnitude;
+                _poseLowerGripY = lowerAnchor.y;
             }
             else
                 CalculateLowerPose(lowerPosition, lowerRotation, lowerGrip.localPosition,
