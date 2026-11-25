@@ -586,6 +586,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 680741356}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &754266331 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4931559420146926455, guid: 6db3659beb04e574d8a878c430f455fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 527041904}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &762826705
 GameObject:
   m_ObjectHideFlags: 0
@@ -1045,6 +1051,10 @@ MonoBehaviour:
     ID: 62
     SerializedTypeNames:
     - VRC.SDK3.Components.VRCPickup
+  - gameObject: {fileID: 754266331}
+    ID: 63
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
   portraitCameraPositionOffset: {x: 0, y: 0, z: 0}
   portraitCameraRotationOffset: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   PlayerPersistence:

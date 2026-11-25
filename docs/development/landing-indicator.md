@@ -94,9 +94,12 @@ Behaviour through a `MaterialPropertyBlock` at Start; the material stays shared.
 | Outline Width | 0.06 m |
 | Debug Logging | false |
 
-Future perks only switch it: `SetLandingIndicatorEnabled(bool)` clears a shown circle when turned
-off, and shows the current batted flight when turned on before it has bounced. No perk state,
-cost or persistence is read here.
+With the [player perk system](player-perks.md) in the world the indicator follows the local
+player's Landing Indicator perk (off without it): it finds the local `PlayerPerkBehaviour` at Start
+or at the latest at a batted flight, registers for `_OnPerksChanged` and switches itself with
+`SetLandingIndicatorEnabled(bool)`, which clears a shown circle when turned off, and shows the
+current batted flight when turned on before it has bounced. Without a perk system the Inspector
+value applies.
 
 ## Cost
 

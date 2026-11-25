@@ -17,9 +17,11 @@ bound to that HomePlate's `StrikeZoneBehaviour` and, through it, to its Ball.
 | Fade I (1) | 2 | 6 m, 0 m |
 | Fade II (2) | 4 | 12 m, 6 m, 3 m, 0 m |
 
-The default is **on, Fade II** (for testing the feature on its own). Future perks only switch it:
-`SetFadeEnabled(bool)` and `SetFadeLevel(int)`; either clears rings that are showing when the
-fade becomes inactive. No perk state, cost or persistence is read here.
+The Inspector default is **on, Fade II** (for testing the feature on its own). With the
+[player perk system](player-perks.md) in the world the fade follows the local player's Pitch Fade
+perk instead (off without it): it finds the local `PlayerPerkBehaviour` at Start or at the latest
+at a release, registers for `_OnPerksChanged` and switches itself with `SetFadeEnabled(bool)` and
+`SetFadeLevel(int)`; either clears rings that are showing when the fade becomes inactive.
 
 ## Release notification
 

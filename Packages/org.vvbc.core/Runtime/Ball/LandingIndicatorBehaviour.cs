@@ -70,6 +70,8 @@ public partial class LandingIndicatorBehaviour : TsukimiBehaviour
     private float _ground;
     // Mirrors `enabled`: Update runs only while a batted flight is tracked.
     private bool _running;
+    // The local player's perks once found (null without a perk system).
+    private PlayerPerkBehaviour _perks;
 
     public void Start()
     {
@@ -79,12 +81,39 @@ public partial class LandingIndicatorBehaviour : TsukimiBehaviour
         SetRunning(false);
         BallBehaviour ball = Ball();
         if (ball != null) ball.RegisterPresentationListener(GetComponent<UdonBehaviour>());
+        BindPerks();
     }
 
     // Shared/Local switches and LocalRig teardown: nothing stays shown while this is off.
     public void OnDisable()
     {
         ResetIndicator();
+    }
+
+    // ---- Local player's perks (docs/development/player-perks.md) ----
+    // With a perk system in the world the indicator follows the local player's Landing
+    // Indicator perk. The Inspector value holds only until it is found (at Start, else at the
+    // next batted flight, before it is used) and in a world without one.
+
+    public void _OnPerksChanged()
+    {
+        if (_perks == null) return;
+        bool on = _perks.IsFlagOn(PerkCatalog.AbilityLandingIndicator);
+        if (on != landingIndicatorEnabled) SetLandingIndicatorEnabled(on);
+    }
+
+    // Found during OnBallBattedFlightStarted, the value is taken directly: that event goes on
+    // to decide with it, so turning on here must not start the flight a second time.
+    private void BindPerks()
+    {
+        if (_perks != null) return;
+        PlayerPerkBehaviour perks = PerkLookup.Local();
+        if (perks == null) return;
+        _perks = perks;
+        perks.AddChangeListener(GetComponent<UdonBehaviour>());
+        bool on = perks.IsFlagOn(PerkCatalog.AbilityLandingIndicator);
+        landingIndicatorEnabled = on;
+        if (!on) ClearIndicator();
     }
 
     // ---- Perk API ----
@@ -109,6 +138,7 @@ public partial class LandingIndicatorBehaviour : TsukimiBehaviour
     {
         BallBehaviour ball = Ball();
         if (ball == null) return;
+        BindPerks();
         if (!landingIndicatorEnabled)
         {
             ClearIndicator();

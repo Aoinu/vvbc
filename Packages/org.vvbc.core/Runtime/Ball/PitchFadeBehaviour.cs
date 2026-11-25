@@ -67,6 +67,8 @@ public partial class PitchFadeBehaviour : TsukimiBehaviour
     [HideInInspector] public int shownRings;
     // Mirrors `enabled`: Update runs only while rings show.
     private bool _running;
+    // The local player's perks once found (null without a perk system).
+    private PlayerPerkBehaviour _perks;
 
     public void Start()
     {
@@ -74,12 +76,36 @@ public partial class PitchFadeBehaviour : TsukimiBehaviour
         _running = true;
         SetRunning(false);
         if (zone != null && zone.ball != null) zone.ball.RegisterPresentationListener(GetComponent<UdonBehaviour>());
+        BindPerks();
     }
 
     // Shared/Local switches and LocalRig teardown: nothing stays shown while this is off.
     public void OnDisable()
     {
         ResetRings();
+    }
+
+    // ---- Local player's perks (docs/development/player-perks.md) ----
+    // With a perk system in the world the fade follows the local player's Pitch Fade perk: off
+    // without it, Fade I or II with it. The Inspector values hold only until it is found (at Start,
+    // else at the next release, before it is used) and in a world without one.
+
+    public void _OnPerksChanged()
+    {
+        if (_perks == null) return;
+        int level = _perks.GetFadeLevel();
+        if (level > FadeOff) SetFadeLevel(level);
+        SetFadeEnabled(level > FadeOff);
+    }
+
+    private void BindPerks()
+    {
+        if (_perks != null) return;
+        PlayerPerkBehaviour perks = PerkLookup.Local();
+        if (perks == null) return;
+        _perks = perks;
+        perks.AddChangeListener(GetComponent<UdonBehaviour>());
+        _OnPerksChanged();
     }
 
     // ---- Perk API ----
@@ -121,6 +147,7 @@ public partial class PitchFadeBehaviour : TsukimiBehaviour
         if (zone == null || zone.ball == null) return;
         BallBehaviour ball = zone.ball;
         int sequence = ball.flightSequence;
+        BindPerks();
         if (!FadeActive() || !LocalBatter())
         {
             ClearFade();

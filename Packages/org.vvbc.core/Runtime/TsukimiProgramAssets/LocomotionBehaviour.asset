@@ -129,6 +129,8 @@ MonoBehaviour:
     0xFFFFFFFC\n    __SetLogEnabled__SystemBoolean_p_0: %SystemBoolean, null\n   
     __SetLogEnabled__SystemBoolean_retjump: %SystemUInt32, 0xFFFFFFFC\n    __GetEffectiveMaximumSpeed_ret:
     %SystemSingle, 0\n    .export __GetEffectiveMaximumSpeed_ret\n    __GetEffectiveMaximumSpeed_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __GetJumpImpulse___t0: %SystemSingle, 0\n    __GetJumpImpulse_ret:
+    %SystemSingle, 0\n    .export __GetJumpImpulse_ret\n    __GetJumpImpulse_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __GetAppliedSpeed_ret: %SystemSingle, 0\n    .export
     __GetAppliedSpeed_ret\n    __GetAppliedSpeed_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     onPlayerRespawnPlayer: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerRespawn___t0:
@@ -381,32 +383,32 @@ MonoBehaviour:
     %SystemBoolean, null\n    __OnPlayerRespawn_intnl_7: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_8:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_11: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_12:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_14: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_15:
-    %SystemSingle, 0\n    __retaddr_21: %SystemUInt32, 0x00002064\n    __OnPlayerRespawn_intnl_17:
+    %SystemSingle, 0\n    __retaddr_21: %SystemUInt32, 0x000020DC\n    __OnPlayerRespawn_intnl_17:
     %SystemBoolean, null\n    __OnPlayerRespawn_intnl_18: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_20:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_21: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_22:
     %SystemBoolean, null\n    __OnPlayerRespawn_intnl_23: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_24:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_25: %SystemBoolean, null\n    __const_39:
     %SystemString, \"respawn; measurement, inertia and jump reset\"\n    __OnPlayerRespawn_intnl_26:
     %SystemString, null\n    __OnDisable_intnl_1: %SystemBoolean, null\n    __retaddr_22:
-    %SystemUInt32, 0x00002350\n    __OnDisable_intnl_2: %SystemBoolean, null\n   
+    %SystemUInt32, 0x000023C8\n    __OnDisable_intnl_2: %SystemBoolean, null\n   
     __const_40: %SystemSingle, -1\n    __const_41: %SystemString, \"disabled; restored
     walk/run/strafe and jump impulse\"\n    __OnDisable_intnl_3: %SystemString, null\n   
     __OnEnable_intnl_2: %SystemSingle, 0\n    __OnEnable_intnl_3: %SystemSingle,
     0\n    __OnEnable_intnl_6: %SystemSingle, 0\n    __OnEnable_intnl_7: %SystemSingle,
     0\n    __OnEnable_intnl_9: %SystemSingle, 0\n    __OnEnable_intnl_10: %SystemSingle,
-    0\n    __retaddr_23: %SystemUInt32, 0x0000266C\n    __OnEnable_intnl_12: %SystemBoolean,
+    0\n    __retaddr_23: %SystemUInt32, 0x000026E4\n    __OnEnable_intnl_12: %SystemBoolean,
     null\n    __const_42: %SystemString, \"enabled; measurement, inertia and jump
     reset\"\n    __OnEnable_intnl_13: %SystemString, null\n    __retaddr_24: %SystemUInt32,
-    0x000026FC\n    __const_43: %SystemString, \"mode changed; limit=\"\n    __ToggleSpeedLimit_intnl_1:
+    0x00002774\n    __const_43: %SystemString, \"mode changed; limit=\"\n    __ToggleSpeedLimit_intnl_1:
     %SystemString, null\n    __ToggleSpeedLimit_intnl_2: %SystemString, null\n   
     __ToggleSpeedLimit_intnl_4: %SystemString, null\n    __retaddr_25: %SystemUInt32,
-    0x000027D8\n    __ToggleInertia_intnl_1: %SystemString, null\n    __ToggleInertia_intnl_2:
+    0x00002850\n    __ToggleInertia_intnl_1: %SystemString, null\n    __ToggleInertia_intnl_2:
     %SystemString, null\n    __ToggleInertia_intnl_4: %SystemString, null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_0:
-    %SystemBoolean, null\n    __retaddr_26: %SystemUInt32, 0x000028E8\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_1:
+    %SystemBoolean, null\n    __retaddr_26: %SystemUInt32, 0x00002960\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_1:
     %SystemString, null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_2: %SystemString,
     null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_4: %SystemString, null\n   
     __SetInertiaEnabled__SystemBoolean_intnl_0: %SystemBoolean, null\n    __retaddr_27:
-    %SystemUInt32, 0x000029F8\n    __SetInertiaEnabled__SystemBoolean_intnl_1: %SystemString,
+    %SystemUInt32, 0x00002A70\n    __SetInertiaEnabled__SystemBoolean_intnl_1: %SystemString,
     null\n    __SetInertiaEnabled__SystemBoolean_intnl_2: %SystemString, null\n   
     __SetInertiaEnabled__SystemBoolean_intnl_4: %SystemString, null\n    __ResetControl_intnl_2:
     %SystemSingle, 0\n    __ResetControl_intnl_3: %SystemSingle, 0\n    __ResetControl_intnl_6:
@@ -420,12 +422,12 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FixedUpdate_intnl_23: %SystemSingle, 0\n    __const_44:
     %SystemInt32, 0\n    __FixedUpdate_intnl_27: %SystemSingle, 0\n    __const_45:
     %SystemSingle, 15\n    __FixedUpdate_intnl_28: %SystemBoolean, null\n    __retaddr_28:
-    %SystemUInt32, 0x00003138\n    __const_46: %SystemInt32, 2\n    __FixedUpdate_intnl_30:
+    %SystemUInt32, 0x000031B0\n    __const_46: %SystemInt32, 2\n    __FixedUpdate_intnl_30:
     %SystemBoolean, null\n    __const_47: %SystemString, \"position discontinuity;
     measurement and inertia reset\"\n    __FixedUpdate_intnl_31: %SystemString, null\n   
     __FixedUpdate_intnl_33: %SystemBoolean, null\n    __FixedUpdate_intnl_34: %SystemSingle,
     0\n    __FixedUpdate_intnl_35: %SystemSingle, 0\n    __FixedUpdate_intnl_37:
-    %SystemSingle, 0\n    __retaddr_29: %SystemUInt32, 0x000033F0\n    __FixedUpdate_intnl_38:
+    %SystemSingle, 0\n    __retaddr_29: %SystemUInt32, 0x00003468\n    __FixedUpdate_intnl_38:
     %SystemSingle, 0\n    __FixedUpdate_intnl_41: %SystemSingle, 0\n    __FixedUpdate_intnl_42:
     %SystemSingle, 0\n    __FixedUpdate_intnl_43: %SystemSingle, 0\n    __FixedUpdate_intnl_44:
     %SystemSingle, 0\n    __FixedUpdate_intnl_51: %SystemSingle, 0\n    __FixedUpdate_intnl_52:
@@ -439,13 +441,13 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __FixedUpdate_intnl_73: %SystemSingle, 0\n   
     __const_51: %SystemSingle, 0.000001\n    __FixedUpdate_intnl_75: %UnityEngineVector3,
     null\n    __FixedUpdate_intnl_76: %SystemSingle, 0\n    __retaddr_30: %SystemUInt32,
-    0x000039D4\n    __FixedUpdate_intnl_77: %SystemSingle, 0\n    __FixedUpdate_intnl_78:
+    0x00003A4C\n    __FixedUpdate_intnl_77: %SystemSingle, 0\n    __FixedUpdate_intnl_78:
     %SystemSingle, 0\n    __FixedUpdate_intnl_80: %SystemSingle, 0\n    __FixedUpdate_intnl_81:
     %SystemSingle, 0\n    __FixedUpdate_intnl_83: %SystemSingle, 0\n    __FixedUpdate_intnl_84:
-    %SystemSingle, 0\n    __retaddr_31: %SystemUInt32, 0x00003C0C\n    __FixedUpdate_intnl_88:
+    %SystemSingle, 0\n    __retaddr_31: %SystemUInt32, 0x00003C84\n    __FixedUpdate_intnl_88:
     %SystemSingle, 0\n    __FixedUpdate_intnl_89: %SystemBoolean, null\n    __FixedUpdate_intnl_90:
     %SystemSingle, 0\n    __FixedUpdate_intnl_91: %SystemSingle, 0\n    __retaddr_32:
-    %SystemUInt32, 0x00003CBC\n    __FixedUpdate_intnl_92: %SystemSingle, 0\n   
+    %SystemUInt32, 0x00003D34\n    __FixedUpdate_intnl_92: %SystemSingle, 0\n   
     __FixedUpdate_intnl_93: %SystemSingle, 0\n    __FixedUpdate_intnl_94: %SystemSingle,
     0\n    __FixedUpdate_intnl_95: %SystemSingle, 0\n    __FixedUpdate_intnl_96:
     %SystemSingle, 0\n    __FixedUpdate_intnl_97: %SystemSingle, 0\n    __FixedUpdate_intnl_98:
@@ -453,7 +455,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __FixedUpdate_intnl_104: %SystemSingle, 0\n    __FixedUpdate_intnl_105:
     %SystemSingle, 0\n    __FixedUpdate_intnl_109: %SystemSingle, 0\n    __FixedUpdate_intnl_110:
     %SystemSingle, 0\n    __FixedUpdate_intnl_111: %SystemSingle, 0\n    __retaddr_33:
-    %SystemUInt32, 0x0000403C\n    __FixedUpdate_intnl_112: %SystemSingle, 0\n   
+    %SystemUInt32, 0x000040B4\n    __FixedUpdate_intnl_112: %SystemSingle, 0\n   
     __FixedUpdate_intnl_115: %SystemSingle, 0\n    __FixedUpdate_intnl_116: %SystemBoolean,
     null\n    __const_52: %SystemString, \"skipped: moving \"\n    __FixedUpdate_intnl_117:
     %SystemSingle, 0\n    __FixedUpdate_intnl_118: %SystemString, null\n    __FixedUpdate_intnl_120:
@@ -479,15 +481,15 @@ MonoBehaviour:
     %SystemString, \" applied=\"\n    __FixedUpdate_intnl_149: %SystemString, null\n   
     __FixedUpdate_intnl_150: %SystemString, null\n    __FixedUpdate_intnl_152: %SystemString,
     null\n    __FixedUpdate_intnl_154: %SystemSingle, 0\n    __retaddr_34: %SystemUInt32,
-    0x00004874\n    __FixedUpdate_intnl_156: %SystemSingle, 0\n    __retaddr_35:
-    %SystemUInt32, 0x000048A4\n    __FixedUpdate_intnl_157: %SystemSingle, 0\n   
-    __retaddr_36: %SystemUInt32, 0x000048D4\n    __FixedUpdate_intnl_158: %SystemSingle,
+    0x000048EC\n    __FixedUpdate_intnl_156: %SystemSingle, 0\n    __retaddr_35:
+    %SystemUInt32, 0x0000491C\n    __FixedUpdate_intnl_157: %SystemSingle, 0\n   
+    __retaddr_36: %SystemUInt32, 0x0000494C\n    __FixedUpdate_intnl_158: %SystemSingle,
     0\n    __FixedUpdate_intnl_159: %SystemSingle, 0\n    __const_66: %SystemString,
     \"jump landing; applied \"\n    __FixedUpdate_intnl_164: %SystemString, null\n   
     __FixedUpdate_intnl_165: %SystemString, null\n    __FixedUpdate_intnl_166: %SystemString,
     null\n    __FixedUpdate_intnl_167: %SystemString, null\n    __FixedUpdate_intnl_169:
     %SystemString, null\n    __const_67: %SystemString, \"jump cooldown started;
-    \"\n    __retaddr_37: %SystemUInt32, 0x00004A98\n    __FixedUpdate_intnl_170:
+    \"\n    __retaddr_37: %SystemUInt32, 0x00004B10\n    __FixedUpdate_intnl_170:
     %SystemSingle, 0\n    __FixedUpdate_intnl_171: %SystemString, null\n    __FixedUpdate_intnl_172:
     %SystemString, null\n    __const_68: %SystemString, \"s\"\n    __FixedUpdate_intnl_174:
     %SystemString, null\n    __const_69: %SystemString, \"jump cooldown ended; impulse
@@ -501,7 +503,7 @@ MonoBehaviour:
     %SystemString, \"input started; initial=\"\n    __FixedUpdate_intnl_195: %SystemString,
     null\n    __const_71: %SystemString, \" grounded=\"\n    __FixedUpdate_intnl_196:
     %SystemString, null\n    __FixedUpdate_intnl_197: %SystemString, null\n    __FixedUpdate_intnl_198:
-    %SystemString, null\n    __retaddr_38: %SystemUInt32, 0x00005128\n    __FixedUpdate_intnl_199:
+    %SystemString, null\n    __retaddr_38: %SystemUInt32, 0x000051A0\n    __FixedUpdate_intnl_199:
     %SystemString, null\n    __FixedUpdate_intnl_201: %SystemString, null\n    __const_72:
     %SystemString, \"input released; segment \"\n    __FixedUpdate_intnl_202: %SystemSingle,
     0\n    __FixedUpdate_intnl_203: %SystemSingle, 0\n    __FixedUpdate_intnl_204:
@@ -517,32 +519,32 @@ MonoBehaviour:
     %SystemString, null\n    __const_77: %SystemString, \"s braking=\"\n    __FixedUpdate_intnl_220:
     %SystemString, null\n    __FixedUpdate_intnl_221: %SystemString, null\n    __FixedUpdate_intnl_222:
     %SystemString, null\n    __const_78: %SystemString, \"s; \"\n    __FixedUpdate_intnl_223:
-    %SystemString, null\n    __retaddr_39: %SystemUInt32, 0x0000549C\n    __FixedUpdate_intnl_224:
+    %SystemString, null\n    __retaddr_39: %SystemUInt32, 0x00005514\n    __FixedUpdate_intnl_224:
     %SystemString, null\n    __FixedUpdate_intnl_226: %SystemString, null\n    __FixedUpdate_intnl_228:
     %SystemSingle, 0\n    __FixedUpdate_intnl_231: %SystemSingle, 0\n    __FixedUpdate_intnl_232:
     %SystemSingle, 0\n    __const_79: %SystemSingle, 0.05\n    __FixedUpdate_intnl_234:
     %SystemSingle, 0\n    __FixedUpdate_intnl_235: %SystemBoolean, null\n    __FixedUpdate_intnl_238:
     %SystemSingle, 0\n    __FixedUpdate_intnl_241: %SystemSingle, 0\n    __FixedUpdate_intnl_242:
     %SystemSingle, 0\n    __const_80: %SystemString, \"maximum reached; \"\n    __retaddr_40:
-    %SystemUInt32, 0x000057C4\n    __FixedUpdate_intnl_245: %SystemString, null\n   
+    %SystemUInt32, 0x0000583C\n    __FixedUpdate_intnl_245: %SystemString, null\n   
     __FixedUpdate_intnl_246: %SystemString, null\n    __FixedUpdate_intnl_247: %SystemString,
-    null\n    __retaddr_41: %SystemUInt32, 0x00005834\n    __FixedUpdate_intnl_248:
+    null\n    __retaddr_41: %SystemUInt32, 0x000058AC\n    __FixedUpdate_intnl_248:
     %SystemString, null\n    __FixedUpdate_intnl_250: %SystemString, null\n    __const_81:
     %SystemSingle, 27.43\n    __const_82: %SystemString, \"base distance \"\n   
     __FixedUpdate_intnl_253: %SystemString, null\n    __FixedUpdate_intnl_254: %SystemString,
     null\n    __const_83: %SystemString, \"m covered; \"\n    __FixedUpdate_intnl_255:
-    %SystemString, null\n    __retaddr_42: %SystemUInt32, 0x0000597C\n    __FixedUpdate_intnl_256:
+    %SystemString, null\n    __retaddr_42: %SystemUInt32, 0x000059F4\n    __FixedUpdate_intnl_256:
     %SystemString, null\n    __FixedUpdate_intnl_257: %SystemString, null\n    __FixedUpdate_intnl_258:
-    %SystemString, null\n    __retaddr_43: %SystemUInt32, 0x000059EC\n    __FixedUpdate_intnl_259:
+    %SystemString, null\n    __retaddr_43: %SystemUInt32, 0x00005A64\n    __FixedUpdate_intnl_259:
     %SystemString, null\n    __FixedUpdate_intnl_261: %SystemString, null\n    __const_84:
     %SystemSingle, 0.25\n    __FixedUpdate_intnl_263: %SystemBoolean, null\n    __const_85:
     %SystemString, \"turn braking started; \"\n    __const_86: %SystemString, \"turn
     braking ended; \"\n    __FixedUpdate_intnl_264: %SystemString, null\n    __retaddr_44:
-    %SystemUInt32, 0x00005B88\n    __FixedUpdate_intnl_265: %SystemString, null\n   
+    %SystemUInt32, 0x00005C00\n    __FixedUpdate_intnl_265: %SystemString, null\n   
     __FixedUpdate_intnl_267: %SystemString, null\n    __FixedUpdate_intnl_270: %SystemSingle,
     0\n    __const_87: %SystemSingle, 0.2\n    __FixedUpdate_intnl_274: %SystemSingle,
     0\n    __FixedUpdate_intnl_276: %SystemSingle, 0\n    __const_88: %SystemString,
-    \"sample; \"\n    __retaddr_45: %SystemUInt32, 0x00005DC8\n    __FixedUpdate_intnl_278:
+    \"sample; \"\n    __retaddr_45: %SystemUInt32, 0x00005E40\n    __FixedUpdate_intnl_278:
     %SystemString, null\n    __FixedUpdate_intnl_280: %SystemString, null\n    __const_89:
     %UnityEngineObject, null\n    __FixedUpdate_intnl_282: %SystemSingle, 0\n   
     __FixedUpdate_intnl_284: %SystemSingle, 0\n    __const_90: %SystemString, \"Position
@@ -605,16 +607,16 @@ MonoBehaviour:
     null\n    __FixedUpdate_intnl_369: %SystemString, null\n    __FixedUpdate_intnl_370:
     %SystemString, null\n    __const_114: %SystemString, \"Acceleration a(v): \"\n   
     __FixedUpdate_intnl_371: %SystemString, null\n    __retaddr_46: %SystemUInt32,
-    0x00006A30\n    __FixedUpdate_intnl_372: %SystemSingle, 0\n    __FixedUpdate_intnl_373:
+    0x00006AA8\n    __FixedUpdate_intnl_372: %SystemSingle, 0\n    __FixedUpdate_intnl_373:
     %SystemString, null\n    __FixedUpdate_intnl_374: %SystemString, null\n    __const_115:
     %SystemString, \" m/s\xB2  (rest \"\n    __FixedUpdate_intnl_375: %SystemString,
-    null\n    __retaddr_47: %SystemUInt32, 0x00006AAC\n    __FixedUpdate_intnl_376:
+    null\n    __retaddr_47: %SystemUInt32, 0x00006B24\n    __FixedUpdate_intnl_376:
     %SystemSingle, 0\n    __FixedUpdate_intnl_377: %SystemString, null\n    __FixedUpdate_intnl_378:
     %SystemString, null\n    __const_116: %SystemString, \", decel \"\n    __FixedUpdate_intnl_379:
     %SystemString, null\n    __FixedUpdate_intnl_380: %SystemString, null\n    __FixedUpdate_intnl_381:
     %SystemString, null\n    __FixedUpdate_intnl_382: %SystemString, null\n    __const_117:
     %SystemString, \"Maximum Speed: \"\n    __FixedUpdate_intnl_383: %SystemString,
-    null\n    __retaddr_48: %SystemUInt32, 0x00006BA8\n    __FixedUpdate_intnl_384:
+    null\n    __retaddr_48: %SystemUInt32, 0x00006C20\n    __FixedUpdate_intnl_384:
     %SystemSingle, 0\n    __FixedUpdate_intnl_385: %SystemString, null\n    __FixedUpdate_intnl_386:
     %SystemString, null\n    __const_118: %SystemString, \"  (x\"\n    __FixedUpdate_intnl_387:
     %SystemString, null\n    __FixedUpdate_intnl_388: %SystemString, null\n    __FixedUpdate_intnl_389:
@@ -645,7 +647,7 @@ MonoBehaviour:
     null\n    __FixedUpdate_intnl_422: %SystemString, null\n    __const_136: %SystemString,
     \"Landing Ratio: \"\n    __FixedUpdate_intnl_425: %SystemString, null\n    __FixedUpdate_intnl_426:
     %SystemString, null\n    __const_137: %SystemString, \"  Cap \"\n    __FixedUpdate_intnl_427:
-    %SystemString, null\n    __retaddr_49: %SystemUInt32, 0x0000726C\n    __FixedUpdate_intnl_428:
+    %SystemString, null\n    __retaddr_49: %SystemUInt32, 0x000072E4\n    __FixedUpdate_intnl_428:
     %SystemSingle, 0\n    __FixedUpdate_intnl_429: %SystemString, null\n    __FixedUpdate_intnl_430:
     %SystemString, null\n    __const_138: %SystemString, \"  Last Landing: \"\n   
     __FixedUpdate_intnl_431: %SystemString, null\n    __FixedUpdate_intnl_432: %SystemString,
@@ -656,7 +658,7 @@ MonoBehaviour:
     %SystemSingle, 0\n    __LandingCap_intnl_0: %SystemSingle, 0\n    __LandingCap_intnl_1:
     %SystemSingle, 0\n    __LandingCap_intnl_4: %SystemSingle, 0\n    __LandingCap_intnl_5:
     %SystemSingle, 0\n    __LandingCap_intnl_7: %SystemSingle, 0\n    __LandingCap_intnl_8:
-    %SystemSingle, 0\n    __retaddr_50: %SystemUInt32, 0x00007650\n    __LandingCap_intnl_9:
+    %SystemSingle, 0\n    __retaddr_50: %SystemUInt32, 0x000076C8\n    __LandingCap_intnl_9:
     %SystemSingle, 0\n    __LandingCap_intnl_10: %SystemSingle, 0\n    __JumpStateName_intnl_0:
     %SystemBoolean, null\n    __JumpStateName_intnl_1: %SystemBoolean, null\n   
     __Accelerate__SystemSingle_SystemSingle_intnl_0: %SystemSingle, 0\n    __Accelerate__SystemSingle_SystemSingle_intnl_1:
@@ -724,7 +726,7 @@ MonoBehaviour:
     __Sample__VRCSDKBaseVRCPlayerApi_intnl_46: %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_47:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_48: %SystemString,
     null\n    __const_155: %SystemString, \" a=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_49:
-    %SystemString, null\n    __retaddr_51: %SystemUInt32, 0x000084B4\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_50:
+    %SystemString, null\n    __retaddr_51: %SystemUInt32, 0x0000852C\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_50:
     %SystemSingle, 0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_51: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_52: %SystemString, null\n   
     __const_156: %SystemString, \" Baccel=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_53:
@@ -734,7 +736,7 @@ MonoBehaviour:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_57: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_58: %SystemString, null\n   
     __const_158: %SystemString, \" max=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_59:
-    %SystemString, null\n    __retaddr_52: %SystemUInt32, 0x000085F0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_60:
+    %SystemString, null\n    __retaddr_52: %SystemUInt32, 0x00008668\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_60:
     %SystemSingle, 0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_61: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_62: %SystemString, null\n   
     __const_159: %SystemString, \" rsw=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_63:
@@ -749,7 +751,7 @@ MonoBehaviour:
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_75: %SystemString, null\n   
     __Sample__VRCSDKBaseVRCPlayerApi_intnl_76: %SystemString, null\n    __const_160:
     %SystemString, \" jump=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_77: %SystemString,
-    null\n    __retaddr_53: %SystemUInt32, 0x00008814\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_78:
+    null\n    __retaddr_53: %SystemUInt32, 0x0000888C\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_78:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_79: %SystemString,
     null\n    __const_161: %SystemString, \" p=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_80:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_81: %UnityEngineVector3,
@@ -1232,6 +1234,13 @@ MonoBehaviour:
     COPY\n        JUMP, Maximum\n        PUSH, __Maximum_ret\n        PUSH, __GetEffectiveMaximumSpeed_ret\n       
     COPY\n        PUSH, __Maximum_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __GetEffectiveMaximumSpeed_retjump\n        JUMP_INDIRECT, __GetEffectiveMaximumSpeed_retjump\n   
+    .export GetJumpImpulse\n    GetJumpImpulse:\n        PUSH, _active\n        JUMP_IF_FALSE,
+    __GetJumpImpulse_L0\n        PUSH, _savedJumpImpulse\n        PUSH, __GetJumpImpulse___t0\n       
+    COPY\n        JUMP, __GetJumpImpulse_L1\n    __GetJumpImpulse_L0:\n        PUSH,
+    __const_6\n        PUSH, __GetJumpImpulse___t0\n        COPY\n    __GetJumpImpulse_L1:\n       
+    PUSH, __GetJumpImpulse___t0\n        PUSH, __GetJumpImpulse_ret\n        COPY\n       
+    PUSH, __GetJumpImpulse___t0\n        PUSH, __returnValue\n        COPY\n       
+    JUMP_INDIRECT, __GetJumpImpulse_retjump\n        JUMP_INDIRECT, __GetJumpImpulse_retjump\n   
     .export GetAppliedSpeed\n    GetAppliedSpeed:\n        PUSH, _applied\n       
     PUSH, __GetAppliedSpeed_ret\n        COPY\n        PUSH, _applied\n        PUSH,
     __returnValue\n        COPY\n        JUMP_INDIRECT, __GetAppliedSpeed_retjump\n       
@@ -2929,7 +2938,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 179ef1078271dc643a465b1e926cb0ff, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: ccab5b59d7dead2cbdda0247ab506147d8cd615e679fad50d4d3f14757ab7528
+  sourceFingerprint: 97edbfcde1173d8bc393dd646eb61f67e7221896e96549b7b1c400d69c3ce3e9
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -3222,6 +3231,8 @@ MonoBehaviour:
     0xFFFFFFFC\n    __SetLogEnabled__SystemBoolean_p_0: %SystemBoolean, null\n   
     __SetLogEnabled__SystemBoolean_retjump: %SystemUInt32, 0xFFFFFFFC\n    __GetEffectiveMaximumSpeed_ret:
     %SystemSingle, 0\n    .export __GetEffectiveMaximumSpeed_ret\n    __GetEffectiveMaximumSpeed_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __GetJumpImpulse___t0: %SystemSingle, 0\n    __GetJumpImpulse_ret:
+    %SystemSingle, 0\n    .export __GetJumpImpulse_ret\n    __GetJumpImpulse_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __GetAppliedSpeed_ret: %SystemSingle, 0\n    .export
     __GetAppliedSpeed_ret\n    __GetAppliedSpeed_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     onPlayerRespawnPlayer: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerRespawn___t0:
@@ -3520,7 +3531,7 @@ MonoBehaviour:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_12: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_13:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_14: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_15:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_16: %SystemSingle, 0\n    __retaddr_21:
-    %SystemUInt32, 0x00002794\n    __OnPlayerRespawn_intnl_17: %SystemBoolean, null\n   
+    %SystemUInt32, 0x0000280C\n    __OnPlayerRespawn_intnl_17: %SystemBoolean, null\n   
     __OnPlayerRespawn_intnl_18: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_19:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_20: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_21:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_22: %SystemBoolean, null\n    __OnPlayerRespawn_intnl_23:
@@ -3528,7 +3539,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __const_39: %SystemString, \"respawn; measurement,
     inertia and jump reset\"\n    __OnPlayerRespawn_intnl_26: %SystemString, null\n   
     __OnDisable_intnl_0: %VRCSDKBaseVRCPlayerApi, null\n    __OnDisable_intnl_1:
-    %SystemBoolean, null\n    __retaddr_22: %SystemUInt32, 0x00002ABC\n    __OnDisable_intnl_2:
+    %SystemBoolean, null\n    __retaddr_22: %SystemUInt32, 0x00002B34\n    __OnDisable_intnl_2:
     %SystemBoolean, null\n    __const_40: %SystemSingle, -1\n    __const_41: %SystemString,
     \"disabled; restored walk/run/strafe and jump impulse\"\n    __OnDisable_intnl_3:
     %SystemString, null\n    __OnEnable_intnl_0: %UnityEngineVector3, null\n    __OnEnable_intnl_1:
@@ -3537,22 +3548,22 @@ MonoBehaviour:
     %SystemSingle, 0\n    __OnEnable_intnl_6: %SystemSingle, 0\n    __OnEnable_intnl_7:
     %SystemSingle, 0\n    __OnEnable_intnl_8: %SystemSingle, 0\n    __OnEnable_intnl_9:
     %SystemSingle, 0\n    __OnEnable_intnl_10: %SystemSingle, 0\n    __OnEnable_intnl_11:
-    %SystemSingle, 0\n    __retaddr_23: %SystemUInt32, 0x00002E78\n    __OnEnable_intnl_12:
+    %SystemSingle, 0\n    __retaddr_23: %SystemUInt32, 0x00002EF0\n    __OnEnable_intnl_12:
     %SystemBoolean, null\n    __const_42: %SystemString, \"enabled; measurement,
     inertia and jump reset\"\n    __OnEnable_intnl_13: %SystemString, null\n    __ToggleSpeedLimit_intnl_0:
-    %SystemBoolean, null\n    __retaddr_24: %SystemUInt32, 0x00002F30\n    __const_43:
+    %SystemBoolean, null\n    __retaddr_24: %SystemUInt32, 0x00002FA8\n    __const_43:
     %SystemString, \"mode changed; limit=\"\n    __ToggleSpeedLimit_intnl_1: %SystemString,
     null\n    __ToggleSpeedLimit_intnl_2: %SystemString, null\n    __ToggleSpeedLimit_intnl_3:
     %SystemString, null\n    __ToggleSpeedLimit_intnl_4: %SystemString, null\n   
     __ToggleInertia_intnl_0: %SystemBoolean, null\n    __retaddr_25: %SystemUInt32,
-    0x00003034\n    __ToggleInertia_intnl_1: %SystemString, null\n    __ToggleInertia_intnl_2:
+    0x000030AC\n    __ToggleInertia_intnl_1: %SystemString, null\n    __ToggleInertia_intnl_2:
     %SystemString, null\n    __ToggleInertia_intnl_3: %SystemString, null\n    __ToggleInertia_intnl_4:
     %SystemString, null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_0: %SystemBoolean,
-    null\n    __retaddr_26: %SystemUInt32, 0x00003158\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_1:
+    null\n    __retaddr_26: %SystemUInt32, 0x000031D0\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_1:
     %SystemString, null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_2: %SystemString,
     null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_3: %SystemString, null\n   
     __SetSpeedLimitEnabled__SystemBoolean_intnl_4: %SystemString, null\n    __SetInertiaEnabled__SystemBoolean_intnl_0:
-    %SystemBoolean, null\n    __retaddr_27: %SystemUInt32, 0x0000327C\n    __SetInertiaEnabled__SystemBoolean_intnl_1:
+    %SystemBoolean, null\n    __retaddr_27: %SystemUInt32, 0x000032F4\n    __SetInertiaEnabled__SystemBoolean_intnl_1:
     %SystemString, null\n    __SetInertiaEnabled__SystemBoolean_intnl_2: %SystemString,
     null\n    __SetInertiaEnabled__SystemBoolean_intnl_3: %SystemString, null\n   
     __SetInertiaEnabled__SystemBoolean_intnl_4: %SystemString, null\n    __ResetControl_intnl_0:
@@ -3580,14 +3591,14 @@ MonoBehaviour:
     %SystemBoolean, null\n    __const_44: %SystemInt32, 0\n    __FixedUpdate_intnl_26:
     %UnityEngineVector3, null\n    __FixedUpdate_intnl_27: %SystemSingle, 0\n   
     __const_45: %SystemSingle, 15\n    __FixedUpdate_intnl_28: %SystemBoolean, null\n   
-    __retaddr_28: %SystemUInt32, 0x00003B9C\n    __const_46: %SystemInt32, 2\n   
+    __retaddr_28: %SystemUInt32, 0x00003C14\n    __const_46: %SystemInt32, 2\n   
     __FixedUpdate_intnl_29: %UnityEngineVector3, null\n    __FixedUpdate_intnl_30:
     %SystemBoolean, null\n    __const_47: %SystemString, \"position discontinuity;
     measurement and inertia reset\"\n    __FixedUpdate_intnl_31: %SystemString, null\n   
     __FixedUpdate_intnl_32: %SystemBoolean, null\n    __FixedUpdate_intnl_33: %SystemBoolean,
     null\n    __FixedUpdate_intnl_34: %SystemSingle, 0\n    __FixedUpdate_intnl_35:
     %SystemSingle, 0\n    __FixedUpdate_intnl_36: %SystemSingle, 0\n    __FixedUpdate_intnl_37:
-    %SystemSingle, 0\n    __retaddr_29: %SystemUInt32, 0x00003EA4\n    __FixedUpdate_intnl_38:
+    %SystemSingle, 0\n    __retaddr_29: %SystemUInt32, 0x00003F1C\n    __FixedUpdate_intnl_38:
     %SystemSingle, 0\n    __FixedUpdate_intnl_39: %SystemSingle, 0\n    __FixedUpdate_intnl_40:
     %SystemSingle, 0\n    __FixedUpdate_intnl_41: %SystemSingle, 0\n    __FixedUpdate_intnl_42:
     %SystemSingle, 0\n    __FixedUpdate_intnl_43: %SystemSingle, 0\n    __FixedUpdate_intnl_44:
@@ -3611,16 +3622,16 @@ MonoBehaviour:
     __FixedUpdate_intnl_73: %SystemSingle, 0\n    __const_51: %SystemSingle, 0.000001\n   
     __FixedUpdate_intnl_74: %SystemBoolean, null\n    __FixedUpdate_intnl_75: %UnityEngineVector3,
     null\n    __FixedUpdate_intnl_76: %SystemSingle, 0\n    __retaddr_30: %SystemUInt32,
-    0x00004618\n    __FixedUpdate_intnl_77: %SystemSingle, 0\n    __FixedUpdate_intnl_78:
+    0x00004690\n    __FixedUpdate_intnl_77: %SystemSingle, 0\n    __FixedUpdate_intnl_78:
     %SystemSingle, 0\n    __FixedUpdate_intnl_79: %UnityEngineVector3, null\n   
     __FixedUpdate_intnl_80: %SystemSingle, 0\n    __FixedUpdate_intnl_81: %SystemSingle,
     0\n    __FixedUpdate_intnl_82: %SystemSingle, 0\n    __FixedUpdate_intnl_83:
     %SystemSingle, 0\n    __FixedUpdate_intnl_84: %SystemSingle, 0\n    __FixedUpdate_intnl_85:
     %SystemSingle, 0\n    __FixedUpdate_intnl_86: %SystemSingle, 0\n    __FixedUpdate_intnl_87:
-    %SystemBoolean, null\n    __retaddr_31: %SystemUInt32, 0x000048C8\n    __FixedUpdate_intnl_88:
+    %SystemBoolean, null\n    __retaddr_31: %SystemUInt32, 0x00004940\n    __FixedUpdate_intnl_88:
     %SystemSingle, 0\n    __FixedUpdate_intnl_89: %SystemBoolean, null\n    __FixedUpdate_intnl_90:
     %SystemSingle, 0\n    __FixedUpdate_intnl_91: %SystemSingle, 0\n    __retaddr_32:
-    %SystemUInt32, 0x0000498C\n    __FixedUpdate_intnl_92: %SystemSingle, 0\n   
+    %SystemUInt32, 0x00004A04\n    __FixedUpdate_intnl_92: %SystemSingle, 0\n   
     __FixedUpdate_intnl_93: %SystemSingle, 0\n    __FixedUpdate_intnl_94: %SystemSingle,
     0\n    __FixedUpdate_intnl_95: %SystemSingle, 0\n    __FixedUpdate_intnl_96:
     %SystemSingle, 0\n    __FixedUpdate_intnl_97: %SystemSingle, 0\n    __FixedUpdate_intnl_98:
@@ -3631,7 +3642,7 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FixedUpdate_intnl_107: %SystemSingle, 0\n    __FixedUpdate_intnl_108:
     %SystemSingle, 0\n    __FixedUpdate_intnl_109: %SystemSingle, 0\n    __FixedUpdate_intnl_110:
     %SystemSingle, 0\n    __FixedUpdate_intnl_111: %SystemSingle, 0\n    __retaddr_33:
-    %SystemUInt32, 0x00004DAC\n    __FixedUpdate_intnl_112: %SystemSingle, 0\n   
+    %SystemUInt32, 0x00004E24\n    __FixedUpdate_intnl_112: %SystemSingle, 0\n   
     __FixedUpdate_intnl_113: %SystemSingle, 0\n    __FixedUpdate_intnl_114: %SystemSingle,
     0\n    __FixedUpdate_intnl_115: %SystemSingle, 0\n    __FixedUpdate_intnl_116:
     %SystemBoolean, null\n    __const_52: %SystemString, \"skipped: moving \"\n   
@@ -3664,9 +3675,9 @@ MonoBehaviour:
     %SystemString, null\n    __FixedUpdate_intnl_150: %SystemString, null\n    __FixedUpdate_intnl_151:
     %SystemString, null\n    __FixedUpdate_intnl_152: %SystemString, null\n    __FixedUpdate_intnl_153:
     %SystemBoolean, null\n    __FixedUpdate_intnl_154: %SystemSingle, 0\n    __FixedUpdate_intnl_155:
-    %SystemBoolean, null\n    __retaddr_34: %SystemUInt32, 0x00005724\n    __FixedUpdate_intnl_156:
-    %SystemSingle, 0\n    __retaddr_35: %SystemUInt32, 0x00005754\n    __FixedUpdate_intnl_157:
-    %SystemSingle, 0\n    __retaddr_36: %SystemUInt32, 0x00005784\n    __FixedUpdate_intnl_158:
+    %SystemBoolean, null\n    __retaddr_34: %SystemUInt32, 0x0000579C\n    __FixedUpdate_intnl_156:
+    %SystemSingle, 0\n    __retaddr_35: %SystemUInt32, 0x000057CC\n    __FixedUpdate_intnl_157:
+    %SystemSingle, 0\n    __retaddr_36: %SystemUInt32, 0x000057FC\n    __FixedUpdate_intnl_158:
     %SystemSingle, 0\n    __FixedUpdate_intnl_159: %SystemSingle, 0\n    __FixedUpdate_intnl_160:
     %SystemSingle, 0\n    __FixedUpdate_intnl_161: %SystemSingle, 0\n    __FixedUpdate_intnl_162:
     %SystemSingle, 0\n    __FixedUpdate_intnl_163: %SystemSingle, 0\n    __const_66:
@@ -3675,7 +3686,7 @@ MonoBehaviour:
     %SystemString, null\n    __FixedUpdate_intnl_167: %SystemString, null\n    __FixedUpdate_intnl_168:
     %SystemString, null\n    __FixedUpdate_intnl_169: %SystemString, null\n    __const_67:
     %SystemString, \"jump cooldown started; \"\n    __retaddr_37: %SystemUInt32,
-    0x000059C0\n    __FixedUpdate_intnl_170: %SystemSingle, 0\n    __FixedUpdate_intnl_171:
+    0x00005A38\n    __FixedUpdate_intnl_170: %SystemSingle, 0\n    __FixedUpdate_intnl_171:
     %SystemString, null\n    __FixedUpdate_intnl_172: %SystemString, null\n    __const_68:
     %SystemString, \"s\"\n    __FixedUpdate_intnl_173: %SystemString, null\n    __FixedUpdate_intnl_174:
     %SystemString, null\n    __FixedUpdate_intnl_175: %SystemBoolean, null\n    __FixedUpdate_intnl_176:
@@ -3693,7 +3704,7 @@ MonoBehaviour:
     %SystemString, \"input started; initial=\"\n    __FixedUpdate_intnl_195: %SystemString,
     null\n    __const_71: %SystemString, \" grounded=\"\n    __FixedUpdate_intnl_196:
     %SystemString, null\n    __FixedUpdate_intnl_197: %SystemString, null\n    __FixedUpdate_intnl_198:
-    %SystemString, null\n    __retaddr_38: %SystemUInt32, 0x0000612C\n    __FixedUpdate_intnl_199:
+    %SystemString, null\n    __retaddr_38: %SystemUInt32, 0x000061A4\n    __FixedUpdate_intnl_199:
     %SystemString, null\n    __FixedUpdate_intnl_200: %SystemString, null\n    __FixedUpdate_intnl_201:
     %SystemString, null\n    __const_72: %SystemString, \"input released; segment
     \"\n    __FixedUpdate_intnl_202: %SystemSingle, 0\n    __FixedUpdate_intnl_203:
@@ -3710,7 +3721,7 @@ MonoBehaviour:
     %SystemString, null\n    __const_77: %SystemString, \"s braking=\"\n    __FixedUpdate_intnl_220:
     %SystemString, null\n    __FixedUpdate_intnl_221: %SystemString, null\n    __FixedUpdate_intnl_222:
     %SystemString, null\n    __const_78: %SystemString, \"s; \"\n    __FixedUpdate_intnl_223:
-    %SystemString, null\n    __retaddr_39: %SystemUInt32, 0x000064F0\n    __FixedUpdate_intnl_224:
+    %SystemString, null\n    __retaddr_39: %SystemUInt32, 0x00006568\n    __FixedUpdate_intnl_224:
     %SystemString, null\n    __FixedUpdate_intnl_225: %SystemString, null\n    __FixedUpdate_intnl_226:
     %SystemString, null\n    __FixedUpdate_intnl_227: %SystemSingle, 0\n    __FixedUpdate_intnl_228:
     %SystemSingle, 0\n    __FixedUpdate_intnl_229: %SystemSingle, 0\n    __FixedUpdate_intnl_230:
@@ -3722,24 +3733,24 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FixedUpdate_intnl_240: %SystemBoolean, null\n    __FixedUpdate_intnl_241:
     %SystemSingle, 0\n    __FixedUpdate_intnl_242: %SystemSingle, 0\n    __FixedUpdate_intnl_243:
     %SystemSingle, 0\n    __FixedUpdate_intnl_244: %SystemBoolean, null\n    __const_80:
-    %SystemString, \"maximum reached; \"\n    __retaddr_40: %SystemUInt32, 0x00006980\n   
+    %SystemString, \"maximum reached; \"\n    __retaddr_40: %SystemUInt32, 0x000069F8\n   
     __FixedUpdate_intnl_245: %SystemString, null\n    __FixedUpdate_intnl_246: %SystemString,
     null\n    __FixedUpdate_intnl_247: %SystemString, null\n    __retaddr_41: %SystemUInt32,
-    0x00006A04\n    __FixedUpdate_intnl_248: %SystemString, null\n    __FixedUpdate_intnl_249:
+    0x00006A7C\n    __FixedUpdate_intnl_248: %SystemString, null\n    __FixedUpdate_intnl_249:
     %SystemString, null\n    __FixedUpdate_intnl_250: %SystemString, null\n    __FixedUpdate_intnl_251:
     %SystemBoolean, null\n    __const_81: %SystemSingle, 27.43\n    __FixedUpdate_intnl_252:
     %SystemBoolean, null\n    __const_82: %SystemString, \"base distance \"\n   
     __FixedUpdate_intnl_253: %SystemString, null\n    __FixedUpdate_intnl_254: %SystemString,
     null\n    __const_83: %SystemString, \"m covered; \"\n    __FixedUpdate_intnl_255:
-    %SystemString, null\n    __retaddr_42: %SystemUInt32, 0x00006B9C\n    __FixedUpdate_intnl_256:
+    %SystemString, null\n    __retaddr_42: %SystemUInt32, 0x00006C14\n    __FixedUpdate_intnl_256:
     %SystemString, null\n    __FixedUpdate_intnl_257: %SystemString, null\n    __FixedUpdate_intnl_258:
-    %SystemString, null\n    __retaddr_43: %SystemUInt32, 0x00006C20\n    __FixedUpdate_intnl_259:
+    %SystemString, null\n    __retaddr_43: %SystemUInt32, 0x00006C98\n    __FixedUpdate_intnl_259:
     %SystemString, null\n    __FixedUpdate_intnl_260: %SystemString, null\n    __FixedUpdate_intnl_261:
     %SystemString, null\n    __const_84: %SystemSingle, 0.25\n    __FixedUpdate_intnl_262:
     %SystemBoolean, null\n    __FixedUpdate_intnl_263: %SystemBoolean, null\n   
     __const_85: %SystemString, \"turn braking started; \"\n    __const_86: %SystemString,
     \"turn braking ended; \"\n    __FixedUpdate_intnl_264: %SystemString, null\n   
-    __retaddr_44: %SystemUInt32, 0x00006DF8\n    __FixedUpdate_intnl_265: %SystemString,
+    __retaddr_44: %SystemUInt32, 0x00006E70\n    __FixedUpdate_intnl_265: %SystemString,
     null\n    __FixedUpdate_intnl_266: %SystemString, null\n    __FixedUpdate_intnl_267:
     %SystemString, null\n    __FixedUpdate_intnl_268: %SystemBoolean, null\n    __FixedUpdate_intnl_269:
     %SystemBoolean, null\n    __FixedUpdate_intnl_270: %SystemSingle, 0\n    __FixedUpdate_intnl_271:
@@ -3748,7 +3759,7 @@ MonoBehaviour:
     null\n    __FixedUpdate_intnl_274: %SystemSingle, 0\n    __FixedUpdate_intnl_275:
     %SystemBoolean, null\n    __FixedUpdate_intnl_276: %SystemSingle, 0\n    __FixedUpdate_intnl_277:
     %SystemSingle, 0\n    __const_88: %SystemString, \"sample; \"\n    __retaddr_45:
-    %SystemUInt32, 0x000070EC\n    __FixedUpdate_intnl_278: %SystemString, null\n   
+    %SystemUInt32, 0x00007164\n    __FixedUpdate_intnl_278: %SystemString, null\n   
     __FixedUpdate_intnl_279: %SystemString, null\n    __FixedUpdate_intnl_280: %SystemString,
     null\n    __const_89: %UnityEngineObject, null\n    __FixedUpdate_intnl_281:
     %SystemBoolean, null\n    __FixedUpdate_intnl_282: %SystemSingle, 0\n    __FixedUpdate_intnl_283:
@@ -3816,16 +3827,16 @@ MonoBehaviour:
     null\n    __FixedUpdate_intnl_369: %SystemString, null\n    __FixedUpdate_intnl_370:
     %SystemString, null\n    __const_114: %SystemString, \"Acceleration a(v): \"\n   
     __FixedUpdate_intnl_371: %SystemString, null\n    __retaddr_46: %SystemUInt32,
-    0x00007E58\n    __FixedUpdate_intnl_372: %SystemSingle, 0\n    __FixedUpdate_intnl_373:
+    0x00007ED0\n    __FixedUpdate_intnl_372: %SystemSingle, 0\n    __FixedUpdate_intnl_373:
     %SystemString, null\n    __FixedUpdate_intnl_374: %SystemString, null\n    __const_115:
     %SystemString, \" m/s\xB2  (rest \"\n    __FixedUpdate_intnl_375: %SystemString,
-    null\n    __retaddr_47: %SystemUInt32, 0x00007EE8\n    __FixedUpdate_intnl_376:
+    null\n    __retaddr_47: %SystemUInt32, 0x00007F60\n    __FixedUpdate_intnl_376:
     %SystemSingle, 0\n    __FixedUpdate_intnl_377: %SystemString, null\n    __FixedUpdate_intnl_378:
     %SystemString, null\n    __const_116: %SystemString, \", decel \"\n    __FixedUpdate_intnl_379:
     %SystemString, null\n    __FixedUpdate_intnl_380: %SystemString, null\n    __FixedUpdate_intnl_381:
     %SystemString, null\n    __FixedUpdate_intnl_382: %SystemString, null\n    __const_117:
     %SystemString, \"Maximum Speed: \"\n    __FixedUpdate_intnl_383: %SystemString,
-    null\n    __retaddr_48: %SystemUInt32, 0x00007FF8\n    __FixedUpdate_intnl_384:
+    null\n    __retaddr_48: %SystemUInt32, 0x00008070\n    __FixedUpdate_intnl_384:
     %SystemSingle, 0\n    __FixedUpdate_intnl_385: %SystemString, null\n    __FixedUpdate_intnl_386:
     %SystemString, null\n    __const_118: %SystemString, \"  (x\"\n    __FixedUpdate_intnl_387:
     %SystemString, null\n    __FixedUpdate_intnl_388: %SystemString, null\n    __FixedUpdate_intnl_389:
@@ -3860,7 +3871,7 @@ MonoBehaviour:
     \"Landing Ratio: \"\n    __FixedUpdate_intnl_423: %SystemString, null\n    __FixedUpdate_intnl_424:
     %SystemSingle, 0\n    __FixedUpdate_intnl_425: %SystemString, null\n    __FixedUpdate_intnl_426:
     %SystemString, null\n    __const_137: %SystemString, \"  Cap \"\n    __FixedUpdate_intnl_427:
-    %SystemString, null\n    __retaddr_49: %SystemUInt32, 0x00008770\n    __FixedUpdate_intnl_428:
+    %SystemString, null\n    __retaddr_49: %SystemUInt32, 0x000087E8\n    __FixedUpdate_intnl_428:
     %SystemSingle, 0\n    __FixedUpdate_intnl_429: %SystemString, null\n    __FixedUpdate_intnl_430:
     %SystemString, null\n    __const_138: %SystemString, \"  Last Landing: \"\n   
     __FixedUpdate_intnl_431: %SystemString, null\n    __FixedUpdate_intnl_432: %SystemString,
@@ -3876,7 +3887,7 @@ MonoBehaviour:
     0\n    __LandingCap_intnl_4: %SystemSingle, 0\n    __LandingCap_intnl_5: %SystemSingle,
     0\n    __LandingCap_intnl_6: %SystemSingle, 0\n    __LandingCap_intnl_7: %SystemSingle,
     0\n    __LandingCap_intnl_8: %SystemSingle, 0\n    __retaddr_50: %SystemUInt32,
-    0x00008C08\n    __LandingCap_intnl_9: %SystemSingle, 0\n    __LandingCap_intnl_10:
+    0x00008C80\n    __LandingCap_intnl_9: %SystemSingle, 0\n    __LandingCap_intnl_10:
     %SystemSingle, 0\n    __LandingCap_intnl_11: %SystemSingle, 0\n    __LandingRatio_intnl_0:
     %SystemSingle, 0\n    __JumpCooldownTime_intnl_0: %SystemSingle, 0\n    __JumpStateName_intnl_0:
     %SystemBoolean, null\n    __JumpStateName_intnl_1: %SystemBoolean, null\n   
@@ -3955,7 +3966,7 @@ MonoBehaviour:
     __Sample__VRCSDKBaseVRCPlayerApi_intnl_46: %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_47:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_48: %SystemString,
     null\n    __const_155: %SystemString, \" a=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_49:
-    %SystemString, null\n    __retaddr_51: %SystemUInt32, 0x00009BFC\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_50:
+    %SystemString, null\n    __retaddr_51: %SystemUInt32, 0x00009C74\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_50:
     %SystemSingle, 0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_51: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_52: %SystemString, null\n   
     __const_156: %SystemString, \" Baccel=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_53:
@@ -3965,7 +3976,7 @@ MonoBehaviour:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_57: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_58: %SystemString, null\n   
     __const_158: %SystemString, \" max=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_59:
-    %SystemString, null\n    __retaddr_52: %SystemUInt32, 0x00009D4C\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_60:
+    %SystemString, null\n    __retaddr_52: %SystemUInt32, 0x00009DC4\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_60:
     %SystemSingle, 0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_61: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_62: %SystemString, null\n   
     __const_159: %SystemString, \" rsw=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_63:
@@ -3980,7 +3991,7 @@ MonoBehaviour:
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_75: %SystemString, null\n   
     __Sample__VRCSDKBaseVRCPlayerApi_intnl_76: %SystemString, null\n    __const_160:
     %SystemString, \" jump=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_77: %SystemString,
-    null\n    __retaddr_53: %SystemUInt32, 0x00009F84\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_78:
+    null\n    __retaddr_53: %SystemUInt32, 0x00009FFC\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_78:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_79: %SystemString,
     null\n    __const_161: %SystemString, \" p=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_80:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_81: %UnityEngineVector3,
@@ -4551,7 +4562,14 @@ MonoBehaviour:
     COPY\n        PUSH, __GetEffectiveMaximumSpeed_intnl_0\n        PUSH, __GetEffectiveMaximumSpeed_ret\n       
     COPY\n        PUSH, __GetEffectiveMaximumSpeed_ret\n        PUSH, __returnValue\n       
     COPY\n        JUMP_INDIRECT, __GetEffectiveMaximumSpeed_retjump\n        JUMP_INDIRECT,
-    __GetEffectiveMaximumSpeed_retjump\n    .export GetAppliedSpeed\n    GetAppliedSpeed:\n       
+    __GetEffectiveMaximumSpeed_retjump\n    .export GetJumpImpulse\n    GetJumpImpulse:\n       
+    PUSH, _active\n        JUMP_IF_FALSE, __GetJumpImpulse_L0\n        PUSH, _savedJumpImpulse\n       
+    PUSH, __GetJumpImpulse___t0\n        COPY\n        JUMP, __GetJumpImpulse_L1\n   
+    __GetJumpImpulse_L0:\n        PUSH, __const_6\n        PUSH, __GetJumpImpulse___t0\n       
+    COPY\n    __GetJumpImpulse_L1:\n        PUSH, __GetJumpImpulse___t0\n       
+    PUSH, __GetJumpImpulse_ret\n        COPY\n        PUSH, __GetJumpImpulse_ret\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __GetJumpImpulse_retjump\n       
+    JUMP_INDIRECT, __GetJumpImpulse_retjump\n    .export GetAppliedSpeed\n    GetAppliedSpeed:\n       
     PUSH, _applied\n        PUSH, __GetAppliedSpeed_ret\n        COPY\n        PUSH,
     __GetAppliedSpeed_ret\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __GetAppliedSpeed_retjump\n        JUMP_INDIRECT, __GetAppliedSpeed_retjump\n   
@@ -6590,6 +6608,8 @@ MonoBehaviour:
     0xFFFFFFFC\n    __SetLogEnabled__SystemBoolean_p_0: %SystemBoolean, null\n   
     __SetLogEnabled__SystemBoolean_retjump: %SystemUInt32, 0xFFFFFFFC\n    __GetEffectiveMaximumSpeed_ret:
     %SystemSingle, 0\n    .export __GetEffectiveMaximumSpeed_ret\n    __GetEffectiveMaximumSpeed_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __GetJumpImpulse___t0: %SystemSingle, 0\n    __GetJumpImpulse_ret:
+    %SystemSingle, 0\n    .export __GetJumpImpulse_ret\n    __GetJumpImpulse_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __GetAppliedSpeed_ret: %SystemSingle, 0\n    .export
     __GetAppliedSpeed_ret\n    __GetAppliedSpeed_retjump: %SystemUInt32, 0xFFFFFFFC\n   
     onPlayerRespawnPlayer: %VRCSDKBaseVRCPlayerApi, null\n    __OnPlayerRespawn___t0:
@@ -6842,32 +6862,32 @@ MonoBehaviour:
     %SystemBoolean, null\n    __OnPlayerRespawn_intnl_7: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_8:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_11: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_12:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_14: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_15:
-    %SystemSingle, 0\n    __retaddr_21: %SystemUInt32, 0x00002064\n    __OnPlayerRespawn_intnl_17:
+    %SystemSingle, 0\n    __retaddr_21: %SystemUInt32, 0x000020DC\n    __OnPlayerRespawn_intnl_17:
     %SystemBoolean, null\n    __OnPlayerRespawn_intnl_18: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_20:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_21: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_22:
     %SystemBoolean, null\n    __OnPlayerRespawn_intnl_23: %SystemSingle, 0\n    __OnPlayerRespawn_intnl_24:
     %SystemSingle, 0\n    __OnPlayerRespawn_intnl_25: %SystemBoolean, null\n    __const_39:
     %SystemString, \"respawn; measurement, inertia and jump reset\"\n    __OnPlayerRespawn_intnl_26:
     %SystemString, null\n    __OnDisable_intnl_1: %SystemBoolean, null\n    __retaddr_22:
-    %SystemUInt32, 0x00002350\n    __OnDisable_intnl_2: %SystemBoolean, null\n   
+    %SystemUInt32, 0x000023C8\n    __OnDisable_intnl_2: %SystemBoolean, null\n   
     __const_40: %SystemSingle, -1\n    __const_41: %SystemString, \"disabled; restored
     walk/run/strafe and jump impulse\"\n    __OnDisable_intnl_3: %SystemString, null\n   
     __OnEnable_intnl_2: %SystemSingle, 0\n    __OnEnable_intnl_3: %SystemSingle,
     0\n    __OnEnable_intnl_6: %SystemSingle, 0\n    __OnEnable_intnl_7: %SystemSingle,
     0\n    __OnEnable_intnl_9: %SystemSingle, 0\n    __OnEnable_intnl_10: %SystemSingle,
-    0\n    __retaddr_23: %SystemUInt32, 0x0000266C\n    __OnEnable_intnl_12: %SystemBoolean,
+    0\n    __retaddr_23: %SystemUInt32, 0x000026E4\n    __OnEnable_intnl_12: %SystemBoolean,
     null\n    __const_42: %SystemString, \"enabled; measurement, inertia and jump
     reset\"\n    __OnEnable_intnl_13: %SystemString, null\n    __retaddr_24: %SystemUInt32,
-    0x000026FC\n    __const_43: %SystemString, \"mode changed; limit=\"\n    __ToggleSpeedLimit_intnl_1:
+    0x00002774\n    __const_43: %SystemString, \"mode changed; limit=\"\n    __ToggleSpeedLimit_intnl_1:
     %SystemString, null\n    __ToggleSpeedLimit_intnl_2: %SystemString, null\n   
     __ToggleSpeedLimit_intnl_4: %SystemString, null\n    __retaddr_25: %SystemUInt32,
-    0x000027D8\n    __ToggleInertia_intnl_1: %SystemString, null\n    __ToggleInertia_intnl_2:
+    0x00002850\n    __ToggleInertia_intnl_1: %SystemString, null\n    __ToggleInertia_intnl_2:
     %SystemString, null\n    __ToggleInertia_intnl_4: %SystemString, null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_0:
-    %SystemBoolean, null\n    __retaddr_26: %SystemUInt32, 0x000028E8\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_1:
+    %SystemBoolean, null\n    __retaddr_26: %SystemUInt32, 0x00002960\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_1:
     %SystemString, null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_2: %SystemString,
     null\n    __SetSpeedLimitEnabled__SystemBoolean_intnl_4: %SystemString, null\n   
     __SetInertiaEnabled__SystemBoolean_intnl_0: %SystemBoolean, null\n    __retaddr_27:
-    %SystemUInt32, 0x000029F8\n    __SetInertiaEnabled__SystemBoolean_intnl_1: %SystemString,
+    %SystemUInt32, 0x00002A70\n    __SetInertiaEnabled__SystemBoolean_intnl_1: %SystemString,
     null\n    __SetInertiaEnabled__SystemBoolean_intnl_2: %SystemString, null\n   
     __SetInertiaEnabled__SystemBoolean_intnl_4: %SystemString, null\n    __ResetControl_intnl_2:
     %SystemSingle, 0\n    __ResetControl_intnl_3: %SystemSingle, 0\n    __ResetControl_intnl_6:
@@ -6881,12 +6901,12 @@ MonoBehaviour:
     %SystemSingle, 0\n    __FixedUpdate_intnl_23: %SystemSingle, 0\n    __const_44:
     %SystemInt32, 0\n    __FixedUpdate_intnl_27: %SystemSingle, 0\n    __const_45:
     %SystemSingle, 15\n    __FixedUpdate_intnl_28: %SystemBoolean, null\n    __retaddr_28:
-    %SystemUInt32, 0x00003138\n    __const_46: %SystemInt32, 2\n    __FixedUpdate_intnl_30:
+    %SystemUInt32, 0x000031B0\n    __const_46: %SystemInt32, 2\n    __FixedUpdate_intnl_30:
     %SystemBoolean, null\n    __const_47: %SystemString, \"position discontinuity;
     measurement and inertia reset\"\n    __FixedUpdate_intnl_31: %SystemString, null\n   
     __FixedUpdate_intnl_33: %SystemBoolean, null\n    __FixedUpdate_intnl_34: %SystemSingle,
     0\n    __FixedUpdate_intnl_35: %SystemSingle, 0\n    __FixedUpdate_intnl_37:
-    %SystemSingle, 0\n    __retaddr_29: %SystemUInt32, 0x000033F0\n    __FixedUpdate_intnl_38:
+    %SystemSingle, 0\n    __retaddr_29: %SystemUInt32, 0x00003468\n    __FixedUpdate_intnl_38:
     %SystemSingle, 0\n    __FixedUpdate_intnl_41: %SystemSingle, 0\n    __FixedUpdate_intnl_42:
     %SystemSingle, 0\n    __FixedUpdate_intnl_43: %SystemSingle, 0\n    __FixedUpdate_intnl_44:
     %SystemSingle, 0\n    __FixedUpdate_intnl_51: %SystemSingle, 0\n    __FixedUpdate_intnl_52:
@@ -6900,13 +6920,13 @@ MonoBehaviour:
     %UnityEngineVector3, null\n    __FixedUpdate_intnl_73: %SystemSingle, 0\n   
     __const_51: %SystemSingle, 0.000001\n    __FixedUpdate_intnl_75: %UnityEngineVector3,
     null\n    __FixedUpdate_intnl_76: %SystemSingle, 0\n    __retaddr_30: %SystemUInt32,
-    0x000039D4\n    __FixedUpdate_intnl_77: %SystemSingle, 0\n    __FixedUpdate_intnl_78:
+    0x00003A4C\n    __FixedUpdate_intnl_77: %SystemSingle, 0\n    __FixedUpdate_intnl_78:
     %SystemSingle, 0\n    __FixedUpdate_intnl_80: %SystemSingle, 0\n    __FixedUpdate_intnl_81:
     %SystemSingle, 0\n    __FixedUpdate_intnl_83: %SystemSingle, 0\n    __FixedUpdate_intnl_84:
-    %SystemSingle, 0\n    __retaddr_31: %SystemUInt32, 0x00003C0C\n    __FixedUpdate_intnl_88:
+    %SystemSingle, 0\n    __retaddr_31: %SystemUInt32, 0x00003C84\n    __FixedUpdate_intnl_88:
     %SystemSingle, 0\n    __FixedUpdate_intnl_89: %SystemBoolean, null\n    __FixedUpdate_intnl_90:
     %SystemSingle, 0\n    __FixedUpdate_intnl_91: %SystemSingle, 0\n    __retaddr_32:
-    %SystemUInt32, 0x00003CBC\n    __FixedUpdate_intnl_92: %SystemSingle, 0\n   
+    %SystemUInt32, 0x00003D34\n    __FixedUpdate_intnl_92: %SystemSingle, 0\n   
     __FixedUpdate_intnl_93: %SystemSingle, 0\n    __FixedUpdate_intnl_94: %SystemSingle,
     0\n    __FixedUpdate_intnl_95: %SystemSingle, 0\n    __FixedUpdate_intnl_96:
     %SystemSingle, 0\n    __FixedUpdate_intnl_97: %SystemSingle, 0\n    __FixedUpdate_intnl_98:
@@ -6914,7 +6934,7 @@ MonoBehaviour:
     %SystemBoolean, null\n    __FixedUpdate_intnl_104: %SystemSingle, 0\n    __FixedUpdate_intnl_105:
     %SystemSingle, 0\n    __FixedUpdate_intnl_109: %SystemSingle, 0\n    __FixedUpdate_intnl_110:
     %SystemSingle, 0\n    __FixedUpdate_intnl_111: %SystemSingle, 0\n    __retaddr_33:
-    %SystemUInt32, 0x0000403C\n    __FixedUpdate_intnl_112: %SystemSingle, 0\n   
+    %SystemUInt32, 0x000040B4\n    __FixedUpdate_intnl_112: %SystemSingle, 0\n   
     __FixedUpdate_intnl_115: %SystemSingle, 0\n    __FixedUpdate_intnl_116: %SystemBoolean,
     null\n    __const_52: %SystemString, \"skipped: moving \"\n    __FixedUpdate_intnl_117:
     %SystemSingle, 0\n    __FixedUpdate_intnl_118: %SystemString, null\n    __FixedUpdate_intnl_120:
@@ -6940,15 +6960,15 @@ MonoBehaviour:
     %SystemString, \" applied=\"\n    __FixedUpdate_intnl_149: %SystemString, null\n   
     __FixedUpdate_intnl_150: %SystemString, null\n    __FixedUpdate_intnl_152: %SystemString,
     null\n    __FixedUpdate_intnl_154: %SystemSingle, 0\n    __retaddr_34: %SystemUInt32,
-    0x00004874\n    __FixedUpdate_intnl_156: %SystemSingle, 0\n    __retaddr_35:
-    %SystemUInt32, 0x000048A4\n    __FixedUpdate_intnl_157: %SystemSingle, 0\n   
-    __retaddr_36: %SystemUInt32, 0x000048D4\n    __FixedUpdate_intnl_158: %SystemSingle,
+    0x000048EC\n    __FixedUpdate_intnl_156: %SystemSingle, 0\n    __retaddr_35:
+    %SystemUInt32, 0x0000491C\n    __FixedUpdate_intnl_157: %SystemSingle, 0\n   
+    __retaddr_36: %SystemUInt32, 0x0000494C\n    __FixedUpdate_intnl_158: %SystemSingle,
     0\n    __FixedUpdate_intnl_159: %SystemSingle, 0\n    __const_66: %SystemString,
     \"jump landing; applied \"\n    __FixedUpdate_intnl_164: %SystemString, null\n   
     __FixedUpdate_intnl_165: %SystemString, null\n    __FixedUpdate_intnl_166: %SystemString,
     null\n    __FixedUpdate_intnl_167: %SystemString, null\n    __FixedUpdate_intnl_169:
     %SystemString, null\n    __const_67: %SystemString, \"jump cooldown started;
-    \"\n    __retaddr_37: %SystemUInt32, 0x00004A98\n    __FixedUpdate_intnl_170:
+    \"\n    __retaddr_37: %SystemUInt32, 0x00004B10\n    __FixedUpdate_intnl_170:
     %SystemSingle, 0\n    __FixedUpdate_intnl_171: %SystemString, null\n    __FixedUpdate_intnl_172:
     %SystemString, null\n    __const_68: %SystemString, \"s\"\n    __FixedUpdate_intnl_174:
     %SystemString, null\n    __const_69: %SystemString, \"jump cooldown ended; impulse
@@ -6962,7 +6982,7 @@ MonoBehaviour:
     %SystemString, \"input started; initial=\"\n    __FixedUpdate_intnl_195: %SystemString,
     null\n    __const_71: %SystemString, \" grounded=\"\n    __FixedUpdate_intnl_196:
     %SystemString, null\n    __FixedUpdate_intnl_197: %SystemString, null\n    __FixedUpdate_intnl_198:
-    %SystemString, null\n    __retaddr_38: %SystemUInt32, 0x00005128\n    __FixedUpdate_intnl_199:
+    %SystemString, null\n    __retaddr_38: %SystemUInt32, 0x000051A0\n    __FixedUpdate_intnl_199:
     %SystemString, null\n    __FixedUpdate_intnl_201: %SystemString, null\n    __const_72:
     %SystemString, \"input released; segment \"\n    __FixedUpdate_intnl_202: %SystemSingle,
     0\n    __FixedUpdate_intnl_203: %SystemSingle, 0\n    __FixedUpdate_intnl_204:
@@ -6978,32 +6998,32 @@ MonoBehaviour:
     %SystemString, null\n    __const_77: %SystemString, \"s braking=\"\n    __FixedUpdate_intnl_220:
     %SystemString, null\n    __FixedUpdate_intnl_221: %SystemString, null\n    __FixedUpdate_intnl_222:
     %SystemString, null\n    __const_78: %SystemString, \"s; \"\n    __FixedUpdate_intnl_223:
-    %SystemString, null\n    __retaddr_39: %SystemUInt32, 0x0000549C\n    __FixedUpdate_intnl_224:
+    %SystemString, null\n    __retaddr_39: %SystemUInt32, 0x00005514\n    __FixedUpdate_intnl_224:
     %SystemString, null\n    __FixedUpdate_intnl_226: %SystemString, null\n    __FixedUpdate_intnl_228:
     %SystemSingle, 0\n    __FixedUpdate_intnl_231: %SystemSingle, 0\n    __FixedUpdate_intnl_232:
     %SystemSingle, 0\n    __const_79: %SystemSingle, 0.05\n    __FixedUpdate_intnl_234:
     %SystemSingle, 0\n    __FixedUpdate_intnl_235: %SystemBoolean, null\n    __FixedUpdate_intnl_238:
     %SystemSingle, 0\n    __FixedUpdate_intnl_241: %SystemSingle, 0\n    __FixedUpdate_intnl_242:
     %SystemSingle, 0\n    __const_80: %SystemString, \"maximum reached; \"\n    __retaddr_40:
-    %SystemUInt32, 0x000057C4\n    __FixedUpdate_intnl_245: %SystemString, null\n   
+    %SystemUInt32, 0x0000583C\n    __FixedUpdate_intnl_245: %SystemString, null\n   
     __FixedUpdate_intnl_246: %SystemString, null\n    __FixedUpdate_intnl_247: %SystemString,
-    null\n    __retaddr_41: %SystemUInt32, 0x00005834\n    __FixedUpdate_intnl_248:
+    null\n    __retaddr_41: %SystemUInt32, 0x000058AC\n    __FixedUpdate_intnl_248:
     %SystemString, null\n    __FixedUpdate_intnl_250: %SystemString, null\n    __const_81:
     %SystemSingle, 27.43\n    __const_82: %SystemString, \"base distance \"\n   
     __FixedUpdate_intnl_253: %SystemString, null\n    __FixedUpdate_intnl_254: %SystemString,
     null\n    __const_83: %SystemString, \"m covered; \"\n    __FixedUpdate_intnl_255:
-    %SystemString, null\n    __retaddr_42: %SystemUInt32, 0x0000597C\n    __FixedUpdate_intnl_256:
+    %SystemString, null\n    __retaddr_42: %SystemUInt32, 0x000059F4\n    __FixedUpdate_intnl_256:
     %SystemString, null\n    __FixedUpdate_intnl_257: %SystemString, null\n    __FixedUpdate_intnl_258:
-    %SystemString, null\n    __retaddr_43: %SystemUInt32, 0x000059EC\n    __FixedUpdate_intnl_259:
+    %SystemString, null\n    __retaddr_43: %SystemUInt32, 0x00005A64\n    __FixedUpdate_intnl_259:
     %SystemString, null\n    __FixedUpdate_intnl_261: %SystemString, null\n    __const_84:
     %SystemSingle, 0.25\n    __FixedUpdate_intnl_263: %SystemBoolean, null\n    __const_85:
     %SystemString, \"turn braking started; \"\n    __const_86: %SystemString, \"turn
     braking ended; \"\n    __FixedUpdate_intnl_264: %SystemString, null\n    __retaddr_44:
-    %SystemUInt32, 0x00005B88\n    __FixedUpdate_intnl_265: %SystemString, null\n   
+    %SystemUInt32, 0x00005C00\n    __FixedUpdate_intnl_265: %SystemString, null\n   
     __FixedUpdate_intnl_267: %SystemString, null\n    __FixedUpdate_intnl_270: %SystemSingle,
     0\n    __const_87: %SystemSingle, 0.2\n    __FixedUpdate_intnl_274: %SystemSingle,
     0\n    __FixedUpdate_intnl_276: %SystemSingle, 0\n    __const_88: %SystemString,
-    \"sample; \"\n    __retaddr_45: %SystemUInt32, 0x00005DC8\n    __FixedUpdate_intnl_278:
+    \"sample; \"\n    __retaddr_45: %SystemUInt32, 0x00005E40\n    __FixedUpdate_intnl_278:
     %SystemString, null\n    __FixedUpdate_intnl_280: %SystemString, null\n    __const_89:
     %UnityEngineObject, null\n    __FixedUpdate_intnl_282: %SystemSingle, 0\n   
     __FixedUpdate_intnl_284: %SystemSingle, 0\n    __const_90: %SystemString, \"Position
@@ -7066,16 +7086,16 @@ MonoBehaviour:
     null\n    __FixedUpdate_intnl_369: %SystemString, null\n    __FixedUpdate_intnl_370:
     %SystemString, null\n    __const_114: %SystemString, \"Acceleration a(v): \"\n   
     __FixedUpdate_intnl_371: %SystemString, null\n    __retaddr_46: %SystemUInt32,
-    0x00006A30\n    __FixedUpdate_intnl_372: %SystemSingle, 0\n    __FixedUpdate_intnl_373:
+    0x00006AA8\n    __FixedUpdate_intnl_372: %SystemSingle, 0\n    __FixedUpdate_intnl_373:
     %SystemString, null\n    __FixedUpdate_intnl_374: %SystemString, null\n    __const_115:
     %SystemString, \" m/s\xB2  (rest \"\n    __FixedUpdate_intnl_375: %SystemString,
-    null\n    __retaddr_47: %SystemUInt32, 0x00006AAC\n    __FixedUpdate_intnl_376:
+    null\n    __retaddr_47: %SystemUInt32, 0x00006B24\n    __FixedUpdate_intnl_376:
     %SystemSingle, 0\n    __FixedUpdate_intnl_377: %SystemString, null\n    __FixedUpdate_intnl_378:
     %SystemString, null\n    __const_116: %SystemString, \", decel \"\n    __FixedUpdate_intnl_379:
     %SystemString, null\n    __FixedUpdate_intnl_380: %SystemString, null\n    __FixedUpdate_intnl_381:
     %SystemString, null\n    __FixedUpdate_intnl_382: %SystemString, null\n    __const_117:
     %SystemString, \"Maximum Speed: \"\n    __FixedUpdate_intnl_383: %SystemString,
-    null\n    __retaddr_48: %SystemUInt32, 0x00006BA8\n    __FixedUpdate_intnl_384:
+    null\n    __retaddr_48: %SystemUInt32, 0x00006C20\n    __FixedUpdate_intnl_384:
     %SystemSingle, 0\n    __FixedUpdate_intnl_385: %SystemString, null\n    __FixedUpdate_intnl_386:
     %SystemString, null\n    __const_118: %SystemString, \"  (x\"\n    __FixedUpdate_intnl_387:
     %SystemString, null\n    __FixedUpdate_intnl_388: %SystemString, null\n    __FixedUpdate_intnl_389:
@@ -7106,7 +7126,7 @@ MonoBehaviour:
     null\n    __FixedUpdate_intnl_422: %SystemString, null\n    __const_136: %SystemString,
     \"Landing Ratio: \"\n    __FixedUpdate_intnl_425: %SystemString, null\n    __FixedUpdate_intnl_426:
     %SystemString, null\n    __const_137: %SystemString, \"  Cap \"\n    __FixedUpdate_intnl_427:
-    %SystemString, null\n    __retaddr_49: %SystemUInt32, 0x0000726C\n    __FixedUpdate_intnl_428:
+    %SystemString, null\n    __retaddr_49: %SystemUInt32, 0x000072E4\n    __FixedUpdate_intnl_428:
     %SystemSingle, 0\n    __FixedUpdate_intnl_429: %SystemString, null\n    __FixedUpdate_intnl_430:
     %SystemString, null\n    __const_138: %SystemString, \"  Last Landing: \"\n   
     __FixedUpdate_intnl_431: %SystemString, null\n    __FixedUpdate_intnl_432: %SystemString,
@@ -7117,7 +7137,7 @@ MonoBehaviour:
     %SystemSingle, 0\n    __LandingCap_intnl_0: %SystemSingle, 0\n    __LandingCap_intnl_1:
     %SystemSingle, 0\n    __LandingCap_intnl_4: %SystemSingle, 0\n    __LandingCap_intnl_5:
     %SystemSingle, 0\n    __LandingCap_intnl_7: %SystemSingle, 0\n    __LandingCap_intnl_8:
-    %SystemSingle, 0\n    __retaddr_50: %SystemUInt32, 0x00007650\n    __LandingCap_intnl_9:
+    %SystemSingle, 0\n    __retaddr_50: %SystemUInt32, 0x000076C8\n    __LandingCap_intnl_9:
     %SystemSingle, 0\n    __LandingCap_intnl_10: %SystemSingle, 0\n    __JumpStateName_intnl_0:
     %SystemBoolean, null\n    __JumpStateName_intnl_1: %SystemBoolean, null\n   
     __Accelerate__SystemSingle_SystemSingle_intnl_0: %SystemSingle, 0\n    __Accelerate__SystemSingle_SystemSingle_intnl_1:
@@ -7185,7 +7205,7 @@ MonoBehaviour:
     __Sample__VRCSDKBaseVRCPlayerApi_intnl_46: %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_47:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_48: %SystemString,
     null\n    __const_155: %SystemString, \" a=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_49:
-    %SystemString, null\n    __retaddr_51: %SystemUInt32, 0x000084B4\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_50:
+    %SystemString, null\n    __retaddr_51: %SystemUInt32, 0x0000852C\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_50:
     %SystemSingle, 0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_51: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_52: %SystemString, null\n   
     __const_156: %SystemString, \" Baccel=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_53:
@@ -7195,7 +7215,7 @@ MonoBehaviour:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_57: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_58: %SystemString, null\n   
     __const_158: %SystemString, \" max=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_59:
-    %SystemString, null\n    __retaddr_52: %SystemUInt32, 0x000085F0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_60:
+    %SystemString, null\n    __retaddr_52: %SystemUInt32, 0x00008668\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_60:
     %SystemSingle, 0\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_61: %SystemString,
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_62: %SystemString, null\n   
     __const_159: %SystemString, \" rsw=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_63:
@@ -7210,7 +7230,7 @@ MonoBehaviour:
     null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_75: %SystemString, null\n   
     __Sample__VRCSDKBaseVRCPlayerApi_intnl_76: %SystemString, null\n    __const_160:
     %SystemString, \" jump=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_77: %SystemString,
-    null\n    __retaddr_53: %SystemUInt32, 0x00008814\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_78:
+    null\n    __retaddr_53: %SystemUInt32, 0x0000888C\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_78:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_79: %SystemString,
     null\n    __const_161: %SystemString, \" p=\"\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_80:
     %SystemString, null\n    __Sample__VRCSDKBaseVRCPlayerApi_intnl_81: %UnityEngineVector3,
@@ -7693,6 +7713,13 @@ MonoBehaviour:
     COPY\n        JUMP, Maximum\n        PUSH, __Maximum_ret\n        PUSH, __GetEffectiveMaximumSpeed_ret\n       
     COPY\n        PUSH, __Maximum_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __GetEffectiveMaximumSpeed_retjump\n        JUMP_INDIRECT, __GetEffectiveMaximumSpeed_retjump\n   
+    .export GetJumpImpulse\n    GetJumpImpulse:\n        PUSH, _active\n        JUMP_IF_FALSE,
+    __GetJumpImpulse_L0\n        PUSH, _savedJumpImpulse\n        PUSH, __GetJumpImpulse___t0\n       
+    COPY\n        JUMP, __GetJumpImpulse_L1\n    __GetJumpImpulse_L0:\n        PUSH,
+    __const_6\n        PUSH, __GetJumpImpulse___t0\n        COPY\n    __GetJumpImpulse_L1:\n       
+    PUSH, __GetJumpImpulse___t0\n        PUSH, __GetJumpImpulse_ret\n        COPY\n       
+    PUSH, __GetJumpImpulse___t0\n        PUSH, __returnValue\n        COPY\n       
+    JUMP_INDIRECT, __GetJumpImpulse_retjump\n        JUMP_INDIRECT, __GetJumpImpulse_retjump\n   
     .export GetAppliedSpeed\n    GetAppliedSpeed:\n        PUSH, _applied\n       
     PUSH, __GetAppliedSpeed_ret\n        COPY\n        PUSH, _applied\n        PUSH,
     __returnValue\n        COPY\n        JUMP_INDIRECT, __GetAppliedSpeed_retjump\n       
@@ -9406,8 +9433,8 @@ MonoBehaviour:
   networkCallableSlots: []
   optExternBefore: 851
   optExternAfter: 851
-  optInsnBefore: 5429
-  optInsnAfter: 4523
-  optBytesBefore: 41116
-  optBytesAfter: 35076
+  optInsnBefore: 5446
+  optInsnAfter: 4540
+  optBytesBefore: 41236
+  optBytesAfter: 35196
   optStage: ran

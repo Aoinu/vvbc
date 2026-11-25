@@ -238,8 +238,9 @@ curve, ball-result model, synchronization or effect: the candidate time, zone
 and timing gates, `ContactQualityAtLocalY`, `ContactPowerCap`,
 `BallResultMath.Calculate()`, `ApplyContactResult` and the contact sound are
 shared. The pure rules live in `BattingAssist`; their settings are on the
-local Bat Motion (a future perk system targets the player's own Bat), and
-`debugLogging` is on Bat Contact. No perk catalog, cost or persistence exists.
+local Bat Motion, and `debugLogging` is on Bat Contact. The
+[player perks](player-perks.md) set them on the player's own Bat (`PerkEffectsBehaviour`: off
+without the Bunt or Homing perk); without a perk system the Inspector defaults below apply.
 
 For each accepted candidate, Bat Contact:
 

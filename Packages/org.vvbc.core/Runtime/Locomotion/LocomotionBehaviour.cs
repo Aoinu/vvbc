@@ -224,6 +224,9 @@ namespace VVBC.Locomotion
         public void SetLogEnabled(bool value) { logEnabled = value; }
 
         public float GetEffectiveMaximumSpeed() { return Maximum(); }
+        // The JumpImpulse jumps use (the saved one; the player's is 0 during the lockout).
+        // 0 until the local player is activated.
+        public float GetJumpImpulse() { return _active ? _savedJumpImpulse : 0f; }
         public float GetAppliedSpeed() { return _applied; }
 
         private void ParametersChanged()

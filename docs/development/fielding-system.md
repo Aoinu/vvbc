@@ -78,7 +78,10 @@ The placeholder visual is a primitive and a two-state Animator controller
 (`Runtime/Animations/GloveAnimator.controller`) with a `Closed` bool. A real
 glove model replaces `GloveVisual` children; the controller only needs the same
 parameter. `CatchTrigger` is a sphere whose `center` must stay at zero; its
-radius times the Mount scale is the catch radius.
+radius times the Mount scale is the catch radius. The Catch Radius
+[perk](player-perks.md) sets `SetCatchRadiusMultiplier(m)`: the trigger radius becomes the
+authored radius times `m` (local, owner only, not synced), and the Mount scale still applies, so
+calibration and the perk stay independent.
 
 ## Scene setup
 

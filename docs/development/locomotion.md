@@ -143,7 +143,10 @@ buffs, settings): `SetMaximumSpeed`, `SetAcceleration`, `SetDeceleration`,
 `SetDirectionMinimumSpeed`, `SetJumpCooldown`, `SetLandingSpeedRatio`,
 `SetLogInterval`, `SetLogEnabled`. Values are sanitised,
 measurement and inertia are kept, and a `parameters changed` line is logged.
-`GetEffectiveMaximumSpeed` and `GetAppliedSpeed` read the current values.
+`GetEffectiveMaximumSpeed` and `GetAppliedSpeed` read the current values, `GetJumpImpulse` the
+impulse jumps use (0 before activation). The [player perks](player-perks.md) use
+`SetSpeedMultiplier` (Max Speed) and `SetJumpImpulse` (Jump); Acceleration perks are not
+connected yet.
 
 ## Jump limit
 
