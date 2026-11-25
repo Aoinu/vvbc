@@ -20,7 +20,7 @@ class DirectPackageTests(unittest.TestCase):
             shutil.copytree(MODULE.ROOT / relative, self.root / relative)
         self.tool = MODULE.Toolchain(self.root)
         self.compiler = Path(self.temp.name) / 'compiler'
-        MODULE.write_json(self.compiler / 'package.json', {'name': MODULE.TSUKIMI, 'version': '0.10.1'})
+        MODULE.write_json(self.compiler / 'package.json', {'name': MODULE.TSUKIMI, 'version': '0.10.2'})
         self.project = Path(self.temp.name) / 'consumer'
         self.write(self.project / 'ProjectSettings/ProjectVersion.txt', 'm_EditorVersion: 2022.3.22f1')
         MODULE.write_json(self.project / 'Packages/manifest.json', {'dependencies': {}})
@@ -41,7 +41,7 @@ class DirectPackageTests(unittest.TestCase):
 
     def test_declared_dependencies(self):
         self.assertEqual(self.tool.check()['vpmDependencies'], {
-            MODULE.TSUKIMI: '0.10.1', 'com.vrchat.worlds': '3.10.5', 'org.vvbc.assets': '0.0.1',
+            MODULE.TSUKIMI: '0.10.2', 'com.vrchat.worlds': '3.10.6', 'org.vvbc.assets': '0.0.1',
             MODULE.VRCUI: '0.14.2'})
 
     def test_runtime_baseline_references_pass(self):

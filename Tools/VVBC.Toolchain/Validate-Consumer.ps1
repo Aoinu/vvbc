@@ -48,12 +48,12 @@ try {
     if (-not ($project -eq $runRoot -or $project.StartsWith($runRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase))) {
         throw 'Resolved consumer path escaped run directory.'
     }
-    Invoke-Vpm @('add', 'package', 'com.vrchat.worlds@3.10.5', '-p', $project)
+    Invoke-Vpm @('add', 'package', 'com.vrchat.worlds@3.10.6', '-p', $project)
     # VPM CLI 0.1.28 logs "Could not get match" but returns 0 for a local path.
     # Install Worlds through VPM. Reference the licensed local Tsukimi install explicitly;
     # no compiler binaries are copied, and this does not prove VPM feed resolution.
     $worlds = Get-Content -LiteralPath (Join-Path $project 'Packages/com.vrchat.worlds/package.json') -Raw | ConvertFrom-Json
-    if ($worlds.version -ne '3.10.5') { throw 'VPM did not install the pinned Worlds SDK.' }
+    if ($worlds.version -ne '3.10.6') { throw 'VPM did not install the pinned Worlds SDK.' }
     # The UI theme is a formal VPM dependency of core, resolved from its author's official listing.
     $vrcuiRepository = 'https://kurone-kito.github.io/vpm/index.json'
     $repositories = (& $script:vpmExecutable list repos 2>&1) -join "`n"

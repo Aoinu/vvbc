@@ -35,7 +35,7 @@ pwsh -File Tools/VVBC.Toolchain/Run-PerformanceTests.ps1 -Check          # stati
 python Tools/VVBC.Toolchain/perf/run.py                                  # same, without PowerShell
 ```
 
-Requirements: Python 3.11+, .NET 8+ (`dotnet`) and the installed `com.tsukimicode.udon-tools` 0.10.1
+Requirements: Python 3.11+, .NET 8+ (`dotnet`) and the installed `com.tsukimicode.udon-tools` 0.10.2
 package. **No Unity Editor is needed**; the runner uses the package's MCP server (`Server~/TsukimiCode.Mcp.dll`).
 `-CompilerRoot`/`VVBC_COMPILER_ROOT` points to another project that provides the package (e.g. measuring a second checkout such as a worktree: `--root <worktree> --compiler-root <main project>`).
 
@@ -64,7 +64,7 @@ over the limit each is, and the command to rerun it. Then:
 ```jsonc
 {
   "schema": 1,
-  "environment": { "tsukimiVersion": "0.10.1", "measurementMethod": "...", "recordedAgainstProductionCommit": "<sha>" },
+  "environment": { "tsukimiVersion": "0.10.2", "measurementMethod": "...", "recordedAgainstProductionCommit": "<sha>" },
   "scenarios": [{
     "id": "feedback_c4_90fps",                  // C#-identifier-like, unique
     "component": "BattingFeedbackBehaviour", "function": "Scan",
@@ -119,6 +119,7 @@ and the `harness/*.Perf.cs` seams):
 | `motion.IgnoreBallCollision` (once per pitch), `GetComponentInParent<BatBehaviour>` | removed / null | excluded |
 | `Rigidbody.velocity/angularVelocity` on drop, hand-tracking reads in `RecordContactPose` (`_owner` is null) | removed / skipped | excluded |
 | `WorldSettingsBehaviour.OnPlayerJoined` (`VRCPlayerApi.Set*Speed`, `SetJumpImpulse`, `SetVoiceDistance*`), raised by `Mimic.Join()` | returns at once | excluded; it runs once per join, never inside a measured call |
+| `LocomotionBehaviour.OnPlayerJoined` (delayed `ActivateLocalPlayer` send inside another Behaviour), raised by `Mimic.Join()` | returns at once | excluded; it runs once per join, never inside a measured call |
 
 So absolute numbers are for the harness, not for VRChat; **comparisons across commits are meaningful**
 because the same stubs apply to both. A regression inside a stand-in-replaced call (e.g. making a curve
@@ -149,6 +150,26 @@ Production changes outside those call sites need no harness change.
   costs about 34 k steps / 7.9 k externs per call, roughly three times the cost of its 16 segment tests measured in
   isolation (about 10 k / 2 k); the first call costs about 130 k steps. The cause (T# code generation for the
   loop, or genuine work) is not identified.
+
+## Tsukimi 0.10.2 re-record (2026-11-26)
+
+All 56 baselines were re-recorded with Tsukimi 0.10.2 at `3c46a6e` (limits +30 %, ceilings +50 %, as
+before). The only harness change is the `Locomotion join` stub: with the Locomotion module in the sources,
+`Mimic.Join()` in every Contact scenario stopped as `notRunnable` (a delayed send inside another Behaviour),
+so the ten Contact scenarios were not measured at all until it was added.
+
+Every comparison below ran on 0.10.2 with the same runner and scenarios:
+
+| Comparison | Steps change | Meaning |
+|---|---|---|
+| `cd1cee0` (the commit that added this harness, run with its own harness and budgets) vs. its 0.10.1 baselines | Feedback -15 % to -35 %, Contact -19 % to -30 %, Motion -47 % to -88 % | the compiler version alone (same sources and harness); externs fall by a similar share |
+| `cd1cee0` -> `50e2163` (SDK 3.10.6 / Tsukimi 0.10.2 update) | Feedback +1 % to +5 %, Contact +2 % to +8 %, Motion 0 % | production changes in between (#4, Locomotion #5, roster #6) |
+| `50e2163` -> `fbd257e` (Locomotion push speed, bunt / homing) | Contact `reject_width` +4.5 % (+1.0 % backlog), hit -0.2 %, Motion +0.4 % to +1.8 %, Feedback 0 % | the bunt / homing contact path |
+| `fbd257e` -> `3c46a6e` (Pitch Fade) | 0 in all 56 scenarios (steps and externs identical) | the fade adds no work to the measured functions |
+
+The `cd1cee0` budgets name `2c6511a` as their production commit and were re-recorded during that pull
+request, so the version-only row is exactly as reliable as those recorded baselines; 0.10.1 itself is no
+longer installed to measure `cd1cee0` again.
 
 ## Adding or changing a scenario
 
