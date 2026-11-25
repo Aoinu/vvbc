@@ -6,7 +6,8 @@ world speed** while keeping VRChat's standard locomotion. It only calls
 `SetJumpImpulse`; it never uses Stations, `SetVelocity` or repeated teleports, and
 never moves or turns the player. Turning, IK, animation, grounding, jump physics
 and networking stay with VRChat. Releasing the
-stick stops the player at once as usual; no coasting is reproduced.
+stick stops the player at once as usual; no coasting is reproduced. A push that
+starts from rest is given a small initial speed so the first step reacts quickly.
 
 The Behaviour is local only (`BehaviourSyncMode.None`), one per world
 (`Runtime/Prefabs/Locomotion.prefab`). It activates one frame after the local
@@ -45,13 +46,42 @@ Feedback Gain. `Vmax = Maximum Speed × Speed Multiplier` (clamped to 0.1–12 m
 length; within 0.01 m/s the maximum counts as reached. Slowing down and turning use
 Deceleration `a_dec`, which does not depend on `Vmax` or the acceleration multiplier.
 
-The defaults (`Vmax` 8 m/s, `a0` 10 m/s², time constant `Vmax / a0` = 0.8 s) cover
-the 27.43 m from home to first base in about 4.25 s of running (with one step of
-measurement delay), i.e. about 4.5 s from contact with roughly 0.3 s before the first
-step. The 99 % speed is reached after about 23 m, matching the 20–30 m at which
-baseball players reach their top speed; 8 m/s is close to measured professional
-top speeds (about 8.0–8.2 m/s). Speed Multiplier changes the time far more than
-Acceleration Multiplier (+10 % speed: about −0.24 s; +10 % acceleration: about −0.06 s).
+**Initial speed.** When the stick leaves the deadzone, the applied speed is raised at
+once to `u_init = min(Initial Speed × Speed Multiplier, Vmax, u_fb)` (default 2 m/s),
+never lowering it, if all of these hold:
+
+- the player is grounded;
+- a position sample was taken since the last reset (join, respawn, enable, toggles,
+  discontinuity), so an unknown speed is not taken as rest;
+- the latest measured speed `|v_t|` and the inertia `|v_i|` are both below Rest Speed
+  Threshold (default 0.2 m/s);
+- the applied speed is below `u_init`.
+
+It is evaluated in the physics step in which the stick crosses the deadzone, after
+`Step` when a sample came in that step, so it neither waits for a new sample nor is
+undone by that step's control. The latest sample is used as is (at rest a sample is
+taken at least every 0.1 s, see Measurement). It happens at most once per push:
+holding the stick, changing its direction, turning, or landing from a jump is no new
+push. Releasing does not clear the inertia, which decays at `a_dec` (8 m/s is gone in
+0.8 s), so a quick release and re-push, or a release during a turn, gets no initial
+speed; a push from real rest after the inertia has decayed does. From `u_init` the
+speed follows the same `a(v)`, so no separate start curve exists.
+
+The defaults (`Vmax` 8 m/s, `a0` 7.5 m/s², initial speed 2 m/s, time constant
+`Vmax / a0` ≈ 1.07 s) cover the 27.43 m from home to first base in 4.21 s
+(analytically; about 4.27 s with one step of measurement delay) at 7.88 m/s. The
+previous start (`a0` 10 m/s² from the 0.1 m/s floor) took 4.21 s and arrived at
+7.96 m/s, so base running is unchanged while the first metres are quicker:
+
+| Distance | 1 m | 3 m | 5 m | 10 m | 20 m | 27.43 m |
+|---|---:|---:|---:|---:|---:|---:|
+| Initial 2 m/s, `a0` 7.5 (analytic) | 0.35 s | 0.80 s | 1.15 s | 1.92 s | 3.26 s | 4.21 s |
+| Previous: `a0` 10 from 0.1 m/s | 0.48 s | 0.91 s | 1.25 s | 1.97 s | 3.28 s | 4.21 s |
+
+That is about 4.5 s from contact with roughly 0.3 s before the first step; 8 m/s is
+close to measured professional top speeds (about 8.0–8.2 m/s). Speed Multiplier
+changes the time far more than Acceleration Multiplier. These are model values;
+check the effective speeds on real clients.
 
 1. **Feedback** (never `Vmax - V`, which subtracts the stick's own speed twice):
    `u_fb = clamp(u + K (Vmax - V), u_min, Vmax)`.
@@ -63,10 +93,14 @@ Acceleration Multiplier (+10 % speed: about −0.24 s; +10 % acceleration: about
    only on the resets above.
 3. **Inertia penalties**, the larger one is used, never the sum:
    - `B_accel = max(0, |v_t| - |v_i|)` (what inertia could not follow this step);
-   - `B_turn = |v_t - v_i|` when `v_t · v_i_prev ≤ 0`, where `v_i_prev` is the
-     inertia carried into the step, so a 90° cut counts. Skipped while either
-     speed is at or below Direction Minimum Speed (default 0.05 m/s, kept below
-     the minimum applied speed so braking does not toggle at the floor).
+   - `B_turn = k_turn |v_i_prev| (1 - cos θ)`, where `v_i_prev` is the inertia
+     carried into the step (before it is updated), θ the horizontal angle between
+     `v_t` and `v_i_prev` and `k_turn` Turn Braking Strength (default 1). At 8 m/s
+     of inertia: 30° 1.07, 60° 4, 90° 8, 120° 12, 180° 16 m/s. It is continuous in
+     θ, so small repeated turns or a rotating stick cannot slip under a threshold.
+     Skipped while either speed is at or below Direction Minimum Speed (default
+     0.05 m/s, kept below the minimum applied speed so braking does not toggle at
+     the floor); near-zero inertia gives at most `2 k_turn |v_i|`.
    - `u_inertia = clamp(Vmax - max(B_accel, B_turn), u_min, Vmax)`.
 4. `u_target = min(u_fb, u_inertia)`.
 5. **Acceleration limit**: an increase follows `a(u)` over `dt` (see above); a
@@ -81,8 +115,11 @@ acceleration step of the target; lower the gain if real clients show oscillation
 | Inspector | Default |
 |---|---:|
 | Maximum Speed | 8.0 m/s |
-| Acceleration (at rest) | 10.0 m/s² |
+| Acceleration (at rest) | 7.5 m/s² |
 | Deceleration | 10.0 m/s² |
+| Initial Speed | 2.0 m/s |
+| Rest Speed Threshold | 0.2 m/s |
+| Turn Braking Strength | 1.0 |
 | Speed Multiplier / Acceleration Multiplier | 1.0 / 1.0 |
 | Minimum Applied Speed | 0.1 m/s |
 | Feedback Gain | 1.0 |
@@ -100,6 +137,7 @@ no acceleration limit either.
 
 Every parameter can also be changed at runtime by another Behaviour (abilities,
 buffs, settings): `SetMaximumSpeed`, `SetAcceleration`, `SetDeceleration`,
+`SetInitialSpeed`, `SetRestSpeedThreshold`, `SetTurnBrakingStrength`,
 `SetSpeedMultiplier`, `SetAccelerationMultiplier`, `SetMinimumAppliedSpeed`,
 `SetFeedbackGain`, `SetInputDeadzone`, `SetWalkSpeedRatio`,
 `SetDirectionMinimumSpeed`, `SetJumpCooldown`, `SetLandingSpeedRatio`,
@@ -142,7 +180,9 @@ take-off until a grounded step is seen. Discontinuities do not reset the jump st
 
 `Samples/Scenes/Locomotion.unity` has a world-space panel (`LocomotionDiagnostics`)
 updated at 10 Hz with Position Speed, GetVelocity, inertial speed and direction,
-direction difference, both limits, the applied speed, both penalties and the maximum,
+direction difference, both limits, the applied speed, both penalties (with Turn
+Braking Strength), the effective and set initial speed, its rest threshold, how often it
+was given and the outcome of the last push (applied, or why it was skipped), the maximum,
 and for the jump limit: grounded, jump state (Ready / Airborne / Cooldown), cooldown
 remaining, current and saved JumpImpulse, landing ratio and cap, and the last landing
 cut (applied before -> after).
@@ -153,12 +193,13 @@ or the Unity Console starts with `[VVBC Locomotion]`:
 | Line | When |
 |---|---|
 | `activated; saved walk/run/strafe=…; max=… accel=… …` | after join, with every setting |
-| `input started; …` | stick leaves the deadzone |
+| `input started; initial=… grounded=…; …` | stick leaves the deadzone; `initial` is `applied N` or `skipped: <reason>` (no sample since reset, airborne, moving, inertia, applied already higher) |
+| `initial speed applied; A -> B count=N` | the initial speed was given |
 | `input released; segment Ns dist peakPos meanPos overMax braking; …` | stick returns; summary of the push: duration, measured distance, peak and mean position speed, time above `Vmax + 0.05`, time with turn braking |
 | `maximum reached; elapsed dist; …` | the applied speed first reaches `Vmax` in a push |
 | `base distance 27.43m covered; elapsed dist; …` | a push covers the home-to-first distance (checks the 4.5 s target) |
 | `parameters changed; …` | a `Set…` method changed a parameter |
-| `turn braking started/ended; …` | `B_turn` becomes non-zero / zero |
+| `turn braking started/ended; …` | `B_turn` rises above 0.25 m/s / falls to 0.1 m/s or below (hysteresis, so direction noise does not log every step) |
 | `jump started; …`, `jump landing; applied A -> B`, `jump cooldown started; Ns`, `jump cooldown ended; impulse restored N` | jump limit transitions |
 | `jump impulse set; …` | `SetJumpImpulse` was called |
 | `sample; …` | every Log Interval while input is active or the player or inertia is moving |
@@ -174,9 +215,16 @@ back from the API, `grounded`, `jump` state, `p` position.
 
 - Desktop movement without Shift uses Walk speed (`u × 0.5`), so the feedback
   sees less than `Vmax` and keeps `u` at the maximum.
-- `B_turn` uses the spec's `≥ 90°` condition. On an exact 90° cut it fires for the
-  first step only (the carried inertia already leans toward the new direction on
-  the next step), after which `B_accel` alone limits re-acceleration.
+- `B_turn` replaced the earlier rule (`|v_t - v_i|` only at 90° or more), under which
+  small repeated turns were not braked. In a 2-D model at top speed the mean applied
+  speed over 2 s is now, previous rule / this rule / no turn braking: stick rotating
+  at 360°/s 4.25 / 3.34 / 5.62, at 720°/s 3.76 / 3.23 / 5.40, reversing 360°/s every
+  0.25 s 6.89 / 5.07 / 6.89, 30° every 0.1 s 3.90 / 2.59 / 6.10. Around 180°/s the
+  new rule brakes slightly less (5.23 against 4.94); steering at 30°/s and ±2°
+  jitter keep the maximum. A 90° cut at 8 m/s now stays braked while the forward
+  inertia decays (about 0.8 s) instead of only on the first step.
+- Snap turning while running changes the movement direction too and is braked like
+  any turn (45° at 8 m/s: 2.3 m/s); check comfort on real clients.
 - Inertia decays at `a_dec` while input is released, so 8 m/s of inertia is gone
   after 0.8 s; a reversal within that time is braked.
 - Speeds above 5 m/s are beyond what VRChat's defaults use; check on real clients
