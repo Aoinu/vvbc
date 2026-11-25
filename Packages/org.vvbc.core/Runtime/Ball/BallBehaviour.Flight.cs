@@ -51,22 +51,43 @@ public partial class BallBehaviour
     }
 
     // A pitch released with its wake; elapsed is the flight time since the release that the
-    // given state is at (non-zero after a network catch-up).
-    private void LaunchPitch(Vector3 position, Vector3 velocity, Vector3 angularVelocity, WakeProfile wake, float elapsed)
+    // given state is at (non-zero after a network catch-up). releasePosition and
+    // releaseVelocity are the pitch's own state at flight time 0 (equal to position and
+    // velocity when elapsed is 0).
+    private void LaunchPitch(Vector3 releasePosition, Vector3 releaseVelocity, Vector3 position, Vector3 velocity,
+        Vector3 angularVelocity, WakeProfile wake, float elapsed)
     {
         StartFlight(position, velocity, angularVelocity, true);
         if (body == null) return;
         _wake = BallAerodynamics.PrepareWake(wake, angularVelocity);
         if (pitchSyncDiagnostics) FlightDiagBegin(position, velocity, angularVelocity, elapsed);
-        if (_wake.mode == BallAerodynamics.WakeNone) return;
-        _wakeTime = elapsed;
-        _wakeSampleTime = elapsed;
-        // A launch runs outside the fixed step (a delayed event, a deserialization or an
-        // ownership callback), so the next FixedUpdate, at Time.fixedTime + fixedDeltaTime,
-        // samples this state first and applies the wake at flight time elapsed.
-        if (motionObserver != null)
-            motionObserver.SetPitchWake(wake.mode, wake.coefficient, wake.direction, wake.coneAngle, wake.initialPhase,
-                elapsed, Time.fixedTime + Time.fixedDeltaTime);
+        if (_wake.mode != BallAerodynamics.WakeNone)
+        {
+            _wakeTime = elapsed;
+            _wakeSampleTime = elapsed;
+            // A launch runs outside the fixed step (a delayed event, a deserialization or an
+            // ownership callback), so the next FixedUpdate, at Time.fixedTime + fixedDeltaTime,
+            // samples this state first and applies the wake at flight time elapsed.
+            if (motionObserver != null)
+                motionObserver.SetPitchWake(wake.mode, wake.coefficient, wake.direction, wake.coneAngle, wake.initialPhase,
+                    elapsed, Time.fixedTime + Time.fixedDeltaTime);
+        }
+        RecordReleasedPitch(releasePosition, releaseVelocity, angularVelocity, wake);
+    }
+
+    // The launched pitch is complete here (flight, wake and strike observer). Local visual
+    // listeners (the pitch fade) read the released* fields once; nothing here is synced.
+    private void RecordReleasedPitch(Vector3 position, Vector3 velocity, Vector3 spin, WakeProfile wake)
+    {
+        releasedPitchPosition = position;
+        releasedPitchVelocity = velocity;
+        releasedPitchSpin = spin;
+        releasedPitchWakeMode = wake.mode;
+        releasedPitchWakeCoefficient = wake.coefficient;
+        releasedPitchWakeDirection = wake.direction;
+        releasedPitchWakeConeAngle = wake.coneAngle;
+        releasedPitchWakePhase = wake.initialPhase;
+        NotifyPitchReleasedListeners();
     }
 
     // A flight that is not the pitch released with the wake never carries it on.

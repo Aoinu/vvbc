@@ -46,5 +46,11 @@ public partial class BallBehaviour : TsukimiBehaviour
     private float _wakeTime, _wakeSampleTime;
     // The flight shown here has touched a groundLayers collider; a new flight, hold or Stage clears it.
     private bool _flightGrounded;
+    // The pitch most recently launched on this client, as released (flight time 0): position,
+    // velocity, spin and its world-space WakeProfile. Set before OnBallPitchReleased; local only.
+    [HideInInspector] public Vector3 releasedPitchPosition, releasedPitchVelocity, releasedPitchSpin;
+    [HideInInspector] public int releasedPitchWakeMode;
+    [HideInInspector] public float releasedPitchWakeCoefficient, releasedPitchWakeConeAngle, releasedPitchWakePhase;
+    [HideInInspector] public Vector3 releasedPitchWakeDirection;
 
 }

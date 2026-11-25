@@ -274,7 +274,7 @@ public partial class BallBehaviour
         ExitHold();
         BallFlightState state = AdvanceToGround(_acceptedPosition, _acceptedVelocity, _acceptedSpin,
             BallAerodynamics.PrepareWake(_acceptedWake, _acceptedSpin), duration, Time.fixedDeltaTime, 0f);
-        LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
+        LaunchPitch(_acceptedPosition, _acceptedVelocity, state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
         if (stale)
         {
             contactConsumed = true;

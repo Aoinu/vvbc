@@ -198,7 +198,7 @@ public partial class BallBehaviour
             dragCoefficient, magnusCoefficient, BallAerodynamics.PrepareWake(wake, spin), (float)elapsed, Time.fixedDeltaTime, 0f);
         _localPitchTime = releaseTime;
         _hasLocalPitch = true;
-        LaunchPitch(state.position, state.velocity, spin, wake, state.time);
+        LaunchPitch(position, velocity, state.position, state.velocity, spin, wake, state.time);
         _lineage = new PitchLineage();
         _localPitchFlight = flightSequence;
         return true;
@@ -547,7 +547,8 @@ public partial class BallBehaviour
         }
         else if (_acceptedKind == PitchState)
         {
-            if (!IsLocalPitch(_acceptedServerTime)) LaunchPitch(_acceptedPosition, _acceptedVelocity, _acceptedSpin, _acceptedWake, 0f);
+            if (!IsLocalPitch(_acceptedServerTime))
+                LaunchPitch(_acceptedPosition, _acceptedVelocity, _acceptedPosition, _acceptedVelocity, _acceptedSpin, _acceptedWake, 0f);
         }
         if (networkDiagnostics) Diag("publish kind=" + _acceptedKind + " seq=" + _acceptedSequence + " time=" + _acceptedServerTime);
         if (pitchSyncDiagnostics && _acceptedLineage.IsPitch())
@@ -997,7 +998,7 @@ public partial class BallBehaviour
             StartFlight(state.position, state.velocity, state.spin, false, spinHalfLife);
             _flightOrigin = _acceptedKind;
         }
-        else LaunchPitch(state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
+        else LaunchPitch(_acceptedPosition, _acceptedVelocity, state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
         if (networkDiagnostics)
             Diag("apply kind=" + _acceptedKind + " seq=" + _acceptedSequence + "/" + _acceptedPublisherId + " age=" + elapsed +
                 " simulated=" + state.time + " groundStop=" + (state.time < duration - 0.0001f));
@@ -1166,6 +1167,13 @@ public partial class BallBehaviour
     {
         for (int i = 0; i < _presentationListeners.Length; i++)
             if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallPresentationChanged");
+    }
+
+    // A pitch was launched on this client with its wake prepared; its release is in released*.
+    private void NotifyPitchReleasedListeners()
+    {
+        for (int i = 0; i < _presentationListeners.Length; i++)
+            if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallPitchReleased");
     }
 
     // Every ground bounce of a flight; listeners keep only the first one they need.

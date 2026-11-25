@@ -13,7 +13,7 @@ HomePlateSet            HomePlateSetBehaviour (Manual sync: the lane mode only)
 │   ├── BatSpawnSwitch L / R
 │   └── PitchSettingsPanel   (World Space canvas; its page edits this lane)
 ├── SharedRig           the networked pitcher, ball and judgment
-│   ├── HomePlate       HomePlateVisual (StrikeZone, Contact, Crossing, Phantom, BatterBoxes)
+│   ├── HomePlate       HomePlateVisual (StrikeZone, Contact, Crossing, Phantom, BatterBoxes, PitchFade)
 │   ├── Ball
 │   └── BattingPitcherMachine
 ├── Visual              decorative only (Mound); hide it when the field model has its own

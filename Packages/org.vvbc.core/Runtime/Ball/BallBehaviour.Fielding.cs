@@ -628,7 +628,7 @@ public partial class BallBehaviour
         _catchBlockedUntil = now + Mathf.Max(0f, selfCatchDelay);
         if (pitched)
         {
-            LaunchPitch(position, velocity, spin, wake, 0f);
+            LaunchPitch(position, velocity, position, velocity, spin, wake, 0f);
             _lineage = _releaseLineage;
             MarkHandPitchApplied(_lineage);
             if (pitchSyncDiagnostics) PitchDiagRelease(position, velocity, spin, wake, serverTime);
