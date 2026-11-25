@@ -420,4 +420,35 @@ public partial class BallBehaviour
         }
         return float.NegativeInfinity;
     }
+
+    // ---- Batted flight (landing indicator) ----
+
+    [TsukimiTest]
+    public void OnlyAFreeFlyingHitIsABattedFlight()
+    {
+        flying = true;
+        _flightOrigin = HitState;
+        Assert.IsTrue(BattedFlight(), "a hit or bunt in the air or rolling");
+        _flightOrigin = PitchState;
+        Assert.IsFalse(BattedFlight(), "a pitch, even after its contact is consumed");
+        _flightOrigin = ThrowState;
+        Assert.IsFalse(BattedFlight(), "a fielder's throw");
+        _flightOrigin = FlightOriginUnknown;
+        Assert.IsFalse(BattedFlight(), "a flight whose origin is not known yet");
+        _flightOrigin = HitState;
+        flying = false;
+        Assert.IsFalse(BattedFlight(), "held or staged");
+    }
+
+    [TsukimiTest]
+    public void ACatchEndsTheBattedFlight()
+    {
+        VRCPlayerApi me = Mimic.Join();
+        flying = true;
+        flightSequence = 3;
+        _flightOrigin = HitState;
+        CatchLocally(null, me.playerId, Vector3.one, 30f, 1.0);
+        Assert.IsFalse(BattedFlight());
+        Assert.AreNotEqual(3, flightSequence, "the hold is another flight sequence");
+    }
 }

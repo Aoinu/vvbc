@@ -171,6 +171,13 @@ public partial class BallBehaviour
         return _flightGrounded;
     }
 
+    // The ball is flying freely in a batted flight (normal hit or bunt, local or received);
+    // pitches, throws, holds and staged balls are not.
+    public bool BattedFlight()
+    {
+        return flying && _flightOrigin == HitState;
+    }
+
     // Forces the ball into the local player's glove as a catch would, without catch effects,
     // whatever its state: in the air, out of play, held by anyone, or behind a local action
     // that still waits for ownership (the recall replaces it). Published as an ordinary

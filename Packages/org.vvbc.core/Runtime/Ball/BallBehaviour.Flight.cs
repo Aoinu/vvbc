@@ -262,6 +262,7 @@ public partial class BallBehaviour
         _sampleCount = 0;
         RecordMotion(physicsTime, state.position, state.velocity, state.spin);
         _contactPending = false;
+        NotifyBattedFlightListeners();
     }
 
     private bool Finite(float value)

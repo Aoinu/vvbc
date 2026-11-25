@@ -997,6 +997,8 @@ public partial class BallBehaviour
         {
             StartFlight(state.position, state.velocity, state.spin, false, spinHalfLife);
             _flightOrigin = _acceptedKind;
+            // StartFlight notifies before the origin is known; a batted flight is announced here.
+            if (_acceptedKind == HitState) NotifyBattedFlightListeners();
         }
         else LaunchPitch(_acceptedPosition, _acceptedVelocity, state.position, state.velocity, _acceptedSpin, _acceptedWake, state.time);
         if (networkDiagnostics)
@@ -1181,6 +1183,14 @@ public partial class BallBehaviour
     {
         for (int i = 0; i < _presentationListeners.Length; i++)
             if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallGroundContact");
+    }
+
+    // A batted flight (a local contact applied, or a received Hit) is flying with its origin
+    // set; BattedFlight() is true from here. Local only: the landing indicator predicts from it.
+    private void NotifyBattedFlightListeners()
+    {
+        for (int i = 0; i < _presentationListeners.Length; i++)
+            if (_presentationListeners[i] != null) _presentationListeners[i].SendCustomEvent("OnBallBattedFlightStarted");
     }
 
     public void RegisterPresentationListener(UdonBehaviour listener)
