@@ -15,13 +15,13 @@
   },
   "locked": {
     "com.vrchat.worlds": {
-      "version": "3.10.5",
+      "version": "3.10.6",
       "dependencies": {
-        "com.vrchat.base": "3.10.5"
+        "com.vrchat.base": "3.10.6"
       }
     },
     "com.vrchat.base": {
-      "version": "3.10.5",
+      "version": "3.10.6",
       "dependencies": {}
     },
     "jp.shiranui-isuzu.unity-mcp": {
@@ -29,7 +29,7 @@
       "dependencies": {}
     },
     "com.tsukimicode.udon-tools": {
-      "version": "0.10.1",
+      "version": "0.10.2",
       "dependencies": {
         "com.vrchat.worlds": ">=3.10.4"
       }
