@@ -165,7 +165,8 @@ Static checks intentionally reject fixture code left in the distributable packag
 Requires Windows PowerShell, Python 3.11+, .NET 8+, official VPM/network access,
 a licensed Unity install and a separately acquired, licensed Tsukimi 0.10.2 install.
 The default compiler location is this project's installed package directory.
-The runner creates a fresh Base project in a unique OS temporary directory,
+The runner creates a fresh project from the VCC `World 2022` template (Unity 2022.3.22f1;
+the unversioned templates now target Unity 6) in a unique OS temporary directory,
 installs Worlds 3.10.6 via official VPM CLI 0.1.28, embeds core's snapshot and
 the tracked files of the local `org.vvbc.assets` package snapshot
 and deploys the independent validator. It never copies development Assets,
