@@ -290,6 +290,12 @@
         "com.unity.nuget.newtonsoft-json": "3.2.1"
       }
     },
+    "net.ureishi.qvpen": {
+      "version": "file:net.ureishi.qvpen",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "org.vvbc.assets": {
       "version": "file:org.vvbc.assets",
       "depth": 0,
