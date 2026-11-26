@@ -28,9 +28,18 @@ public partial class PlayerPerkBehaviour : TsukimiBehaviour
     public const int StatNotReported = 0;
     public const int StatApplied = 1;
     public const int StatUnavailable = 2;
+    // Applied, but the system makes it ineffective now (control with penalty strength 0).
+    public const int StatNoEffect = 3;
 
     [Tooltip("Behaviours that receive _OnPerksChanged (the PlayerObject's PerkEffects). Others register at runtime.")]
     public UdonBehaviour[] changeListeners = new UdonBehaviour[0];
+
+    [Header("Control perk: error 1 sigma at control score 0 (m; sigma at 85 = 0.15 x), provisional")]
+    public float controlSigmaAtZeroDebuff = 1.30f;
+    public float controlSigmaAtZeroStandard = 0.90f;
+    public float controlSigmaAtZeroI = 0.60f;
+    public float controlSigmaAtZeroII = 0.40f;
+    public float controlSigmaAtZeroIII = 0.18f;
 
     [UdonSynced] private int[] _syncedPerks = new int[0];
     [UdonSynced] private int _syncedRevision;
@@ -196,6 +205,33 @@ public partial class PlayerPerkBehaviour : TsukimiBehaviour
     {
         float level = GetEffectValue(PerkCatalog.AbilityPitchFade);
         return PerkStats.Finite(level) ? Mathf.Clamp(Mathf.RoundToInt(level), 0, 2) : 0;
+    }
+
+    // The selected cap or level value, else the design standard (Ball Speed caps in km/h,
+    // Batted Ball Speed km/h, gamma, contact width offset cm, early / late yaw degrees).
+    public float GetValueOrStandard(int ability)
+    {
+        if (!HasEffect(ability)) return PerkCatalog.Standard(ability);
+        float value = GetEffectValue(ability);
+        return PerkStats.Finite(value) ? value : PerkCatalog.Standard(ability);
+    }
+
+    // Stage of Spin or Control: -1 debuff, 0 none, 1-3 I-III.
+    public int GetStage(int ability)
+    {
+        if (!HasEffect(ability)) return 0;
+        float value = GetEffectValue(ability);
+        return PerkStats.Finite(value) ? Mathf.Clamp(Mathf.RoundToInt(value), -1, 3) : 0;
+    }
+
+    // The control error's 1 sigma at control score 0 (metres) for the selected Control stage,
+    // from the tunable values above.
+    public float GetControlSigmaAtZero()
+    {
+        int stage = GetStage(PerkCatalog.AbilityControl);
+        float sigma = stage == -1 ? controlSigmaAtZeroDebuff : stage == 1 ? controlSigmaAtZeroI
+            : stage == 2 ? controlSigmaAtZeroII : stage == 3 ? controlSigmaAtZeroIII : controlSigmaAtZeroStandard;
+        return PerkStats.Finite(sigma) && sigma >= 0f ? sigma : PerkCatalog.ControlSigmaAtZero(stage);
     }
 
     // ---- Applied values (reported by the owner's PerkEffects, read by the UI) ----

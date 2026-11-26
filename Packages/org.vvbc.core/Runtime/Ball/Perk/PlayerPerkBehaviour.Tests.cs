@@ -9,6 +9,13 @@ public partial class PlayerPerkBehaviour
         return Mathf.Abs(expected - actual) <= tolerance;
     }
 
+    // The mound's control sigma (ReleasePlateMath.ControlSigma, tested with the mound):
+    // sigma at score 0 x (1 - score / 100).
+    private static float SigmaAt(float score, float sigmaAtZero)
+    {
+        return sigmaAtZero * (1f - score / 100f);
+    }
+
     private void ResetForTest()
     {
         _selected = new int[PerkRules.MaxSelected];
@@ -55,9 +62,93 @@ public partial class PlayerPerkBehaviour
         Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.CatchRadiusIII));
         Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.AccelerationI));
         Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.AccelerationDebuff));
-        Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.BallSpeedII), "speed caps differ");
-        Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.SpinIII), "spin standard differs");
-        Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.ControlDebuff), "control formula undefined");
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.BallSpeedII));
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.SpinIII));
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.ControlDebuff));
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.BattedBallSpeedDebuff));
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.TimingI));
+        Assert.IsFalse(PerkCatalog.IsImplemented(1014), "an unknown id is never selectable");
+    }
+
+    [TsukimiTest]
+    public void NewBattingPerksAreCatalogued()
+    {
+        Assert.AreEqual(43, PerkCatalog.PerkCount, "32 before + 11 batting perks");
+        int[] ids = { 1021, 1031, 1032, 1033, 1041, 1051, 1052, 1053, 1061, 1071, 1081 };
+        for (int i = 0; i < ids.Length; i++)
+        {
+            Assert.IsTrue(PerkCatalog.IsKnown(ids[i]));
+            Assert.AreEqual(PerkCatalog.CategoryBatting, PerkCatalog.Category(ids[i]));
+        }
+        Assert.AreEqual("Batted Ball Speed Debuff", PerkCatalog.Name(PerkCatalog.BattedBallSpeedDebuff));
+        Assert.AreEqual("Sweet Spot Tolerance III", PerkCatalog.Name(PerkCatalog.SweetSpotIII));
+        Assert.AreEqual("Contact Range I", PerkCatalog.Name(PerkCatalog.ContactRangeI));
+        Assert.AreEqual("Timing Tolerance I", PerkCatalog.Name(PerkCatalog.TimingI));
+        Assert.AreEqual(144f, PerkCatalog.EffectValue(PerkCatalog.BattedBallSpeedDebuff, 0));
+        Assert.AreEqual(200f, PerkCatalog.EffectValue(PerkCatalog.BattedBallSpeedIII, 0));
+        Assert.AreEqual(1.25f, PerkCatalog.EffectValue(PerkCatalog.SweetSpotDebuff, 0));
+        Assert.AreEqual(0.70f, PerkCatalog.EffectValue(PerkCatalog.SweetSpotIII, 0));
+        Assert.AreEqual(-2.0f, PerkCatalog.EffectValue(PerkCatalog.ContactRangeDebuff, 0));
+        Assert.AreEqual(2.5f, PerkCatalog.EffectValue(PerkCatalog.ContactRangeI, 0));
+        Assert.AreEqual(2, PerkCatalog.EffectCount(PerkCatalog.TimingI));
+        Assert.AreEqual(60f, PerkCatalog.EffectValue(PerkCatalog.TimingI, 0));
+        Assert.AreEqual(45f, PerkCatalog.EffectValue(PerkCatalog.TimingI, 1));
+        // Every buff/debuff pair of the new series excludes each other; the series combine.
+        Assert.IsTrue(PerkRules.OppositeOnSameAbility(PerkCatalog.BattedBallSpeedDebuff, PerkCatalog.BattedBallSpeedII));
+        Assert.IsTrue(PerkRules.OppositeOnSameAbility(PerkCatalog.SweetSpotDebuff, PerkCatalog.SweetSpotI));
+        Assert.IsTrue(PerkRules.OppositeOnSameAbility(PerkCatalog.ContactRangeDebuff, PerkCatalog.ContactRangeI));
+        Assert.IsFalse(PerkRules.OppositeOnSameAbility(PerkCatalog.BattedBallSpeedDebuff, PerkCatalog.SweetSpotI));
+        Assert.IsFalse(PerkRules.OppositeOnSameAbility(PerkCatalog.ContactRangeDebuff, PerkCatalog.TimingI));
+    }
+
+    [TsukimiTest]
+    public void ResolvedValuesUseTheStandardWithoutAPerk()
+    {
+        Mimic.Join();
+        ResetForTest();
+        Assert.AreEqual(120f, GetValueOrStandard(PerkCatalog.AbilityPitchSpeedCap));
+        Assert.AreEqual(120f, GetValueOrStandard(PerkCatalog.AbilityThrowSpeedCap));
+        Assert.AreEqual(162f, GetValueOrStandard(PerkCatalog.AbilityBattedBallSpeed));
+        Assert.AreEqual(1f, GetValueOrStandard(PerkCatalog.AbilitySweetSpot));
+        Assert.AreEqual(0f, GetValueOrStandard(PerkCatalog.AbilityContactRange));
+        Assert.AreEqual(0, GetStage(PerkCatalog.AbilitySpin));
+        Assert.IsTrue(Near(0.90f, GetControlSigmaAtZero(), 0.0001f));
+        TryAddPerk(PerkCatalog.BallSpeedDebuff);
+        Assert.AreEqual(105f, GetValueOrStandard(PerkCatalog.AbilityPitchSpeedCap));
+        Assert.AreEqual(90f, GetValueOrStandard(PerkCatalog.AbilityThrowSpeedCap));
+        TryRemovePerk(PerkCatalog.BallSpeedDebuff);
+        TryAddPerk(PerkCatalog.BallSpeedIII);
+        Assert.AreEqual(160f, GetValueOrStandard(PerkCatalog.AbilityPitchSpeedCap));
+        Assert.AreEqual(155f, GetValueOrStandard(PerkCatalog.AbilityThrowSpeedCap));
+        TryAddPerk(PerkCatalog.SpinDebuff);
+        Assert.AreEqual(-1, GetStage(PerkCatalog.AbilitySpin));
+        TryAddPerk(PerkCatalog.ControlIII);
+        Assert.AreEqual(3, GetStage(PerkCatalog.AbilityControl));
+        Assert.IsTrue(Near(0.18f, GetControlSigmaAtZero(), 0.0001f));
+        Assert.IsTrue(Near(0.027f, SigmaAt(85f, GetControlSigmaAtZero()), 0.0001f), "2.7 cm at score 85");
+        controlSigmaAtZeroIII = 0.25f;
+        Assert.IsTrue(Near(0.25f, GetControlSigmaAtZero(), 0.0001f), "the Inspector value is used");
+        TryAddPerk(PerkCatalog.SweetSpotII);
+        TryAddPerk(PerkCatalog.TimingI);
+        Assert.AreEqual(0.80f, GetValueOrStandard(PerkCatalog.AbilitySweetSpot));
+        Assert.AreEqual(60f, GetValueOrStandard(PerkCatalog.AbilityTimingEarly));
+        Assert.AreEqual(45f, GetValueOrStandard(PerkCatalog.AbilityTimingLate));
+        ClearPerks();
+        Assert.AreEqual(120f, GetValueOrStandard(PerkCatalog.AbilityPitchSpeedCap), "clear returns to the standard");
+        Assert.AreEqual(0, GetStage(PerkCatalog.AbilityControl));
+    }
+
+    [TsukimiTest]
+    public void ControlSigmaAtScore85MatchesTheDesign()
+    {
+        Assert.IsTrue(Near(0.195f, SigmaAt(85f, PerkCatalog.ControlSigmaAtZero(-1)), 0.0001f));
+        Assert.IsTrue(Near(0.135f, SigmaAt(85f, PerkCatalog.ControlSigmaAtZero(0)), 0.0001f));
+        Assert.IsTrue(Near(0.090f, SigmaAt(85f, PerkCatalog.ControlSigmaAtZero(1)), 0.0001f));
+        Assert.IsTrue(Near(0.060f, SigmaAt(85f, PerkCatalog.ControlSigmaAtZero(2)), 0.0001f));
+        Assert.IsTrue(Near(0.027f, SigmaAt(85f, PerkCatalog.ControlSigmaAtZero(3)), 0.0001f));
+        Assert.AreEqual(0f, SigmaAt(100f, PerkCatalog.ControlSigmaAtZero(-1)), "an ideal release has no error");
+        Assert.IsTrue(Near(1.30f, SigmaAt(0f, PerkCatalog.ControlSigmaAtZero(-1)), 0.0001f));
+        Assert.IsTrue(Near(0.45f, SigmaAt(50f, PerkCatalog.ControlSigmaAtZero(0)), 0.0001f));
     }
 
     // ---- Selection rules ----
@@ -169,7 +260,7 @@ public partial class PlayerPerkBehaviour
         Assert.IsTrue(Near(7.5f / 8f, GetFactor(PerkCatalog.AbilityMaxSpeed), 0.0001f));
     }
 
-    [TsukimiTest]
+    [TsukimiTest(maxSteps: 5000000)]
     public void NoCountLimitBetweenCompatiblePerks()
     {
         Mimic.Join();
@@ -182,19 +273,24 @@ public partial class PlayerPerkBehaviour
         Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.JumpI));
         Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.CatchRadiusIII));
         Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.AccelerationIII));
-        Assert.AreEqual(8, GetSelectedCount(), "every implemented series at once");
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.BattedBallSpeedIII));
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.SweetSpotIII));
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.ContactRangeI));
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.TimingI));
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.BallSpeedIII));
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.SpinIII));
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.ControlIII));
+        Assert.AreEqual(15, GetSelectedCount(), "one perk of every buff series at once");
         Assert.IsTrue(PerkRules.IsValidSelection(_selected, _count));
     }
 
     [TsukimiTest]
-    public void UnimplementedAndUnknownPerksAreRejected()
+    public void UnknownPerksAreRejected()
     {
         Mimic.Join();
         ResetForTest();
-        Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.BallSpeedIII));
-        Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.SpinI));
-        Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.ControlII));
         Assert.AreEqual(PerkRules.UnknownPerk, TryAddPerk(42));
+        Assert.AreEqual(PerkRules.UnknownPerk, TryAddPerk(1022), "a gap between ids is no perk");
         Assert.AreEqual(0, GetSelectedCount());
         Assert.AreEqual(0, GetRevision());
     }
@@ -448,10 +544,11 @@ public partial class PlayerPerkBehaviour
         int[] bad = { PerkCatalog.HomingI, 9999, PerkCatalog.HomingI, PerkCatalog.HomingII,
             PerkCatalog.SpinI, PerkCatalog.MaxSpeedI, PerkCatalog.MaxSpeedDebuff, PerkCatalog.Bunt };
         Assert.IsTrue(ReceiveSelection(bad, 1));
-        Assert.AreEqual(3, GetSelectedCount());
+        Assert.AreEqual(4, GetSelectedCount());
         Assert.AreEqual(PerkCatalog.HomingI, GetSelectedPerk(0));
-        Assert.AreEqual(PerkCatalog.MaxSpeedI, GetSelectedPerk(1));
-        Assert.AreEqual(PerkCatalog.Bunt, GetSelectedPerk(2));
+        Assert.AreEqual(PerkCatalog.SpinI, GetSelectedPerk(1));
+        Assert.AreEqual(PerkCatalog.MaxSpeedI, GetSelectedPerk(2));
+        Assert.AreEqual(PerkCatalog.Bunt, GetSelectedPerk(3));
         Assert.IsTrue(PerkRules.IsValidSelection(_selected, _count));
         Assert.IsTrue(ReceiveSelection(null, 2));
         Assert.AreEqual(0, GetSelectedCount(), "a missing array is an empty selection");

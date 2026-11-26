@@ -67,6 +67,46 @@ public static class BattingAssist
         return BatGeometry.Finite(forwardSpeed) && BatGeometry.Finite(pullThreshold) && forwardSpeed < pullThreshold;
     }
 
+    // ---- Batting perks (player-perks.md) ----
+
+    // Signed sine of the Bat's horizontal yaw away from perpendicular to the batting direction:
+    // positive when the tip has turned toward the field (an early swing, the barrel ahead),
+    // negative when it still points back toward the catcher (late). The Bat axis runs root to
+    // tip and the batting direction points to the field for both batting sides, so a left-handed
+    // batter's swing (the mirror image) gets the same sign for the same timing. NaN when either
+    // direction has no horizontal part.
+    public static float TimingSine(Vector3 axis, Vector3 centerDirection)
+    {
+        Vector3 horizontal = axis - Vector3.Dot(axis, Vector3.up) * Vector3.up;
+        Vector3 center = centerDirection - Vector3.Dot(centerDirection, Vector3.up) * Vector3.up;
+        if (horizontal.sqrMagnitude < 0.000001f || center.sqrMagnitude < 0.000001f) return float.NaN;
+        return Vector3.Dot(horizontal.normalized, center.normalized);
+    }
+
+    // The yaw gate with separate early and late tolerances (degrees). Equal tolerances are the
+    // former symmetric gate |sine| <= sin(yaw) exactly.
+    public static bool TimingAccepts(float sine, float earlyDegrees, float lateDegrees)
+    {
+        if (!BatGeometry.Finite(sine)) return false;
+        return sine <= Mathf.Sin(earlyDegrees * Mathf.Deg2Rad) && -sine <= Mathf.Sin(lateDegrees * Mathf.Deg2Rad);
+    }
+
+    // A normal swing's contact half width with the Contact Range offset (metres), never negative.
+    public static float OffsetHalfWidth(float normalHalfWidth, float offset)
+    {
+        if (!BatGeometry.Finite(normalHalfWidth)) return float.NaN;
+        return Mathf.Max(0f, normalHalfWidth + (BatGeometry.Finite(offset) ? offset : 0f));
+    }
+
+    // Where a contact lies in the band a wider half width added: 0 inside the normal half width
+    // (and whenever nothing was added), rising to 1 at the widened edge.
+    public static float ExtensionFraction(float absY, float normalHalfWidth, float effectiveHalfWidth)
+    {
+        if (!BatGeometry.Finite(absY) || !BatGeometry.Finite(normalHalfWidth) || !BatGeometry.Finite(effectiveHalfWidth)) return 0f;
+        if (!(effectiveHalfWidth > normalHalfWidth) || absY <= normalHalfWidth) return 0f;
+        return Mathf.Clamp01((absY - normalHalfWidth) / (effectiveHalfWidth - normalHalfWidth));
+    }
+
     // power already includes the existing hand-history cap.
     public static float BuntPower(float power, float buntPowerCap, bool pulled)
     {

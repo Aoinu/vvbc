@@ -79,6 +79,23 @@ public static class PerkStats
         return 0f;
     }
 
+    // The selected cap or level value of the ability, else its design standard (absolute design
+    // values: Ball Speed caps, Batted Ball Speed, gamma, width offset, yaw tolerances).
+    public static float ValueOrStandard(int[] selected, int count, int ability)
+    {
+        if (!HasEffect(selected, count, ability)) return PerkCatalog.Standard(ability);
+        float value = EffectValue(selected, count, ability);
+        return Finite(value) ? value : PerkCatalog.Standard(ability);
+    }
+
+    // Stage of a staged level ability (Spin, Control): -1 debuff, 0 none, 1-3 I-III.
+    public static int Stage(int[] selected, int count, int ability)
+    {
+        if (!HasEffect(selected, count, ability)) return 0;
+        float value = EffectValue(selected, count, ability);
+        return Finite(value) ? Mathf.Clamp(Mathf.RoundToInt(value), -1, 3) : 0;
+    }
+
     public static bool Flag(int[] selected, int count, int ability)
     {
         return PerkCatalog.AbilityKind(ability) == PerkCatalog.KindFlag && HasEffect(selected, count, ability);

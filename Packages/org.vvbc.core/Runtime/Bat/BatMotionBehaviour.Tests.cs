@@ -571,4 +571,29 @@ public partial class BatMotionBehaviour
         Assert.IsTrue(homingEnabled);
         Assert.AreEqual(0.5f, homingRate);
     }
+
+    [TsukimiTest]
+    public void BattingPerkSettersRejectInvalidValuesAndResetRestoresThem()
+    {
+        Assert.IsFalse(SetBattedBallSpeed(float.NaN, 0f));
+        Assert.IsFalse(SetBattedBallSpeed(-1f, 0f));
+        Assert.IsFalse(SetSpeedQualityGamma(0f));
+        Assert.IsFalse(SetSpeedQualityGamma(float.PositiveInfinity));
+        Assert.IsFalse(SetContactWidthOffset(1f));
+        Assert.IsFalse(SetTimingTolerance(91f, 30f));
+        Assert.AreEqual(0f, battedSpeedBonusTopKmh, "a rejected value changes nothing");
+        Assert.AreEqual(1f, speedQualityGamma);
+        Assert.IsTrue(SetBattedBallSpeed(200f, 0f));
+        Assert.IsTrue(SetSpeedQualityGamma(0.7f));
+        Assert.IsTrue(SetContactWidthOffset(-0.02f));
+        Assert.IsTrue(SetTimingTolerance(60f, 45f));
+        Assert.AreEqual(60f, NormalSwingEarlyYaw());
+        Assert.AreEqual(45f, NormalSwingLateYaw());
+        ResetBattingSettings();
+        Assert.AreEqual(0f, battedSpeedBonusTopKmh);
+        Assert.AreEqual(1f, speedQualityGamma);
+        Assert.AreEqual(0f, contactWidthOffset);
+        Assert.AreEqual(timingYawDegrees, NormalSwingEarlyYaw(), "0: the symmetric yaw");
+        Assert.AreEqual(timingYawDegrees, NormalSwingLateYaw());
+    }
 }

@@ -167,8 +167,10 @@ public partial class ManualPitchBehaviour
     // (Knuckle) gets its initial phase here, once per solve, from the mound's own seed.
     public PitchProperties IdealFor(int type)
     {
-        PitchProperties ideal = ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(),
-            _activeHand == GloveBehaviour.HandLeft);
+        bool left = _activeHand == GloveBehaviour.HandLeft;
+        PitchProperties ideal = _perkActive
+            ? ManualPitchQuality.IdealPropertiesWithProfile(BuildFor(type), SpinProfile(), left)
+            : ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(), left);
         if (ideal.wakeLocal.mode == BallAerodynamics.WakeRotating)
         {
             _phaseSeed = PitchPlaylist.NextSeed(_phaseSeed);
@@ -180,8 +182,10 @@ public partial class ManualPitchBehaviour
     // The common failure mode of the current hand.
     public PitchProperties FailureFlight()
     {
-        return ManualPitchQuality.FailureProperties(FourSeamRpm(), failureSpinRatio,
-            _activeHand == GloveBehaviour.HandLeft);
+        bool left = _activeHand == GloveBehaviour.HandLeft;
+        return _perkActive
+            ? ManualPitchQuality.FailurePropertiesWithProfile(SpinProfile(), failureSpinRatio, left)
+            : ManualPitchQuality.FailureProperties(FourSeamRpm(), failureSpinRatio, left);
     }
 
     // The mound's 4-Seam rpm, limited to its maximum.
@@ -213,6 +217,7 @@ public partial class ManualPitchBehaviour
         course.converged = centre ? _defaultConverged : _lockConverged;
         course.speedMultiplier = centre ? _defaultSpeedMultiplier : _lockSpeedMultiplier;
         course.solverSpeedKmh = centre ? _defaultSolverSpeedKmh : _lockSolverSpeedKmh;
+        course.maxSpeedKmh = centre ? _defaultMaxSpeedKmh : _lockMaxSpeedKmh;
         course.ideal = centre ? _defaultIdeal : _lockIdeal;
         return course;
     }

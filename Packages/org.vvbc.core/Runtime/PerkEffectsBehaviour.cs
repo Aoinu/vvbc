@@ -36,6 +36,8 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
     private bool _battingApplied;
     private float _appliedHomingRate;
     private bool _appliedBunt;
+    private float _appliedBattedTop = -1f, _appliedBattedCap = -1f, _appliedGamma = -1f, _appliedWidthOffset = -1f;
+    private float _appliedEarlyYaw = -1f, _appliedLateYaw = -1f;
     private float _appliedCatchMultiplier = 1f;
     private bool _speedBaseCaptured;
     private float _baseSpeedMultiplier = 1f;
@@ -49,6 +51,7 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
     private float _appliedInitialSpeed = -1f;
     private float _baseJumpImpulse = -1f;
     private float _appliedJumpFactor = 1f;
+    private float _appliedFenceImpulse;
     private int _locomotionWaits;
 
     void Start()
@@ -109,6 +112,10 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
         {
             perks.ReportStat(PerkCatalog.AbilityHoming, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
             perks.ReportStat(PerkCatalog.AbilityBunt, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
+            perks.ReportStat(PerkCatalog.AbilityBattedBallSpeed, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
+            perks.ReportStat(PerkCatalog.AbilitySweetSpot, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
+            perks.ReportStat(PerkCatalog.AbilityContactRange, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
+            perks.ReportStat(PerkCatalog.AbilityTimingEarly, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
             return;
         }
         // The first apply always writes, so the assists' Inspector defaults never stay on.
@@ -121,9 +128,42 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
             batMotion.SetBuntEnabled(bunt);
             _appliedBunt = bunt;
         }
+        ApplyBattingPerks();
         _battingApplied = true;
         perks.ReportStat(PerkCatalog.AbilityHoming, 0f, batMotion.EffectiveHomingRate(), PlayerPerkBehaviour.StatApplied);
         perks.ReportStat(PerkCatalog.AbilityBunt, 0f, batMotion.buntEnabled ? 1f : 0f, PlayerPerkBehaviour.StatApplied);
+    }
+
+    // Batted Ball Speed (a buff's top speed or the debuff's cap, km/h), Sweet Spot Tolerance
+    // (gamma), Contact Range (cm -> m on the half width) and Timing Tolerance (early / late yaw;
+    // 0 keeps the Bat's own symmetric yaw). The first apply writes the neutral values too.
+    private void ApplyBattingPerks()
+    {
+        float standard = PerkCatalog.Standard(PerkCatalog.AbilityBattedBallSpeed);
+        float batted = perks.GetValueOrStandard(PerkCatalog.AbilityBattedBallSpeed);
+        float top = batted > standard ? batted : 0f;
+        float cap = batted < standard ? batted : 0f;
+        if ((!_battingApplied || top != _appliedBattedTop || cap != _appliedBattedCap) && batMotion.SetBattedBallSpeed(top, cap))
+        {
+            _appliedBattedTop = top;
+            _appliedBattedCap = cap;
+        }
+        float gamma = perks.GetValueOrStandard(PerkCatalog.AbilitySweetSpot);
+        if ((!_battingApplied || gamma != _appliedGamma) && batMotion.SetSpeedQualityGamma(gamma)) _appliedGamma = gamma;
+        float offset = perks.GetValueOrStandard(PerkCatalog.AbilityContactRange) / 100f;
+        if ((!_battingApplied || offset != _appliedWidthOffset) && batMotion.SetContactWidthOffset(offset)) _appliedWidthOffset = offset;
+        float early = perks.HasEffect(PerkCatalog.AbilityTimingEarly) ? perks.GetEffectValue(PerkCatalog.AbilityTimingEarly) : 0f;
+        float late = perks.HasEffect(PerkCatalog.AbilityTimingLate) ? perks.GetEffectValue(PerkCatalog.AbilityTimingLate) : 0f;
+        if ((!_battingApplied || early != _appliedEarlyYaw || late != _appliedLateYaw) && batMotion.SetTimingTolerance(early, late))
+        {
+            _appliedEarlyYaw = early;
+            _appliedLateYaw = late;
+        }
+        perks.ReportStat(PerkCatalog.AbilityBattedBallSpeed, standard, batted, PlayerPerkBehaviour.StatApplied);
+        perks.ReportStat(PerkCatalog.AbilitySweetSpot, 1f, batMotion.speedQualityGamma, PlayerPerkBehaviour.StatApplied);
+        perks.ReportStat(PerkCatalog.AbilityContactRange, 0f, batMotion.contactWidthOffset * 100f, PlayerPerkBehaviour.StatApplied);
+        perks.ReportStat(PerkCatalog.AbilityTimingEarly, batMotion.timingYawDegrees, batMotion.NormalSwingEarlyYaw(), PlayerPerkBehaviour.StatApplied);
+        perks.ReportStat(PerkCatalog.AbilityTimingLate, batMotion.timingYawDegrees, batMotion.NormalSwingLateYaw(), PlayerPerkBehaviour.StatApplied);
     }
 
     // ---- Fielding ----
@@ -192,6 +232,15 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
         ApplyJump(perks.GetFactor(PerkCatalog.AbilityJumpHeight), gravity);
     }
 
+    // Impulse for the fence height from the base impulse (height factor 1.30 / 0.46, square
+    // root); 0 without the perk or a base.
+    public static float FenceJumpImpulse(float baseImpulse, bool jumpPerk)
+    {
+        if (!jumpPerk || !(baseImpulse > 0f)) return 0f;
+        float standard = PerkCatalog.Standard(PerkCatalog.AbilityJumpHeight);
+        return baseImpulse * PerkStats.JumpImpulseFactor(PerkCatalog.JumpFenceHeight / standard);
+    }
+
     // base x factor, then at most the cap on the same scale (cap / standard x base) when a cap
     // effect is selected. A non-positive or non-finite result keeps the base.
     public static float InitialSpeedFor(float baseSpeed, float factor, bool capped, float capValue)
@@ -222,6 +271,14 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
                 locomotion.SetJumpImpulse(_baseJumpImpulse * PerkStats.JumpImpulseFactor(factor));
                 _appliedJumpFactor = factor;
             }
+        }
+        // Fence jump zones: with a Jump perk, the fence height's impulse from the same base;
+        // without one, none (the normal impulse inside a zone too).
+        float fence = FenceJumpImpulse(_baseJumpImpulse, perks.HasEffect(PerkCatalog.AbilityJumpHeight));
+        if (fence != _appliedFenceImpulse)
+        {
+            locomotion.SetFenceJumpImpulse(fence);
+            _appliedFenceImpulse = fence;
         }
         float baseImpulse = _baseJumpImpulse > 0f ? _baseJumpImpulse : locomotion.GetJumpImpulse();
         int state = factor == _appliedJumpFactor && baseImpulse > 0f ? PlayerPerkBehaviour.StatApplied : PlayerPerkBehaviour.StatUnavailable;

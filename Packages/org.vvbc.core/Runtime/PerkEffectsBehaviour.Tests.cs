@@ -164,4 +164,39 @@ public partial class PerkEffectsBehaviour
         Assert.IsFalse(glove.SetCatchRadiusMultiplier(float.NaN));
         Assert.IsFalse(glove.SetCatchRadiusMultiplier(0f));
     }
+
+    [TsukimiTest]
+    public void BattingPerksSetTheBatsNormalSwingSettings()
+    {
+        Select(new int[] { PerkCatalog.BattedBallSpeedII, PerkCatalog.SweetSpotI, PerkCatalog.ContactRangeI, PerkCatalog.TimingI });
+        Assert.AreEqual(185f, batMotion.battedSpeedBonusTopKmh);
+        Assert.AreEqual(0f, batMotion.battedSpeedCapKmh);
+        Assert.AreEqual(0.9f, batMotion.speedQualityGamma);
+        Assert.IsTrue(Near(0.025f, batMotion.contactWidthOffset, 0.00001f), "+2.5 cm half width");
+        Assert.AreEqual(60f, batMotion.NormalSwingEarlyYaw());
+        Assert.AreEqual(45f, batMotion.NormalSwingLateYaw());
+        Select(new int[] { PerkCatalog.BattedBallSpeedDebuff, PerkCatalog.SweetSpotDebuff, PerkCatalog.ContactRangeDebuff });
+        Assert.AreEqual(0f, batMotion.battedSpeedBonusTopKmh);
+        Assert.AreEqual(144f, batMotion.battedSpeedCapKmh);
+        Assert.AreEqual(1.25f, batMotion.speedQualityGamma);
+        Assert.IsTrue(Near(-0.02f, batMotion.contactWidthOffset, 0.00001f));
+        Assert.AreEqual(batMotion.timingYawDegrees, batMotion.NormalSwingEarlyYaw(), "no Timing perk: the Bat's own yaw");
+        Select(new int[0]);
+        Assert.AreEqual(0f, batMotion.battedSpeedBonusTopKmh);
+        Assert.AreEqual(0f, batMotion.battedSpeedCapKmh);
+        Assert.AreEqual(1f, batMotion.speedQualityGamma);
+        Assert.AreEqual(0f, batMotion.contactWidthOffset);
+        Assert.AreEqual(0f, batMotion.timingEarlyYawDegrees);
+        Assert.AreEqual(0f, batMotion.timingLateYawDegrees);
+    }
+
+    [TsukimiTest]
+    public void JumpPerkGivesTheFenceImpulseFromTheSameBase()
+    {
+        Assert.IsTrue(Near(3f * Mathf.Sqrt(1.30f / 0.46f), FenceJumpImpulse(3f, true), 0.0001f), "1.30 m from the 0.46 m base");
+        Assert.AreEqual(0f, FenceJumpImpulse(3f, false), "no Jump perk: no fence impulse");
+        Assert.AreEqual(0f, FenceJumpImpulse(0f, true), "no base yet");
+        float height = 3f * Mathf.Sqrt(1.30f / 0.46f);
+        Assert.IsTrue(Near(1.30f, PerkStats.JumpHeight(height, 3f * 3f / (2f * 0.46f)), 0.001f), "the impulse reaches 1.30 m where 3.0 reaches 0.46 m");
+    }
 }

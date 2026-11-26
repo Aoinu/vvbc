@@ -279,6 +279,18 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private int _resultCrossFrames = -1;
     private float _resultPositionScore = -1f, _resultTimingCap = 100f, _resultScore = -1f;
     private float _resultStrength, _resultSigma, _resultDrawSigma;
+    // The synced settings' sigma at score 0, and whether the pitcher's Control perk replaced it.
+    private float _resultSceneSigma;
+    private bool _resultSigmaFromPerk;
+    // The local player's perks (player perk system), found when pitcher mode starts; null in a
+    // world without it, where the Inspector speed, spin and the synced control sigma are used.
+    private PlayerPerkBehaviour _perks;
+    // The pitcher's abilities read from the perks at binding and on each change (tests set them
+    // with SetPerkAbilities). Inactive: the Inspector speed, spin and the synced sigma.
+    private bool _perkActive;
+    private float _perkPitchCapKmh;
+    private int _perkSpinStage;
+    private float _perkControlSigma;
     private Vector2 _resultDrawError;
     private float _resultDrawAngle;
     private Vector3 _resultLaunchDirection;
@@ -304,6 +316,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // The single speed the solver aims with (maxPitchSpeedKmh x solverSpeedRatio x the type's
     // multiplier at the lock), in km/h.
     private float _lockSolverSpeedKmh;
+    // The 4-Seam speed limit (km/h) of the lock's solve, used by its release.
+    private float _lockMaxSpeedKmh;
     private bool _lockConverged;
     // The lock's aim for the failure flight (quality 0), solved after the ideal one.
     private Vector3 _lockFailureDirection;
@@ -319,6 +333,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private const float DefaultCourseMoveMeters = 0.01f;
     private Vector3 _defaultTarget, _defaultRelease, _defaultDirection, _defaultPredicted;
     private float _defaultSolverSpeedKmh, _defaultSolverError = -1f;
+    private float _defaultMaxSpeedKmh;
     private int _defaultType;
     private PitchBuild _defaultBuild;
     private float _defaultSpeedMultiplier = 1f;
@@ -609,6 +624,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             if (state != StateInactive) Unlock();
             else
             {
+                BindPerks();
                 state = StateTargeting;
                 _hasCursor = false;
                 _ball.SetManualPitcher(this);
@@ -644,6 +660,106 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         ResetArmSamples();
         InvalidateDefaultCourse();
     }
+
+    // ---- Player perks (docs/development/player-perks.md) ----
+
+    // Finds the local player's perks once and follows their changes.
+    private void BindPerks()
+    {
+        if (_perks != null) return;
+        PlayerPerkBehaviour perks = PerkLookup.Local();
+        if (perks == null) return;
+        BindPerksTo(perks);
+    }
+
+    // The binding itself (tests give the perks directly).
+    public void BindPerksTo(PlayerPerkBehaviour perks)
+    {
+        _perks = perks;
+        if (perks == null) return;
+        perks.AddChangeListener(GetComponent<UdonBehaviour>());
+        ReadPerks();
+        ReportPerkStats();
+    }
+
+    private void ReadPerks()
+    {
+        if (_perks == null) return;
+        SetPerkAbilities(_perks.GetValueOrStandard(PerkCatalog.AbilityPitchSpeedCap), _perks.GetStage(PerkCatalog.AbilitySpin),
+            _perks.GetControlSigmaAtZero());
+    }
+
+    // The pitcher's 4-Seam speed limit (km/h), Spin stage and control sigma at score 0 (m).
+    public void SetPerkAbilities(float pitchCapKmh, int spinStage, float controlSigmaAtZero)
+    {
+        _perkActive = true;
+        _perkPitchCapKmh = pitchCapKmh;
+        _perkSpinStage = spinStage;
+        _perkControlSigma = controlSigmaAtZero;
+    }
+
+    // A changed selection never reaches a course solved before it: the default course is solved
+    // again and a lock is solved again for its target, as after a type switch. A release already
+    // fixed is not touched.
+    public void _OnPerksChanged()
+    {
+        if (_perks == null) return;
+        ReadPerks();
+        bool locked = state == StateSolving || state == StateLockedReady;
+        OnPerksChangedAt(locked ? Physics.gravity : Vector3.zero, locked ? Time.fixedDeltaTime : 0f);
+    }
+
+    public void OnPerksChangedAt(Vector3 gravity, float fixedStep)
+    {
+        InvalidateDefaultCourse();
+        if (state == StateSolving || state == StateLockedReady) RestartLockSolve(gravity, fixedStep);
+        ReportPerkStats();
+        Notify();
+    }
+
+    // The 4-Seam speed limit (km/h): the Ball Speed perk's pitch cap, 120 without one (the design
+    // standard); maxPitchSpeedKmh only in a world without the perk system.
+    public float PitchSpeedCapKmh()
+    {
+        return _perkActive ? _perkPitchCapKmh : maxPitchSpeedKmh;
+    }
+
+    public int SpinStage()
+    {
+        return _perkActive ? _perkSpinStage : 0;
+    }
+
+    // The Spin perk's profile (the standard without one).
+    public PitchSpinProfile SpinProfile()
+    {
+        int stage = SpinStage();
+        PitchSpinProfile profile = new PitchSpinProfile();
+        profile.fourSeamRpm = PerkCatalog.SpinFourSeamRpm(stage);
+        profile.breakingMultiplier = PerkCatalog.SpinBreakingMultiplier(stage);
+        profile.splitRpm = PerkCatalog.SpinSplitRpm(stage);
+        profile.changeRpm = PerkCatalog.SpinChangeRpm(stage);
+        profile.knuckleSsw = PerkCatalog.SpinKnuckleSsw(stage);
+        return profile;
+    }
+
+    // The pitch abilities as this mound uses them, for the perk panel: the pitch cap against the
+    // mound's Inspector cap, the 4-Seam rpm against the mound's, and the control sigma at score
+    // 85 against the synced setting's (no effect while the penalty strength is 0).
+    private void ReportPerkStats()
+    {
+        if (_perks == null) return;
+        _perks.ReportStat(PerkCatalog.AbilityPitchSpeedCap, ManualPitchMath.SpeedSetting(maxPitchSpeedKmh), PitchSpeedCapKmh(), PlayerPerkBehaviour.StatApplied);
+        _perks.ReportStat(PerkCatalog.AbilitySpin, FourSeamRpm(), SpinProfile().fourSeamRpm, PlayerPerkBehaviour.StatApplied);
+        float strength = controlSettings != null ? controlSettings.penaltyStrength : controlPenaltyStrength;
+        float sceneSigma = controlSettings != null ? controlSettings.controlSigma : controlSigmaMeters;
+        _perks.ReportStat(PerkCatalog.AbilityControl, ReleasePlateMath.ControlSigma(ReferenceControlScore, sceneSigma),
+            ReleasePlateMath.ControlSigma(ReferenceControlScore, _perkControlSigma),
+            strength > 0f ? PlayerPerkBehaviour.StatApplied : PlayerPerkBehaviour.StatNoEffect);
+        _perks.NotifyStatsChanged();
+    }
+
+    // The control score the perk sigmas are stated at (an average release).
+    public const float ReferenceControlScore = 85f;
 
     private GloveBehaviour LocalGlove()
     {
@@ -854,7 +970,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _lockType = _selectedType;
         _lockBuild = BuildFor(_lockType);
         _lockSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_lockBuild);
-        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
+        _lockMaxSpeedKmh = PitchSpeedCapKmh();
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(_lockMaxSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
         _lockConverged = false;
         _lockIdeal = IdealFor(_lockType);
         // The lock takes the shared solver; an unfinished default-course solve starts again later.
@@ -965,7 +1082,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _defaultType = _selectedType;
         _defaultBuild = BuildFor(_defaultType);
         _defaultSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_defaultBuild);
-        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
+        _defaultMaxSpeedKmh = PitchSpeedCapKmh();
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(_defaultMaxSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
         _defaultIdeal = IdealFor(_defaultType);
         _defaultSolving = true;
         WakeProfile wake = _defaultIdeal.wakeLocal;
@@ -1259,11 +1377,21 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // The control settings of this release: the synced ones of the mound's settings, else the
     // Inspector values. Read once here, so a change during the flight never reaches it.
+    // With the player perk system the sigma at score 0 is the pitcher's own (Control perk, read
+    // here locally, never written to the synced settings); strength and timing cap stay the
+    // mound's.
     private void ReadControlSettings()
     {
         if (controlSettings != null)
             SetControlSettings(controlSettings.penaltyStrength, controlSettings.timingCap, controlSettings.controlSigma);
         else SetControlSettings(controlPenaltyStrength, timingScoreCap, controlSigmaMeters);
+        ReportPerkStats();
+    }
+
+    // The sigma at score 0 a release uses: the pitcher's Control perk, else the setting.
+    public float ControlSigmaAtZeroNow()
+    {
+        return _perkActive ? _perkControlSigma : _setSigma;
     }
 
     public void SetControlSettings(float strength, float timingCap, float sigma)
@@ -1277,7 +1405,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // only when the strength can produce an error (never per frame, never on receivers).
     private void DrawControlUniforms()
     {
-        if (!(_setStrength > 0f) || !(_setSigma > 0f))
+        if (!(_setStrength > 0f) || !(ControlSigmaAtZeroNow() > 0f))
         {
             SetControlDraw(0f, 0.5f, 0.5f, 0.5f, 0.5f);
             return;
@@ -1459,7 +1587,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultTimingCap = ReleasePlateMath.TimingCap(_resultTiming, _setTimingCap);
         _resultScore = ReleasePlateMath.FinalScore(_resultPositionScore, _resultTimingCap);
         _resultStrength = ManualPitchMath.Finite(_setStrength) ? Mathf.Clamp01(_setStrength) : 0f;
-        _resultSigma = ReleasePlateMath.ControlSigma(_resultScore, _setSigma);
+        _resultSceneSigma = _setSigma;
+        _resultSigmaFromPerk = _perkActive;
+        _resultSigma = ReleasePlateMath.ControlSigma(_resultScore, ControlSigmaAtZeroNow());
         _resultDrawSigma = ReleasePlateMath.ScaledControlError(_resultSigma, _resultStrength);
         _resultDrawError = ReleasePlateMath.ControlError(_resultDrawSigma, _drawAngle, _drawU1, _drawU2, _drawU3, _drawU4);
         _resultDrawAngle = _resultDrawSigma > 0f ? Mathf.Clamp01(_drawAngle) * 360f : 0f;
@@ -1513,7 +1643,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultCurveSet = curveGiven || ArmSpeedCurveUsable();
         _resultCurveOutput = ManualPitchMath.SpeedRatio(curveGiven ? givenCurveOutput
             : _resultCurveSet ? EvaluateArmSpeedCurve(debugArmSpeed) : 1f);
-        _resultMaxSpeedKmh = ManualPitchMath.SpeedSetting(maxPitchSpeedKmh);
+        _resultMaxSpeedKmh = ManualPitchMath.SpeedSetting(course.maxSpeedKmh);
         _resultSpeedMultiplier = course.speedMultiplier;
         releaseVelocity = direction.normalized * (_resultMaxSpeedKmh * _resultCurveOutput * course.speedMultiplier / 3.6f);
         releaseSpin = PitchSpin.ToWorld(spinLocal, direction);
@@ -1984,6 +2114,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             "   palm: quality only, no control";
         text += "\n  random  strength " + (_resultStrength * 100f).ToString("F0") + "%   sigma " + AbsCm(_resultDrawSigma) +
             " (score " + _resultScore.ToString("F0") + ": " + AbsCm(_resultSigma) + " at full strength)" +
+            "\n  sigma at score 0 " + AbsCm(_resultSigmaFromPerk ? _perkControlSigma : _resultSceneSigma) + (_resultSigmaFromPerk ? " (Control perk; synced setting " + AbsCm(_resultSceneSigma) + " not used)" : " (synced setting)") +
             "\n  drawn " + AbsCm(_resultDrawError.magnitude) + " at " + _resultDrawAngle.ToString("F0") + " deg   " + Offset(_resultDrawError) +
             "   (aimed offset at the plate's front edge, not the arrival)" +
             "\n  launch direction " + _resultLaunchDirection.ToString("F4");

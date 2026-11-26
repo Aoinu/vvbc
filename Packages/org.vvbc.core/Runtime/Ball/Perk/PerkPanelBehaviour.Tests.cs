@@ -10,19 +10,31 @@ public partial class PerkPanelBehaviour
         int[] rows = new int[RowCount];
         for (int category = 0; category < PerkCatalog.CategoryCount; category++)
         {
-            FillRowIds(category, rows);
-            for (int i = 0; i < RowCount; i++)
+            int count = PerkCount(category);
+            for (int page = 0; page < PageCount(count); page++)
             {
-                if (rows[i] == 0) continue;
-                total++;
-                Assert.AreEqual(category, PerkCatalog.Category(rows[i]));
+                Assert.AreEqual(count, FillRowIds(category, page, rows));
+                for (int i = 0; i < RowCount; i++)
+                {
+                    if (rows[i] == 0) continue;
+                    total++;
+                    Assert.AreEqual(category, PerkCatalog.Category(rows[i]));
+                }
             }
         }
-        Assert.AreEqual(PerkCatalog.PerkCount, total, "no perk is cut off by the row count");
+        Assert.AreEqual(PerkCatalog.PerkCount, total, "every perk is on some page; none is cut off");
         FillRowIds(PerkCatalog.CategoryBatting, rows);
         Assert.AreEqual(PerkCatalog.Bunt, rows[0]);
         Assert.AreEqual(PerkCatalog.HomingIII, rows[3]);
-        Assert.AreEqual(0, rows[4]);
+        Assert.AreEqual(PerkCatalog.BattedBallSpeedDebuff, rows[4]);
+        Assert.AreEqual(15, PerkCount(PerkCatalog.CategoryBatting));
+        Assert.AreEqual(2, PageCount(15), "the Batting tab needs a second page");
+        Assert.AreEqual(1, PageCount(12));
+        FillRowIds(PerkCatalog.CategoryBatting, 1, rows);
+        Assert.AreEqual(PerkCatalog.ContactRangeDebuff, rows[0]);
+        Assert.AreEqual(PerkCatalog.ContactRangeI, rows[1]);
+        Assert.AreEqual(PerkCatalog.TimingI, rows[2]);
+        Assert.AreEqual(0, rows[3]);
     }
 
     [TsukimiTest]
@@ -51,5 +63,10 @@ public partial class PerkPanelBehaviour
         Assert.AreEqual("Catch Radius: not reported (no PerkEffects for this player)",
             PercentLine("Catch Radius", 0f, 0f, 0f, "cm", "F1", PlayerPerkBehaviour.StatNotReported));
         Assert.AreEqual("+0.0%", SignedPercent(0.0001f));
+        Assert.AreEqual("Batted Ball Speed: up to 185 km/h (std 162; bonus from Power 0.85 and quality 0.90)", BattedSpeedLine(185f));
+        Assert.AreEqual("Batted Ball Speed: capped at 144 km/h (std 162)", BattedSpeedLine(144f));
+        Assert.AreEqual("Batted Ball Speed: 162 km/h top (std)", BattedSpeedLine(162f));
+        Assert.AreEqual("Spin: 4S 2200 rpm, breaking x1.00, Split 900, Change 1650 rpm, Knuckle SSW 0.040", SpinLine(0));
+        Assert.AreEqual("Spin: 4S 2800 rpm, breaking x1.40, Split 180, Change 1350 rpm, Knuckle SSW 0.055", SpinLine(3));
     }
 }

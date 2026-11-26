@@ -217,9 +217,52 @@ namespace VVBC.Locomotion
         public void SetJumpImpulse(float value)
         {
             _savedJumpImpulse = Mathf.Max(0f, value);
-            VRCPlayerApi player = Networking.LocalPlayer;
-            if (_active && !_jumpLocked && Utilities.IsValid(player)) player.SetJumpImpulse(_savedJumpImpulse);
+            RefreshJumpImpulse();
             Log("jump impulse set; " + _savedJumpImpulse.ToString("F2") + (_jumpLocked ? " after the lockout" : ""));
+        }
+
+        // ---- Fence jump zones ----------------------------------------------------------
+        // FenceJumpZoneBehaviour counts the local player in (overlapping zones add up). Inside
+        // one, a jump uses the fence impulse when a system set one (Jump I perk), else the normal
+        // impulse. Applied like SetJumpImpulse: at once while jumping is allowed, otherwise when
+        // the lockout ends, so a jump in progress is never changed.
+
+        private int _fenceZoneCount;
+        private float _fenceJumpImpulse;
+
+        // 0 (or invalid): no fence impulse; the normal one is used everywhere.
+        public void SetFenceJumpImpulse(float value)
+        {
+            _fenceJumpImpulse = value > 0f && value < 1000f ? value : 0f;
+            RefreshJumpImpulse();
+        }
+
+        public void EnterFenceZone()
+        {
+            _fenceZoneCount++;
+            RefreshJumpImpulse();
+        }
+
+        public void ExitFenceZone()
+        {
+            if (_fenceZoneCount > 0) _fenceZoneCount--;
+            RefreshJumpImpulse();
+        }
+
+        public bool InFenceZone() { return _fenceZoneCount > 0; }
+        public float GetFenceJumpImpulse() { return _fenceJumpImpulse; }
+
+        // The impulse the next jump takes off with.
+        public float EffectiveJumpImpulse()
+        {
+            return _fenceZoneCount > 0 && _fenceJumpImpulse > 0f ? _fenceJumpImpulse : _savedJumpImpulse;
+        }
+
+        private void RefreshJumpImpulse()
+        {
+            if (!_active || _jumpLocked) return;
+            VRCPlayerApi player = Networking.LocalPlayer;
+            if (Utilities.IsValid(player)) player.SetJumpImpulse(EffectiveJumpImpulse());
         }
         public void SetLogEnabled(bool value) { logEnabled = value; }
 
@@ -242,7 +285,7 @@ namespace VVBC.Locomotion
         {
             if (!Utilities.IsValid(player) || !player.isLocal || !_active) return;
             ResetControl();
-            if (ResetJump()) player.SetJumpImpulse(_savedJumpImpulse);
+            if (ResetJump()) player.SetJumpImpulse(EffectiveJumpImpulse());
             Apply(player);
             Log("respawn; measurement, inertia and jump reset");
         }
@@ -433,8 +476,10 @@ namespace VVBC.Locomotion
         private float ToggleJumpLock(float current)
         {
             _jumpLocked = _jumpState != JumpReady;
-            if (!_jumpLocked) return _savedJumpImpulse;
-            if (current > 0f) _savedJumpImpulse = current;
+            if (!_jumpLocked) return EffectiveJumpImpulse();
+            // The fence impulse this Behaviour applied is not another system's value.
+            if (current > 0f && !(_fenceZoneCount > 0 && _fenceJumpImpulse > 0f && current == _fenceJumpImpulse))
+                _savedJumpImpulse = current;
             return 0f;
         }
 

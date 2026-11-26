@@ -52,8 +52,20 @@ public struct ManualPitchCourse
     // The type's speed as a multiple of the 4-Seam speed, and the solver's speed (with it), km/h.
     public float speedMultiplier;
     public float solverSpeedKmh;
+    // The 4-Seam speed limit (km/h) the course was solved with; the release uses the same one.
+    public float maxSpeedKmh;
     // The type's ideal spin and wake for the throwing hand (pitch-local, a Rotating phase drawn).
     public PitchProperties ideal;
+}
+
+// A pitcher's spin ability for hand pitches (see ManualPitchQuality.IdealPropertiesWithProfile).
+public struct PitchSpinProfile
+{
+    public float fourSeamRpm;
+    public float breakingMultiplier;
+    public float splitRpm;
+    public float changeRpm;
+    public float knuckleSsw;
 }
 
 // Pure functions of the manual pitch types: their ideal flight for a throwing hand, the common
@@ -73,6 +85,43 @@ public static class ManualPitchQuality
         PitchProperties p = PitchPropertiesCalculator.Calculate(build, PitchPropertiesCalculator.DefaultBaseSpeedMps, rpm);
         if (PitchType.Safe(build.pitchTypeId) == PitchType.FourSeam) p.spinRpm = rpm;
         return leftHanded ? PitchPropertiesCalculator.MirrorForLeftHand(p) : p;
+    }
+
+    // A pitcher's spin ability (hand pitches with the Spin perk): the types are computed at the
+    // profile standard (4-Seam ProfileStandardFourSeamRpm), then the 4-Seam, Split and Change take
+    // the profile's absolute rpm, a general breaking ball (2-Seam to Curve) its standard rpm x the
+    // multiplier, and the Knuckle the profile's SSW coefficient (its rpm, axis, cone and phase
+    // unchanged). Axes, wakes other than the Knuckle's coefficient, and speeds are untouched; the
+    // batting pitcher never uses this.
+    public const float ProfileStandardFourSeamRpm = 2200f;
+
+    public static PitchProperties IdealPropertiesWithProfile(PitchBuild build, PitchSpinProfile profile, bool leftHanded)
+    {
+        int type = PitchType.Safe(build.pitchTypeId);
+        PitchProperties p = PitchPropertiesCalculator.Calculate(build, PitchPropertiesCalculator.DefaultBaseSpeedMps, ProfileStandardFourSeamRpm);
+        if (type == PitchType.FourSeam) p.spinRpm = ProfileRpm(profile.fourSeamRpm);
+        else if (type == PitchType.Split) p.spinRpm = ProfileRpm(profile.splitRpm);
+        else if (type == PitchType.Change) p.spinRpm = ProfileRpm(profile.changeRpm);
+        else if (type == PitchType.Knuckle)
+            p.wakeLocal.coefficient = Mathf.Clamp(ManualPitchMath.Finite(profile.knuckleSsw) ? profile.knuckleSsw : 0f,
+                0f, BallAerodynamics.MaxWakeCoefficient);
+        else
+        {
+            float multiplier = ManualPitchMath.Finite(profile.breakingMultiplier) && profile.breakingMultiplier > 0f ? profile.breakingMultiplier : 0f;
+            p.spinRpm = Mathf.Clamp(p.spinRpm * multiplier, 0f, PitchPropertiesCalculator.MaxSpinRpm);
+        }
+        return leftHanded ? PitchPropertiesCalculator.MirrorForLeftHand(p) : p;
+    }
+
+    // The failure mode of a profile: failureRatio of the same pitcher's 4-Seam rpm.
+    public static PitchProperties FailurePropertiesWithProfile(PitchSpinProfile profile, float failureRatio, bool leftHanded)
+    {
+        return FailureProperties(ProfileRpm(profile.fourSeamRpm), failureRatio, leftHanded);
+    }
+
+    private static float ProfileRpm(float rpm)
+    {
+        return ManualPitchMath.Finite(rpm) ? Mathf.Clamp(rpm, 0f, PitchPropertiesCalculator.MaxSpinRpm) : 0f;
     }
 
     // The common failure mode: the type's own speed, the hand's fixed 4-Seam axis, failureRatio

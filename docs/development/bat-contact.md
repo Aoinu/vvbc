@@ -121,6 +121,12 @@ not affect quality. Timing allows horizontal Bat yaw within 30 degrees of
 perpendicular to the configured center direction. The contact zone remains a
 local-space box with 1.5 m half extents.
 
+The batting perks (Batted Ball Speed, Sweet Spot Tolerance, Contact Range, Timing Tolerance; see
+[Player perks](player-perks.md#new-batting-perks-batting-normal-swing-only)) are Bat Motion
+settings on the same path: a normal swing's early / late yaw tolerance, a half width offset with a
+weak outer band, and the exit speed of `BallResultMath.ExitSpeed`. Their neutral values give the
+previous contact and result exactly; a Bunt keeps the symmetric yaw and the 1.5x width.
+
 In the `BatMotionBehaviour` Inspector, the **Bat Geometry** section edits
 `Bat Length (m)`, the standard Unity `Radius Curve (m)` editor, and Sweet Spot,
 Contact Range Start and End as percentages, plus `Contact Margin (m)`. Invalid

@@ -23,6 +23,17 @@ public struct BallResultSnapshot
     // (Spin Curve at abs(normalizedY)). Spin sign comes from normalizedY.
     public float maxSpinRpm;
     public float spinRatio;
+    // Batting perks (player-perks.md); the defaults (all 0) leave the exit speed unchanged.
+    // Exponent on the quality used for the speed only (0 or invalid: 1).
+    public float speedQualityGamma;
+    // Largest extra exit speed (m/s) of a Batted Ball Speed buff, reached at Power and quality 1.
+    public float speedBonusMax;
+    // Hard cap on the exit speed (m/s) of the Batted Ball Speed debuff; 0 or less: none.
+    public float speedCap;
+    // Position in the band a Contact Range buff added (0 inside the normal width, 1 at the
+    // widened edge), and the speed scale at that edge.
+    public float extensionFraction;
+    public float extensionMinimumScale;
 }
 
 public struct BallResult
@@ -51,6 +62,48 @@ public static class BallResultMath
         float sine = Mathf.Sin(radians);
         return value * cosine + Vector3.Cross(axis, value) * sine +
             axis * (Vector3.Dot(axis, value) * (1f - cosine));
+    }
+
+    public const float MinimumExitSpeed = 8f;
+    public const float ExitSpeedRange = 37f;
+    // The bonus starts above these (raw Power and the quality before any gamma).
+    public const float BonusPowerStart = 0.85f;
+    public const float BonusQualityStart = 0.90f;
+
+    // Exit speed (m/s): 8 + 37 P Q^gamma, with the Contact Range band's scale on the swing's part;
+    // then a Batted Ball Speed buff adds up to speedBonusMax, weighted by smoothsteps of Power
+    // (0.85-1) and of the quality before gamma (0.90-1), so ordinary hits are unchanged; a debuff
+    // caps the total. With the defaults it is exactly 8 + 37 P Q. Only the speed changes: the
+    // direction, launch angle and spin are computed apart from it.
+    public static float ExitSpeed(float power, float quality, float gamma, float bonusMax, float cap,
+        float extensionFraction, float extensionMinimumScale)
+    {
+        float p = Mathf.Clamp01(Finite(power) ? power : 0f);
+        float q = Mathf.Clamp01(Finite(quality) ? quality : 0f);
+        float g = Finite(gamma) && gamma > 0f ? gamma : 1f;
+        float speedQuality = g == 1f ? q : Mathf.Pow(q, g);
+        float scale = ExtensionScale(extensionFraction, extensionMinimumScale);
+        float speed = MinimumExitSpeed + ExitSpeedRange * p * speedQuality * scale;
+        if (Finite(bonusMax) && bonusMax > 0f)
+            speed += bonusMax * SmoothEdge(BonusPowerStart, 1f, p) * SmoothEdge(BonusQualityStart, 1f, q) * scale;
+        if (Finite(cap) && cap > 0f && speed > cap) speed = cap;
+        return speed;
+    }
+
+    // 1 inside the normal width, falling linearly to the minimum scale at the widened edge.
+    public static float ExtensionScale(float fraction, float minimumScale)
+    {
+        if (!Finite(fraction) || !(fraction > 0f)) return 1f;
+        float minimum = Finite(minimumScale) ? Mathf.Clamp01(minimumScale) : 1f;
+        return 1f - (1f - minimum) * Mathf.Clamp01(fraction);
+    }
+
+    // 0 at or below a, 1 at or above b, 3t^2 - 2t^3 between.
+    public static float SmoothEdge(float a, float b, float x)
+    {
+        if (!(b > a)) return x >= b ? 1f : 0f;
+        float t = Mathf.Clamp01((x - a) / (b - a));
+        return t * t * (3f - 2f * t);
     }
 
     public static BallResult Calculate(BallResultSnapshot s)
@@ -99,7 +152,8 @@ public static class BallResultMath
         float launch = 38f * yn + Vector3.Dot(y, up) * (12f + 0.35f * attack);
         Vector3 direction = Rotate(Rotate(center, y, spray * s.sprayScale), x, launch * s.launchScale);
         if (!FiniteVector(direction) || direction.sqrMagnitude < 0.00000001f) return result;
-        result.linearVelocity = direction.normalized * (8f + 37f * Mathf.Clamp01(s.power) * Mathf.Clamp01(s.quality));
+        result.linearVelocity = direction.normalized * ExitSpeed(s.power, s.quality, s.speedQualityGamma,
+            s.speedBonusMax, s.speedCap, s.extensionFraction, s.extensionMinimumScale);
         // +normalizedY is a hit on the upper half of the ball (Y points down at
         // a level bat), so +normalizedY gives topspin: omega = +x for forward
         // flight along center. The axis stays fixed to the bat's long axis.

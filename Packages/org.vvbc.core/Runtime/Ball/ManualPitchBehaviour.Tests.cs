@@ -66,7 +66,8 @@ public partial class ManualPitchBehaviour
         _lockType = _selectedType;
         _lockBuild = BuildFor(_lockType);
         _lockSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_lockBuild);
-        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
+        _lockMaxSpeedKmh = PitchSpeedCapKmh();
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(_lockMaxSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
         _lockConverged = true;
         _lockIdeal = IdealFor(_lockType);
         state = StateLockedReady;
@@ -82,7 +83,8 @@ public partial class ManualPitchBehaviour
         _defaultType = _selectedType;
         _defaultBuild = BuildFor(_defaultType);
         _defaultSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_defaultBuild);
-        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
+        _defaultMaxSpeedKmh = PitchSpeedCapKmh();
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(_defaultMaxSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
         _defaultConverged = true;
         _defaultSolverError = 0f;
         _defaultPredicted = target;
@@ -1345,7 +1347,7 @@ public partial class ManualPitchBehaviour
         int iterations = aimSolver.iterations;
         Vector3 hand = HandAt(TestChest, Overhand);
         Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 0.5f));
-        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 45f, 0.01f), "the release reads the maximum at the release");
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 70f, 0.01f), "the release uses the maximum its course was solved with (140), not the later 90");
         Assert.IsFalse(aimSolver.solving, "the release does not solve again");
         Assert.AreEqual(iterations, aimSolver.iterations);
         Assert.AreEqual(lockDirection, _lockDirection);
@@ -1666,6 +1668,7 @@ public partial class ManualPitchBehaviour
         _lockTarget = new Vector3(0f, 0.75f, 0f);
         _lockRelease = p0;
         _lockDirection = (_lockTarget - p0).normalized;
+        _lockMaxSpeedKmh = maxPitchSpeedKmh;
         _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
         _lockConverged = true;
         state = StateLockedReady;

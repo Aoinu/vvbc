@@ -158,6 +158,13 @@ Repeated jumping in standard VRChat locomotion is slightly faster than running. 
 jump itself (height, gravity, take-off speed, air control) is left to VRChat; the
 Behaviour only blocks the next jump and cuts the applied speed once on landing.
 
+**Fence jump zones.** `FenceJumpZoneBehaviour` (trigger colliders) counts the local player in
+(`EnterFenceZone` / `ExitFenceZone`). Inside one, a jump uses the fence impulse when a system set
+one (`SetFenceJumpImpulse`; the Jump I perk: 1.30 m), else the normal one; it is applied like
+`SetJumpImpulse` (at once while jumping is allowed, otherwise when the lockout ends), and the
+fence impulse it applied is never saved as another system's normal one. See
+[Player perks](player-perks.md#jump-i-and-fence-jump-zones).
+
 - **Ready → Airborne (take-off).** Grounded (`IsPlayerGrounded`) changes to airborne
   while the jump button is held or was pressed within 0.3 s (`InputJump`). Nothing is
   blocked at the press, so the first jump always happens; `SetJumpImpulse(0)` is called

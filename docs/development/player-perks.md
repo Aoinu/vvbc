@@ -53,8 +53,8 @@ Values are the design values; "std" is the design standard without a perk.
 | Acceleration (design units, std 10 = Locomotion's 6.24 m/s²), ids 3021 / 3031-3033 | 8.0 | 10.0 | 11.0 | 12.0 | 14.0 | implemented |
 | Acceleration: initial speed (m/s), same perks | 2.0 | 3.0 | 3.2 | 3.4 | 3.6 | implemented |
 | Catch Radius (cm), ids 4001 / 4011-4013 | 8 | 12 | 14 | 16 | 18 | implemented |
-| Ball Speed: pitch cap (km/h), ids 2001 / 2011-2013 | 105 | 120 | 140 | 150 | 160 | **not implemented** |
-| Ball Speed: throw cap (km/h), same perks | 90 | 120 | 135 | 145 | 155 | **not implemented** |
+| Ball Speed: pitch cap (km/h), ids 2001 / 2011-2013 | 105 | 120 | 140 | 150 | 160 | implemented (below) |
+| Ball Speed: throw cap (km/h), same perks | 90 | 120 | 135 | 145 | 155 | implemented (below) |
 
 Ball Speed is one series with two effects (pitch cap and throw cap), so it is the multi-ability
 case of the buff/debuff rule. There is no throw accuracy perk (dropped in the earlier design).
@@ -141,11 +141,56 @@ Notes and limits:
 - `LocomotionBehaviour.Tests.cs` checks the first base targets with one frame of measurement
   delay (`RunningPerksMeetTheirHomeToFirstTargets`).
 
-**Jump I** (id 3041, Running, series Jump, no other stage, no debuff): normal jump height 0.46 m
-→ 0.55 m, implemented. In designated fence areas the height is 1.30 m; no fence area exists
-yet, so that part is **not implemented** (the perk applies the normal-area height everywhere).
+### Jump I and fence jump zones
 
-### Spin (one series, ids 2021 / 2031-2033, Pitching) — not implemented
+**Jump I** (id 3041, Running, series Jump, no other stage, no debuff):
+
+| State | Jump height |
+|---|---:|
+| No perk (anywhere) | about 0.46 m (VRChat's 3.00 impulse) |
+| Jump I, normal area | 0.55 m |
+| Jump I, inside a fence jump zone | 1.30 m |
+
+A **fence jump zone** is `FenceJumpZoneBehaviour` (`Runtime/Locomotion`, prefab
+`Runtime/Prefabs/FenceJumpZone.prefab`): a trigger BoxCollider placed and sized in the scene (any
+number, overlaps allowed) with a reference to the scene's `Locomotion`. It only counts the local
+player in and out (`OnPlayerTriggerEnter/Exit`, its own inside flag so a missed or repeated event
+never counts twice, and `OnDisable` lets go). Nothing runs per frame and the trigger changes no
+physics of the ground, fences or balls.
+
+`LocomotionBehaviour` keeps the count and a fence impulse (`SetFenceJumpImpulse`, 0 = none). The
+next jump takes off with the fence impulse while the count is above 0 and one is set, else the
+normal one (`EffectiveJumpImpulse`). It is applied like `SetJumpImpulse`: at once while jumping is
+allowed, otherwise when the lockout ends, so a jump in progress is never changed; the lockout, the
+landing cooldown and the landing cut are unchanged. `PerkEffectsBehaviour` sets the fence impulse
+to `base × √(1.30 / 0.46)` (5.04 for the 3.00 base) with a Jump perk and 0 without, so a player
+without Jump I jumps normally inside a zone. Entering or leaving, taking or dropping the perk,
+teleports (trigger events) and respawns all take effect from the next jump.
+
+`PracticeSpace.unity` has one zone in front of the backstop (20 × 3 × 2 m at z -6.4).
+
+### Ball Speed (pitch and throw limits, one perk)
+
+The player perk system's standard is **120 km/h** for both limits. With the perk system (a
+`PlayerPerkBehaviour` for the local player) every hand pitch and throw uses the perk's absolute
+value, never a ratio applied to the Inspector settings: no perk 120 / 120, Debuff 105 / 90, I
+140 / 135, II 150 / 145, III 160 / 155 km/h. **This replaces the Inspector limits**
+(`ManualPitchBehaviour.maxPitchSpeedKmh` 140, `ThrowAimBehaviour.maxThrowSpeedKmh` 145) for
+players of a perk world: a player without perks pitches at most 120 km/h, no longer 140. Those
+Inspector values are kept and used only in a world without the perk system.
+
+- **Pitch**: the 4-Seam limit `Vmax` in `Vraw = Vmax × curve(arm speed) × type multiplier` and in
+  the solver's `Vsolver = Vmax × solverSpeedRatio × type multiplier` (locked course, default
+  course, every re-solve). Each course records the `Vmax` it was solved with
+  (`ManualPitchCourse.maxSpeedKmh`) and its release uses that one, so the solver and the release
+  never read different limits. Every other type keeps its multiplier on top (a Curve at Ball Speed
+  III is 160 × 0.735 km/h, not clamped to 160). The synced release velocity is the result.
+- **Throw**: `ThrowAimBehaviour.perkMaxThrowSpeedKmh`, given by the releasing client's Ball
+  (`BallBehaviour.LocalThrowSpeedCapKmh`) before each throw, pitcher-mode pickoff throws
+  included. The arm-speed curve (`FieldingMath.ThrowSpeed`, 2 → 10 m/s) and the 90 km/h minimum
+  stay; a limit under the minimum lowers the minimum with it (Debuff: 90 / 90).
+
+### Spin (Pitching, ids 2021 / 2031-2033)
 
 | Pitch type / parameter | Debuff | std | I | II | III |
 |---|---:|---:|---:|---:|---:|
@@ -155,31 +200,120 @@ yet, so that part is **not implemented** (the perk applies the normal-area heigh
 | Change spin (rpm) | 1800 | 1650 | 1550 | 1450 | 1350 |
 | Knuckle SSW coefficient | 0.030 | 0.040 | 0.045 | 0.050 | 0.055 |
 
-Low-spin types have their own definitions (Split and Change spin go down as the stage goes up).
+Applied to **hand pitches only** (`ManualPitchQuality.IdealPropertiesWithProfile`,
+`PitchSpinProfile`); the batting pitcher and `PitchPropertiesCalculator` are unchanged. Every type
+is first computed at the profile standard (`PitchPropertiesCalculator.Calculate` with a 2200 rpm
+4-Seam base), then:
 
-### Control (ids 2041 / 2051-2053, Pitching) — not implemented
+- 4-Seam: the stage's absolute rpm (right- and left-hand axes unchanged);
+- general breaking balls (2-Seam, Sinker, Cutter, Slider, Sweeper, Curve): the type's standard rpm
+  × the multiplier (the 4-Seam stage never moves them a second time); axis, required pose and SSW
+  are the type's own;
+- Split and Change: the stage's absolute rpm (no multiplier on top);
+- Knuckle: the stage's SSW coefficient; its rpm, Rotating wake axis, cone and seeded phase are
+  unchanged.
 
-Target precision: Debuff whole zone, std 2 parts, I 4 parts, II 9 parts, III about one ball.
+The failure flight is `failureSpinRatio` (0.7) × the same pitcher's 4-Seam rpm, and the quality
+blend (rpm, axis, SSW, Knuckle) is the existing one. The solver aims with the profiled ideal flight
+(the course stores it), so the solver and the release share it. With the perk system and no Spin
+perk the standard profile is used (4-Seam 2200 rpm instead of the mound's 2500).
 
-### Not implemented: why
+### Control (Pitching, ids 2041 / 2051-2053)
 
-These perks are in the catalog with their values and are shown in the UI, but cannot be
-selected (`PerkRules.NotImplemented`):
+Target precision: Debuff whole zone, std 2 parts, I 4 parts, II 9 parts, III about one ball. The
+control score (release plate position and timing, unchanged) gives the error's 1 sigma
+`sigma(score) = sigmaAtZero × (1 - score / 100)`; the perk sets `sigmaAtZero` (provisional,
+tunable on `PlayerPerkBehaviour`: `controlSigmaAtZeroDebuff` ... `controlSigmaAtZeroIII`):
 
-- **Ball Speed**: the current pitch maximum is 140 km/h (`ManualPitchBehaviour.maxPitchSpeedKmh`)
-  and throws run 90-145 km/h (`ThrowAimBehaviour.min/maxThrowSpeedKmh`); the perk standard is
-  120 km/h for both, so what the caps mean in the current model is not decided.
-- **Spin**: the perk standard is a 2200 rpm 4-Seam; the current pitch model uses 2500 rpm
-  (`fourSeamSpinRpm`, max 2800), and the per-type mapping is not decided.
-- **Control**: the formula from zone divisions to the current control error is not defined.
-- **Jump I in fence areas**: no fence area system exists.
+| Stage | sigmaAtZero | sigma at score 85 |
+|---|---:|---:|
+| Debuff | 1.30 m | 19.5 cm |
+| std | 0.90 m | 13.5 cm |
+| I | 0.60 m | 9.0 cm |
+| II | 0.40 m | 6.0 cm |
+| III | 0.18 m | 2.7 cm |
+
+sigma is a 1-sigma value, not a limit; a score of 100 (ideal release) has no error. The pitcher's
+client reads it locally at the release (`ManualPitchBehaviour.ControlSigmaAtZeroNow`); the mound's
+synced control settings (`ManualPitchControlSettingsBehaviour`: penalty strength, timing cap and
+its own sigma) are never written. The **penalty strength still applies**: at 0 (the default) the
+drawn error is 0 whatever the perk, on purpose; the panel says so (`last mound: penalty strength 0
+- control error has no effect`) and the mound's debug text shows the score, the sigma at score 0
+and whether it came from the perk. `PracticeSpace.unity`'s mound is set to strength 100 % so the
+perk is visible there.
+
+### New batting perks (Batting, normal swing only)
+
+| Id | Perk | Value |
+|---:|---|---|
+| 1021 | Batted Ball Speed Debuff | cap 144 km/h (std 162) |
+| 1031 / 1032 / 1033 | Batted Ball Speed I / II / III | up to 172 / 185 / 200 km/h |
+| 1041 | Sweet Spot Tolerance Debuff | gamma 1.25 (std 1.00) |
+| 1051 / 1052 / 1053 | Sweet Spot Tolerance I / II / III | gamma 0.90 / 0.80 / 0.70 |
+| 1061 | Contact Range Debuff | half width -2.0 cm |
+| 1071 | Contact Range I | half width +2.5 cm |
+| 1081 | Timing Tolerance I | yaw early 60 / late 45 deg (std 30 / 30) |
+
+They are settings on the local Bat Motion (`battedSpeedBonusTopKmh`, `battedSpeedCapKmh`,
+`speedQualityGamma`, `contactWidthOffset`, `timingEarlyYawDegrees` / `timingLateYawDegrees`;
+setters `SetBattedBallSpeed`, `SetSpeedQualityGamma`, `SetContactWidthOffset`,
+`SetTimingTolerance`; `ResetBattingSettings` restores them), set by `PerkEffectsBehaviour` and
+read by Bat Contact on the shared contact path. Neutral values give the previous contact and
+result exactly. A Bunt never gets them (only the debuff's cap, which a Bunt's 30 % Power cap
+never reaches).
+
+- **Exit speed** (`BallResultMath.ExitSpeed`; direction, launch angle and spin are computed
+  apart and never change):
+
+  ```text
+  base  = 8 + 37 × P × Q^gamma × band                       (m/s; Sweet Spot gamma)
+  bonus = (top - 162) / 3.6 × smoothstep(0.85, 1, P) × smoothstep(0.90, 1, Q) × band
+  speed = base + bonus;  Debuff: speed = min(speed, 144 / 3.6)
+  ```
+
+  `Q` is the contact quality before gamma (the bonus reads it, so the two perks do not multiply),
+  `smoothstep(a, b, x) = 3t² - 2t³`, `t = clamp01((x - a) / (b - a))`. Only P > 0.85 and Q > 0.90
+  get any bonus; P = Q = 1 reaches the stage's top. The quality itself (contact decision, launch
+  angle, spin, the displayed quality) is unchanged.
+- **Contact Range**: a normal swing's half width (`BatGeometry.ContactWidth` via
+  `ContactWidthAtLocalY`) becomes `max(0, width + offset)`, tested on the Homing-corrected
+  coordinates (Homing first, the offset once). Inside the normal width nothing changes (the
+  normalized Y for launch and spin keeps the normal width). In the band a buff adds, `band`
+  falls linearly from 1 at the normal edge to `contactExtensionMinimumScale` (0.25, provisional,
+  Bat Motion Inspector) at the widened edge, on the speed only; beyond it is still a miss. A
+  Bunt's width (1.5x) has no offset. The physical Bat mesh and colliders are not touched.
+- **Timing Tolerance**: the yaw gate is split into an early and a late side
+  (`BattingAssist.TimingSine`: the sine of the Bat's horizontal yaw from perpendicular, positive
+  when the tip has turned toward the field). Root-to-tip axis and the batting direction make an
+  early swing positive for right- and left-handed batters alike (the mirror image). Candidates
+  pass a gate wide enough for either kind, then a normal swing its own early / late tolerance and
+  a Bunt the symmetric `timingYawDegrees`. The time window, the candidate search and the quality
+  are unchanged.
+
+### Order of calculation with several perks
+
+Pitch: the course (lock or default) is solved with the 4-Seam limit and the spin profile of the
+current perks; a perk change drops every course solved before it (`_OnPerksChanged` →
+`InvalidateDefaultCourse`, lock solved again). At the release: speed = the course's limit × arm
+curve × type multiplier; flight = blend(profiled ideal, profiled failure, quality); aim =
+blend of the two solved directions, then the control error from the score and the perk sigma ×
+the synced strength. Throw: limit → arm curve → elevation solve (unchanged).
+
+Batting: timing gate (wide) → Bunt classification → Homing (normal swing) → Bat length range →
+width with the Contact Range offset (normal swing) or the Bunt multiplier → kind's timing gate →
+quality, Power and caps as before → `ExitSpeed` (gamma, band, bonus, cap).
+
+Running: Max Speed (speed multiplier, scales the acceleration) and Acceleration (multiplier,
+initial speed) combine as in [Running balance](#running-balance); Jump and the fence zone are
+independent of both.
 
 ## Selection rules
 
 `PlayerPerkBehaviour` keeps the selected ids in selection order. The only rules
 (`PerkRules.CheckAdd`, in this order):
 
-1. unknown id → `UnknownPerk`; not implemented → `NotImplemented`;
+1. unknown id → `UnknownPerk`; not implemented → `NotImplemented` (no designed perk is in that
+   state now; the code stays for a perk catalogued before it is connected);
 2. already selected → `Duplicate` (no id is ever twice in a selection);
 3. another stage of the same series (`PerkCatalog.Group`) → `SeriesConflict` (Homing I/II/III,
    Fade I/II, Max Speed I/II/III, ...). Debuffs are a series of their own;
@@ -215,13 +349,15 @@ order of adding and removing never matters and Clear All returns to the base exa
   exactly (8.0 → 8.9 m/s). Acceleration's standard 10 is a design unit: the factor (x1.1 for
   11) is applied to Locomotion's base (6.24 m/s²). The factor is kept finite and within
   [0, 10]; a non-finite modifier counts as none.
-- **Level** (Homing rate, Fade level): the value of the one selected stage; series exclusion
-  guarantees at most one, so no "strongest stage wins" rule hides a conflict.
+- **Level** (Homing rate, Fade level, Spin and Control stage, Sweet Spot gamma, Contact Range
+  offset, Timing yaw): the value of the one selected stage (else the design standard,
+  `GetValueOrStandard`); series and buff/debuff exclusion guarantee at most one, so no
+  "strongest stage wins" rule hides a conflict.
 - **Flag** (Bunt, Landing Indicator): on while selected.
-- **Cap** (pitch and throw speed, initial speed): an upper limit, never turned into a
-  percentage. The initial speed cap (Max Speed Debuff, 2.0 on the 3.0 standard) is applied on the
-  same scale as the base: `min(base × factor, base × cap / standard)`. Pitch and throw caps are
-  not connected.
+- **Cap** (pitch and throw speed, initial speed, batted ball speed): an absolute value, never
+  turned into a percentage (pitch and throw: the standard 120 without a perk; batted ball speed:
+  a buff's top or the debuff's cap). The initial speed cap (Max Speed Debuff, 2.0 on the 3.0
+  standard) is applied on the same scale as the base: `min(base × factor, base × cap / standard)`.
 
 Each game system keeps its own limits (Locomotion's 12 m/s ceiling, `SetHoming` accepting 0-1),
 and the displayed final value is the one the system reports back.
@@ -247,6 +383,10 @@ catch are never changed afterwards; the next one uses the new value.
 | Catch Radius | `GloveBehaviour.SetCatchRadiusMultiplier(factor)`: authored trigger radius × factor, then the glove scale as before (calibration independent); both catch paths and the debug sphere follow | multiplier 1 |
 | Pitch Fade | each `PitchFadeBehaviour` finds the local `PlayerPerkBehaviour` (Start, then at a release), registers for `_OnPerksChanged` and calls `SetFadeLevel` / `SetFadeEnabled` | off |
 | Landing Indicator | each `LandingIndicatorBehaviour` likewise (Start, then at a batted flight), `SetLandingIndicatorEnabled` | off |
+| Jump (fence zones) | `LocomotionBehaviour.SetFenceJumpImpulse(base × √(1.30 / 0.46))`; zones count the player | 0 (normal jump inside zones) |
+| Batted Ball Speed, Sweet Spot, Contact Range, Timing | `BatMotionBehaviour.SetBattedBallSpeed / SetSpeedQualityGamma / SetContactWidthOffset / SetTimingTolerance` | neutral (0 / 0, 1, 0, 0 / 0) |
+| Pitch speed limit, Spin, Control | each `ManualPitchBehaviour` finds the local `PlayerPerkBehaviour` when pitcher mode starts (`PerkLookup`), reads the limit, Spin stage and control sigma (`SetPerkAbilities`), registers for `_OnPerksChanged` (courses solved again) and reports them for the panel | 120 km/h, standard profile, sigmaAtZero 0.90 |
+| Throw speed limit | the releasing `BallBehaviour` gives `ThrowAimBehaviour.perkMaxThrowSpeedKmh` per throw | 120 km/h |
 
 `ResetBattingSettings()` is never called: only the perk-managed fields change. Only the local
 Locomotion (local by design) and the local Bat and Glove are written; no other player's settings.
@@ -255,8 +395,19 @@ Inspector defaults (on, for testing them alone).
 
 Added APIs: `GloveBehaviour.SetCatchRadiusMultiplier(float)`, `CatchRadiusMultiplier()`,
 `CatchRadiusAt(float)`; `LocomotionBehaviour.GetJumpImpulse()`, `GetEffectiveAcceleration()`,
-`GetEffectiveInitialSpeed()`; `_OnPerksChanged` on Pitch Fade and the Landing Indicator. Not
-connected: pitch/throw caps, spin and control.
+`GetEffectiveInitialSpeed()`, `SetFenceJumpImpulse`, `EnterFenceZone` / `ExitFenceZone`,
+`InFenceZone`, `EffectiveJumpImpulse`; `_OnPerksChanged` on Pitch Fade, the Landing Indicator
+and the mound (`BindPerksTo`, `SetPerkAbilities`, `PitchSpeedCapKmh`, `SpinProfile`,
+`ControlSigmaAtZeroNow`); `ThrowAimBehaviour.perkMaxThrowSpeedKmh`, `ThrowMaxSpeedKmh`; the Bat
+Motion setters above; `BallResultMath.ExitSpeed`; `BattingAssist.TimingSine`, `TimingAccepts`,
+`OffsetHalfWidth`, `ExtensionFraction`; `PlayerPerkBehaviour.GetValueOrStandard`, `GetStage`,
+`GetControlSigmaAtZero`.
+
+Every effect is applied on the acting player's client only (the batter's contact, the pitcher's
+release, the thrower's throw, the local Locomotion); remote clients receive the existing synced
+results and never apply another player's perks. Multiple mounds and lanes: each mound binds the
+local player's perks itself when that player enters it, so a player keeps their abilities on any
+mound or plate, and nothing of another player's pitching is changed.
 
 ## Synchronization
 
@@ -276,14 +427,19 @@ A World Space canvas placed in the scene (`Runtime/Prefabs/PerkPanel.prefab`). I
 player's `Perks` by itself (retrying for 60 s after Start).
 
 - Five category tabs: Batting, Pitching, Running, Fielding, Visual Aids.
-- Up to 12 rows per category. Each row: name, stage, BUFF/DEBUFF, design amount and state
-  (`SELECTED`, `CONFLICT` with the conflicting perk, `NOT IMPLEMENTED` with the reason), and the
-  description. Pressing a row adds or removes that perk; unimplemented rows are not interactable.
-- Clear All, a status line with the last result or rejection reason, and the ability block:
-  `Max Speed: 8.00 -> 8.90 m/s (+11.2%)`, Acceleration and Initial Speed (the values Locomotion
-  uses, percentage = final / base - 1, since Max Speed also scales the acceleration), Jump
-  Height, Catch Radius, Homing, Bunt, Pitch Fade and Landing Indicator, and the abilities that
-  are not connected.
+- 12 rows per page; a category with more perks (Batting: 15) gets `< Prev` / `Next >` and
+  `Page 1 / 2 (15 perks)` under the rows (hidden for one page). Each row: name, stage,
+  BUFF/DEBUFF, design amount and state (`SELECTED`, `CONFLICT` with the conflicting perk,
+  `NOT IMPLEMENTED` with the reason), and the description. Pressing a row adds or removes that
+  perk; unimplemented rows are not interactable.
+- Clear All, a status line with the last result or rejection reason, and the **selected
+  category's** ability block with units: Batting (Homing, Bunt, batted ball speed top or cap in
+  km/h, gamma, half width offset in cm, early / late yaw in degrees as the Bat uses them);
+  Pitching (pitch and throw limits in km/h with the mound's unused setting, the spin profile in
+  rpm and the Knuckle SSW, the control target next to the actual sigma at score 85 and 0 in cm,
+  and whether the last mound's penalty strength makes it effective); Running (Max Speed,
+  Acceleration, Initial Speed, Jump Height, fence zone height); Fielding (Catch Radius); Visual
+  Aids.
 - It rebuilds only on presses, `_OnPerksChanged` and when enabled; nothing runs per frame and a
   hidden panel does not rebuild. All rules live in `PlayerPerkBehaviour`, so a future menu page
   can replace it.
@@ -297,8 +453,13 @@ player's `Perks` by itself (retrying for 60 s after Start).
    `Locomotion` (a prefab cannot hold the scene reference). Without it running perks are
    reported as not available.
 3. Place `PerkPanel.prefab` where players can reach it.
+4. Optional: place `FenceJumpZone.prefab` instances along fences, size their BoxCollider and set
+   their `Locomotion`.
+5. To see the Control perk, set the mound's control penalty strength above 0 (its panel slider or
+   `ControlSettings.penaltyStrength`).
 
-`PracticeSpace.unity` is set up this way.
+`PracticeSpace.unity` is set up this way (fence zone in front of the backstop, mound strength
+100 %).
 
 ## Future: cost and slots
 
@@ -336,7 +497,42 @@ ones), and the budget shown in the panel. Selection, sync and application need n
   remote player's perks, no rewrite of unchanged abilities, glove input checks.
 - `LocomotionBehaviour.Tests.cs`: the new defaults, Speed Multiplier scaling the acceleration
   but not the initial speed, and every running perk's first base time with one frame of delay.
-- `PerkPanelBehaviour.Tests.cs`: rows per category, row titles, ability lines.
+- `PerkPanelBehaviour.Tests.cs`: every perk on some page, the Batting second page, row titles,
+  ability lines (batted ball speed, spin profile).
+- `ManualPitchBehaviour.Perks.Tests.cs`: the 4-Seam limit for no perk and every stage (release
+  and solver, arm curve kept), type multipliers on top, a release using its course's limit, a perk
+  change dropping the default course and the lock, the spin profile for every type and stage
+  (axes, SSW and the Knuckle's rpm kept), the failure rpm, left-hand mirror, the batting
+  pitcher's calculator unchanged, the solver and the release sharing the profile, and control:
+  sigma at 85 per stage, the error for the same score and draw scaling with sigma, score 0 / 50 /
+  85 / 100, strength 0, the synced setting untouched.
+- `ThrowAimBehaviour.Tests.cs`: throw limits per stage, the minimum kept or lowered, the arm curve
+  unchanged, invalid limits ignored.
+- `BallBehaviour.Result.Tests.cs`: the exit speed without perks equal to the previous formula,
+  the bonus only above the thresholds and continuous, every top reached at P = Q = 1, the 144 cap
+  only on faster hits, gamma on the speed only (direction and spin unchanged), the bonus reading
+  the raw quality, the Contact Range band scale.
+- `BatContactBehaviour.Tests.cs`: early / late yaw (standard ±30, Timing Tolerance I 60 / 45 on
+  the right side only, left-hander mirror), a Bunt keeping the symmetric gate, Contact Range
+  widths (inside unchanged, band fraction, beyond still a miss, debuff, a Bunt without offset),
+  snapshot values only for normal swings. `BatMotionBehaviour.Tests.cs`: setters and reset.
+- `LocomotionBehaviour.Tests.cs` / `FenceJumpZoneBehaviour.Tests.cs`: zone counting, overlaps,
+  never below zero, the fence impulse only with one set, a jump in progress keeping its impulse,
+  disabling a zone. `PerkEffectsBehaviour.Tests.cs`: the batting settings per perk and back, the
+  fence impulse (1.30 m from the 3.00 base).
+- ClientSim (`PracticeSpace.unity`, one local player, this extension): the Batting tab pages
+  (15 perks, page 2 with Contact Range and Timing), Contact Range I rejected against its debuff,
+  the Bat Motion values for Batted Ball Speed II, Sweet Spot I, Contact Range Debuff and Timing
+  I; the mound (bound to the local perks by hand: pitcher mode needs VR) reading 160 km/h, Spin
+  II and sigma 0.60 m, the panel's pitching block; Jump I: impulse 3.28 outside, 5.04 after a
+  teleport into the fence zone, 3.28 after leaving, 3.00 after Clear All.
+
+**Not verified** (needs VR / real clients): an actual hand pitch with each limit, spin profile and
+control stage (the arrival spread); an actual throw with a limit; real swings with the batting
+perks (exit speeds, band contacts, early / late timing on both batting sides); jumping in a fence
+zone with a VR body; multiple clients and late joiners with the new perks. Provisional:
+the control sigmas, `contactExtensionMinimumScale` (0.25, linear), and the 120 km/h standard
+replacing the mounds' 140 km/h.
 - Not covered by `test`: the glove trigger radius (no collider in tests), `PerkLookup`
   (PlayerObjects), Pitch Fade and Landing Indicator following the perks, the UI prefab, real
   network delivery. These need ClientSim and VRChat clients.

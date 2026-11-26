@@ -370,4 +370,118 @@ public partial class BatContactBehaviour
         Assert.AreEqual(0.5f, _candidateHomingRate);
     }
 
+    // ---- Batting perks (player-perks.md) ----
+
+    // A Bat axis yawed by `degrees` from perpendicular to the batting direction (+z), positive
+    // toward the field; `left` mirrors the swing (a left-handed batter: the Bat points -x).
+    private static Vector3 YawedAxis(float degrees, bool left)
+    {
+        float r = degrees * Mathf.Deg2Rad;
+        return new Vector3((left ? -1f : 1f) * Mathf.Cos(r), 0.3f, Mathf.Sin(r));
+    }
+
+    [TsukimiTest]
+    public void TimingToleranceWidensOnlyTheEarlyAndTheLateSideItNames()
+    {
+        Vector3 center = Vector3.forward;
+        // Standard: +-30 deg symmetric, as before.
+        Assert.IsTrue(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(29f, false), center), 30f, 30f));
+        Assert.IsFalse(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(31f, false), center), 30f, 30f));
+        Assert.IsFalse(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(-31f, false), center), 30f, 30f));
+        // Timing Tolerance I: early 60, late 45.
+        Assert.IsTrue(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(59f, false), center), 60f, 45f), "early 59");
+        Assert.IsFalse(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(61f, false), center), 60f, 45f), "early 61");
+        Assert.IsTrue(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(-44f, false), center), 60f, 45f), "late 44");
+        Assert.IsFalse(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(-50f, false), center), 60f, 45f), "late 50 is beyond 45");
+        Assert.IsTrue(BattingAssist.TimingAccepts(BattingAssist.TimingSine(YawedAxis(50f, false), center), 60f, 45f), "but early 50 is inside 60");
+        // A left-handed batter's swing is the mirror image: the same timing gets the same sign.
+        float[] yaws = { -50f, -44f, -10f, 0f, 20f, 59f, 61f };
+        for (int i = 0; i < yaws.Length; i++)
+        {
+            float right = BattingAssist.TimingSine(YawedAxis(yaws[i], false), center);
+            float left = BattingAssist.TimingSine(YawedAxis(yaws[i], true), center);
+            Assert.IsTrue(Mathf.Abs(right - left) < 0.00001f, "mirror at " + yaws[i]);
+            Assert.AreEqual(BattingAssist.TimingAccepts(right, 60f, 45f), BattingAssist.TimingAccepts(left, 60f, 45f));
+        }
+        Assert.IsTrue(Mathf.Abs(BattingAssist.TimingSine(YawedAxis(30f, false), center) - 0.5f) < 0.0001f, "early is positive");
+        Assert.IsFalse(BattingAssist.TimingAccepts(float.NaN, 60f, 45f));
+    }
+
+    [TsukimiTest]
+    public void ABuntKeepsTheSymmetricGateAndANormalSwingGetsThePerk()
+    {
+        motion.timingYawDegrees = 30f;
+        motion.SetTimingTolerance(60f, 45f);
+        _candidateTimingSine = Mathf.Sin(50f * Mathf.Deg2Rad);
+        Assert.IsTrue(KindTimingAccepts(false), "a normal swing 50 deg early: inside Timing Tolerance I");
+        Assert.IsFalse(KindTimingAccepts(true), "a Bunt keeps +-30");
+        motion.SetTimingTolerance(0f, 0f);
+        Assert.IsFalse(KindTimingAccepts(false), "without the perk: the symmetric 30");
+        Assert.AreEqual(30f, motion.NormalSwingEarlyYaw());
+        Assert.AreEqual(30f, motion.NormalSwingLateYaw());
+    }
+
+    [TsukimiTest]
+    public void ContactRangeOffsetsOnlyANormalSwingsHalfWidth()
+    {
+        float normal = TestWidth(0.8f);
+        // Buff +2.5 cm: inside the normal width nothing changes; the added band is weak contact.
+        _candidateY = normal * 0.9f;
+        Assert.IsTrue(WithinContactWidth(normal, 1f, 0.025f));
+        Assert.AreEqual(0f, _candidateExtension, "inside the normal width: no band");
+        _candidateY = normal + 0.0125f;
+        Assert.IsTrue(WithinContactWidth(normal, 1f, 0.025f), "the new outer band makes contact");
+        Assert.IsTrue(Mathf.Abs(_candidateExtension - 0.5f) < 0.0001f, "half way across the band");
+        Assert.IsTrue(Mathf.Abs(_candidateWidth - (normal + 0.025f)) < 0.00001f);
+        _candidateY = -(normal + 0.026f);
+        Assert.IsFalse(WithinContactWidth(normal, 1f, 0.025f), "beyond the band: still a miss");
+        // Debuff -2.0 cm.
+        _candidateY = normal - 0.015f;
+        Assert.IsFalse(WithinContactWidth(normal, 1f, -0.02f), "the outer 2 cm no longer hits");
+        _candidateY = normal - 0.025f;
+        Assert.IsTrue(WithinContactWidth(normal, 1f, -0.02f));
+        Assert.AreEqual(0f, _candidateExtension);
+        Assert.AreEqual(0f, BattingAssist.OffsetHalfWidth(0.01f, -0.02f), "never negative");
+        // A Bunt: the plane resolution ignores the offset and keeps the 1.5x width.
+        SetupAssist();
+        motion.contactWidthOffset = 0.025f;
+        _candidateY = normal + 0.01f;
+        _candidatePattern = BattingAssist.BuntPatternA;
+        Assert.IsTrue(WithinKindWidth(normal), "a Bunt: 1.5x");
+        Assert.IsTrue(Mathf.Abs(_candidateWidth - normal * 1.5f) < 0.00001f, "a Bunt's width has no offset");
+        Assert.AreEqual(0f, _candidateExtension);
+        _candidatePattern = BattingAssist.BuntNone;
+        Assert.IsTrue(WithinKindWidth(normal), "a normal swing: the offset");
+        Assert.IsTrue(Mathf.Abs(_candidateWidth - (normal + 0.025f)) < 0.00001f);
+        Assert.IsTrue(_candidateExtension > 0f);
+    }
+
+    [TsukimiTest]
+    public void PerkSnapshotValuesGoToNormalSwingsOnly()
+    {
+        motion.SetBattedBallSpeed(185f, 0f);
+        motion.SetSpeedQualityGamma(0.8f);
+        motion.contactExtensionMinimumScale = 0.25f;
+        _candidateExtension = 0.4f;
+        BallResultSnapshot normal = WithPerks(new BallResultSnapshot(), false);
+        Assert.IsTrue(Mathf.Abs(normal.speedBonusMax - (185f - 162f) / 3.6f) < 0.0001f);
+        Assert.AreEqual(0.8f, normal.speedQualityGamma);
+        Assert.AreEqual(0.4f, normal.extensionFraction);
+        Assert.AreEqual(0f, normal.speedCap);
+        BallResultSnapshot bunt = WithPerks(new BallResultSnapshot(), true);
+        Assert.AreEqual(0f, bunt.speedBonusMax, "no bonus for a Bunt");
+        Assert.AreEqual(1f, bunt.speedQualityGamma, "no gamma for a Bunt");
+        Assert.AreEqual(0f, bunt.extensionFraction);
+        motion.SetBattedBallSpeed(0f, 144f);
+        Assert.IsTrue(Mathf.Abs(WithPerks(new BallResultSnapshot(), false).speedCap - 40f) < 0.0001f, "144 km/h = 40 m/s");
+        Assert.AreEqual(0f, WithPerks(new BallResultSnapshot(), false).speedBonusMax);
+        motion.SetBattedBallSpeed(0f, 0f);
+        motion.SetSpeedQualityGamma(1f);
+        _candidateExtension = 0f;
+        BallResultSnapshot neutral = WithPerks(new BallResultSnapshot(), false);
+        Assert.AreEqual(0f, neutral.speedBonusMax);
+        Assert.AreEqual(0f, neutral.speedCap);
+        Assert.AreEqual(1f, neutral.speedQualityGamma);
+        Assert.AreEqual(162f, MaxExitSpeedKmh);
+    }
 }

@@ -602,10 +602,19 @@ The raw release speed (before any future pitcher ability) comes from the control
 only for a recognized pitch; a throw never reads it:
 
 ```text
-Vraw    = maxPitchSpeedKmh x Clamp01(armSpeedCurve(|v_arm|)) x m  km/h, 140 by default
-Vsolver = maxPitchSpeedKmh x Clamp01(solverSpeedRatio) x m        km/h, at the lock, 0.97 by default
+Vraw    = Vmax x Clamp01(armSpeedCurve(|v_arm|)) x m             km/h
+Vsolver = Vmax x Clamp01(solverSpeedRatio) x m                   km/h, at the lock, 0.97 by default
+Vmax    = the 4-Seam limit the course was solved with (ManualPitchCourse.maxSpeedKmh):
+          the pitcher's Ball Speed perk (120 km/h standard) with the player perk system,
+          maxPitchSpeedKmh (140) without it
 m       = PitchPropertiesCalculator.SpeedMultiplier(build)        1 for the 4-Seam (table in Pitch types)
 ```
+
+The release uses the limit its own course was solved with, never a later setting, so the solver
+and the release cannot read different limits (changed with the player perks; before, the release
+read `maxPitchSpeedKmh` again at the release). With the player perk system the spin of every type
+comes from the pitcher's Spin profile and the control sigma at score 0 from the Control perk; a
+perk change solves every course again. See [Player perks](player-perks.md#ball-speed-pitch-and-throw-limits-one-perk).
 
 The multiplier is the calculator's speed at its default base divided by that base, so it is exact
 for every base and the calculator's 90-160 km/h **base limit (an automatic-pitch rule) never

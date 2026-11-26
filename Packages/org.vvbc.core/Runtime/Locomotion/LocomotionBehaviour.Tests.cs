@@ -772,6 +772,48 @@ namespace VVBC.Locomotion
         }
 
         // Airborne for 0.5 s, landing at t = 1.55.
+        // ---- Fence jump zones ----------------------------------------------------------
+
+        [TsukimiTest]
+        public void FenceZonesChooseTheJumpImpulse()
+        {
+            _savedJumpImpulse = 3f;
+            Assert.AreEqual(3f, EffectiveJumpImpulse(), "no zone, no fence impulse");
+            EnterFenceZone();
+            Assert.AreEqual(3f, EffectiveJumpImpulse(), "inside without a fence impulse: the normal jump");
+            SetFenceJumpImpulse(5f);
+            Assert.AreEqual(5f, EffectiveJumpImpulse(), "inside with one: the fence jump");
+            EnterFenceZone();
+            ExitFenceZone();
+            Assert.AreEqual(5f, EffectiveJumpImpulse(), "overlapping zones: still inside one");
+            ExitFenceZone();
+            Assert.AreEqual(3f, EffectiveJumpImpulse(), "outside every zone");
+            ExitFenceZone();
+            Assert.IsFalse(InFenceZone(), "never below zero");
+            SetFenceJumpImpulse(float.NaN);
+            Assert.AreEqual(0f, GetFenceJumpImpulse(), "an invalid impulse is none");
+        }
+
+        [TsukimiTest]
+        public void AJumpInProgressKeepsItsImpulseAndTheNextOneUsesTheZone()
+        {
+            _savedJumpImpulse = 3f;
+            SetFenceJumpImpulse(5f);
+            EnterFenceZone();
+            // Take-off inside the zone: the lock saves the player's impulse, but the fence impulse
+            // it applied itself is not taken for another system's normal one.
+            _jumpState = JumpAirborne;
+            Assert.AreEqual(0f, ToggleJumpLock(5f), "locked during the jump");
+            Assert.AreEqual(3f, _savedJumpImpulse, "the normal impulse is kept");
+            ExitFenceZone();
+            _jumpState = JumpReady;
+            Assert.AreEqual(3f, ToggleJumpLock(0f), "left the zone mid-air: the next jump is the normal one");
+            // Another system's value set on the player while jumping was allowed is still kept.
+            _jumpState = JumpAirborne;
+            ToggleJumpLock(4f);
+            Assert.AreEqual(4f, _savedJumpImpulse);
+        }
+
         private void JumpAndLand()
         {
             TakeOff();

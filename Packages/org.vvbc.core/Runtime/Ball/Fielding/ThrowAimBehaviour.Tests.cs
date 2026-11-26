@@ -878,6 +878,45 @@ public partial class ThrowAimBehaviour
         Assert.IsFalse(gameObject.activeSelf);
     }
 
+    // Ball Speed perk (player-perks.md): the throw's top speed is the perk's absolute limit
+    // (120 km/h standard), the arm-speed curve and the minimum are kept, and a limit under the
+    // minimum lowers the minimum with it.
+    private float ThrowSpeedKmhWith(float perkLimit, float armStep)
+    {
+        SetBases();
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        PlaceMarkersAt(origin);
+        Vector3 release = origin + new Vector3(0.3f, -0.2f, 0f);
+        Vector3 toSecond = (_markerPositions[1] - release).normalized;
+        ResetSamples();
+        for (int i = 0; i < 5; i++) Sample(i * 0.02f, release - toSecond * (armStep * (4 - i)));
+        perkMaxThrowSpeedKmh = perkLimit;
+        Release(release, 0f, 0f);
+        return releaseVelocity.magnitude * 3.6f;
+    }
+
+    [TsukimiTest]
+    public void TheBallSpeedPerkSetsTheThrowLimit()
+    {
+        Assert.IsTrue(Mathf.Abs(ThrowSpeedKmhWith(0f, 0.4f) - 145f) < 0.05f, "no perk system: the Inspector 145 km/h");
+        float[] limits = { 90f, 120f, 135f, 145f, 155f };
+        for (int i = 0; i < limits.Length; i++)
+        {
+            float fast = ThrowSpeedKmhWith(limits[i], 0.4f);
+            Assert.IsTrue(Mathf.Abs(fast - limits[i]) < 0.05f, "a fast arm reaches the limit " + limits[i] + ": " + fast);
+            Assert.AreEqual(limits[i], releaseMaxSpeedKmh);
+            Assert.AreEqual(Mathf.Min(90f, limits[i]), releaseMinSpeedKmh, "the minimum never exceeds the limit");
+            float slow = ThrowSpeedKmhWith(limits[i], 0.02f);
+            Assert.IsTrue(Mathf.Abs(slow - 90f) < 0.05f, "a slow arm keeps the 90 km/h minimum: " + slow);
+            float middle = ThrowSpeedKmhWith(limits[i], 0.16f);
+            float expected = FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, limits[i] / 3.6f) * 3.6f;
+            Assert.IsTrue(Mathf.Abs(middle - expected) < 0.05f, "the arm-speed curve is unchanged");
+        }
+        Assert.AreEqual(145f, maxThrowSpeedKmh, "the Inspector setting is not changed");
+        Assert.AreEqual(145f, ThrowMaxSpeedKmh(145f, float.NaN));
+        Assert.AreEqual(145f, ThrowMaxSpeedKmh(145f, -1f));
+    }
+
     // ---- helpers ----
 
     private void Release(Vector3 release, float randomAngle, float randomRadius)

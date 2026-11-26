@@ -56,6 +56,65 @@ public partial class BatMotionBehaviour
         buntEnabled = enabled;
     }
 
+    // Batting perks (player-perks.md), set by the local PerkEffects; neutral by default, so the
+    // contact and result are the previous ones exactly. Normal swings only: a Bunt keeps the
+    // standard width, the symmetric timing gate and no speed bonus or gamma.
+    [Header("Batting perks")]
+    [Tooltip("Batted Ball Speed buff: exit speed (km/h) the bonus reaches at Power 1 and quality 1; 0 = no bonus.")]
+    public float battedSpeedBonusTopKmh;
+    [Tooltip("Batted Ball Speed debuff: hard cap on the exit speed (km/h); 0 = none.")]
+    public float battedSpeedCapKmh;
+    [Tooltip("Sweet Spot Tolerance: the exit speed uses quality^gamma. 1 = unchanged.")]
+    public float speedQualityGamma = 1f;
+    [Tooltip("Contact Range: offset (m) on a normal swing's contact half width.")]
+    public float contactWidthOffset;
+    [Tooltip("Timing Tolerance: a normal swing's early / late yaw tolerance (degrees); 0 = timingYawDegrees.")]
+    public float timingEarlyYawDegrees;
+    public float timingLateYawDegrees;
+    [Tooltip("Contact Range buff: the speed contribution at the widened edge, as a fraction (1 at the normal edge, linear between). Provisional.")]
+    [Range(0f, 1f)] public float contactExtensionMinimumScale = 0.25f;
+
+    public float NormalSwingEarlyYaw() { return timingEarlyYawDegrees > 0f ? timingEarlyYawDegrees : timingYawDegrees; }
+    public float NormalSwingLateYaw() { return timingLateYawDegrees > 0f ? timingLateYawDegrees : timingYawDegrees; }
+
+    // topKmh above 162 (the formula's 45 m/s maximum) gives the bonus; capKmh above 0 the debuff
+    // cap. Both 0: neither. Invalid values are rejected and leave the settings unchanged.
+    public bool SetBattedBallSpeed(float topKmh, float capKmh)
+    {
+        if (!ContactFinite(topKmh) || !ContactFinite(capKmh) || topKmh < 0f || capKmh < 0f || topKmh > 400f || capKmh > 400f) return false;
+        CaptureBattingDefaults();
+        battedSpeedBonusTopKmh = topKmh;
+        battedSpeedCapKmh = capKmh;
+        return true;
+    }
+
+    public bool SetSpeedQualityGamma(float gamma)
+    {
+        if (!ContactFinite(gamma) || gamma <= 0f || gamma > 10f) return false;
+        CaptureBattingDefaults();
+        speedQualityGamma = gamma;
+        return true;
+    }
+
+    public bool SetContactWidthOffset(float offsetMeters)
+    {
+        if (!ContactFinite(offsetMeters) || offsetMeters < -0.5f || offsetMeters > 0.5f) return false;
+        CaptureBattingDefaults();
+        contactWidthOffset = offsetMeters;
+        return true;
+    }
+
+    // 0 for either side: that side uses timingYawDegrees.
+    public bool SetTimingTolerance(float earlyDegrees, float lateDegrees)
+    {
+        if (!ContactFinite(earlyDegrees) || !ContactFinite(lateDegrees) || earlyDegrees < 0f || lateDegrees < 0f ||
+            earlyDegrees > 90f || lateDegrees > 90f) return false;
+        CaptureBattingDefaults();
+        timingEarlyYawDegrees = earlyDegrees;
+        timingLateYawDegrees = lateDegrees;
+        return true;
+    }
+
     public float SweetSpotLocalY() { return BatGeometry.NormalizedToLocalY(batLength, sweetSpotNormalized); }
     public float ContactStartLocalY() { return BatGeometry.NormalizedToLocalY(batLength, contactStartNormalized); }
     public float ContactEndLocalY() { return BatGeometry.NormalizedToLocalY(batLength, contactEndNormalized); }
@@ -217,6 +276,7 @@ public partial class BatMotionBehaviour
     private float _defaultContactEndNormalized, _defaultContactMargin, _defaultMinimumQuality, _defaultTimingYaw;
     private bool _defaultBuntEnabled, _defaultHomingEnabled;
     private float _defaultHomingRate;
+    private float _defaultBonusTop, _defaultSpeedCap, _defaultGamma, _defaultWidthOffset, _defaultEarlyYaw, _defaultLateYaw;
     private readonly float[] _defaultCapSettings = new float[14];
 
     public void Start()
@@ -238,6 +298,9 @@ public partial class BatMotionBehaviour
         _defaultTimingYaw = timingYawDegrees;
         _defaultBuntEnabled = buntEnabled;
         _defaultHomingEnabled = homingEnabled; _defaultHomingRate = homingRate;
+        _defaultBonusTop = battedSpeedBonusTopKmh; _defaultSpeedCap = battedSpeedCapKmh;
+        _defaultGamma = speedQualityGamma; _defaultWidthOffset = contactWidthOffset;
+        _defaultEarlyYaw = timingEarlyYawDegrees; _defaultLateYaw = timingLateYawDegrees;
         _defaultCapSettings[0] = invalidWindowSeconds;
         _defaultCapSettings[1] = oneHandMovingDistance; _defaultCapSettings[2] = oneHandStillDistance;
         _defaultCapSettings[3] = wristStillDistance; _defaultCapSettings[4] = wristRotationDegrees;
@@ -322,6 +385,9 @@ public partial class BatMotionBehaviour
         timingYawDegrees = _defaultTimingYaw;
         buntEnabled = _defaultBuntEnabled;
         homingEnabled = _defaultHomingEnabled; homingRate = _defaultHomingRate;
+        battedSpeedBonusTopKmh = _defaultBonusTop; battedSpeedCapKmh = _defaultSpeedCap;
+        speedQualityGamma = _defaultGamma; contactWidthOffset = _defaultWidthOffset;
+        timingEarlyYawDegrees = _defaultEarlyYaw; timingLateYawDegrees = _defaultLateYaw;
         for (int i = 0; i < _defaultCapSettings.Length; i++) ApplyBattingCapSetting(i, _defaultCapSettings[i]);
     }
 

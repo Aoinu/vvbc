@@ -240,6 +240,17 @@ public partial class BallBehaviour
         return found;
     }
 
+    // The releasing (local) player's throw speed limit from the Ball Speed perk (120 km/h without
+    // one); 0 in a world without the perk system. Only the releasing client computes a throw, so
+    // the limit is never applied for a remote player.
+    private PlayerPerkBehaviour _localPerks;
+
+    private float LocalThrowSpeedCapKmh()
+    {
+        if (_localPerks == null) _localPerks = PerkLookup.Local();
+        return _localPerks != null ? _localPerks.GetValueOrStandard(PerkCatalog.AbilityThrowSpeedCap) : 0f;
+    }
+
     private int LocalThrowHand()
     {
         GloveBehaviour glove = LocalGlove();
@@ -609,6 +620,7 @@ public partial class BallBehaviour
         {
             // A recognition that failed in pitcher mode falls back to a throw without HomePlate.
             throwAim.SetPitcherMode(manualPitcher != null);
+            throwAim.perkMaxThrowSpeedKmh = LocalThrowSpeedCapKmh();
             throwAim.RefreshMarkers();
             throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, ThrowSpinHalfLife,
                 -Physics.gravity.y, Time.fixedDeltaTime, Random.Range(0f, 2f * Mathf.PI), Random.value);
