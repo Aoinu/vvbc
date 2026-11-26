@@ -24,8 +24,8 @@ public partial class PitchFadeBehaviour : TsukimiBehaviour
     public LineRenderer[] rings;
 
     [Header("Fade")]
-    [Tooltip("Show the fade at all. Future perks switch it with SetFadeEnabled.")]
-    public bool fadeEnabled = true;
+    [Tooltip("Show the fade at all. Default off (no perk); the Pitch Fade perk switches it with SetFadeEnabled.")]
+    public bool fadeEnabled = false;
     [Range(0, 2), Tooltip("0 Off, 1 Fade I (2 rings), 2 Fade II (4 rings). Future perks set it with SetFadeLevel.")]
     public int fadeLevel = FadeTwo;
     [Tooltip("Ring diameter when it appears, in metres.")]

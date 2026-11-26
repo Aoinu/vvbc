@@ -506,8 +506,8 @@ All values are decided once on the releasing client:
   Difference from the earlier specification (changed on purpose): the ball's
   position was sampled, averaged over 0.08 s, and a sample faster than
   `maxTrackingSpeed` (40 m/s) was discarded, which dropped real fast arms.
-- **Speed**: arm speed ≤ 2 m/s → 90 km/h, ≥ 10 m/s → 145 km/h, smoothstep in
-  between. Unchanged. With the player perk system the top is the thrower's Ball Speed perk
+- **Speed**: arm speed ≤ 2 m/s → 90 km/h, ≥ 10 m/s → `maxThrowSpeedKmh` (120 km/h, the
+  perk standard; 145 before the perk system), smoothstep in between. With the player perk system the top is the thrower's Ball Speed perk
   limit (120 km/h standard, 90-155; `perkMaxThrowSpeedKmh`, given by the Ball per throw) and the
   minimum never exceeds it ([Player perks](player-perks.md#ball-speed-pitch-and-throw-limits-one-perk)).
 - **Target**: among the shown targets, the one whose marker is closest to the

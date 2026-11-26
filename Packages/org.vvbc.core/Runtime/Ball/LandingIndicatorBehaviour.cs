@@ -24,8 +24,8 @@ public partial class LandingIndicatorBehaviour : TsukimiBehaviour
     public Transform groundReference;
 
     [Header("Landing Indicator")]
-    [Tooltip("Show the indicator at all. Future perks switch it with SetLandingIndicatorEnabled.")]
-    public bool landingIndicatorEnabled = true;
+    [Tooltip("Show the indicator at all. Default off (no perk); the Landing Indicator perk switches it with SetLandingIndicatorEnabled.")]
+    public bool landingIndicatorEnabled = false;
     [Tooltip("Seconds between two predictions of the landing point.")]
     public float predictionInterval = 0.20f;
     [Tooltip("Seconds the centre takes to move to a new prediction.")]

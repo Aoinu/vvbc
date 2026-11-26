@@ -157,13 +157,13 @@ public partial struct ReleasePlateHit
     }
 
     [TsukimiTest]
-    public void TheSigmaShrinksWithTheScoreAndVanishesAtZeroStrength()
+    public void TheSigmaShrinksWithTheScoreAndVanishesAtScore100()
     {
         Assert.AreEqual(0.4f, ReleasePlateMath.ControlSigma(0f, 0.4f));
         Assert.AreEqual(0f, ReleasePlateMath.ControlSigma(100f, 0.4f));
         Assert.IsTrue(ReleasePlateMath.ControlSigma(30f, 0.4f) > ReleasePlateMath.ControlSigma(70f, 0.4f));
-        Assert.AreEqual(0f, ReleasePlateMath.ScaledControlError(0.4f, 0f));
-        Assert.AreEqual(0.2f, ReleasePlateMath.ScaledControlError(0.4f, 0.5f));
+        Assert.AreEqual(0.9f, ReleasePlateMath.ControlSigma(0f, 0.9f), "the standard: 0.90 m at score 0");
+        Assert.IsTrue(Mathf.Abs(ReleasePlateMath.ControlSigma(85f, 0.9f) - 0.135f) < 0.00001f, "0.15 x at score 85");
         Assert.AreEqual(Vector2.zero, ReleasePlateMath.ControlError(0f, 0.3f, 0f, 0f, 0f, 0f), "zero limit: exactly no error");
     }
 

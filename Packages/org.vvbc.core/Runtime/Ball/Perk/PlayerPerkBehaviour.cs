@@ -28,8 +28,6 @@ public partial class PlayerPerkBehaviour : TsukimiBehaviour
     public const int StatNotReported = 0;
     public const int StatApplied = 1;
     public const int StatUnavailable = 2;
-    // Applied, but the system makes it ineffective now (control with penalty strength 0).
-    public const int StatNoEffect = 3;
 
     [Tooltip("Behaviours that receive _OnPerksChanged (the PlayerObject's PerkEffects). Others register at runtime.")]
     public UdonBehaviour[] changeListeners = new UdonBehaviour[0];

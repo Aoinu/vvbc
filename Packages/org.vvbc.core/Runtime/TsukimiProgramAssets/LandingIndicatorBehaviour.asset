@@ -8380,7 +8380,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 9efd88c3ac5c16d43b6638386cb0ebcd, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 779d1429744b565bf9266f6294afda4477e33e17884f5d5d7868f07c7e3130bc
+  sourceFingerprint: dfa5946cd2c652a9ed571a5864936e7b5ea182e57012e38d769b97bd468306a8
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -8414,7 +8414,8 @@ MonoBehaviour:
     rangeMax: 0
   - symbol: landingIndicatorEnabled
     header: Landing Indicator
-    tooltip: Show the indicator at all. Future perks switch it with SetLandingIndicatorEnabled.
+    tooltip: Show the indicator at all. Default off (no perk); the Landing Indicator
+      perk switches it with SetLandingIndicatorEnabled.
     hidden: 0
     space: 0
     hasRange: 0
@@ -25864,7 +25865,6 @@ MonoBehaviour:
     Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
   - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
     Side\x01String:=Large"
-  - "=landingIndicatorEnabled\tBoolTrue\t\t0\t\t\t\t\t"
   - "=markerColor\tGetterConst\t=UnityEngineColor\t0\t\t\t=UnityEngineColor.__get_white__UnityEngineColor\t\t"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=8637017943892801259\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=8637017943892801259"
@@ -25893,7 +25893,6 @@ MonoBehaviour:
     Side\x01String:=\x01String:=Slow\x01String:=Glove Side\x01String:=Small"
   - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
     Side\x01String:=Large"
-  - "=landingIndicatorEnabled\tBoolTrue\t\t0\t\t\t\t\t"
   - "=markerColor\tGetterConst\t=UnityEngineColor\t0\t\t\t=UnityEngineColor.__get_white__UnityEngineColor\t\t"
   - "=__refl_typeid\tPrimConst\t=SystemInt64\t0\tInt64:=8637017943892801259\t\t\t\t"
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=8637017943892801259"

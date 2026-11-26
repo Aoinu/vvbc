@@ -20,7 +20,7 @@ T# source in `Packages/org.vvbc.core/Runtime/Ball` is authoritative.
 | `Ball/PitchPropertiesCalculator.cs` | The physical definition of every type (shared with the batting pitcher): also `SpeedMultiplier` and `MirrorForLeftHand`. |
 | `Ball/ReleasePlateMath.cs` | Pure math of the release plate: plate frame, segment crossing, early-release prediction, position score, binary timing cap, maximum and random control error. |
 | `Ball/ManualPitchBehaviour.cs` | Mound component (local, no sync of its own; see [manual pitch sync](manual-pitch-sync.md)): mound trigger, pitcher-mode state, fixed release point and release plate, throwing-controller sampling and crossing, auto release, cursor, glove-hand lock, solver, release resolution, control, feedback, debug. |
-| `Ball/ManualPitchControlSettingsBehaviour.cs` | The mound's control balance (penalty strength, timing cap, error sigma), Manual-synced on its own object, with its three panel sliders. |
+| `Ball/ManualPitchControlSettingsBehaviour.cs` | The mound's timing cap, Manual-synced on its own object, with its panel slider. |
 | `Ball/ManualPitchBehaviour.Calibration.cs` | Calibration draft, commit, PlayerData persistence. |
 | `Ball/ManualPitchPanelBehaviour.cs` | World-space panel: buttons and status text only. |
 | `Ball/BallBehaviour.Fielding.cs` | Single release gate (Pickup Use / Drop / the mound's auto release, `AutoReleaseHand`), pitch-or-throw branch, launch (a pitch from the mound's `releasePosition`, `P0`), release re-assertion. |
@@ -188,7 +188,7 @@ release is a throw (`not locked`).
 
 `ManualPitchQuality.IdealProperties` uses `PitchPropertiesCalculator` for each type's
 unit axis and pitch-local wake. The mound's 4-Seam rpm sets the base spin
-(`min(fourSeamSpinRpm 2500, maxFourSeamSpinRpm 2800)`). The 4-Seam ideal and the
+(`min(fourSeamSpinRpm 2200, maxFourSeamSpinRpm 2800)`; 2200 is the Spin perk standard). The 4-Seam ideal and the
 common failure flight both use the same wake as the batting pitcher. A Rotating wake (Knuckle) gets its initial phase when the course is solved, from the mound's
 own seed (`PitchPropertiesCalculator.PhaseFromSeed`, as the batting pitcher), so the solver aims
 with the phase the pitch is released with; a default course used by a Knuckle is solved again
@@ -519,10 +519,11 @@ The plate crossing (actual or predicted) gives the control score (`ReleasePlateM
 positionScore = 100 x (1 - clamp01(|offset| / halfDiagonal))     linear, provisional
 timingCap     = 100 for Ideal; timingCap (60) for Early, Auto and Late   binary, never graded
 score         = min(positionScore, timingCap)
-sigma         = sigmaAtScore0 (0.40 m) x (1 - score / 100)        linear, provisional
-sigma'        = sigma x strength (0..1, default 0)
+sigma         = sigmaAtScore0 x (1 - score / 100)                 linear, provisional
+sigmaAtScore0 = the pitcher's Control perk (0.90 m standard; 1.30 / 0.60 / 0.40 / 0.18 m for
+                Debuff / I / II / III), controlSigmaMeters (0.90 m) without the perk system
 z             = (u1 + u2 + u3 + u4 - 2) x sqrt(3)                 four uniforms: ~N(0, 1), |z| <= 2 sqrt(3)
-distance      = sigma' x |z|                                      68 % within sigma', 95 % within 2 sigma'
+distance      = sigma x |z|                                       68 % within sigma, 95 % within 2 sigma
 angle         = 2 pi u0                                           uniform, independent of the offset
 error (right, up) = distance x (cos angle, sin angle)             at the plate's front edge
 direction     = ControlDirection(D0, error + armDirectionPenalty, distance to the plane)
@@ -535,28 +536,32 @@ version (changed on purpose, after a real-client test): the setting was the larg
 distance `limit x |u1 + u2 + u3 + u4 - 2| / 2`, whose mean is about 23 % of the limit; typical
 errors were 2-5 cm and could not be felt. The timing cap first applied to Early releases only; it
 now applies to every release outside the ideal timing, the auto release (held too long)
-included. At strength 0 no uniform is drawn and the
-pitch leaves along `D0` (the arm-direction penalty, default 0, is unchanged). The five uniforms
+included. There is no strength factor: control score -> the pitcher's sigma -> the random
+error, so every release short of score 100 can miss, with or without a Control perk (the former
+mound-wide "Control penalty" strength and "Error 1 sigma" sliders were removed with the player
+perks). Only a sigma of 0 (score 100) skips the draw, and the pitch then leaves along `D0` (the
+arm-direction penalty, default 0, is unchanged). The five uniforms
 are drawn only on the pitcher's client, once per release; the error turns only the launch
 direction (no new solve): `P0`, speed, spin, axis and SSW are untouched. The drawn error is an
 aimed offset at the front-edge plane; the measured arrival (below) is shown separately. The
-three settings come from the mound's `ManualPitchControlSettingsBehaviour` (synced; see
-[Control settings](#control-settings)), read once at the release, so a change never reaches a
-pitch in flight; without one the mound's Inspector fallbacks are used.
+timing cap comes from the mound's `ManualPitchControlSettingsBehaviour` (synced; see
+[Control settings](#control-settings)) and the sigma from the pitcher's own perks, both read once
+at the release, so a change never reaches a pitch in flight; without the settings object the
+mound's `timingScoreCap` is used. Another player's perks never reach a pitch: each client reads
+only its local player's `PlayerPerkBehaviour`.
 
 ### Control settings
 
 `Panel/ControlSettings` (`ManualPitchControlSettingsBehaviour`, Manual sync, its own object; the
-Ball's pitch sync is unchanged) holds three synced floats with sliders and value labels:
+Ball's pitch sync is unchanged) holds one synced float, the timing cap, with its slider and
+value label:
 
 | Slider | Range, step | Default |
 |---|---|---|
-| Control penalty (strength) | 0-100 %, 5 % | 0 % |
 | Timing cap (every release but Ideal) | 0-100, 5 | 60 |
-| Error 1 sigma at score 0 | 0-100 cm, 1 cm | 40 cm (provisional) |
 
-An edit takes Ownership, snaps and clamps the values and requests a serialization; others and
-late joiners receive the owner's values in `OnDeserialization` (clamped again). Shown values
+An edit takes Ownership, snaps and clamps the value and requests a serialization; others and
+late joiners receive the owner's value in `OnDeserialization` (clamped again). Shown values
 are set with `SetValueWithoutNotify`, so they never call back. Plate size, auto-release frames
 and prediction distance stay Inspector settings of the mound.
 
@@ -606,7 +611,7 @@ Vraw    = Vmax x Clamp01(armSpeedCurve(|v_arm|)) x m             km/h
 Vsolver = Vmax x Clamp01(solverSpeedRatio) x m                   km/h, at the lock, 0.97 by default
 Vmax    = the 4-Seam limit the course was solved with (ManualPitchCourse.maxSpeedKmh):
           the pitcher's Ball Speed perk (120 km/h standard) with the player perk system,
-          maxPitchSpeedKmh (140) without it
+          maxPitchSpeedKmh (120, the same standard) without it
 m       = PitchPropertiesCalculator.SpeedMultiplier(build)        1 for the 4-Seam (table in Pitch types)
 ```
 
@@ -673,8 +678,8 @@ aimed with (quality 1), whatever the pose and timing, so that (1) the solver's o
 speed difference and (3) the quality-made ball change can be separated. Every type is aimed and
 flown the same way (`EveryTypeIsAimedWithItsOwnFlightAndArrives`), the ideal and the failure
 flight, and the aim follows the quality (`ASwitchSolvesTheLockAgainAndTheAimFollowsTheQuality`). The shared upward 4-Seam SSW is aimed and flown the same way (`AnUpwardWakeIsAimedAndFlownTheSameWay`).
-With the control penalty strength above 0 the drawn control error also separates the flight from
-the solver's crossing, by design.
+The drawn control error also separates the flight from the solver's crossing (below score 100),
+by design.
 
 ## Release feedback
 
@@ -861,7 +866,7 @@ table does not reach an instance that overrides it:
 
 `diagnosticIdealSpin` is described under [Release](#release). `showDebug` (off by default) writes, after every release, `PitcherMode`, `PitchState`,
 release input (Trigger/Grip/Auto), recognition and reason, the plate (kind, timing, offset,
-frames, predicted path), the score, strength, error limit and drawn error, the control offset and
+frames, predicted path), the score, sigma and drawn error, the control offset and
 launch direction, controller speed and direction error (shown only), the launch point (the fixed `P0`, or the ball centre for a throw), curve output, maximum, solver and release speed, pose error and quality, spin rpm and axis, SSW, solver error and
 predicted target to `debugLabel` for `debugSeconds` (6) and to the log. With it off nothing
 is shown or logged.

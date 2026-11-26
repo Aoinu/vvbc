@@ -22,7 +22,7 @@ MonoBehaviour:
     maxAimElevation: %SystemSingle, 30\n    .export maxAimElevation\n    aimElevationGain:
     %SystemSingle, 1.5\n    .export aimElevationGain\n    referenceSpeedKmh: %SystemSingle,
     110\n    .export referenceSpeedKmh\n    minThrowSpeedKmh: %SystemSingle, 90\n   
-    .export minThrowSpeedKmh\n    maxThrowSpeedKmh: %SystemSingle, 145\n    .export
+    .export minThrowSpeedKmh\n    maxThrowSpeedKmh: %SystemSingle, 120\n    .export
     maxThrowSpeedKmh\n    slowArmSpeed: %SystemSingle, 2\n    .export slowArmSpeed\n   
     fastArmSpeed: %SystemSingle, 10\n    .export fastArmSpeed\n    maxLaunchElevation:
     %SystemSingle, 12\n    .export maxLaunchElevation\n    throwSpinRpm: %SystemSingle,
@@ -5070,7 +5070,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 342745ec5f0f2e04d930667bca8d1ed4, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 6b1eea474cafaa0af2d5024f6b626fa22beeb04e1b8273af576a562202abe1ab
+  sourceFingerprint: 98b11f4e1c8a3a13972b251385c96799d15c80cab6c5d20a3724472cd695f9eb
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -5132,7 +5132,9 @@ MonoBehaviour:
     rangeMax: 0
   - symbol: maxThrowSpeedKmh
     header: 
-    tooltip: Throw speed at or above the fast arm speed, in km/h. Default 145.
+    tooltip: Throw speed at or above the fast arm speed, in km/h, in a world without
+      the player perk system (with it, the thrower's Ball Speed perk). Default 120,
+      the perk standard.
     hidden: 0
     space: 0
     hasRange: 0
@@ -5532,7 +5534,7 @@ MonoBehaviour:
     maxAimElevation: %SystemSingle, 30\n    .export maxAimElevation\n    aimElevationGain:
     %SystemSingle, 1.5\n    .export aimElevationGain\n    referenceSpeedKmh: %SystemSingle,
     110\n    .export referenceSpeedKmh\n    minThrowSpeedKmh: %SystemSingle, 90\n   
-    .export minThrowSpeedKmh\n    maxThrowSpeedKmh: %SystemSingle, 145\n    .export
+    .export minThrowSpeedKmh\n    maxThrowSpeedKmh: %SystemSingle, 120\n    .export
     maxThrowSpeedKmh\n    slowArmSpeed: %SystemSingle, 2\n    .export slowArmSpeed\n   
     fastArmSpeed: %SystemSingle, 10\n    .export fastArmSpeed\n    maxLaunchElevation:
     %SystemSingle, 12\n    .export maxLaunchElevation\n    throwSpinRpm: %SystemSingle,
@@ -11330,7 +11332,7 @@ MonoBehaviour:
     maxAimElevation: %SystemSingle, 30\n    .export maxAimElevation\n    aimElevationGain:
     %SystemSingle, 1.5\n    .export aimElevationGain\n    referenceSpeedKmh: %SystemSingle,
     110\n    .export referenceSpeedKmh\n    minThrowSpeedKmh: %SystemSingle, 90\n   
-    .export minThrowSpeedKmh\n    maxThrowSpeedKmh: %SystemSingle, 145\n    .export
+    .export minThrowSpeedKmh\n    maxThrowSpeedKmh: %SystemSingle, 120\n    .export
     maxThrowSpeedKmh\n    slowArmSpeed: %SystemSingle, 2\n    .export slowArmSpeed\n   
     fastArmSpeed: %SystemSingle, 10\n    .export fastArmSpeed\n    maxLaunchElevation:
     %SystemSingle, 12\n    .export maxLaunchElevation\n    throwSpinRpm: %SystemSingle,

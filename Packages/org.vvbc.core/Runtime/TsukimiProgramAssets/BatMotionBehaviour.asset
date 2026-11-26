@@ -68,7 +68,7 @@ MonoBehaviour:
     %SystemSingle, 1.5\n    .export buntContactWidthMultiplier\n    buntPowerCap:
     %SystemSingle, 0.3\n    .export buntPowerCap\n    buntPullThreshold: %SystemSingle,
     -0.1\n    .export buntPullThreshold\n    homingEnabled: %SystemBoolean, null\n   
-    .export homingEnabled\n    homingRate: %SystemSingle, 0.5\n    .export homingRate\n   
+    .export homingEnabled\n    homingRate: %SystemSingle, 0\n    .export homingRate\n   
     battedSpeedBonusTopKmh: %SystemSingle, 0\n    .export battedSpeedBonusTopKmh\n   
     battedSpeedCapKmh: %SystemSingle, 0\n    .export battedSpeedCapKmh\n    speedQualityGamma:
     %SystemSingle, 1\n    .export speedQualityGamma\n    contactWidthOffset: %SystemSingle,
@@ -9812,7 +9812,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 549452d6668ff764e98fcd242f6da2d8, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 41f956244561abd1b0364e34921783be307b96bac8ecad1e623137e5f3fa8903
+  sourceFingerprint: 4c3faa2a338b08815469c84bba3ea06395c7a1811d75ca9a188f90a3d896de68
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -9921,7 +9921,7 @@ MonoBehaviour:
   - symbol: homingRate
     header: 
     tooltip: Fraction of the contact-plane offset from the sweet spot removed before
-      evaluating a normal swing.
+      evaluating a normal swing. Default 0 (no perk).
     hidden: 0
     space: 0
     hasRange: 1
@@ -10186,7 +10186,7 @@ MonoBehaviour:
     %SystemSingle, 1.5\n    .export buntContactWidthMultiplier\n    buntPowerCap:
     %SystemSingle, 0.3\n    .export buntPowerCap\n    buntPullThreshold: %SystemSingle,
     -0.1\n    .export buntPullThreshold\n    homingEnabled: %SystemBoolean, null\n   
-    .export homingEnabled\n    homingRate: %SystemSingle, 0.5\n    .export homingRate\n   
+    .export homingEnabled\n    homingRate: %SystemSingle, 0\n    .export homingRate\n   
     battedSpeedBonusTopKmh: %SystemSingle, 0\n    .export battedSpeedBonusTopKmh\n   
     battedSpeedCapKmh: %SystemSingle, 0\n    .export battedSpeedCapKmh\n    speedQualityGamma:
     %SystemSingle, 1\n    .export speedQualityGamma\n    contactWidthOffset: %SystemSingle,
@@ -21796,7 +21796,7 @@ MonoBehaviour:
     %SystemSingle, 1.5\n    .export buntContactWidthMultiplier\n    buntPowerCap:
     %SystemSingle, 0.3\n    .export buntPowerCap\n    buntPullThreshold: %SystemSingle,
     -0.1\n    .export buntPullThreshold\n    homingEnabled: %SystemBoolean, null\n   
-    .export homingEnabled\n    homingRate: %SystemSingle, 0.5\n    .export homingRate\n   
+    .export homingEnabled\n    homingRate: %SystemSingle, 0\n    .export homingRate\n   
     battedSpeedBonusTopKmh: %SystemSingle, 0\n    .export battedSpeedBonusTopKmh\n   
     battedSpeedCapKmh: %SystemSingle, 0\n    .export battedSpeedCapKmh\n    speedQualityGamma:
     %SystemSingle, 1\n    .export speedQualityGamma\n    contactWidthOffset: %SystemSingle,
@@ -31550,8 +31550,6 @@ MonoBehaviour:
   - "=_stableBodyRotation\tGetterConst\t=UnityEngineQuaternion\t0\t\t\t=UnityEngineQuaternion.__get_identity__UnityEngineQuaternion\t\t"
   - "=_remoteRotationOffset\tGetterConst\t=UnityEngineQuaternion\t0\t\t\t=UnityEngineQuaternion.__get_identity__UnityEngineQuaternion\t\t"
   - "=_transitionRotation\tGetterConst\t=UnityEngineQuaternion\t0\t\t\t=UnityEngineQuaternion.__get_identity__UnityEngineQuaternion\t\t"
-  - "=buntEnabled\tBoolTrue\t\t0\t\t\t\t\t"
-  - "=homingEnabled\tBoolTrue\t\t0\t\t\t\t\t"
   - "=_defaultCapSettings\tArrayAlloc\t=SystemSingleArray\t14\t\t\t\t\t"
   - "=_contactTimes\tArrayAlloc\t=SystemSingleArray\t32\t\t\t\t\t"
   - "=_contactPositions\tArrayAlloc\t=UnityEngineVector3Array\t32\t\t\t\t\t"
@@ -31604,8 +31602,6 @@ MonoBehaviour:
   - "=_stableBodyRotation\tGetterConst\t=UnityEngineQuaternion\t0\t\t\t=UnityEngineQuaternion.__get_identity__UnityEngineQuaternion\t\t"
   - "=_remoteRotationOffset\tGetterConst\t=UnityEngineQuaternion\t0\t\t\t=UnityEngineQuaternion.__get_identity__UnityEngineQuaternion\t\t"
   - "=_transitionRotation\tGetterConst\t=UnityEngineQuaternion\t0\t\t\t=UnityEngineQuaternion.__get_identity__UnityEngineQuaternion\t\t"
-  - "=buntEnabled\tBoolTrue\t\t0\t\t\t\t\t"
-  - "=homingEnabled\tBoolTrue\t\t0\t\t\t\t\t"
   - "=_defaultCapSettings\tArrayAlloc\t=SystemSingleArray\t14\t\t\t\t\t"
   - "=_contactTimes\tArrayAlloc\t=SystemSingleArray\t32\t\t\t\t\t"
   - "=_contactPositions\tArrayAlloc\t=UnityEngineVector3Array\t32\t\t\t\t\t"

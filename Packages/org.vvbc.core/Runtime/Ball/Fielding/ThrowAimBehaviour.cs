@@ -37,8 +37,8 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     [Header("Throw Speed")]
     [Tooltip("Throw speed at or below the slow arm speed, in km/h. Default 90.")]
     public float minThrowSpeedKmh = 90f;
-    [Tooltip("Throw speed at or above the fast arm speed, in km/h. Default 145.")]
-    public float maxThrowSpeedKmh = 145f;
+    [Tooltip("Throw speed at or above the fast arm speed, in km/h, in a world without the player perk system (with it, the thrower's Ball Speed perk). Default 120, the perk standard.")]
+    public float maxThrowSpeedKmh = 120f;
     [Tooltip("Arm speed giving the minimum throw speed, in m/s. Default 2.")]
     public float slowArmSpeed = 2f;
     [Tooltip("Arm speed giving the maximum throw speed, in m/s. Default 10.")]

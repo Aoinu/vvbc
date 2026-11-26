@@ -175,9 +175,10 @@ The player perk system's standard is **120 km/h** for both limits. With the perk
 `PlayerPerkBehaviour` for the local player) every hand pitch and throw uses the perk's absolute
 value, never a ratio applied to the Inspector settings: no perk 120 / 120, Debuff 105 / 90, I
 140 / 135, II 150 / 145, III 160 / 155 km/h. **This replaces the Inspector limits**
-(`ManualPitchBehaviour.maxPitchSpeedKmh` 140, `ThrowAimBehaviour.maxThrowSpeedKmh` 145) for
-players of a perk world: a player without perks pitches at most 120 km/h, no longer 140. Those
-Inspector values are kept and used only in a world without the perk system.
+(`ManualPitchBehaviour.maxPitchSpeedKmh`, `ThrowAimBehaviour.maxThrowSpeedKmh`) for players of
+a perk world. Those Inspector values are used only in a world without the perk system, and their
+defaults are the same 120 km/h standard (they were 140 and 145 before the perk system), so a
+player without perks pitches and throws the same either way.
 
 - **Pitch**: the 4-Seam limit `Vmax` in `Vraw = Vmax × curve(arm speed) × type multiplier` and in
   the solver's `Vsolver = Vmax × solverSpeedRatio × type multiplier` (locked course, default
@@ -234,13 +235,14 @@ tunable on `PlayerPerkBehaviour`: `controlSigmaAtZeroDebuff` ... `controlSigmaAt
 | III | 0.18 m | 2.7 cm |
 
 sigma is a 1-sigma value, not a limit; a score of 100 (ideal release) has no error. The pitcher's
-client reads it locally at the release (`ManualPitchBehaviour.ControlSigmaAtZeroNow`); the mound's
-synced control settings (`ManualPitchControlSettingsBehaviour`: penalty strength, timing cap and
-its own sigma) are never written. The **penalty strength still applies**: at 0 (the default) the
-drawn error is 0 whatever the perk, on purpose; the panel says so (`last mound: penalty strength 0
-- control error has no effect`) and the mound's debug text shows the score, the sigma at score 0
-and whether it came from the perk. `PracticeSpace.unity`'s mound is set to strength 100 % so the
-perk is visible there.
+client reads it locally at the release (`ManualPitchBehaviour.ControlSigmaAtZeroNow`); the
+model is control score -> the pitcher's sigma -> the random error, with **no strength factor**:
+the mound-wide Control penalty and Error 1 sigma settings were removed, so the error is always
+drawn in full and a player without a Control perk has the standard 0.90 m. The mound keeps only
+its synced timing cap (`ManualPitchControlSettingsBehaviour`), which the perk never writes. In a
+world without the perk system the mound's `controlSigmaMeters` (0.90 m, the same standard) is
+used. The mound's debug text shows the score, the sigma, the sigma at score 0 and its Control
+stage (Standard without a perk).
 
 ### New batting perks (Batting, normal swing only)
 
@@ -437,7 +439,7 @@ player's `Perks` by itself (retrying for 60 s after Start).
   km/h, gamma, half width offset in cm, early / late yaw in degrees as the Bat uses them);
   Pitching (pitch and throw limits in km/h with the mound's unused setting, the spin profile in
   rpm and the Knuckle SSW, the control target next to the actual sigma at score 85 and 0 in cm,
-  and whether the last mound's penalty strength makes it effective); Running (Max Speed,
+  and whether a mound used it yet); Running (Max Speed,
   Acceleration, Initial Speed, Jump Height, fence zone height); Fielding (Catch Radius); Visual
   Aids.
 - It rebuilds only on presses, `_OnPerksChanged` and when enabled; nothing runs per frame and a
@@ -455,11 +457,8 @@ player's `Perks` by itself (retrying for 60 s after Start).
 3. Place `PerkPanel.prefab` where players can reach it.
 4. Optional: place `FenceJumpZone.prefab` instances along fences, size their BoxCollider and set
    their `Locomotion`.
-5. To see the Control perk, set the mound's control penalty strength above 0 (its panel slider or
-   `ControlSettings.penaltyStrength`).
 
-`PracticeSpace.unity` is set up this way (fence zone in front of the backstop, mound strength
-100 %).
+`PracticeSpace.unity` is set up this way (fence zone in front of the backstop).
 
 ## Future: cost and slots
 
@@ -531,8 +530,26 @@ ones), and the budget shown in the panel. Selection, sync and application need n
 control stage (the arrival spread); an actual throw with a limit; real swings with the batting
 perks (exit speeds, band contacts, early / late timing on both batting sides); jumping in a fence
 zone with a VR body; multiple clients and late joiners with the new perks. Provisional:
-the control sigmas, `contactExtensionMinimumScale` (0.25, linear), and the 120 km/h standard
-replacing the mounds' 140 km/h.
+the control sigmas and `contactExtensionMinimumScale` (0.25, linear).
+
+### Standard values without perks
+
+Every system's Inspector default is its no-perk standard, so a player without perks plays the
+same with or without the perk system:
+
+| System | Field | Default (= standard) |
+|---|---|---|
+| Manual pitch | `maxPitchSpeedKmh` | 120 km/h (was 140) |
+| Manual pitch | `fourSeamSpinRpm` | 2200 rpm (was 2500) |
+| Manual pitch | `controlSigmaMeters` | 0.90 m at score 0 (was 0.40 with a 0 % strength) |
+| Throw | `maxThrowSpeedKmh` / `minThrowSpeedKmh` | 120 (was 145) / 90 km/h; Ball `fallbackThrowSpeedKmh` 90 |
+| Bat Motion | `buntEnabled`, `homingEnabled`, `homingRate` | off, off, 0 (were on, on, 0.50) |
+| Bat Motion | batted ball top / cap, gamma, width offset, early / late yaw | none (162 km/h), 1.00, 0 m, 30 / 30 deg |
+| Pitch Fade / Landing Indicator | `fadeEnabled` / `landingIndicatorEnabled` | off (were on) |
+| Locomotion | max speed, acceleration, initial speed, JumpImpulse | 8.0 m/s, 6.24, 3.0 m/s, 3.0 (unchanged; the Acceleration perk's catalogue 10.0 is a design scale, not Locomotion's 6.24) |
+| Glove | catch radius | 12 cm (unchanged; calibration and the perk multiplier stay separate) |
+
+The batting pitcher is not a player and keeps its own values (`PitchPropertiesCalculator`).
 - Not covered by `test`: the glove trigger radius (no collider in tests), `PerkLookup`
   (PlayerObjects), Pitch Fade and Landing Indicator following the perks, the UI prefab, real
   network delivery. These need ClientSim and VRChat clients.

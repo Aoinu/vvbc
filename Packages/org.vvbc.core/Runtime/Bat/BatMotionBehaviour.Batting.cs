@@ -15,10 +15,10 @@ public partial class BatMotionBehaviour
     public float minimumQuality = 0.25f;
     public float timingYawDegrees = 30f;
 
-    // Batting assists, local to this player's Bat and not synchronized. A future
-    // perk system sets them through SetHoming/SetBuntEnabled or these fields.
+    // Batting assists, local to this player's Bat and not synchronized. Off by default (no
+    // perk); the player perk system sets them through SetHoming/SetBuntEnabled.
     [Header("Bunt")]
-    public bool buntEnabled = true;
+    public bool buntEnabled = false;
     [Tooltip("Pattern A: raw Power (before caps) must be below this.")]
     public float buntPatternARawPowerThreshold = 0.20f;
     [Tooltip("Pattern B: two-hand free grip with the upper hand at or beyond this fraction of Bat length.")]
@@ -30,9 +30,9 @@ public partial class BatMotionBehaviour
     public float buntPullThreshold = -0.1f;
 
     [Header("Homing")]
-    public bool homingEnabled = true;
-    [Tooltip("Fraction of the contact-plane offset from the sweet spot removed before evaluating a normal swing.")]
-    [Range(0f, 1f)] public float homingRate = 0.50f;
+    public bool homingEnabled = false;
+    [Tooltip("Fraction of the contact-plane offset from the sweet spot removed before evaluating a normal swing. Default 0 (no perk).")]
+    [Range(0f, 1f)] public float homingRate = 0f;
 
     // Rate applied to a normal swing; zero when disabled or invalid.
     public float EffectiveHomingRate()

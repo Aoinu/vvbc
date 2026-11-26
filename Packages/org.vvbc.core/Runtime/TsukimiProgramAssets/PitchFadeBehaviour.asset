@@ -10668,7 +10668,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: afb6aaa0aa91fdc42899036393c93594, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: e6460a341313652828d4c6c00bfa182307c98bd23d7b0e62ddf6621fdbcc6072
+  sourceFingerprint: 4d08fb67e058f9e033848d49f9498639a8a5f75159d1b48468c920ce0b5bb705
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -10694,7 +10694,8 @@ MonoBehaviour:
     rangeMax: 0
   - symbol: fadeEnabled
     header: Fade
-    tooltip: Show the fade at all. Future perks switch it with SetFadeEnabled.
+    tooltip: Show the fade at all. Default off (no perk); the Pitch Fade perk switches
+      it with SetFadeEnabled.
     hidden: 0
     space: 0
     hasRange: 0
@@ -32591,7 +32592,6 @@ MonoBehaviour:
   - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
     Side\x01String:=Large"
   - "=rings\tArrayAlloc\t=UnityEngineLineRendererArray\t0\t\t\t\t\t"
-  - "=fadeEnabled\tBoolTrue\t\t0\t\t\t\t\t"
   - "=fadeTwoDistances\tArrayConst\t=SystemSingleArray\t4\t\t\t\t\t=Single:=12\x01Single:=6\x01Single:=3\x01Single:=0"
   - "=fadeOneDistances\tArrayConst\t=SystemSingleArray\t2\t\t\t\t\t=Single:=6\x01Single:=0"
   - "=strikeColor\tCtorConst\t\t0\t\t\t=UnityEngineColor.__ctor__SystemSingle_SystemSingle_SystemSingle_SystemSingle__UnityEngineColor\t=Single:=1\x01Single:=0.9\x01Single:=0.05\x01Single:=0.9\t"
@@ -32630,7 +32630,6 @@ MonoBehaviour:
   - "=__sf__X9zPitchType__HighLabels\tArrayConst\t=SystemStringArray\t30\t\t\t\t\t=String:=\x01String:=\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Large\x01String:=Sink\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Fast\x01String:=Large\x01String:=Vertical\x01String:=Lift\x01String:=\x01String:=\x01String:=Slurve\x01String:=Slow\x01String:=\x01String:=Large\x01String:=\x01String:=\x01String:=Slow\x01String:=Down\x01String:=\x01String:=Fast\x01String:=Arm
     Side\x01String:=Large"
   - "=rings\tArrayAlloc\t=UnityEngineLineRendererArray\t0\t\t\t\t\t"
-  - "=fadeEnabled\tBoolTrue\t\t0\t\t\t\t\t"
   - "=fadeTwoDistances\tArrayConst\t=SystemSingleArray\t4\t\t\t\t\t=Single:=12\x01Single:=6\x01Single:=3\x01Single:=0"
   - "=fadeOneDistances\tArrayConst\t=SystemSingleArray\t2\t\t\t\t\t=Single:=6\x01Single:=0"
   - "=strikeColor\tCtorConst\t\t0\t\t\t=UnityEngineColor.__ctor__SystemSingle_SystemSingle_SystemSingle_SystemSingle__UnityEngineColor\t=Single:=1\x01Single:=0.9\x01Single:=0.05\x01Single:=0.9\t"

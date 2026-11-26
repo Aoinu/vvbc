@@ -347,7 +347,10 @@ public partial class PitchFadeBehaviour
     [TsukimiTest]
     public void PerkApiSwitchesLevelAndEnabled()
     {
-        Assert.IsTrue(FadeActive(), "on, Fade II by default");
+        Assert.IsFalse(FadeActive(), "off by default (no perk)");
+        Assert.AreEqual(FadeTwo, fadeLevel, "Fade II once switched on");
+        SetFadeEnabled(true);
+        Assert.IsTrue(FadeActive());
         Assert.AreEqual(4, RingDistanceCount());
         SetFadeLevel(FadeOne);
         Assert.AreEqual(2, RingDistanceCount());

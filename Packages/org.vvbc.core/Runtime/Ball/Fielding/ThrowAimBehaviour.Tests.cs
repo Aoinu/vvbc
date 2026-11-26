@@ -139,7 +139,7 @@ public partial class ThrowAimBehaviour
         Assert.AreEqual(1, selectedTarget, "second base");
         Assert.IsTrue(releaseMiss < 0.01f, "the arm ray passes through the marker");
         float speed = releaseVelocity.magnitude;
-        Assert.IsTrue(Mathf.Abs(speed - FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, 145f / 3.6f)) < 0.01f, "arm speed 8 m/s");
+        Assert.IsTrue(Mathf.Abs(speed - FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, 120f / 3.6f)) < 0.01f, "arm speed 8 m/s (the default 120 km/h maximum)");
         Vector3 flat = new Vector3(releaseVelocity.x, 0f, releaseVelocity.z).normalized;
         Vector3 wanted = new Vector3(-release.x, 0f, 38.8f - release.z).normalized;
         Assert.IsTrue(Vector3.Dot(flat, wanted) > 0.9999f, "heading at the base itself, not the marker");
@@ -898,7 +898,7 @@ public partial class ThrowAimBehaviour
     [TsukimiTest]
     public void TheBallSpeedPerkSetsTheThrowLimit()
     {
-        Assert.IsTrue(Mathf.Abs(ThrowSpeedKmhWith(0f, 0.4f) - 145f) < 0.05f, "no perk system: the Inspector 145 km/h");
+        Assert.IsTrue(Mathf.Abs(ThrowSpeedKmhWith(0f, 0.4f) - 120f) < 0.05f, "no perk system: the Inspector 120 km/h, the same as the standard");
         float[] limits = { 90f, 120f, 135f, 145f, 155f };
         for (int i = 0; i < limits.Length; i++)
         {
@@ -912,7 +912,8 @@ public partial class ThrowAimBehaviour
             float expected = FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, limits[i] / 3.6f) * 3.6f;
             Assert.IsTrue(Mathf.Abs(middle - expected) < 0.05f, "the arm-speed curve is unchanged");
         }
-        Assert.AreEqual(145f, maxThrowSpeedKmh, "the Inspector setting is not changed");
+        Assert.AreEqual(120f, maxThrowSpeedKmh, "the Inspector setting is not changed");
+        Assert.AreEqual(90f, minThrowSpeedKmh);
         Assert.AreEqual(145f, ThrowMaxSpeedKmh(145f, float.NaN));
         Assert.AreEqual(145f, ThrowMaxSpeedKmh(145f, -1f));
     }

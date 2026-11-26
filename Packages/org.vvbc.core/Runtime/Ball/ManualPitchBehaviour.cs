@@ -70,14 +70,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     public Color lockedCursorColor = new Color(1f, 0.85f, 0.2f, 1f);
 
     [Header("4-Seam (the base of every type: speed, and the common failure mode's spin and SSW)")]
-    [Tooltip("Highest 4-Seam release speed, in km/h: a 4-Seam leaves at this times the arm-speed curve's output, any other type at that times its speed multiplier. Default 140.")]
-    public float maxPitchSpeedKmh = 140f;
+    [Tooltip("Highest 4-Seam release speed, in km/h: a 4-Seam leaves at this times the arm-speed curve's output, any other type at that times its speed multiplier. Used only in a world without the player perk system (with it, the pitcher's Ball Speed perk). Default 120, the perk standard.")]
+    public float maxPitchSpeedKmh = 120f;
     [Tooltip("Arm speed (x, m/s, the recognition's averaged sample) to normalized release speed (y, 0..1). The output is clamped to 0..1 and held at the end keys outside them. Without keys every pitch leaves at maxPitchSpeedKmh.")]
     public AnimationCurve armSpeedCurve;
     [Range(0f, 1f), Tooltip("Speed the solver aims with, as a fraction of maxPitchSpeedKmh, taken when the course is locked. Never applied to the release itself. Default 0.97.")]
     public float solverSpeedRatio = 0.97f;
-    [Tooltip("Spin of a 4-Seam released in the calibrated pose, in rpm. Default 2500.")]
-    public float fourSeamSpinRpm = 2500f;
+    [Tooltip("Spin of a 4-Seam released in the calibrated pose, in rpm. Default 2200, the Spin perk standard.")]
+    public float fourSeamSpinRpm = 2200f;
     [Tooltip("Upper limit of the 4-Seam spin, in rpm. Default 2800.")]
     public float maxFourSeamSpinRpm = 2800f;
 
@@ -97,15 +97,13 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     [Tooltip("Longest path, in metres, from the hand to the plate along its current motion for a release before the plate to be a pitch. Default 0.30.")]
     public float maxPredictionDistance = 0.30f;
 
-    [Header("Control score (local fallbacks when no Control Settings is found)")]
-    [Tooltip("Synced control settings of this mound (penalty strength, timing cap, error sigma). When empty, the child ManualPitchControlSettingsBehaviour is used, else the three values below.")]
+    [Header("Control score")]
+    [Tooltip("Synced timing cap of this mound. When empty, the child ManualPitchControlSettingsBehaviour is used, else timingScoreCap below.")]
     public ManualPitchControlSettingsBehaviour controlSettings;
-    [Range(0f, 1f), Tooltip("Strength of the random control error, 0..1. Default 0: every pitch leaves along the solved direction.")]
-    public float controlPenaltyStrength = 0f;
-    [Range(0f, 100f), Tooltip("Score cap of every release outside the ideal timing (early, auto, late). Default 60.")]
+    [Range(0f, 100f), Tooltip("Score cap of every release outside the ideal timing (early, auto, late), used when no Control Settings is found. Default 60.")]
     public float timingScoreCap = 60f;
-    [Tooltip("Control error sigma (1 sigma of the normal draw) at score 0, before the strength, in metres at the plate's front edge. Provisional default 0.40.")]
-    public float controlSigmaMeters = 0.40f;
+    [Tooltip("Control error sigma (1 sigma of the normal draw) at score 0, in metres at the plate's front edge, used only in a world without the player perk system (with it, the pitcher's Control perk). Default 0.90, the perk standard.")]
+    public float controlSigmaMeters = 0.90f;
 
     [Header("Control (control only; never speed, spin, axis or SSW)")]
     [Tooltip("Crossing miss per degree between the arm's motion and the direction from the release point to the target, in metres, toward where the arm moved. Independent of the controller rotation. Default 0 (no penalty).")]
@@ -264,9 +262,9 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     // The hold whose feedback is shown; a new hold clears the previous crossing and trail.
     private int _feedbackSession = -1;
 
-    // Control settings and random draw taken at the release (the settings Behaviour is read
-    // only in the thin release wrapper; the core reads these).
-    private float _setStrength, _setTimingCap = 60f, _setSigma = 0.40f;
+    // The timing cap and random draw taken at the release (the settings Behaviour is read only
+    // in the thin release wrapper; the core reads these).
+    private float _setTimingCap = 60f;
     private float _drawAngle, _drawU1 = 0.5f, _drawU2 = 0.5f, _drawU3 = 0.5f, _drawU4 = 0.5f;
 
     // Plate result of the last release (snapshot).
@@ -278,19 +276,21 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
     private float _resultPredictDistance = -1f;
     private int _resultCrossFrames = -1;
     private float _resultPositionScore = -1f, _resultTimingCap = 100f, _resultScore = -1f;
-    private float _resultStrength, _resultSigma, _resultDrawSigma;
-    // The synced settings' sigma at score 0, and whether the pitcher's Control perk replaced it.
-    private float _resultSceneSigma;
+    // The sigma of the draw (at the release's score), the sigma at score 0 it came from and
+    // whether that was the pitcher's Control perk.
+    private float _resultSigma, _resultSigmaAtZero;
     private bool _resultSigmaFromPerk;
     // The local player's perks (player perk system), found when pitcher mode starts; null in a
-    // world without it, where the Inspector speed, spin and the synced control sigma are used.
+    // world without it, where the Inspector speed, spin and control sigma are used.
     private PlayerPerkBehaviour _perks;
     // The pitcher's abilities read from the perks at binding and on each change (tests set them
-    // with SetPerkAbilities). Inactive: the Inspector speed, spin and the synced sigma.
+    // with SetPerkAbilities). Inactive: the Inspector speed, spin and sigma.
     private bool _perkActive;
     private float _perkPitchCapKmh;
     private int _perkSpinStage;
     private float _perkControlSigma;
+    // The Control stage, for the diagnostics only (0 Standard when tests set the abilities).
+    private int _perkControlStage;
     private Vector2 _resultDrawError;
     private float _resultDrawAngle;
     private Vector3 _resultLaunchDirection;
@@ -687,6 +687,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         if (_perks == null) return;
         SetPerkAbilities(_perks.GetValueOrStandard(PerkCatalog.AbilityPitchSpeedCap), _perks.GetStage(PerkCatalog.AbilitySpin),
             _perks.GetControlSigmaAtZero());
+        _perkControlStage = _perks.GetStage(PerkCatalog.AbilityControl);
     }
 
     // The pitcher's 4-Seam speed limit (km/h), Spin stage and control sigma at score 0 (m).
@@ -744,17 +745,14 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
 
     // The pitch abilities as this mound uses them, for the perk panel: the pitch cap against the
     // mound's Inspector cap, the 4-Seam rpm against the mound's, and the control sigma at score
-    // 85 against the synced setting's (no effect while the penalty strength is 0).
+    // 85 against the mound's Inspector sigma.
     private void ReportPerkStats()
     {
         if (_perks == null) return;
         _perks.ReportStat(PerkCatalog.AbilityPitchSpeedCap, ManualPitchMath.SpeedSetting(maxPitchSpeedKmh), PitchSpeedCapKmh(), PlayerPerkBehaviour.StatApplied);
         _perks.ReportStat(PerkCatalog.AbilitySpin, FourSeamRpm(), SpinProfile().fourSeamRpm, PlayerPerkBehaviour.StatApplied);
-        float strength = controlSettings != null ? controlSettings.penaltyStrength : controlPenaltyStrength;
-        float sceneSigma = controlSettings != null ? controlSettings.controlSigma : controlSigmaMeters;
-        _perks.ReportStat(PerkCatalog.AbilityControl, ReleasePlateMath.ControlSigma(ReferenceControlScore, sceneSigma),
-            ReleasePlateMath.ControlSigma(ReferenceControlScore, _perkControlSigma),
-            strength > 0f ? PlayerPerkBehaviour.StatApplied : PlayerPerkBehaviour.StatNoEffect);
+        _perks.ReportStat(PerkCatalog.AbilityControl, ReleasePlateMath.ControlSigma(ReferenceControlScore, controlSigmaMeters),
+            ReleasePlateMath.ControlSigma(ReferenceControlScore, _perkControlSigma), PlayerPerkBehaviour.StatApplied);
         _perks.NotifyStatsChanged();
     }
 
@@ -1375,37 +1373,32 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return ResolveTrackedReleaseAt(Time.time, hand.position, hand.rotation, ballPosition, PlanePoint(plate, forward), forward, input);
     }
 
-    // The control settings of this release: the synced ones of the mound's settings, else the
-    // Inspector values. Read once here, so a change during the flight never reaches it.
-    // With the player perk system the sigma at score 0 is the pitcher's own (Control perk, read
-    // here locally, never written to the synced settings); strength and timing cap stay the
-    // mound's.
+    // The timing cap of this release: the mound's synced one, else the Inspector value. Read
+    // once here, so a change during the flight never reaches it. The sigma at score 0 is the
+    // pitcher's own (Control perk, read locally), never a mound setting.
     private void ReadControlSettings()
     {
-        if (controlSettings != null)
-            SetControlSettings(controlSettings.penaltyStrength, controlSettings.timingCap, controlSettings.controlSigma);
-        else SetControlSettings(controlPenaltyStrength, timingScoreCap, controlSigmaMeters);
+        SetTimingCap(controlSettings != null ? controlSettings.timingCap : timingScoreCap);
         ReportPerkStats();
     }
 
-    // The sigma at score 0 a release uses: the pitcher's Control perk, else the setting.
+    // The sigma at score 0 a release uses: the pitcher's Control perk (0.90 m standard), else,
+    // without the perk system, the Inspector sigma (0.90 m by default).
     public float ControlSigmaAtZeroNow()
     {
-        return _perkActive ? _perkControlSigma : _setSigma;
+        return _perkActive ? _perkControlSigma : controlSigmaMeters;
     }
 
-    public void SetControlSettings(float strength, float timingCap, float sigma)
+    public void SetTimingCap(float timingCap)
     {
-        _setStrength = strength;
         _setTimingCap = timingCap;
-        _setSigma = sigma;
     }
 
     // The five uniforms of the random control error, drawn on the pitcher's client only and
-    // only when the strength can produce an error (never per frame, never on receivers).
+    // only when a sigma can produce an error (never per frame, never on receivers).
     private void DrawControlUniforms()
     {
-        if (!(_setStrength > 0f) || !(ControlSigmaAtZeroNow() > 0f))
+        if (!(ControlSigmaAtZeroNow() > 0f))
         {
             SetControlDraw(0f, 0.5f, 0.5f, 0.5f, 0.5f);
             return;
@@ -1582,17 +1575,15 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         }
 
         // Control score: the crossing's distance from the plate centre, capped for every release
-        // outside the ideal timing; it sets the error's sigma, scaled by the penalty strength.
+        // outside the ideal timing; with the pitcher's sigma at score 0 it sets the error's sigma.
         _resultPositionScore = ReleasePlateMath.PositionScore(_resultCrossOffset, _plate.halfWidth, _plate.halfHeight);
         _resultTimingCap = ReleasePlateMath.TimingCap(_resultTiming, _setTimingCap);
         _resultScore = ReleasePlateMath.FinalScore(_resultPositionScore, _resultTimingCap);
-        _resultStrength = ManualPitchMath.Finite(_setStrength) ? Mathf.Clamp01(_setStrength) : 0f;
-        _resultSceneSigma = _setSigma;
         _resultSigmaFromPerk = _perkActive;
-        _resultSigma = ReleasePlateMath.ControlSigma(_resultScore, ControlSigmaAtZeroNow());
-        _resultDrawSigma = ReleasePlateMath.ScaledControlError(_resultSigma, _resultStrength);
-        _resultDrawError = ReleasePlateMath.ControlError(_resultDrawSigma, _drawAngle, _drawU1, _drawU2, _drawU3, _drawU4);
-        _resultDrawAngle = _resultDrawSigma > 0f ? Mathf.Clamp01(_drawAngle) * 360f : 0f;
+        _resultSigmaAtZero = ControlSigmaAtZeroNow();
+        _resultSigma = ReleasePlateMath.ControlSigma(_resultScore, _resultSigmaAtZero);
+        _resultDrawError = ReleasePlateMath.ControlError(_resultSigma, _drawAngle, _drawU1, _drawU2, _drawU3, _drawU4);
+        _resultDrawAngle = _resultSigma > 0f ? Mathf.Clamp01(_drawAngle) * 360f : 0f;
 
         // The arm-direction penalty (default 0): the angle of the arm's motion, toward where it
         // moved, as a crossing offset (right, up, metres). A zero coefficient contributes exactly zero.
@@ -1727,9 +1718,8 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         _resultPositionScore = -1f;
         _resultTimingCap = 100f;
         _resultScore = -1f;
-        _resultStrength = 0f;
         _resultSigma = 0f;
-        _resultDrawSigma = 0f;
+        _resultSigmaAtZero = 0f;
         _resultDrawError = Vector2.zero;
         _resultDrawAngle = 0f;
         _resultLaunchDirection = Vector3.zero;
@@ -2105,16 +2095,20 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
         return text + " (default)";
     }
 
-    // Control: the arm-direction penalty's crossing offset (the only control penalty).
+    private static string PerkStageName(int stage)
+    {
+        return stage == -1 ? "Debuff" : stage == 1 ? "I" : stage == 2 ? "II" : stage == 3 ? "III" : "Standard";
+    }
+
+    // Control: the arm-direction penalty's crossing offset and the random error.
     public string ControlText()
     {
         string text = "\nCONTROL  (crossing offset)";
         if (!_resultPitched) return text + "\n  not a pitch: nothing applied";
         text += "\n  arm direction " + Offset(_penaltyDirection) + "   (" + _resultDirectionK.ToString("F3") + " m/deg)" +
             "   palm: quality only, no control";
-        text += "\n  random  strength " + (_resultStrength * 100f).ToString("F0") + "%   sigma " + AbsCm(_resultDrawSigma) +
-            " (score " + _resultScore.ToString("F0") + ": " + AbsCm(_resultSigma) + " at full strength)" +
-            "\n  sigma at score 0 " + AbsCm(_resultSigmaFromPerk ? _perkControlSigma : _resultSceneSigma) + (_resultSigmaFromPerk ? " (Control perk; synced setting " + AbsCm(_resultSceneSigma) + " not used)" : " (synced setting)") +
+        text += "\n  random  sigma " + AbsCm(_resultSigma) + " at score " + _resultScore.ToString("F0") +
+            "   (score 0: " + AbsCm(_resultSigmaAtZero) + ", " + (_resultSigmaFromPerk ? "Control perk " + PerkStageName(_perkControlStage) : "no perk system: mound setting") + ")" +
             "\n  drawn " + AbsCm(_resultDrawError.magnitude) + " at " + _resultDrawAngle.ToString("F0") + " deg   " + Offset(_resultDrawError) +
             "   (aimed offset at the plate's front edge, not the arrival)" +
             "\n  launch direction " + _resultLaunchDirection.ToString("F4");
@@ -2266,7 +2260,7 @@ public partial class ManualPitchBehaviour : TsukimiBehaviour
             "\nPlate: " + ReleasePlateMath.CrossName(_resultCross) + "  Timing: " + ReleasePlateMath.TimingName(_resultTiming) +
             "  Offset: " + _resultCrossOffset.ToString("F3") + "  Frames: " + _resultCrossFrames + "  Predict: " + _resultPredictDistance.ToString("F3") +
             "\nScore: " + _resultScore.ToString("F0") + " (pos " + _resultPositionScore.ToString("F0") + ", cap " + _resultTimingCap.ToString("F0") +
-            ")  Strength: " + _resultStrength.ToString("F2") + "  Sigma: " + _resultDrawSigma.ToString("F3") + " m  Drawn: " + _resultDrawError.ToString("F3") +
+            ")  Sigma: " + _resultSigma.ToString("F3") + " m  Drawn: " + _resultDrawError.ToString("F3") +
             "\nControlOffset: " + _penaltyDirection.ToString("F3") + "  LaunchDir: " + _resultLaunchDirection.ToString("F4") +
             "\nControllerSpeed: " + debugArmSpeed.ToString("F2") + " m/s  DirError: " + debugDirectionError.ToString("F1") + " deg (shown only)" +
             "\nLaunch: " + (debugRecognized ? releasePosition.ToString("F2") + " (fixed P0)" : "ball centre") +

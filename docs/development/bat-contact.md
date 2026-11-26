@@ -302,19 +302,19 @@ range, width, quality, `normalizedY`, spin and the contact position given to
 `BallResultMath` use the corrected coordinates. The Ball and Bat are not moved,
 and the hand-off, sound and `contactPosition` keep the physical Ball position.
 With Homing disabled or at rate 0, the calculation is the previous one exactly.
-Intended steps are 0, 0.25, 0.50 and 0.75 (Homing I–III); the default is
-enabled at 0.50.
+Intended steps are 0, 0.25, 0.50 and 0.75 (Homing I–III); the default is off
+at 0 (no perk), as is Bunt.
 
 | Bat Motion field | Default |
 |---|---|
-| `buntEnabled` | true |
+| `buntEnabled` | false |
 | `buntPatternARawPowerThreshold` | 0.20 |
 | `buntUpperGripThreshold` | 0.65 |
 | `buntContactWidthMultiplier` | 1.5 |
 | `buntPowerCap` | 0.30 |
 | `buntPullThreshold` | -0.1 m/s |
-| `homingEnabled` | true |
-| `homingRate` | 0.50 |
+| `homingEnabled` | false |
+| `homingRate` | 0 |
 
 Local code can call `SetHoming(enabled, rate)` (rate 0–1, otherwise rejected)
 and `SetBuntEnabled(enabled)` on the local Bat Motion; `ResetBattingSettings()`

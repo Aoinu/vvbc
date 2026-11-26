@@ -348,8 +348,7 @@ public partial class PerkPanelBehaviour : TsukimiBehaviour
         text += "\nControl: target " + PerkCatalog.ControlTargetText(control) + "; sigma at score 85 "
             + (sigma * 0.15f * 100f).ToString("F1") + " cm (at 0: " + (sigma * 100f).ToString("F0") + " cm)";
         int state = perks.GetStatState(PerkCatalog.AbilityControl);
-        if (state == PlayerPerkBehaviour.StatNoEffect) text += "\n  last mound: penalty strength 0 - control error has no effect";
-        else if (state == PlayerPerkBehaviour.StatApplied) text += "\n  last mound: applied (penalty strength above 0)";
+        if (state == PlayerPerkBehaviour.StatApplied) text += "\n  last mound: applied";
         else text += "\n  not used on a mound yet";
         return text;
     }

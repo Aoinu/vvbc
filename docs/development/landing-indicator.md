@@ -78,7 +78,7 @@ Behaviour through a `MaterialPropertyBlock` at Start; the material stays shared.
 
 | Field | Default |
 |---|---|
-| Landing Indicator Enabled | true |
+| Landing Indicator Enabled | false (the no-perk standard; the perk switches it on) |
 | Prediction Interval | 0.20 s |
 | Position Transition Duration | 0.15 s |
 | Ground Reference | the HomePlate |

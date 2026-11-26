@@ -296,6 +296,8 @@ public partial class LandingIndicatorBehaviour
     [TsukimiTest]
     public void OnlyABattedFlightStartsTheIndicator()
     {
+        Assert.IsFalse(ShouldStart(true, 5), "off by default (no perk)");
+        landingIndicatorEnabled = true;
         Assert.IsTrue(ShouldStart(true, 5), "a hit or a bunt");
         Assert.IsFalse(ShouldStart(false, 5), "a pitch, a throw, a held or staged ball");
         landingIndicatorEnabled = false;
@@ -305,6 +307,7 @@ public partial class LandingIndicatorBehaviour
     [TsukimiTest(maxSteps: 10000000)]
     public void TheFirstBounceEndsTheFlightForGood()
     {
+        landingIndicatorEnabled = true;
         RefreshTest(5, new Vector3(0f, 10f, 30f), 10f);
         Assert.IsTrue(Continues(true, 5));
         NoteGroundContact(true, 5);
@@ -319,6 +322,7 @@ public partial class LandingIndicatorBehaviour
     public void ABounceBeforeTheHitDoesNotEndTheHit()
     {
         // A pitch in the dirt bounces (not batted yet), then is hit in the same flight sequence.
+        landingIndicatorEnabled = true;
         NoteGroundContact(false, 5);
         Assert.IsTrue(ShouldStart(true, 5));
     }
@@ -326,6 +330,7 @@ public partial class LandingIndicatorBehaviour
     [TsukimiTest(maxSteps: 10000000)]
     public void ACatchResetNewPitchOrThrowEndsTheIndicator()
     {
+        landingIndicatorEnabled = true;
         RefreshTest(5, new Vector3(0f, 10f, 30f), 10f);
         Assert.IsFalse(Continues(false, 5), "caught or held: no longer a free batted flight");
         Assert.IsFalse(Continues(true, 6), "another flight (a received hit, a throw or a pitch)");

@@ -29,7 +29,7 @@ public partial class ManualPitchBehaviour
     {
         Mimic.Join();
         Assert.IsTrue(PerkPitcherForTest());
-        Assert.IsTrue(Near(CurveReleaseSpeedKmh(1f), 140f, 0.01f), "no perk system: the mound's 140 km/h");
+        Assert.IsTrue(Near(CurveReleaseSpeedKmh(1f), 120f, 0.01f), "no perk system: the mound's 120 km/h, the same as the standard");
         SetPerkAbilities(120f, 0, 0.9f);
         Assert.IsTrue(Near(CurveReleaseSpeedKmh(1f), 120f, 0.01f), "perk system, no perk: the 120 km/h standard");
         Assert.IsTrue(Near(_lockSolverSpeedKmh, 120f * 0.97f, 0.01f), "the solver aims with the same limit");
@@ -41,7 +41,7 @@ public partial class ManualPitchBehaviour
             Assert.IsTrue(Near(_lockSolverSpeedKmh, caps[i] * 0.97f, 0.01f));
             Assert.IsTrue(Near(CurveReleaseSpeedKmh(0.5f), caps[i] * 0.5f, 0.01f), "the arm-speed curve scales it as before");
         }
-        Assert.AreEqual(140f, maxPitchSpeedKmh, "the Inspector setting is not changed");
+        Assert.AreEqual(120f, maxPitchSpeedKmh, "the Inspector setting is not changed");
     }
 
     [TsukimiTest]
@@ -130,8 +130,8 @@ public partial class ManualPitchBehaviour
     {
         Mimic.Join();
         Assert.IsTrue(PerkPitcherForTest());
-        Assert.IsTrue(Near(IdealFor(PitchType.FourSeam).spinRpm, 2500f, 0.01f), "the mound's fourSeamSpinRpm");
-        Assert.IsTrue(Near(IdealFor(PitchType.Split).spinRpm, 2500f * 0.18f, 0.01f), "the calculator's own Split");
+        Assert.IsTrue(Near(IdealFor(PitchType.FourSeam).spinRpm, 2200f, 0.01f), "the mound's fourSeamSpinRpm, the standard 2200");
+        Assert.IsTrue(Near(IdealFor(PitchType.Split).spinRpm, 2200f * 0.18f, 0.01f), "the calculator's own Split");
         PitchProperties batting = PitchPropertiesCalculator.Calculate(BuildFor(PitchType.Split), PitchPropertiesCalculator.DefaultBaseSpeedMps, 2500f);
         SetPerkAbilities(120f, 3, 0.9f);
         PitchProperties afterPerk = PitchPropertiesCalculator.Calculate(BuildFor(PitchType.Split), PitchPropertiesCalculator.DefaultBaseSpeedMps, 2500f);
@@ -177,10 +177,10 @@ public partial class ManualPitchBehaviour
         return 0.15f * halfDiagonal;
     }
 
-    private float ControlErrorFor(float strength, Vector2 offset)
+    private float ControlErrorFor(Vector2 offset)
     {
         LockForTest(new Vector3(0f, 0.75f, 0f));
-        SetControlSettings(strength, 60f, 0.4f);
+        SetTimingCap(60f);
         SetControlDraw(0.3f, 1f, 1f, 1f, 1f);
         Vector3 hand = HandAt(TestChest, _calPosition);
         CrossForTest(offset, TowardPlate(), IdealHand(TestChest));
@@ -194,34 +194,40 @@ public partial class ManualPitchBehaviour
         Mimic.Join();
         Assert.IsTrue(PerkPitcherForTest());
         Vector2 offset = new Vector2(Score85Offset(), 0f);
-        float sceneError = ControlErrorFor(1f, offset);
+        float sceneError = ControlErrorFor(offset);
         Assert.IsTrue(Near(_resultScore, 85f, 0.05f), "score " + _resultScore);
-        Assert.IsTrue(Near(_resultSigma, 0.4f * 0.15f, 0.0005f), "no perk system: the synced sigma");
+        Assert.IsTrue(Near(_resultSigma, 0.9f * 0.15f, 0.0005f), "no perk system: the mound's 0.90 m, the same as the standard");
+        Assert.IsTrue(Near(sceneError, 0.135f * ReleasePlateMath.MaxSigmas, 0.0005f), "the sigma is drawn in full: no strength factor");
+        Assert.IsTrue(ControlText().Contains("mound setting"), ControlText());
         float[] sigmas = { 1.30f, 0.90f, 0.60f, 0.40f, 0.18f };
         float[] at85 = { 0.195f, 0.135f, 0.090f, 0.060f, 0.027f };
         float previous = float.MaxValue;
         for (int i = 0; i < sigmas.Length; i++)
         {
             SetPerkAbilities(120f, i - 1, sigmas[i]);
-            float error = ControlErrorFor(1f, offset);
+            float error = ControlErrorFor(offset);
             Assert.IsTrue(Near(_resultSigma, at85[i], 0.0005f), "sigma at 85 for stage " + (i - 1) + ": " + _resultSigma);
-            Assert.IsTrue(Near(error / sceneError, sigmas[i] / 0.4f, 0.01f), "same score and draw: the error scales with the sigma");
+            Assert.IsTrue(Near(error, at85[i] * ReleasePlateMath.MaxSigmas, 0.0005f), "the stage's sigma is applied as is");
+            Assert.IsTrue(Near(error / sceneError, sigmas[i] / 0.9f, 0.01f), "same score and draw: the error scales with the sigma");
             Assert.IsTrue(error < previous, "every stage is more precise than the one below");
             previous = error;
             Assert.IsTrue(ControlText().Contains("Control perk"), ControlText());
         }
+        SetPerkAbilities(120f, 0, 0.9f);
+        ControlErrorFor(offset);
+        Assert.IsTrue(ControlText().Contains("Control perk Standard"), "no Control perk: shown as Standard " + ControlText());
     }
 
     [TsukimiTest]
-    public void AnIdealReleaseAndAZeroStrengthHaveNoError()
+    public void OnlyAnIdealReleaseHasNoError()
     {
         Mimic.Join();
         Assert.IsTrue(PerkPitcherForTest());
         SetPerkAbilities(120f, -1, 1.30f);
-        Assert.AreEqual(0f, ControlErrorFor(1f, Vector2.zero), "score 100: no error even with the debuff");
-        Assert.AreEqual(0f, ControlErrorFor(0f, new Vector2(Score85Offset(), 0f)), "strength 0: switched off on purpose");
-        Assert.IsTrue(_resultSigma > 0f, "the sigma itself is still shown");
-        Assert.AreEqual(0.4f, _setSigma, "the synced setting is never rewritten by the perk");
+        Assert.AreEqual(0f, ControlErrorFor(Vector2.zero), "score 100: no error even with the debuff");
+        SetPerkAbilities(120f, 0, 0.9f);
+        Assert.IsTrue(ControlErrorFor(new Vector2(Score85Offset(), 0f)) > 0.4f, "no Control perk, score 85: the standard error, never switched off");
+        Assert.AreEqual(0.9f, controlSigmaMeters, "the Inspector sigma is never rewritten by the perk");
     }
 
     [TsukimiTest]
@@ -234,7 +240,7 @@ public partial class ManualPitchBehaviour
         float[] scores = { 0f, 50f, 85f, 100f };
         for (int i = 0; i < scores.Length; i++)
         {
-            ControlErrorFor(1f, new Vector2((1f - scores[i] / 100f) * halfDiagonal, 0f));
+            ControlErrorFor(new Vector2((1f - scores[i] / 100f) * halfDiagonal, 0f));
             Assert.IsTrue(Near(_resultScore, scores[i], 0.05f), "score " + _resultScore);
             Assert.IsTrue(Near(_resultSigma, 0.9f * (1f - scores[i] / 100f), 0.0005f), "sigma = 0.9 x (1 - score / 100) at " + scores[i]);
         }

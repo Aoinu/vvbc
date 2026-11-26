@@ -553,23 +553,27 @@ public partial class BatMotionBehaviour
     [TsukimiTest]
     public void HomingAndBuntSettingsValidateAndRestoreDefaults()
     {
-        Assert.IsTrue(buntEnabled);
-        Assert.IsTrue(homingEnabled);
-        Assert.AreEqual(0.5f, EffectiveHomingRate());
+        Assert.IsFalse(buntEnabled, "no perk: no Bunt");
+        Assert.IsFalse(homingEnabled, "no perk: no Homing");
+        Assert.AreEqual(0f, homingRate);
+        Assert.AreEqual(0f, EffectiveHomingRate());
+        Assert.AreEqual(30f, timingYawDegrees);
+        Assert.AreEqual(30f, NormalSwingEarlyYaw());
+        Assert.AreEqual(30f, NormalSwingLateYaw());
         CaptureBattingDefaults();
         Assert.IsFalse(SetHoming(true, 1.1f));
         Assert.IsFalse(SetHoming(true, float.NaN));
-        Assert.AreEqual(0.5f, homingRate);
+        Assert.AreEqual(0f, homingRate);
         Assert.IsTrue(SetHoming(true, 0.75f));
         Assert.AreEqual(0.75f, EffectiveHomingRate());
         Assert.IsTrue(SetHoming(false, 0.25f));
         Assert.AreEqual(0f, EffectiveHomingRate(), "disabled Homing applies no correction");
-        SetBuntEnabled(false);
-        Assert.IsFalse(buntEnabled);
+        SetBuntEnabled(true);
+        Assert.IsTrue(buntEnabled, "a perk turns Bunt on");
         ResetBattingSettings();
-        Assert.IsTrue(buntEnabled);
-        Assert.IsTrue(homingEnabled);
-        Assert.AreEqual(0.5f, homingRate);
+        Assert.IsFalse(buntEnabled);
+        Assert.IsFalse(homingEnabled);
+        Assert.AreEqual(0f, homingRate);
     }
 
     [TsukimiTest]

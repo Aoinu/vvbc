@@ -17,21 +17,20 @@ MonoBehaviour:
   udonAssembly: ".data_start\n    ChangedEventName: %SystemString, \"_OnPerksChanged\"\n   
     StatsChangedEventName: %SystemString, \"_OnPerkStatsChanged\"\n    StatNotReported:
     %SystemInt32, 0\n    StatApplied: %SystemInt32, 1\n    StatUnavailable: %SystemInt32,
-    2\n    StatNoEffect: %SystemInt32, 3\n    changeListeners: %UnityEngineComponentArray,
-    null\n    .export changeListeners\n    controlSigmaAtZeroDebuff: %SystemSingle,
-    1.3\n    .export controlSigmaAtZeroDebuff\n    controlSigmaAtZeroStandard: %SystemSingle,
-    0.9\n    .export controlSigmaAtZeroStandard\n    controlSigmaAtZeroI: %SystemSingle,
-    0.6\n    .export controlSigmaAtZeroI\n    controlSigmaAtZeroII: %SystemSingle,
-    0.4\n    .export controlSigmaAtZeroII\n    controlSigmaAtZeroIII: %SystemSingle,
-    0.18\n    .export controlSigmaAtZeroIII\n    _syncedPerks: %SystemInt32Array,
-    null\n    .sync _syncedPerks, none\n    _syncedRevision: %SystemInt32, 0\n   
-    .sync _syncedRevision, none\n    _selected: %SystemInt32Array, null\n    _count:
-    %SystemInt32, 0\n    _revision: %SystemInt32, 0\n    _factor: %SystemSingleArray,
-    null\n    _value: %SystemSingleArray, null\n    _has: %SystemBooleanArray, null\n   
-    _calculated: %SystemBoolean, null\n    _statBase: %SystemSingleArray, null\n   
-    _statFinal: %SystemSingleArray, null\n    _statState: %SystemInt32Array, null\n   
-    _statsDirty: %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n   
-    __refl_typename: %SystemString, \"PlayerPerkBehaviour\"\n    __refl_typeids:
+    2\n    changeListeners: %UnityEngineComponentArray, null\n    .export changeListeners\n   
+    controlSigmaAtZeroDebuff: %SystemSingle, 1.3\n    .export controlSigmaAtZeroDebuff\n   
+    controlSigmaAtZeroStandard: %SystemSingle, 0.9\n    .export controlSigmaAtZeroStandard\n   
+    controlSigmaAtZeroI: %SystemSingle, 0.6\n    .export controlSigmaAtZeroI\n   
+    controlSigmaAtZeroII: %SystemSingle, 0.4\n    .export controlSigmaAtZeroII\n   
+    controlSigmaAtZeroIII: %SystemSingle, 0.18\n    .export controlSigmaAtZeroIII\n   
+    _syncedPerks: %SystemInt32Array, null\n    .sync _syncedPerks, none\n    _syncedRevision:
+    %SystemInt32, 0\n    .sync _syncedRevision, none\n    _selected: %SystemInt32Array,
+    null\n    _count: %SystemInt32, 0\n    _revision: %SystemInt32, 0\n    _factor:
+    %SystemSingleArray, null\n    _value: %SystemSingleArray, null\n    _has: %SystemBooleanArray,
+    null\n    _calculated: %SystemBoolean, null\n    _statBase: %SystemSingleArray,
+    null\n    _statFinal: %SystemSingleArray, null\n    _statState: %SystemInt32Array,
+    null\n    _statsDirty: %SystemBoolean, null\n    __refl_typeid: %SystemInt64,
+    null\n    __refl_typename: %SystemString, \"PlayerPerkBehaviour\"\n    __refl_typeids:
     %SystemInt64Array, null\n    __Start___inl0__ability: %SystemInt32, 0\n    __Start___inl0____t0:
     %SystemBooleanArray, null\n    __Start___inl0____t1: %SystemInt32, 0\n    __Start___inl0____t2:
     %SystemSingleArray, null\n    __Start___inl0____t3: %SystemInt32, 0\n    __Start___inl0____t4:
@@ -4964,7 +4963,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 3d9fc6e06af79cb42abf34988cb613b2, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 70b7d22518eefd2cbcfc1a6ae1b73f850b90d777de69c9fd3867136c4acfe659
+  sourceFingerprint: 7511cb6f8ae609e8fa370e888f4466bfa7e5b4329f153b58a027fde9dd8f1a9a
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -5006,21 +5005,20 @@ MonoBehaviour:
   optBeforeUasm: ".data_start\n    ChangedEventName: %SystemString, \"_OnPerksChanged\"\n   
     StatsChangedEventName: %SystemString, \"_OnPerkStatsChanged\"\n    StatNotReported:
     %SystemInt32, 0\n    StatApplied: %SystemInt32, 1\n    StatUnavailable: %SystemInt32,
-    2\n    StatNoEffect: %SystemInt32, 3\n    changeListeners: %UnityEngineComponentArray,
-    null\n    .export changeListeners\n    controlSigmaAtZeroDebuff: %SystemSingle,
-    1.3\n    .export controlSigmaAtZeroDebuff\n    controlSigmaAtZeroStandard: %SystemSingle,
-    0.9\n    .export controlSigmaAtZeroStandard\n    controlSigmaAtZeroI: %SystemSingle,
-    0.6\n    .export controlSigmaAtZeroI\n    controlSigmaAtZeroII: %SystemSingle,
-    0.4\n    .export controlSigmaAtZeroII\n    controlSigmaAtZeroIII: %SystemSingle,
-    0.18\n    .export controlSigmaAtZeroIII\n    _syncedPerks: %SystemInt32Array,
-    null\n    .sync _syncedPerks, none\n    _syncedRevision: %SystemInt32, 0\n   
-    .sync _syncedRevision, none\n    _selected: %SystemInt32Array, null\n    _count:
-    %SystemInt32, 0\n    _revision: %SystemInt32, 0\n    _factor: %SystemSingleArray,
-    null\n    _value: %SystemSingleArray, null\n    _has: %SystemBooleanArray, null\n   
-    _calculated: %SystemBoolean, null\n    _statBase: %SystemSingleArray, null\n   
-    _statFinal: %SystemSingleArray, null\n    _statState: %SystemInt32Array, null\n   
-    _statsDirty: %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n   
-    __refl_typename: %SystemString, \"PlayerPerkBehaviour\"\n    __refl_typeids:
+    2\n    changeListeners: %UnityEngineComponentArray, null\n    .export changeListeners\n   
+    controlSigmaAtZeroDebuff: %SystemSingle, 1.3\n    .export controlSigmaAtZeroDebuff\n   
+    controlSigmaAtZeroStandard: %SystemSingle, 0.9\n    .export controlSigmaAtZeroStandard\n   
+    controlSigmaAtZeroI: %SystemSingle, 0.6\n    .export controlSigmaAtZeroI\n   
+    controlSigmaAtZeroII: %SystemSingle, 0.4\n    .export controlSigmaAtZeroII\n   
+    controlSigmaAtZeroIII: %SystemSingle, 0.18\n    .export controlSigmaAtZeroIII\n   
+    _syncedPerks: %SystemInt32Array, null\n    .sync _syncedPerks, none\n    _syncedRevision:
+    %SystemInt32, 0\n    .sync _syncedRevision, none\n    _selected: %SystemInt32Array,
+    null\n    _count: %SystemInt32, 0\n    _revision: %SystemInt32, 0\n    _factor:
+    %SystemSingleArray, null\n    _value: %SystemSingleArray, null\n    _has: %SystemBooleanArray,
+    null\n    _calculated: %SystemBoolean, null\n    _statBase: %SystemSingleArray,
+    null\n    _statFinal: %SystemSingleArray, null\n    _statState: %SystemInt32Array,
+    null\n    _statsDirty: %SystemBoolean, null\n    __refl_typeid: %SystemInt64,
+    null\n    __refl_typename: %SystemString, \"PlayerPerkBehaviour\"\n    __refl_typeids:
     %SystemInt64Array, null\n    __Start___inl0__ability: %SystemInt32, 0\n    __Start___inl0____t0:
     %SystemBooleanArray, null\n    __Start___inl0____t1: %SystemInt32, 0\n    __Start___inl0____t2:
     %SystemSingleArray, null\n    __Start___inl0____t3: %SystemInt32, 0\n    __Start___inl0____t4:
@@ -10284,21 +10282,20 @@ MonoBehaviour:
   optAfterUasm: ".data_start\n    ChangedEventName: %SystemString, \"_OnPerksChanged\"\n   
     StatsChangedEventName: %SystemString, \"_OnPerkStatsChanged\"\n    StatNotReported:
     %SystemInt32, 0\n    StatApplied: %SystemInt32, 1\n    StatUnavailable: %SystemInt32,
-    2\n    StatNoEffect: %SystemInt32, 3\n    changeListeners: %UnityEngineComponentArray,
-    null\n    .export changeListeners\n    controlSigmaAtZeroDebuff: %SystemSingle,
-    1.3\n    .export controlSigmaAtZeroDebuff\n    controlSigmaAtZeroStandard: %SystemSingle,
-    0.9\n    .export controlSigmaAtZeroStandard\n    controlSigmaAtZeroI: %SystemSingle,
-    0.6\n    .export controlSigmaAtZeroI\n    controlSigmaAtZeroII: %SystemSingle,
-    0.4\n    .export controlSigmaAtZeroII\n    controlSigmaAtZeroIII: %SystemSingle,
-    0.18\n    .export controlSigmaAtZeroIII\n    _syncedPerks: %SystemInt32Array,
-    null\n    .sync _syncedPerks, none\n    _syncedRevision: %SystemInt32, 0\n   
-    .sync _syncedRevision, none\n    _selected: %SystemInt32Array, null\n    _count:
-    %SystemInt32, 0\n    _revision: %SystemInt32, 0\n    _factor: %SystemSingleArray,
-    null\n    _value: %SystemSingleArray, null\n    _has: %SystemBooleanArray, null\n   
-    _calculated: %SystemBoolean, null\n    _statBase: %SystemSingleArray, null\n   
-    _statFinal: %SystemSingleArray, null\n    _statState: %SystemInt32Array, null\n   
-    _statsDirty: %SystemBoolean, null\n    __refl_typeid: %SystemInt64, null\n   
-    __refl_typename: %SystemString, \"PlayerPerkBehaviour\"\n    __refl_typeids:
+    2\n    changeListeners: %UnityEngineComponentArray, null\n    .export changeListeners\n   
+    controlSigmaAtZeroDebuff: %SystemSingle, 1.3\n    .export controlSigmaAtZeroDebuff\n   
+    controlSigmaAtZeroStandard: %SystemSingle, 0.9\n    .export controlSigmaAtZeroStandard\n   
+    controlSigmaAtZeroI: %SystemSingle, 0.6\n    .export controlSigmaAtZeroI\n   
+    controlSigmaAtZeroII: %SystemSingle, 0.4\n    .export controlSigmaAtZeroII\n   
+    controlSigmaAtZeroIII: %SystemSingle, 0.18\n    .export controlSigmaAtZeroIII\n   
+    _syncedPerks: %SystemInt32Array, null\n    .sync _syncedPerks, none\n    _syncedRevision:
+    %SystemInt32, 0\n    .sync _syncedRevision, none\n    _selected: %SystemInt32Array,
+    null\n    _count: %SystemInt32, 0\n    _revision: %SystemInt32, 0\n    _factor:
+    %SystemSingleArray, null\n    _value: %SystemSingleArray, null\n    _has: %SystemBooleanArray,
+    null\n    _calculated: %SystemBoolean, null\n    _statBase: %SystemSingleArray,
+    null\n    _statFinal: %SystemSingleArray, null\n    _statState: %SystemInt32Array,
+    null\n    _statsDirty: %SystemBoolean, null\n    __refl_typeid: %SystemInt64,
+    null\n    __refl_typename: %SystemString, \"PlayerPerkBehaviour\"\n    __refl_typeids:
     %SystemInt64Array, null\n    __Start___inl0__ability: %SystemInt32, 0\n    __Start___inl0____t0:
     %SystemBooleanArray, null\n    __Start___inl0____t1: %SystemInt32, 0\n    __Start___inl0____t2:
     %SystemSingleArray, null\n    __Start___inl0____t3: %SystemInt32, 0\n    __Start___inl0____t4:
