@@ -71,19 +71,58 @@ public partial class PerkEffectsBehaviour
         locomotion.maximumSpeed = 8f;
         locomotion.speedMultiplier = 1f;
         Select(new int[] { PerkCatalog.MaxSpeedI });
-        Assert.IsTrue(Near(8.4f, locomotion.GetEffectiveMaximumSpeed(), 0.0001f));
+        Assert.IsTrue(Near(8.9f, locomotion.GetEffectiveMaximumSpeed(), 0.0001f));
+        Assert.IsTrue(Near(6.24f * 8.9f / 8f, locomotion.GetEffectiveAcceleration(), 0.0001f), "the acceleration scales with the maximum");
+        Assert.AreEqual(3f, locomotion.GetEffectiveInitialSpeed(), "Max Speed buffs leave the first step alone");
         Select(new int[] { PerkCatalog.MaxSpeedIII });
-        Assert.IsTrue(Near(9.6f, locomotion.GetEffectiveMaximumSpeed(), 0.0001f));
-        Assert.IsTrue(Near(9.6f, perks.GetStatFinal(PerkCatalog.AbilityMaxSpeed), 0.0001f), "the display is the applied value");
+        Assert.IsTrue(Near(9.9f, locomotion.GetEffectiveMaximumSpeed(), 0.0001f));
+        Assert.IsTrue(Near(9.9f, perks.GetStatFinal(PerkCatalog.AbilityMaxSpeed), 0.0001f), "the display is the applied value");
         Assert.AreEqual(8f, perks.GetStatBase(PerkCatalog.AbilityMaxSpeed));
         Select(new int[] { PerkCatalog.MaxSpeedDebuff, PerkCatalog.Bunt });
-        Assert.IsTrue(Near(6.0f, locomotion.GetEffectiveMaximumSpeed(), 0.0001f));
+        Assert.IsTrue(Near(7.5f, locomotion.GetEffectiveMaximumSpeed(), 0.0001f));
+        Assert.IsTrue(Near(2f, locomotion.GetEffectiveInitialSpeed(), 0.0001f), "the debuff caps the initial speed at 2.0");
         Select(new int[0]);
         Assert.AreEqual(1f, locomotion.speedMultiplier);
         Assert.AreEqual(8f, locomotion.GetEffectiveMaximumSpeed());
-        Assert.AreEqual(7.5f, locomotion.acceleration, "acceleration is not connected");
+        Assert.AreEqual(3f, locomotion.initialSpeed, "back to the Inspector initial speed");
+        Assert.AreEqual(6.24f, locomotion.acceleration, "the Inspector acceleration is never changed");
         Assert.AreEqual(1f, locomotion.accelerationMultiplier);
-        Assert.AreEqual(PlayerPerkBehaviour.StatUnavailable, perks.GetStatState(PerkCatalog.AbilityAcceleration));
+        Assert.AreEqual(PlayerPerkBehaviour.StatApplied, perks.GetStatState(PerkCatalog.AbilityAcceleration));
+    }
+
+    [TsukimiTest]
+    public void AccelerationSetsTheMultiplierAndTheInitialSpeed()
+    {
+        Select(new int[] { PerkCatalog.AccelerationI });
+        Assert.IsTrue(Near(1.1f, locomotion.accelerationMultiplier, 0.0001f));
+        Assert.IsTrue(Near(3.2f, locomotion.initialSpeed, 0.0001f));
+        Assert.IsTrue(Near(6.24f * 1.1f, perks.GetStatFinal(PerkCatalog.AbilityAcceleration), 0.0001f));
+        Assert.AreEqual(6.24f, perks.GetStatBase(PerkCatalog.AbilityAcceleration));
+        Assert.IsTrue(Near(3.2f, perks.GetStatFinal(PerkCatalog.AbilityInitialSpeed), 0.0001f));
+        Select(new int[] { PerkCatalog.AccelerationDebuff });
+        Assert.IsTrue(Near(0.8f, locomotion.accelerationMultiplier, 0.0001f));
+        Assert.IsTrue(Near(2f, locomotion.initialSpeed, 0.0001f));
+        // Both series: Speed Multiplier also scales the acceleration; the Max Speed Debuff caps
+        // the Acceleration III initial speed.
+        Select(new int[] { PerkCatalog.AccelerationIII, PerkCatalog.MaxSpeedII });
+        Assert.IsTrue(Near(6.24f * 1.4f * 1.175f, locomotion.GetEffectiveAcceleration(), 0.0001f));
+        Assert.IsTrue(Near(3.6f, locomotion.GetEffectiveInitialSpeed(), 0.0001f));
+        Select(new int[] { PerkCatalog.AccelerationIII, PerkCatalog.MaxSpeedDebuff });
+        Assert.IsTrue(Near(2f, locomotion.GetEffectiveInitialSpeed(), 0.0001f));
+        Select(new int[0]);
+        Assert.AreEqual(1f, locomotion.accelerationMultiplier);
+        Assert.AreEqual(3f, locomotion.initialSpeed);
+        Assert.AreEqual(6.24f, locomotion.GetEffectiveAcceleration());
+    }
+
+    [TsukimiTest]
+    public void InitialSpeedIsTheBaseTimesTheFactorUnderTheCap()
+    {
+        Assert.IsTrue(Near(3.6f, InitialSpeedFor(3f, 1.2f, false, 0f), 0.0001f));
+        Assert.IsTrue(Near(2f, InitialSpeedFor(3f, 1.2f, true, 2f), 0.0001f), "cap 2.0 on the 3.0 standard");
+        Assert.IsTrue(Near(2.4f, InitialSpeedFor(3.6f, 1f, true, 2f), 0.0001f), "the cap follows a different base");
+        Assert.IsTrue(Near(1.5f, InitialSpeedFor(3f, 0.5f, true, 2f), 0.0001f), "a lower speed stays under the cap");
+        Assert.AreEqual(3f, InitialSpeedFor(3f, 1f, true, float.NaN), "an invalid cap is ignored");
     }
 
     [TsukimiTest]
@@ -92,7 +131,7 @@ public partial class PerkEffectsBehaviour
         locomotion.maximumSpeed = 11f;
         locomotion.speedMultiplier = 1f;
         Select(new int[] { PerkCatalog.MaxSpeedIII });
-        Assert.IsTrue(Near(1.2f, locomotion.speedMultiplier, 0.0001f), "the multiplier, not the Inspector maximum, is changed");
+        Assert.IsTrue(Near(1.2375f, locomotion.speedMultiplier, 0.0001f), "the multiplier, not the Inspector maximum, is changed");
         Assert.AreEqual(11f, locomotion.maximumSpeed);
         Assert.AreEqual(12f, locomotion.GetEffectiveMaximumSpeed(), "the existing 12 m/s ceiling still applies");
         Assert.AreEqual(12f, perks.GetStatFinal(PerkCatalog.AbilityMaxSpeed));

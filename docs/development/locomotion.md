@@ -41,13 +41,16 @@ join, respawn, enabling the Behaviour and the validation toggles.
 Feedback Gain. `Vmax = Maximum Speed × Speed Multiplier` (clamped to 0.1–12 m/s).
 
 **Speed-dependent acceleration.** Speeding up uses `a(v) = a0 (1 − v / Vmax)` with
-`a0 = Acceleration × Acceleration Multiplier`. It is integrated exactly over each step,
+`a0 = Acceleration × Acceleration Multiplier × Speed Multiplier`. Speed Multiplier scales
+`Vmax` and `a0` together, so the time constant `Vmax / a0` (the shape of the curve) is kept and
+only Acceleration Multiplier changes it. It is integrated exactly over each step,
 `v' = Vmax − (Vmax − v) e^(−a0 dt / Vmax)`, so the result does not depend on the step
 length; within 0.01 m/s the maximum counts as reached. Slowing down and turning use
 Deceleration `a_dec`, which does not depend on `Vmax` or the acceleration multiplier.
 
 **Initial speed.** When the stick leaves the deadzone, the applied speed is raised at
-once to `u_init = min(Initial Speed × Speed Multiplier, Vmax, u_fb)` (default 2 m/s),
+once to `u_init = min(Initial Speed, Vmax, u_fb)` (default 3 m/s; not scaled by Speed
+Multiplier, the first step is its own setting),
 never lowering it, if all of these hold:
 
 - the player is grounded;
@@ -67,20 +70,21 @@ push. Releasing does not clear the inertia, which decays at `a_dec` (8 m/s is go
 speed; a push from real rest after the inertia has decayed does. From `u_init` the
 speed follows the same `a(v)`, so no separate start curve exists.
 
-The defaults (`Vmax` 8 m/s, `a0` 7.5 m/s², initial speed 2 m/s, time constant
-`Vmax / a0` ≈ 1.07 s) cover the 27.43 m from home to first base in 4.21 s
-(analytically; about 4.27 s with one step of measurement delay) at 7.88 m/s. The
-previous start (`a0` 10 m/s² from the 0.1 m/s floor) took 4.21 s and arrived at
-7.96 m/s, so base running is unchanged while the first metres are quicker:
+The defaults (`Vmax` 8 m/s, `a0` 6.24 m/s², initial speed 3 m/s, time constant
+`Vmax / a0` ≈ 1.28 s) cover the 27.43 m from home to first base in 4.20 s
+(analytically; about 4.25 s with one step of measurement delay), 4.5 s from contact with
+0.3 s of reaction. `a0` was solved for that time after the initial speed was raised from
+2 m/s; the first base time is the same as with the previous defaults (2 m/s, 7.5 m/s²),
+while the first metres are quicker:
 
 | Distance | 1 m | 3 m | 5 m | 10 m | 20 m | 27.43 m |
 |---|---:|---:|---:|---:|---:|---:|
-| Initial 2 m/s, `a0` 7.5 (analytic) | 0.35 s | 0.80 s | 1.15 s | 1.92 s | 3.26 s | 4.21 s |
-| Previous: `a0` 10 from 0.1 m/s | 0.48 s | 0.91 s | 1.25 s | 1.97 s | 3.28 s | 4.21 s |
+| Initial 3 m/s, `a0` 6.24 (analytic) | 0.28 s | 0.72 s | 1.08 s | 1.86 s | 3.24 s | 4.20 s |
+| Previous: initial 2 m/s, `a0` 7.5 | 0.35 s | 0.80 s | 1.15 s | 1.92 s | 3.26 s | 4.21 s |
 
-That is about 4.5 s from contact with roughly 0.3 s before the first step; 8 m/s is
-close to measured professional top speeds (about 8.0–8.2 m/s). Speed Multiplier
-changes the time far more than Acceleration Multiplier. These are model values;
+8 m/s is close to measured professional top speeds (about 8.0–8.2 m/s). The running perks
+(Max Speed, Acceleration) and the measurements behind these targets are in
+[Player perks: Running balance](player-perks.md#running-balance). These are model values;
 check the effective speeds on real clients.
 
 1. **Feedback** (never `Vmax - V`, which subtracts the stick's own speed twice):
@@ -115,9 +119,9 @@ acceleration step of the target; lower the gain if real clients show oscillation
 | Inspector | Default |
 |---|---:|
 | Maximum Speed | 8.0 m/s |
-| Acceleration (at rest) | 7.5 m/s² |
+| Acceleration (at rest) | 6.24 m/s² |
 | Deceleration | 10.0 m/s² |
-| Initial Speed | 2.0 m/s |
+| Initial Speed | 3.0 m/s |
 | Rest Speed Threshold | 0.2 m/s |
 | Turn Braking Strength | 1.0 |
 | Speed Multiplier / Acceleration Multiplier | 1.0 / 1.0 |

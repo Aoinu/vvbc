@@ -53,7 +53,8 @@ public partial class PlayerPerkBehaviour
         Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.MaxSpeedDebuff));
         Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.JumpI));
         Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.CatchRadiusIII));
-        Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.AccelerationI), "acceleration mapping pending");
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.AccelerationI));
+        Assert.IsTrue(PerkCatalog.IsImplemented(PerkCatalog.AccelerationDebuff));
         Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.BallSpeedII), "speed caps differ");
         Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.SpinIII), "spin standard differs");
         Assert.IsFalse(PerkCatalog.IsImplemented(PerkCatalog.ControlDebuff), "control formula undefined");
@@ -146,6 +147,29 @@ public partial class PlayerPerkBehaviour
     }
 
     [TsukimiTest]
+    public void RunningPerksCombineAcrossSeries()
+    {
+        Mimic.Join();
+        ResetForTest();
+        // Acceleration and its debuff share both abilities; one stage per series.
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.AccelerationI));
+        Assert.AreEqual(PerkRules.BuffDebuffConflict, TryAddPerk(PerkCatalog.AccelerationDebuff));
+        Assert.AreEqual(PerkRules.SeriesConflict, TryAddPerk(PerkCatalog.AccelerationIII));
+        // The Max Speed Debuff caps the initial speed but changes no ability an Acceleration buff
+        // raises, so the two go together; Max Speed buffs still conflict with it.
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.MaxSpeedDebuff));
+        Assert.IsFalse(PerkRules.OppositeOnSameAbility(PerkCatalog.MaxSpeedDebuff, PerkCatalog.AccelerationIII));
+        Assert.IsTrue(PerkRules.OppositeOnSameAbility(PerkCatalog.MaxSpeedDebuff, PerkCatalog.MaxSpeedI));
+        Assert.IsTrue(PerkRules.OppositeOnSameAbility(PerkCatalog.AccelerationDebuff, PerkCatalog.AccelerationII));
+        Assert.AreEqual(2, GetSelectedCount());
+        Assert.IsTrue(HasEffect(PerkCatalog.AbilityInitialSpeedCap));
+        Assert.AreEqual(2f, GetEffectValue(PerkCatalog.AbilityInitialSpeedCap));
+        Assert.IsTrue(Near(3.2f / 3f, GetFactor(PerkCatalog.AbilityInitialSpeed), 0.0001f));
+        Assert.IsTrue(Near(1.1f, GetFactor(PerkCatalog.AbilityAcceleration), 0.0001f));
+        Assert.IsTrue(Near(7.5f / 8f, GetFactor(PerkCatalog.AbilityMaxSpeed), 0.0001f));
+    }
+
+    [TsukimiTest]
     public void NoCountLimitBetweenCompatiblePerks()
     {
         Mimic.Join();
@@ -157,7 +181,8 @@ public partial class PlayerPerkBehaviour
         Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.MaxSpeedIII));
         Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.JumpI));
         Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.CatchRadiusIII));
-        Assert.AreEqual(7, GetSelectedCount(), "every implemented series at once");
+        Assert.AreEqual(PerkRules.Ok, TryAddPerk(PerkCatalog.AccelerationIII));
+        Assert.AreEqual(8, GetSelectedCount(), "every implemented series at once");
         Assert.IsTrue(PerkRules.IsValidSelection(_selected, _count));
     }
 
@@ -166,7 +191,6 @@ public partial class PlayerPerkBehaviour
     {
         Mimic.Join();
         ResetForTest();
-        Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.AccelerationI));
         Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.BallSpeedIII));
         Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.SpinI));
         Assert.AreEqual(PerkRules.NotImplemented, TryAddPerk(PerkCatalog.ControlII));
@@ -214,14 +238,25 @@ public partial class PlayerPerkBehaviour
         Mimic.Join();
         ResetForTest();
         TryAddPerk(PerkCatalog.MaxSpeedI);
-        Assert.IsTrue(Near(8.4f, PerkStats.ApplyFactor(8f, GetFactor(PerkCatalog.AbilityMaxSpeed)), 0.0001f));
+        Assert.IsTrue(Near(8.9f, PerkStats.ApplyFactor(8f, GetFactor(PerkCatalog.AbilityMaxSpeed)), 0.0001f));
         TryRemovePerk(PerkCatalog.MaxSpeedI);
         TryAddPerk(PerkCatalog.MaxSpeedIII);
-        Assert.IsTrue(Near(9.6f, PerkStats.ApplyFactor(8f, GetFactor(PerkCatalog.AbilityMaxSpeed)), 0.0001f));
+        Assert.IsTrue(Near(9.9f, PerkStats.ApplyFactor(8f, GetFactor(PerkCatalog.AbilityMaxSpeed)), 0.0001f));
         TryRemovePerk(PerkCatalog.MaxSpeedIII);
         TryAddPerk(PerkCatalog.MaxSpeedDebuff);
-        Assert.IsTrue(Near(6.0f, PerkStats.ApplyFactor(8f, GetFactor(PerkCatalog.AbilityMaxSpeed)), 0.0001f));
-        Assert.IsTrue(Near(-0.25f, GetModifier(PerkCatalog.AbilityMaxSpeed), 0.0001f));
+        Assert.IsTrue(Near(7.5f, PerkStats.ApplyFactor(8f, GetFactor(PerkCatalog.AbilityMaxSpeed)), 0.0001f));
+        Assert.IsTrue(Near(-0.0625f, GetModifier(PerkCatalog.AbilityMaxSpeed), 0.0001f));
+        TryRemovePerk(PerkCatalog.MaxSpeedDebuff);
+        // Acceleration: x0.8 / x1.4 on the base (design 8 / 14 on a standard of 10) and the
+        // initial speed 2.0 / 3.6 on a 3.0 standard.
+        TryAddPerk(PerkCatalog.AccelerationDebuff);
+        Assert.IsTrue(Near(0.8f, GetFactor(PerkCatalog.AbilityAcceleration), 0.0001f));
+        Assert.IsTrue(Near(2.0f, PerkStats.ApplyFactor(3f, GetFactor(PerkCatalog.AbilityInitialSpeed)), 0.0001f));
+        TryRemovePerk(PerkCatalog.AccelerationDebuff);
+        TryAddPerk(PerkCatalog.AccelerationIII);
+        Assert.IsTrue(Near(1.4f, GetFactor(PerkCatalog.AbilityAcceleration), 0.0001f));
+        Assert.IsTrue(Near(3.6f, PerkStats.ApplyFactor(3f, GetFactor(PerkCatalog.AbilityInitialSpeed)), 0.0001f));
+        TryRemovePerk(PerkCatalog.AccelerationIII);
         TryAddPerk(PerkCatalog.CatchRadiusII);
         Assert.IsTrue(Near(0.16f, PerkStats.ApplyFactor(0.12f, GetFactor(PerkCatalog.AbilityCatchRadius)), 0.0001f));
         TryAddPerk(PerkCatalog.JumpI);
@@ -236,10 +271,10 @@ public partial class PlayerPerkBehaviour
         int[] both = { PerkCatalog.MaxSpeedI, PerkCatalog.MaxSpeedII };
         int[] reversed = { PerkCatalog.MaxSpeedII, PerkCatalog.MaxSpeedI };
         float sum = PerkStats.PercentModifier(both, 2, PerkCatalog.AbilityMaxSpeed);
-        Assert.IsTrue(Near(0.05f + 0.125f, sum, 0.0001f));
+        Assert.IsTrue(Near(0.1125f + 0.175f, sum, 0.0001f));
         Assert.AreEqual(sum, PerkStats.PercentModifier(reversed, 2, PerkCatalog.AbilityMaxSpeed));
         int[] mixed = { PerkCatalog.MaxSpeedDebuff, PerkCatalog.MaxSpeedIII };
-        Assert.IsTrue(Near(8f * (1f - 0.25f + 0.2f), PerkStats.ApplyFactor(8f, PerkStats.PercentFactor(mixed, 2, PerkCatalog.AbilityMaxSpeed)), 0.0001f));
+        Assert.IsTrue(Near(8f * (1f - 0.0625f + 0.2375f), PerkStats.ApplyFactor(8f, PerkStats.PercentFactor(mixed, 2, PerkCatalog.AbilityMaxSpeed)), 0.0001f));
         // A legal mixed selection in either order.
         int[] a = { PerkCatalog.MaxSpeedDebuff, PerkCatalog.CatchRadiusIII, PerkCatalog.JumpI };
         int[] b = { PerkCatalog.JumpI, PerkCatalog.CatchRadiusIII, PerkCatalog.MaxSpeedDebuff };
@@ -256,7 +291,7 @@ public partial class PlayerPerkBehaviour
         TryAddPerk(PerkCatalog.MaxSpeedII);
         TryRemovePerk(PerkCatalog.CatchRadiusI);
         Assert.AreEqual(1f, GetFactor(PerkCatalog.AbilityCatchRadius));
-        Assert.IsTrue(Near(1.125f, GetFactor(PerkCatalog.AbilityMaxSpeed), 0.0001f));
+        Assert.IsTrue(Near(1.175f, GetFactor(PerkCatalog.AbilityMaxSpeed), 0.0001f));
         TryAddPerk(PerkCatalog.CatchRadiusI);
         TryAddPerk(PerkCatalog.HomingI);
         TryRemovePerk(PerkCatalog.HomingI);

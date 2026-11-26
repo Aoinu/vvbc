@@ -236,8 +236,9 @@ public partial class PerkPanelBehaviour : TsukimiBehaviour
     public static string StatsText(PlayerPerkBehaviour perks)
     {
         string text = "CURRENT ABILITIES (base -> final)";
-        text += "\n" + PercentLine("Max Speed", perks.GetStatBase(PerkCatalog.AbilityMaxSpeed), perks.GetStatFinal(PerkCatalog.AbilityMaxSpeed),
-            perks.GetModifier(PerkCatalog.AbilityMaxSpeed), "m/s", "F2", perks.GetStatState(PerkCatalog.AbilityMaxSpeed));
+        text += "\n" + AppliedLine(perks, "Max Speed", PerkCatalog.AbilityMaxSpeed, "m/s");
+        text += "\n" + AppliedLine(perks, "Acceleration", PerkCatalog.AbilityAcceleration, "m/s²");
+        text += "\n" + AppliedLine(perks, "Initial Speed", PerkCatalog.AbilityInitialSpeed, "m/s");
         text += "\n" + PercentLine("Jump Height", perks.GetStatBase(PerkCatalog.AbilityJumpHeight), perks.GetStatFinal(PerkCatalog.AbilityJumpHeight),
             perks.GetModifier(PerkCatalog.AbilityJumpHeight), "m", "F2", perks.GetStatState(PerkCatalog.AbilityJumpHeight));
         text += "\n" + PercentLine("Catch Radius", perks.GetStatBase(PerkCatalog.AbilityCatchRadius) * 100f, perks.GetStatFinal(PerkCatalog.AbilityCatchRadius) * 100f,
@@ -246,9 +247,22 @@ public partial class PerkPanelBehaviour : TsukimiBehaviour
         int fade = perks.GetFadeLevel();
         text += "\nPitch Fade: " + (fade == 0 ? "Off" : fade == 1 ? "Fade I (2 rings)" : "Fade II (4 rings)")
             + "   Landing Indicator: " + (perks.IsFlagOn(PerkCatalog.AbilityLandingIndicator) ? "On" : "Off");
-        float acceleration = perks.GetStatBase(PerkCatalog.AbilityAcceleration);
-        text += "\nAcceleration: " + (acceleration > 0f ? acceleration.ToString("F2") + " m/s²" : "-") + " (perks not connected)";
         text += "\nPitch/Throw Speed Cap, Spin, Control: perks not connected";
         return text;
+    }
+
+    // A running value as Locomotion uses it; the percentage is final / base - 1, because Max
+    // Speed also scales the acceleration and the Max Speed Debuff caps the initial speed.
+    private static string AppliedLine(PlayerPerkBehaviour perks, string name, int ability, string unit)
+    {
+        float baseValue = perks.GetStatBase(ability);
+        float finalValue = perks.GetStatFinal(ability);
+        return PercentLine(name, baseValue, finalValue, RatioModifier(baseValue, finalValue), unit, "F2", perks.GetStatState(ability));
+    }
+
+    public static float RatioModifier(float baseValue, float finalValue)
+    {
+        if (!(baseValue > 0f) || !PerkStats.Finite(finalValue)) return 0f;
+        return finalValue / baseValue - 1f;
     }
 }

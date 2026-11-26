@@ -14,12 +14,12 @@ namespace VVBC.Locomotion
     {
         [Header("Speed control (m/s, m/s²)")]
         public float maximumSpeed = 8f;
-        [Tooltip("Acceleration at rest (m/s²). It falls linearly with speed and reaches zero at the maximum: a(v) = a0 (1 - v / max).")]
-        public float acceleration = 7.5f;
+        [Tooltip("Acceleration at rest (m/s²). It falls linearly with speed and reaches zero at the maximum: a(v) = a0 (1 - v / max). With the 3 m/s initial speed, 6.24 covers home to first base in 4.2 s (docs/development/player-perks.md).")]
+        public float acceleration = 6.24f;
         [Tooltip("Rate (m/s²) at which inertia slows down or turns. Independent of the maximum speed.")]
         public float deceleration = 10f;
-        [Tooltip("Run/Strafe speed (m/s) given at once when the stick leaves the deadzone from rest. Scaled by Speed Multiplier, never above the maximum or the feedback limit, and never lowers the applied speed.")]
-        public float initialSpeed = 2f;
+        [Tooltip("Run/Strafe speed (m/s) given at once when the stick leaves the deadzone from rest. Not scaled by Speed Multiplier; never above the maximum or the feedback limit, and never lowers the applied speed.")]
+        public float initialSpeed = 3f;
         [Tooltip("Initial Speed is given only while both the measured and the inertial speed are below this (m/s).")]
         public float restSpeedThreshold = 0.2f;
         public float minimumAppliedSpeed = 0.1f;
@@ -32,7 +32,7 @@ namespace VVBC.Locomotion
         public float directionMinimumSpeed = 0.05f;
 
         [Header("Modifiers (abilities, buffs and debuffs)")]
-        [Tooltip("Multiplies Maximum Speed.")]
+        [Tooltip("Multiplies Maximum Speed and the acceleration at rest together, so max / a0 (the shape of the speed curve) is kept. Initial Speed is not scaled.")]
         public float speedMultiplier = 1f;
         [Tooltip("Multiplies Acceleration (at rest). Deceleration is not affected.")]
         public float accelerationMultiplier = 1f;
@@ -224,6 +224,10 @@ namespace VVBC.Locomotion
         public void SetLogEnabled(bool value) { logEnabled = value; }
 
         public float GetEffectiveMaximumSpeed() { return Maximum(); }
+        // Acceleration at rest after both multipliers, and the initial speed a push from rest
+        // gets (before the feedback limit).
+        public float GetEffectiveAcceleration() { return AccelerationAtRest(); }
+        public float GetEffectiveInitialSpeed() { return EffectiveInitialSpeed(); }
         // The JumpImpulse jumps use (the saved one; the player's is 0 during the lockout).
         // 0 until the local player is activated.
         public float GetJumpImpulse() { return _active ? _savedJumpImpulse : 0f; }
@@ -362,10 +366,10 @@ namespace VVBC.Locomotion
             }
         }
 
-        // Scaled like the other speeds (Speed Multiplier) and never above the maximum.
+        // The first step is its own setting: not scaled by Speed Multiplier, never above the maximum.
         private float EffectiveInitialSpeed()
         {
-            return Mathf.Clamp(Mathf.Max(0f, initialSpeed) * Mathf.Max(0f, speedMultiplier), 0f, Maximum());
+            return Mathf.Clamp(Mathf.Max(0f, initialSpeed), 0f, Maximum());
         }
 
         // ---- Jump limit ----------------------------------------------------------------
@@ -571,7 +575,11 @@ namespace VVBC.Locomotion
             return AccelerationAtRest() * Mathf.Max(0f, 1f - speed / Maximum());
         }
 
-        private float AccelerationAtRest() { return Mathf.Max(0f, acceleration) * Mathf.Max(0f, accelerationMultiplier); }
+        // Speed Multiplier scales the acceleration with the maximum, keeping max / a0.
+        private float AccelerationAtRest()
+        {
+            return Mathf.Max(0f, acceleration) * Mathf.Max(0f, accelerationMultiplier) * Mathf.Max(0f, speedMultiplier);
+        }
 
         private void Apply(VRCPlayerApi player)
         {

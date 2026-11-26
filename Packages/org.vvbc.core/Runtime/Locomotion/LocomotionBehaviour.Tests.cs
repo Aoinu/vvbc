@@ -7,8 +7,8 @@ namespace VVBC.Locomotion
     public partial class LocomotionBehaviour
     {
         private const float Frame = 1f / 60f;
-        // From the floor, a0 = 7.5 and max = 8 reach the maximum within 0.01 after about 7.1 s.
-        private const int SettleFrames = 480;
+        // From the floor, a0 = 6.24 and max = 8 reach the maximum within 0.01 after about 8.6 s.
+        private const int SettleFrames = 600;
 
         // Ideal client: the next measured velocity is the stick direction times the applied
         // speed (optionally the speed applied one frame earlier), plus room-scale walking.
@@ -29,9 +29,9 @@ namespace VVBC.Locomotion
         public void InspectorDefaultsMatchTheSpecification()
         {
             Assert.AreEqual(8f, maximumSpeed);
-            Assert.AreEqual(7.5f, acceleration);
+            Assert.AreEqual(6.24f, acceleration);
             Assert.AreEqual(10f, deceleration);
-            Assert.AreEqual(2f, initialSpeed);
+            Assert.AreEqual(3f, initialSpeed);
             Assert.AreEqual(0.2f, restSpeedThreshold);
             Assert.AreEqual(1f, turnBrakingStrength);
             Assert.AreEqual(1f, speedMultiplier);
@@ -46,8 +46,8 @@ namespace VVBC.Locomotion
         [TsukimiTest]
         public void AccelerationFallsLinearlyWithSpeed()
         {
-            Assert.AreEqual(7.5f, AccelerationAt(0f));
-            Assert.AreEqual(3.75f, AccelerationAt(4f));
+            Assert.AreEqual(acceleration, AccelerationAt(0f));
+            Assert.IsTrue(Mathf.Abs(AccelerationAt(4f) - acceleration * 0.5f) < 0.0001f);
             Assert.AreEqual(0f, AccelerationAt(8f));
             Assert.AreEqual(0f, AccelerationAt(9f), "no acceleration above the maximum");
         }
@@ -58,7 +58,9 @@ namespace VVBC.Locomotion
             speedMultiplier = 1.1f;
             accelerationMultiplier = 0.5f;
             Assert.IsTrue(Mathf.Abs(Maximum() - 8.8f) < 0.001f);
-            Assert.AreEqual(3.75f, AccelerationAtRest());
+            Assert.IsTrue(Mathf.Abs(AccelerationAtRest() - 6.24f * 0.5f * 1.1f) < 0.0001f, "Speed Multiplier scales the acceleration too");
+            Assert.IsTrue(Mathf.Abs(Maximum() / AccelerationAtRest() - 8f / (6.24f * 0.5f)) < 0.0001f, "max / a0 depends on the acceleration multiplier only");
+            Assert.AreEqual(AccelerationAtRest(), GetEffectiveAcceleration());
             maximumSpeed = 20f;
             Assert.AreEqual(SpeedCeiling, Maximum());
         }
@@ -125,44 +127,66 @@ namespace VVBC.Locomotion
             Measure(Vector3.zero, StaleSampleTime);
         }
 
-        // The previous model: no initial speed and a0 = 10.
+        // The previous defaults: 2 m/s initial speed and a0 = 7.5.
         private void UsePreviousStart()
         {
-            initialSpeed = 0f;
-            acceleration = 10f;
+            initialSpeed = 2f;
+            acceleration = 7.5f;
         }
 
+        // Balance targets (docs/development/player-perks.md, running): home to first base in 4.2 s
+        // from the push (4.5 s with 0.3 s of reaction), analytic; one frame of delay adds about 0.05 s.
         [TsukimiTest]
-        public void HomeToFirstKeepsThePreviousTimeAndSpeed()
+        public void HomeToFirstKeepsThePreviousTime()
         {
             float seconds = PushFromRest(27.43f);
-            float speed = _arrivalSpeed;
             UsePreviousStart();
             float previousSeconds = PushFromRest(27.43f);
-            float previousSpeed = _arrivalSpeed;
-            // Analytic: 4.213 s at 7.88 m/s (was 4.215 s at 7.96 m/s); one frame of delay adds about 0.05 s.
-            Assert.IsTrue(seconds > 4.2f && seconds < 4.3f, "27.43 m in about 4.27 s with one frame of delay");
-            Assert.IsTrue(Mathf.Abs(seconds - previousSeconds) < 0.05f, "within 0.05 s of the previous model");
-            Assert.IsTrue(speed > 7.8f && speed < 7.95f, "about 7.89 m/s at first base");
-            Assert.IsTrue(Mathf.Abs(speed - previousSpeed) < 0.15f, "close to the previous 7.96 m/s");
+            Assert.IsTrue(seconds > 4.2f && seconds < 4.3f, "27.43 m in about 4.25 s with one frame of delay");
+            Assert.IsTrue(Mathf.Abs(seconds - previousSeconds) < 0.03f, "within 0.03 s of the previous defaults");
         }
 
         [TsukimiTest]
         public void TheFirstMetresAreQuickerThanBefore()
         {
-            // Simulated (one frame of delay), new / previous: 1 m 0.40 / 0.52 s, 3 m 0.85 / 0.95 s,
-            // 5 m 1.20 / 1.28 s, 10 m 1.97 / 2.00 s, 20 m 3.32 / 3.32 s.
+            // Analytic, new / previous: 1 m 0.28 / 0.35 s, 3 m 0.72 / 0.80 s, 5 m 1.08 / 1.15 s.
             float one = PushFromRest(1f);
             float three = PushFromRest(3f);
             float five = PushFromRest(5f);
-            float ten = PushFromRest(10f);
-            float twenty = PushFromRest(20f);
             UsePreviousStart();
-            Assert.IsTrue(one < PushFromRest(1f) - 0.1f, "1 m at least 0.1 s sooner");
+            Assert.IsTrue(one < PushFromRest(1f) - 0.05f, "1 m at least 0.05 s sooner");
             Assert.IsTrue(three < PushFromRest(3f) - 0.05f, "3 m sooner");
-            Assert.IsTrue(five < PushFromRest(5f), "5 m sooner");
-            Assert.IsTrue(ten <= PushFromRest(10f), "10 m not later");
-            Assert.IsTrue(Mathf.Abs(twenty - PushFromRest(20f)) < 0.05f, "20 m about the same");
+            Assert.IsTrue(five < PushFromRest(5f) - 0.05f, "5 m sooner");
+        }
+
+        // The running perks as PerkEffects sets them (Speed Multiplier = Max Speed factor,
+        // Acceleration Multiplier = Acceleration factor, Initial Speed set directly).
+        private float HomeToFirstWith(float speed, float accelerationFactor, float initial)
+        {
+            speedMultiplier = speed;
+            accelerationMultiplier = accelerationFactor;
+            initialSpeed = initial;
+            return PushFromRest(27.43f);
+        }
+
+        [TsukimiTest(maxSteps: 5000000)]
+        public void RunningPerksMeetTheirHomeToFirstTargets()
+        {
+            // Analytic targets plus up to about 0.06 s of one-frame delay.
+            float none = HomeToFirstWith(1f, 1f, 3f);
+            float speedDebuff = HomeToFirstWith(7.5f / 8f, 1f, 2f);
+            float speedI = HomeToFirstWith(8.9f / 8f, 1f, 3f);
+            float speedII = HomeToFirstWith(9.4f / 8f, 1f, 3f);
+            float speedIII = HomeToFirstWith(9.9f / 8f, 1f, 3f);
+            float accelerationDebuff = HomeToFirstWith(1f, 0.8f, 2f);
+            float accelerationIII = HomeToFirstWith(1f, 1.4f, 3.6f);
+            Assert.IsTrue(none > 4.2f && none < 4.27f, "none: 4.20 s");
+            Assert.IsTrue(speedDebuff > 4.57f && speedDebuff < 4.64f, "Max Speed Debuff: 4.57 s");
+            Assert.IsTrue(speedI > 3.89f && speedI < 3.96f, "Max Speed I: 3.89 s");
+            Assert.IsTrue(speedII > 3.74f && speedII < 3.81f, "Max Speed II: 3.74 s");
+            Assert.IsTrue(speedIII > 3.61f && speedIII < 3.68f, "Max Speed III: 3.61 s");
+            Assert.IsTrue(accelerationDebuff > 4.56f && accelerationDebuff < 4.63f, "Acceleration Debuff: 4.56 s");
+            Assert.IsTrue(accelerationIII > 3.92f && accelerationIII < 3.99f, "Acceleration III: 3.93 s");
         }
 
         [TsukimiTest]
@@ -249,8 +273,8 @@ namespace VVBC.Locomotion
             ResetControl();
             Simulate(Vector3.forward, Vector3.zero, 15, false);
             // v(t) = max - (max - v0) e^(-a0 t / max) over 0.25 s.
-            float expected = 8f - 7.9f * Mathf.Exp(-7.5f * 15f * Frame / 8f);
-            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 1.75 m/s after 0.25 s without the initial speed");
+            float expected = 8f - 7.9f * Mathf.Exp(-acceleration * 15f * Frame / 8f);
+            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 1.5 m/s after 0.25 s without the initial speed");
         }
 
         [TsukimiTest]
@@ -275,7 +299,7 @@ namespace VVBC.Locomotion
             _inertial = Vector3.zero;
             _effective = new Vector3(4f, 0f, 0f);
             Step(true, 0.25f);
-            float expected = 8f - 8f * Mathf.Exp(-7.5f * 0.25f / 8f);
+            float expected = 8f - 8f * Mathf.Exp(-acceleration * 0.25f / 8f);
             Assert.IsTrue(Mathf.Abs(_inertial.x - expected) < 0.001f);
             Assert.AreEqual(0f, _inertial.y);
         }
@@ -393,7 +417,7 @@ namespace VVBC.Locomotion
         {
             StandStill();
             Assert.IsTrue(Control(true, SamplePending, true), "the stick crossed the deadzone");
-            Assert.AreEqual(2f, _applied, "given in the step the stick moved, with no new sample");
+            Assert.AreEqual(3f, _applied, "given in the step the stick moved, with no new sample");
             Assert.AreEqual(1, _initialCount);
         }
 
@@ -403,9 +427,9 @@ namespace VVBC.Locomotion
             StandStill();
             Control(true, SamplePending, true);
             Simulate(Vector3.forward, Vector3.zero, 15, false);
-            // v(t) = max - (max - 2) e^(-a0 t / max) over 0.25 s.
-            float expected = 8f - 6f * Mathf.Exp(-7.5f * 15f * Frame / 8f);
-            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 3.25 m/s after 0.25 s");
+            // v(t) = max - (max - 3) e^(-a0 t / max) over 0.25 s.
+            float expected = 8f - 5f * Mathf.Exp(-acceleration * 15f * Frame / 8f);
+            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 4.0 m/s after 0.25 s");
             Simulate(Vector3.forward, Vector3.zero, SettleFrames, false);
             Assert.AreEqual(8f, _applied);
         }
@@ -417,7 +441,7 @@ namespace VVBC.Locomotion
             _effective = Vector3.zero;
             _sampleTime = Frame;
             Control(true, SampleReady, true);
-            Assert.AreEqual(2f, _applied);
+            Assert.AreEqual(3f, _applied);
         }
 
         [TsukimiTest]
@@ -521,7 +545,7 @@ namespace VVBC.Locomotion
             }
             Assert.IsTrue(_inertial.magnitude < 0.2f, "8 m/s decays at 10 m/s² within 0.8 s");
             Control(true, SamplePending, true);
-            Assert.AreEqual(2f, _applied);
+            Assert.AreEqual(3f, _applied);
             Assert.AreEqual(1, _initialCount);
         }
 
@@ -531,16 +555,17 @@ namespace VVBC.Locomotion
             maximumSpeed = 1.5f;
             StandStill();
             Control(true, SamplePending, true);
-            Assert.AreEqual(1.5f, _applied, "a maximum below 2 m/s caps it");
+            Assert.AreEqual(1.5f, _applied, "a maximum below 3 m/s caps it");
             maximumSpeed = 8f;
-            speedMultiplier = 0.5f;
+            speedMultiplier = 0.25f;
             StandStill();
             Control(true, SamplePending, true);
-            Assert.AreEqual(1f, _applied, "scaled by Speed Multiplier like the maximum");
+            Assert.AreEqual(2f, _applied, "an effective maximum of 2 m/s caps it");
             speedMultiplier = 1.25f;
             StandStill();
             Control(true, SamplePending, true);
-            Assert.AreEqual(2.5f, _applied);
+            Assert.AreEqual(3f, _applied, "not scaled by Speed Multiplier");
+            Assert.AreEqual(3f, GetEffectiveInitialSpeed());
         }
 
         [TsukimiTest]
@@ -681,7 +706,7 @@ namespace VVBC.Locomotion
             return sum / 72f;
         }
 
-        [TsukimiTest]
+        [TsukimiTest(maxSteps: 3000000)]
         public void RotatingTheStickCannotAvoidTurnBraking()
         {
             // Mean applied speed over 2 s, previous 90° rule / this rule / no turn braking
@@ -886,8 +911,8 @@ namespace VVBC.Locomotion
             Assert.IsTrue(Mathf.Abs(_applied - 5.6f) < 0.0001f);
             Simulate(Vector3.forward, Vector3.zero, 15, false);
             // v(t) = max - (max - 5.6) e^(-a0 t / max) over 0.25 s.
-            float expected = 8f - 2.4f * Mathf.Exp(-7.5f * 15f * Frame / 8f);
-            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 6.48 m/s after 0.25 s");
+            float expected = 8f - 2.4f * Mathf.Exp(-acceleration * 15f * Frame / 8f);
+            Assert.IsTrue(Mathf.Abs(_applied - expected) < 0.01f, "about 6.36 m/s after 0.25 s");
             Simulate(Vector3.forward, Vector3.zero, SettleFrames, false);
             Assert.AreEqual(8f, _applied, "back to the maximum");
         }

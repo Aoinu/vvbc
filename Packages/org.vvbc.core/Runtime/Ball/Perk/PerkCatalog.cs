@@ -30,8 +30,12 @@ public static class PerkCatalog
     public const int AbilityThrowSpeedCap = 10;
     public const int AbilitySpin = 11;
     public const int AbilityControl = 12;
+    // Run/Strafe speed given at once on a push from rest (Acceleration perks).
+    public const int AbilityInitialSpeed = 13;
+    // Upper limit of the initial speed (Max Speed Debuff), on the standard's scale.
+    public const int AbilityInitialSpeedCap = 14;
     // Abilities are 1..AbilityCount.
-    public const int AbilityCount = 12;
+    public const int AbilityCount = 14;
 
     // ---- Effect kinds ----
     // On/off: the ability is on while a perk with this effect is selected. Value 1.
@@ -42,7 +46,7 @@ public static class PerkCatalog
     // Value is the ability at the design standard (Standard(ability)); the modifier is
     // value / standard - 1, and modifiers of all selected perks add up on the base value.
     public const int KindPercent = 3;
-    // Value is an upper limit (km/h); not composed with percentages.
+    // Value is an upper limit (km/h, or m/s for the initial speed); not composed with percentages.
     public const int KindCap = 4;
 
     // ---- Series (stage groups: different tiers of one series exclude each other) ----
@@ -219,8 +223,8 @@ public static class PerkCatalog
         switch (Group(id))
         {
             case GroupBunt: case GroupHoming: case GroupPitchFade: case GroupLandingIndicator:
-            case GroupMaxSpeed: case GroupMaxSpeedDebuff: case GroupJump:
-            case GroupCatchRadius: case GroupCatchRadiusDebuff: return true;
+            case GroupMaxSpeed: case GroupMaxSpeedDebuff: case GroupAcceleration: case GroupAccelerationDebuff:
+            case GroupJump: case GroupCatchRadius: case GroupCatchRadiusDebuff: return true;
         }
         return false;
     }
@@ -229,8 +233,6 @@ public static class PerkCatalog
     {
         switch (Group(id))
         {
-            case GroupAcceleration: case GroupAccelerationDebuff:
-                return "Values were set for a 10 m/s² standard; the current model uses 7.5 m/s² with a 2 m/s initial speed. Mapping pending.";
             case GroupBallSpeed: case GroupBallSpeedDebuff:
                 return "Perk caps assume 120 km/h; the current pitch (140 km/h) and throw (90-145 km/h) settings differ. Mapping pending.";
             case GroupSpin: case GroupSpinDebuff:
@@ -291,8 +293,8 @@ public static class PerkCatalog
             case GroupBallSpeed: case GroupBallSpeedDebuff: return "Upper limit of pitch speed and of throw speed (one perk, two limits).";
             case GroupSpin: case GroupSpinDebuff: return "Spin of each pitch type (low-spin types have their own values).";
             case GroupControl: case GroupControlDebuff: return "Pitch control target precision.";
-            case GroupMaxSpeed: case GroupMaxSpeedDebuff: return "Maximum running speed.";
-            case GroupAcceleration: case GroupAccelerationDebuff: return "Running acceleration.";
+            case GroupMaxSpeed: case GroupMaxSpeedDebuff: return "Maximum running speed; the acceleration scales with it, so the speed curve keeps its shape.";
+            case GroupAcceleration: case GroupAccelerationDebuff: return "First step: the speed given at once from rest, and the acceleration.";
             case GroupJump: return "Jump height (fence areas: 1.30 m, not implemented yet).";
             case GroupCatchRadius: case GroupCatchRadiusDebuff: return "Glove catch radius, independent of the glove calibration scale.";
             case GroupPitchFade: return "Local rings on the predicted pitch path, shown to the batter.";
@@ -322,14 +324,14 @@ public static class PerkCatalog
             case ControlI: return "4 parts";
             case ControlII: return "9 parts";
             case ControlIII: return "About one ball";
-            case MaxSpeedDebuff: return "6.0 m/s (std 8.0)";
-            case MaxSpeedI: return "8.4 m/s";
-            case MaxSpeedII: return "9.0 m/s";
-            case MaxSpeedIII: return "9.6 m/s";
-            case AccelerationDebuff: return "6.0 m/s² (std 10.0)";
-            case AccelerationI: return "11.0 m/s²";
-            case AccelerationII: return "12.0 m/s²";
-            case AccelerationIII: return "14.0 m/s²";
+            case MaxSpeedDebuff: return "7.5 m/s, initial max 2.0 (std 8.0)";
+            case MaxSpeedI: return "8.9 m/s";
+            case MaxSpeedII: return "9.4 m/s";
+            case MaxSpeedIII: return "9.9 m/s";
+            case AccelerationDebuff: return "Accel x0.8, initial 2.0 m/s (std x1.0, 3.0)";
+            case AccelerationI: return "Accel x1.1, initial 3.2 m/s";
+            case AccelerationII: return "Accel x1.2, initial 3.4 m/s";
+            case AccelerationIII: return "Accel x1.4, initial 3.6 m/s";
             case JumpI: return "0.55 m (std 0.46)";
             case CatchRadiusDebuff: return "8 cm (std 12)";
             case CatchRadiusI: return "14 cm";
@@ -346,8 +348,14 @@ public static class PerkCatalog
 
     public static int EffectCount(int id)
     {
-        if (!IsKnown(id)) return 0;
-        return Group(id) == GroupBallSpeed || Group(id) == GroupBallSpeedDebuff ? 2 : 1;
+        switch (Group(id))
+        {
+            case GroupNone: return 0;
+            case GroupBallSpeed: case GroupBallSpeedDebuff:
+            case GroupAcceleration: case GroupAccelerationDebuff:
+            case GroupMaxSpeedDebuff: return 2;
+        }
+        return 1;
     }
 
     public static int EffectAbility(int id, int effect)
@@ -358,8 +366,9 @@ public static class PerkCatalog
             case GroupHoming: return AbilityHoming;
             case GroupPitchFade: return AbilityPitchFade;
             case GroupLandingIndicator: return AbilityLandingIndicator;
-            case GroupMaxSpeed: case GroupMaxSpeedDebuff: return AbilityMaxSpeed;
-            case GroupAcceleration: case GroupAccelerationDebuff: return AbilityAcceleration;
+            case GroupMaxSpeed: return AbilityMaxSpeed;
+            case GroupMaxSpeedDebuff: return effect == 0 ? AbilityMaxSpeed : AbilityInitialSpeedCap;
+            case GroupAcceleration: case GroupAccelerationDebuff: return effect == 0 ? AbilityAcceleration : AbilityInitialSpeed;
             case GroupJump: return AbilityJumpHeight;
             case GroupCatchRadius: case GroupCatchRadiusDebuff: return AbilityCatchRadius;
             case GroupBallSpeed: case GroupBallSpeedDebuff: return effect == 0 ? AbilityPitchSpeedCap : AbilityThrowSpeedCap;
@@ -375,8 +384,9 @@ public static class PerkCatalog
         {
             case AbilityBunt: case AbilityLandingIndicator: return KindFlag;
             case AbilityHoming: case AbilityPitchFade: case AbilitySpin: case AbilityControl: return KindLevel;
-            case AbilityMaxSpeed: case AbilityAcceleration: case AbilityJumpHeight: case AbilityCatchRadius: return KindPercent;
-            case AbilityPitchSpeedCap: case AbilityThrowSpeedCap: return KindCap;
+            case AbilityMaxSpeed: case AbilityAcceleration: case AbilityJumpHeight: case AbilityCatchRadius:
+            case AbilityInitialSpeed: return KindPercent;
+            case AbilityPitchSpeedCap: case AbilityThrowSpeedCap: case AbilityInitialSpeedCap: return KindCap;
         }
         return 0;
     }
@@ -393,14 +403,14 @@ public static class PerkCatalog
             case PitchFadeI: return 1f;
             case PitchFadeII: return 2f;
             case LandingIndicator: return 1f;
-            case MaxSpeedDebuff: return 6.0f;
-            case MaxSpeedI: return 8.4f;
-            case MaxSpeedII: return 9.0f;
-            case MaxSpeedIII: return 9.6f;
-            case AccelerationDebuff: return 6.0f;
-            case AccelerationI: return 11.0f;
-            case AccelerationII: return 12.0f;
-            case AccelerationIII: return 14.0f;
+            case MaxSpeedDebuff: return effect == 0 ? 7.5f : 2.0f;
+            case MaxSpeedI: return 8.9f;
+            case MaxSpeedII: return 9.4f;
+            case MaxSpeedIII: return 9.9f;
+            case AccelerationDebuff: return effect == 0 ? 8.0f : 2.0f;
+            case AccelerationI: return effect == 0 ? 11.0f : 3.2f;
+            case AccelerationII: return effect == 0 ? 12.0f : 3.4f;
+            case AccelerationIII: return effect == 0 ? 14.0f : 3.6f;
             case JumpI: return 0.55f;
             case CatchRadiusDebuff: return 8f;
             case CatchRadiusI: return 14f;
@@ -422,6 +432,8 @@ public static class PerkCatalog
         {
             case AbilityMaxSpeed: return 8.0f;
             case AbilityAcceleration: return 10.0f;
+            case AbilityInitialSpeed: return 3.0f;
+            case AbilityInitialSpeedCap: return 3.0f;
             case AbilityJumpHeight: return 0.46f;
             case AbilityCatchRadius: return 12f;
             case AbilityPitchSpeedCap: return 120f;
@@ -446,6 +458,8 @@ public static class PerkCatalog
             case AbilityThrowSpeedCap: return "Throw Speed Cap";
             case AbilitySpin: return "Spin";
             case AbilityControl: return "Control";
+            case AbilityInitialSpeed: return "Initial Speed";
+            case AbilityInitialSpeedCap: return "Initial Speed Cap";
         }
         return "Unknown";
     }

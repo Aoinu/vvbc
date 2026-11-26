@@ -15,9 +15,11 @@ using VVBC.Locomotion;
 //   Bat Motion   Homing rate (0 / 25 / 50 / 75 %) and Bunt on/off; nothing else of the batting
 //                settings is touched.
 //   Glove        catch radius multiplier (on the authored trigger radius, before glove scale).
-//   Locomotion   speed multiplier = base multiplier x Max Speed factor; JumpImpulse = base
-//                impulse x sqrt(Jump Height factor), set through Locomotion so the jump lockout
-//                and landing cooldown keep working.
+//   Locomotion   speed multiplier = base multiplier x Max Speed factor (Locomotion scales the
+//                acceleration with it); acceleration multiplier = base x Acceleration factor;
+//                initial speed = base x Initial Speed factor, capped by the Max Speed Debuff;
+//                JumpImpulse = base impulse x sqrt(Jump Height factor), set through Locomotion
+//                so the jump lockout and landing cooldown keep working.
 // Pitch Fade and the Landing Indicator sit on every HomePlate and follow the local player's
 // perks themselves. What was applied is reported back to PlayerPerkBehaviour for display.
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
@@ -37,8 +39,14 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
     private float _appliedCatchMultiplier = 1f;
     private bool _speedBaseCaptured;
     private float _baseSpeedMultiplier = 1f;
+    private float _baseAccelerationMultiplier = 1f;
+    private float _baseInitialSpeed;
     private float _baseMaximumSpeed;
+    private float _baseAcceleration;
+    private float _baseEffectiveInitialSpeed;
     private float _appliedSpeedFactor = 1f;
+    private float _appliedAccelerationFactor = 1f;
+    private float _appliedInitialSpeed = -1f;
     private float _baseJumpImpulse = -1f;
     private float _appliedJumpFactor = 1f;
     private int _locomotionWaits;
@@ -89,7 +97,7 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
         if (perks == null) return;
         ApplyBatting(perks.GetHomingRate(), perks.IsFlagOn(PerkCatalog.AbilityBunt));
         ApplyCatch(perks.GetFactor(PerkCatalog.AbilityCatchRadius));
-        ApplyRunning(perks.GetFactor(PerkCatalog.AbilityMaxSpeed), perks.GetFactor(PerkCatalog.AbilityJumpHeight), gravity);
+        ApplyRunning(gravity);
         perks.NotifyStatsChanged();
     }
 
@@ -134,32 +142,68 @@ public partial class PerkEffectsBehaviour : TsukimiBehaviour
 
     // ---- Running ----
 
-    private void ApplyRunning(float speedFactor, float jumpFactor, float gravity)
+    // Max Speed sets Speed Multiplier (Locomotion scales the acceleration with it, keeping the
+    // curve's shape); Acceleration sets Acceleration Multiplier and the initial speed; the Max
+    // Speed Debuff caps the initial speed. All from the bases taken before the first change.
+    private void ApplyRunning(float gravity)
     {
         if (locomotion == null)
         {
             perks.ReportStat(PerkCatalog.AbilityMaxSpeed, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
             perks.ReportStat(PerkCatalog.AbilityJumpHeight, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
             perks.ReportStat(PerkCatalog.AbilityAcceleration, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
+            perks.ReportStat(PerkCatalog.AbilityInitialSpeed, 0f, 0f, PlayerPerkBehaviour.StatUnavailable);
             return;
         }
         if (!_speedBaseCaptured)
         {
             _speedBaseCaptured = true;
             _baseSpeedMultiplier = locomotion.speedMultiplier;
+            _baseAccelerationMultiplier = locomotion.accelerationMultiplier;
+            _baseInitialSpeed = locomotion.initialSpeed;
             _baseMaximumSpeed = locomotion.GetEffectiveMaximumSpeed();
+            _baseAcceleration = locomotion.GetEffectiveAcceleration();
+            _baseEffectiveInitialSpeed = locomotion.GetEffectiveInitialSpeed();
         }
+        float speedFactor = perks.GetFactor(PerkCatalog.AbilityMaxSpeed);
         if (speedFactor != _appliedSpeedFactor)
         {
             locomotion.SetSpeedMultiplier(_baseSpeedMultiplier * speedFactor);
             _appliedSpeedFactor = speedFactor;
         }
-        // Locomotion keeps its own 12 m/s ceiling; the reported final value is what it uses.
+        float accelerationFactor = perks.GetFactor(PerkCatalog.AbilityAcceleration);
+        if (accelerationFactor != _appliedAccelerationFactor)
+        {
+            locomotion.SetAccelerationMultiplier(_baseAccelerationMultiplier * accelerationFactor);
+            _appliedAccelerationFactor = accelerationFactor;
+        }
+        float initial = InitialSpeedFor(_baseInitialSpeed, perks.GetFactor(PerkCatalog.AbilityInitialSpeed),
+            perks.HasEffect(PerkCatalog.AbilityInitialSpeedCap), perks.GetEffectValue(PerkCatalog.AbilityInitialSpeedCap));
+        if (initial != _appliedInitialSpeed)
+        {
+            if (initial != locomotion.initialSpeed) locomotion.SetInitialSpeed(initial);
+            _appliedInitialSpeed = initial;
+        }
+        // Locomotion keeps its own limits (12 m/s ceiling, initial speed under the maximum); the
+        // reported final values are what it uses.
         perks.ReportStat(PerkCatalog.AbilityMaxSpeed, _baseMaximumSpeed, locomotion.GetEffectiveMaximumSpeed(), PlayerPerkBehaviour.StatApplied);
-        // Acceleration perks are not connected yet: the current value is shown, never changed.
-        float acceleration = locomotion.acceleration * locomotion.accelerationMultiplier;
-        perks.ReportStat(PerkCatalog.AbilityAcceleration, acceleration, acceleration, PlayerPerkBehaviour.StatUnavailable);
-        ApplyJump(jumpFactor, gravity);
+        perks.ReportStat(PerkCatalog.AbilityAcceleration, _baseAcceleration, locomotion.GetEffectiveAcceleration(), PlayerPerkBehaviour.StatApplied);
+        perks.ReportStat(PerkCatalog.AbilityInitialSpeed, _baseEffectiveInitialSpeed, locomotion.GetEffectiveInitialSpeed(), PlayerPerkBehaviour.StatApplied);
+        ApplyJump(perks.GetFactor(PerkCatalog.AbilityJumpHeight), gravity);
+    }
+
+    // base x factor, then at most the cap on the same scale (cap / standard x base) when a cap
+    // effect is selected. A non-positive or non-finite result keeps the base.
+    public static float InitialSpeedFor(float baseSpeed, float factor, bool capped, float capValue)
+    {
+        float speed = PerkStats.ApplyFactor(baseSpeed, factor);
+        if (capped)
+        {
+            float standard = PerkCatalog.Standard(PerkCatalog.AbilityInitialSpeed);
+            float cap = standard > 0f && PerkStats.Finite(capValue) ? baseSpeed * capValue / standard : speed;
+            if (cap < speed) speed = cap;
+        }
+        return PerkStats.Finite(speed) && speed >= 0f ? speed : baseSpeed;
     }
 
     private void ApplyJump(float factor, float gravity)

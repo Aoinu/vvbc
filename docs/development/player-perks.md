@@ -48,14 +48,98 @@ Values are the design values; "std" is the design standard without a perk.
 
 | Ability | Debuff | std | I | II | III | State |
 |---|---:|---:|---:|---:|---:|---|
-| Max Speed (m/s), ids 3001 / 3011-3013 | 6.0 | 8.0 | 8.4 | 9.0 | 9.6 | implemented |
-| Acceleration (m/s²), ids 3021 / 3031-3033 | 6.0 | 10.0 | 11.0 | 12.0 | 14.0 | **not implemented** (below) |
+| Max Speed (m/s), ids 3001 / 3011-3013 | 7.5 | 8.0 | 8.9 | 9.4 | 9.9 | implemented |
+| Max Speed Debuff: initial speed cap (m/s) | 2.0 | - | - | - | - | implemented |
+| Acceleration (design units, std 10 = Locomotion's 6.24 m/s²), ids 3021 / 3031-3033 | 8.0 | 10.0 | 11.0 | 12.0 | 14.0 | implemented |
+| Acceleration: initial speed (m/s), same perks | 2.0 | 3.0 | 3.2 | 3.4 | 3.6 | implemented |
 | Catch Radius (cm), ids 4001 / 4011-4013 | 8 | 12 | 14 | 16 | 18 | implemented |
 | Ball Speed: pitch cap (km/h), ids 2001 / 2011-2013 | 105 | 120 | 140 | 150 | 160 | **not implemented** |
 | Ball Speed: throw cap (km/h), same perks | 90 | 120 | 135 | 145 | 155 | **not implemented** |
 
 Ball Speed is one series with two effects (pitch cap and throw cap), so it is the multi-ability
 case of the buff/debuff rule. There is no throw accuracy perk (dropped in the earlier design).
+Max Speed and Acceleration values were retuned from the first design table (Max Speed 6.0 / 8.4 /
+9.0 / 9.6, Acceleration Debuff 6.0) to the running balance below.
+
+### Running balance
+
+The running perks are tuned to times from home to first base, measured from contact with 0.3 s
+of reaction before the first push (the model times below are the push alone plus 0.3 s):
+
+- **No perk: 4.5 s. Max Speed I: 4.2 s.** II 4.05 s, III 3.9 s; debuffs about 4.85 s.
+- **Initial speed: 2.0 m/s with a debuff, 3.0 m/s or more without one.**
+- Max Speed is the long-distance perk (first base and beyond); Acceleration is the first-step
+  perk (the first 1-5 m, infield range): Acceleration III covers the most ground in the first
+  second, Max Speed III reaches first base soonest.
+
+Reference measurements (Statcast and NPB; the reasons for the targets):
+
+| Measure | Value | Source |
+|---|---|---|
+| MLB Sprint Speed (fastest 1 s window), average / elite | 27 ft/s (8.23 m/s) / 30 ft/s (9.14 m/s); fastest players about 31 ft/s | Baseball Savant |
+| Batter-runner first 3 ft ("key step") | 0.7 s typical, 0.5 s the quickest (2017) | Baseball Savant, Sprint Speed explainer |
+| Distance in the next 1.5 s | 31.7 ft (9.66 m), one runner | same |
+| Speed about 2.5 s after contact | 25 ft/s (7.6 m/s), top 29.3 ft/s | same |
+| Home to first | 4.1 s average for that runner; NPB: under 4.0 s is fast, 3.8 s for the fastest | Baseball Savant; Number |
+| Outfielders, route-adjusted feet in 3 s after release | 29.3-38.3 ft (8.9-11.7 m), worst to best | FanGraphs (2022) |
+
+No public infielder first-step or range figure was found; the runner and outfielder figures
+above stand in for it.
+
+**Model.** Locomotion's run from rest (see [Locomotion](locomotion.md)): the stick gives the
+initial speed `v0` at once, then `v(t) = Vmax − (Vmax − v0) e^(−t/τ)` with `τ = Vmax / a0`.
+Distance `x(t) = Vmax t − (Vmax − v0) τ (1 − e^(−t/τ))`.
+
+- Base (no perk): `v0` 3.0 m/s, `a0` 6.24 m/s², `Vmax` 8.0 m/s. `a0` is solved so that 27.43 m
+  takes 4.2 s; the first base time is the same as the previous defaults (2.0 m/s, 7.5 m/s²),
+  but the first metres are quicker.
+- Max Speed scales `Vmax` and `a0` together (Speed Multiplier), so `τ` and the curve's shape stay
+  and the whole run is faster. Raising `Vmax` alone would lengthen `τ` and need 10-11 m/s for
+  II / III.
+- Acceleration multiplies `a0` and sets `v0`. Hitting 4.2 s with it alone would need `a0` x1.6
+  (x4 for III), which in combination with Max Speed gives 3.3 s, so it gets a smaller first base
+  effect and a larger first-step one.
+- The Max Speed Debuff also caps `v0` at 2.0 m/s, so every running debuff starts at 2.0 m/s.
+
+Times include the 0.3 s reaction; "in 1.0 s" and "in 0.7 s" are the distance covered that long
+after the push (0.7 s after the push = 1.0 s after contact). Analytic values, without
+measurement delay (one frame adds about 0.05 s):
+
+| Selection | Initial (m/s) | Max (m/s) | a0 (m/s²) | 1 m | 3 m | 5 m | 10 m | 1st (27.43 m) | 2nd (54.86 m) | in 1.0 s | in 0.7 s |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Previous defaults (2.0 m/s, 7.5 m/s²) | 2.0 | 8.0 | 7.50 | 0.65 | 1.10 | 1.45 | 2.22 | **4.51** | 7.96 | 4.11 m | 2.52 m |
+| No perk | 3.0 | 8.0 | 6.24 | 0.58 | 1.02 | 1.38 | 2.16 | **4.50** | 7.96 | 4.53 m | 2.90 m |
+| Max Speed Debuff | 2.0 | 7.5 | 5.85 | 0.67 | 1.16 | 1.55 | 2.39 | **4.87** | 8.55 | 3.68 m | 2.28 m |
+| Max Speed I | 3.0 | 8.9 | 6.94 | 0.58 | 0.99 | 1.33 | 2.06 | **4.19** | 7.31 | 4.80 m | 3.05 m |
+| Max Speed II | 3.0 | 9.4 | 7.33 | 0.57 | 0.98 | 1.31 | 2.01 | **4.04** | 7.00 | 4.96 m | 3.13 m |
+| Max Speed III | 3.0 | 9.9 | 7.72 | 0.57 | 0.96 | 1.28 | 1.96 | **3.91** | 6.73 | 5.11 m | 3.21 m |
+| Acceleration Debuff | 2.0 | 8.0 | 4.99 | 0.68 | 1.19 | 1.59 | 2.43 | **4.86** | 8.35 | 3.54 m | 2.20 m |
+| Acceleration I | 3.2 | 8.0 | 6.86 | 0.57 | 0.99 | 1.34 | 2.10 | **4.41** | 7.86 | 4.78 m | 3.07 m |
+| Acceleration II | 3.4 | 8.0 | 7.49 | 0.56 | 0.96 | 1.30 | 2.04 | **4.33** | 7.77 | 5.01 m | 3.24 m |
+| Acceleration III | 3.6 | 8.0 | 8.74 | 0.54 | 0.92 | 1.25 | 1.97 | **4.23** | 7.66 | 5.32 m | 3.45 m |
+
+Home to first (s, with reaction) for both series together (the Max Speed Debuff caps the initial
+speed of any Acceleration buff at 2.0 m/s):
+
+| Max Speed \ Acceleration | Debuff | none | I | II | III |
+|---|---:|---:|---:|---:|---:|
+| Debuff | 5.07 | 4.87 | 4.79 | 4.73 | 4.62 |
+| none | 4.86 | 4.50 | 4.41 | 4.33 | 4.23 |
+| I | 4.54 | 4.19 | 4.10 | 4.02 | 3.92 |
+| II | 4.38 | 4.04 | 3.95 | 3.88 | 3.77 |
+| III | 4.24 | 3.91 | 3.82 | 3.74 | **3.64** |
+
+Notes and limits:
+
+- Max Speed III (9.9 m/s) is above the fastest measured players (about 9.4 m/s); it follows from
+  the 3.9 s target. Max Speed III with Acceleration III (3.64 s) is faster than any professional;
+  with no point or slot limit yet, balance tests should keep that combination in mind.
+- The initial speed is given at once; 3.0-3.6 m/s from a standstill may be uncomfortable in VR
+  and needs checking on real clients.
+- Real infielders also gain from a ready stance, a split step and a dive, which VR cannot
+  reproduce; the first-step values carry part of that.
+- `LocomotionBehaviour.Tests.cs` checks the first base targets with one frame of measurement
+  delay (`RunningPerksMeetTheirHomeToFirstTargets`).
 
 **Jump I** (id 3041, Running, series Jump, no other stage, no debuff): normal jump height 0.46 m
 → 0.55 m, implemented. In designated fence areas the height is 1.30 m; no fence area exists
@@ -82,9 +166,6 @@ Target precision: Debuff whole zone, std 2 parts, I 4 parts, II 9 parts, III abo
 These perks are in the catalog with their values and are shown in the UI, but cannot be
 selected (`PerkRules.NotImplemented`):
 
-- **Acceleration**: the values were fixed against a 10 m/s² standard. The current Locomotion uses
-  7.5 m/s² with a 2 m/s initial speed, so applying the old absolute values would change the
-  standard run. The mapping to the current model has to be decided first.
 - **Ball Speed**: the current pitch maximum is 140 km/h (`ManualPitchBehaviour.maxPitchSpeedKmh`)
   and throws run 90-145 km/h (`ThrowAimBehaviour.min/maxThrowSpeedKmh`); the perk standard is
   120 km/h for both, so what the caps mean in the current model is not decided.
@@ -128,14 +209,19 @@ Always computed from the selection and a base value, never on top of the previou
 order of adding and removing never matters and Clear All returns to the base exactly
 (`PerkStats`, cached per ability in `PlayerPerkBehaviour` on every change):
 
-- **Percent** (Max Speed, Acceleration, Jump Height, Catch Radius): each effect contributes
-  `value / standard - 1` (Max Speed I: 8.4 / 8.0 - 1 = +5 %); `final = base × (1 + Σ)`. With the
-  base at the design standard the table values come out exactly (8.0 → 8.4 m/s). The factor is
-  kept finite and within [0, 10]; a non-finite modifier counts as none.
+- **Percent** (Max Speed, Acceleration, Initial Speed, Jump Height, Catch Radius): each effect
+  contributes `value / standard - 1` (Max Speed I: 8.9 / 8.0 - 1 = +11.25 %);
+  `final = base × (1 + Σ)`. With the base at the design standard the table values come out
+  exactly (8.0 → 8.9 m/s). Acceleration's standard 10 is a design unit: the factor (x1.1 for
+  11) is applied to Locomotion's base (6.24 m/s²). The factor is kept finite and within
+  [0, 10]; a non-finite modifier counts as none.
 - **Level** (Homing rate, Fade level): the value of the one selected stage; series exclusion
   guarantees at most one, so no "strongest stage wins" rule hides a conflict.
 - **Flag** (Bunt, Landing Indicator): on while selected.
-- **Cap** (pitch and throw speed): an upper limit, never turned into a percentage (not connected).
+- **Cap** (pitch and throw speed, initial speed): an upper limit, never turned into a
+  percentage. The initial speed cap (Max Speed Debuff, 2.0 on the 3.0 standard) is applied on the
+  same scale as the base: `min(base × factor, base × cap / standard)`. Pitch and throw caps are
+  not connected.
 
 Each game system keeps its own limits (Locomotion's 12 m/s ceiling, `SetHoming` accepting 0-1),
 and the displayed final value is the one the system reports back.
@@ -154,7 +240,9 @@ catch are never changed afterwards; the next one uses the new value.
 |---|---|---|
 | Homing | `BatMotionBehaviour.SetHoming(rate > 0, rate)` | disabled, rate 0 |
 | Bunt | `BatMotionBehaviour.SetBuntEnabled(bool)` (bunt numbers unchanged) | off |
-| Max Speed | `LocomotionBehaviour.SetSpeedMultiplier(base multiplier × factor)`; base multiplier and maximum read once before the first change, Inspector `maximumSpeed` untouched | base multiplier |
+| Max Speed | `LocomotionBehaviour.SetSpeedMultiplier(base multiplier × factor)`; Locomotion scales the maximum and the acceleration with it. Bases read once before the first change, Inspector `maximumSpeed` / `acceleration` untouched | base multiplier |
+| Acceleration | `SetAccelerationMultiplier(base multiplier × factor)` | base multiplier |
+| Initial Speed | `SetInitialSpeed(base × factor)`, capped by the Max Speed Debuff (`PerkEffectsBehaviour.InitialSpeedFor`); base = Inspector `initialSpeed` | base |
 | Jump Height | `LocomotionBehaviour.SetJumpImpulse(base × √factor)` (height ∝ impulse²); base = `GetJumpImpulse()` before the first jump perk. Going through Locomotion keeps the jump lockout and landing cooldown | base impulse |
 | Catch Radius | `GloveBehaviour.SetCatchRadiusMultiplier(factor)`: authored trigger radius × factor, then the glove scale as before (calibration independent); both catch paths and the debug sphere follow | multiplier 1 |
 | Pitch Fade | each `PitchFadeBehaviour` finds the local `PlayerPerkBehaviour` (Start, then at a release), registers for `_OnPerksChanged` and calls `SetFadeLevel` / `SetFadeEnabled` | off |
@@ -166,8 +254,9 @@ In a world without the perk system, Bat Motion, Pitch Fade and the Landing Indic
 Inspector defaults (on, for testing them alone).
 
 Added APIs: `GloveBehaviour.SetCatchRadiusMultiplier(float)`, `CatchRadiusMultiplier()`,
-`CatchRadiusAt(float)`; `LocomotionBehaviour.GetJumpImpulse()`; `_OnPerksChanged` on Pitch Fade
-and the Landing Indicator. Not connected: acceleration, pitch/throw caps, spin and control.
+`CatchRadiusAt(float)`; `LocomotionBehaviour.GetJumpImpulse()`, `GetEffectiveAcceleration()`,
+`GetEffectiveInitialSpeed()`; `_OnPerksChanged` on Pitch Fade and the Landing Indicator. Not
+connected: pitch/throw caps, spin and control.
 
 ## Synchronization
 
@@ -191,8 +280,10 @@ player's `Perks` by itself (retrying for 60 s after Start).
   (`SELECTED`, `CONFLICT` with the conflicting perk, `NOT IMPLEMENTED` with the reason), and the
   description. Pressing a row adds or removes that perk; unimplemented rows are not interactable.
 - Clear All, a status line with the last result or rejection reason, and the ability block:
-  `Max Speed: 8.00 -> 8.40 m/s (+5.0%)`, Jump Height, Catch Radius (applied values), Homing,
-  Bunt, Pitch Fade and Landing Indicator, and the abilities that are not connected.
+  `Max Speed: 8.00 -> 8.90 m/s (+11.2%)`, Acceleration and Initial Speed (the values Locomotion
+  uses, percentage = final / base - 1, since Max Speed also scales the acceleration), Jump
+  Height, Catch Radius, Homing, Bunt, Pitch Fade and Landing Indicator, and the abilities that
+  are not connected.
 - It rebuilds only on presses, `_OnPerksChanged` and when enabled; nothing runs per frame and a
   hidden panel does not rebuild. All rules live in `PlayerPerkBehaviour`, so a future menu page
   can replace it.
@@ -231,10 +322,20 @@ ones), and the budget shown in the panel. Selection, sync and application need n
   0.18 m), the HomePlate's fade and indicator, and the ability block shows 8.00 → 9.60 m/s,
   0.46 → 0.55 m, 12 → 18 cm; Clear All returns every value to the base. Rings and circles were
   not watched on an actual pitch, and no second client was used.
+- ClientSim, running balance (`PracticeSpace.unity`, selected from the Running tab): no perk
+  8.00 m/s, 6.24 m/s², 3.00 m/s; Acceleration I x1.1 / 3.2 m/s; with Max Speed I 8.90 m/s and
+  7.64 m/s²; Max Speed Debuff rejected against Max Speed I and Acceleration Debuff against
+  Acceleration I; Max Speed Debuff with Acceleration III 7.50 m/s, 8.19 m/s², initial 2.00 m/s
+  (capped); Acceleration Debuff 4.99 m/s², 2.00 m/s; Clear All back to the base. The run itself
+  (stick input, first base times) was not driven in ClientSim; the times are model values
+  checked by the Locomotion tests.
 - `PerkEffectsBehaviour.Tests.cs`: assists off on the empty selection without touching other
-  batting settings, Homing stages and removal, Bunt, Max Speed (stages, debuff, clear, Inspector
-  base and the 12 m/s ceiling), jump impulse scaling and restore, no application of a remote
-  player's perks, no rewrite of unchanged abilities, glove input checks.
+  batting settings, Homing stages and removal, Bunt, Max Speed (stages, debuff and its initial
+  speed cap, clear, Inspector base and the 12 m/s ceiling), Acceleration (multiplier, initial
+  speed, both series together, the cap), jump impulse scaling and restore, no application of a
+  remote player's perks, no rewrite of unchanged abilities, glove input checks.
+- `LocomotionBehaviour.Tests.cs`: the new defaults, Speed Multiplier scaling the acceleration
+  but not the initial speed, and every running perk's first base time with one frame of delay.
 - `PerkPanelBehaviour.Tests.cs`: rows per category, row titles, ability lines.
 - Not covered by `test`: the glove trigger radius (no collider in tests), `PerkLookup`
   (PlayerObjects), Pitch Fade and Landing Indicator following the perks, the UI prefab, real

@@ -1,4 +1,5 @@
 using Tsukimi;
+using UnityEngine;
 
 public partial class PerkPanelBehaviour
 {
@@ -28,8 +29,11 @@ public partial class PerkPanelBehaviour
     public void RowTitleShowsStageKindAmountAndState()
     {
         Assert.AreEqual("Homing II  [II / BUFF]  50%  - SELECTED", RowTitle(PerkCatalog.HomingII, RowSelected));
-        Assert.AreEqual("Max Speed Debuff  [Debuff / DEBUFF]  6.0 m/s (std 8.0)", RowTitle(PerkCatalog.MaxSpeedDebuff, RowAvailable));
-        Assert.AreEqual("Acceleration I  [I / BUFF]  11.0 m/s²  - NOT IMPLEMENTED", RowTitle(PerkCatalog.AccelerationI, RowNotImplemented));
+        Assert.AreEqual("Max Speed Debuff  [Debuff / DEBUFF]  7.5 m/s, initial max 2.0 (std 8.0)", RowTitle(PerkCatalog.MaxSpeedDebuff, RowAvailable));
+        Assert.AreEqual("Acceleration I  [I / BUFF]  Accel x1.1, initial 3.2 m/s", RowTitle(PerkCatalog.AccelerationI, RowAvailable));
+        Assert.AreEqual("Spin I  [I / BUFF]  4S 2300, x1.15, Split 650, Chg 1550, Knuckle 0.045  - NOT IMPLEMENTED", RowTitle(PerkCatalog.SpinI, RowNotImplemented));
+        Assert.IsTrue(Mathf.Abs(RatioModifier(6.24f, 6.864f) - 0.1f) < 0.0001f, "the percentage of what Locomotion uses");
+        Assert.AreEqual(0f, RatioModifier(0f, 3f));
         Assert.AreEqual("Homing III  [III / BUFF]  75%  - CONFLICT", RowTitle(PerkCatalog.HomingIII, RowBlocked));
     }
 
