@@ -101,6 +101,63 @@ public partial class BallBehaviour
         Assert.AreEqual(y.playerId, LocalHolderId());
     }
 
+    // ---- Confirmed possession (match Time conditions) ----
+
+    [TsukimiTest]
+    public void ConfirmedHoldWaitsForTheOwnersPossession()
+    {
+        Mimic.Join();
+        VRCPlayerApi x = Mimic.Join();
+        VRCPlayerApi y = Mimic.Join();
+        Networking.SetOwner(x, gameObject);
+        _acceptedSequence = 3;
+        _acceptedKind = PitchState;
+        _acceptedPublisherId = x.playerId;
+        _sequence = 4;
+        _kind = PossessionState;
+        _hold = HoldHand;
+        _batterOrHolderId = y.playerId;
+        _publisherId = y.playerId;
+        ReceiveSnapshot();
+        Assert.IsFalse(HasConfirmedHold(), "a possession whose publisher does not own the ball is not confirmed");
+        Assert.AreEqual(0, ConfirmedHolderId());
+        Networking.SetOwner(y, gameObject);
+        Assert.IsTrue(HasConfirmedHold());
+        Assert.AreEqual(HoldHand, ConfirmedHoldMode(), "a hand hold counts");
+        Assert.AreEqual(y.playerId, ConfirmedHolderId());
+        Assert.AreEqual(4, ConfirmedHoldSequence());
+    }
+
+    [TsukimiTest]
+    public void ConfirmedHoldIgnoresLocalSpeculation()
+    {
+        Mimic.Join();
+        VRCPlayerApi owner = Mimic.Join();
+        Networking.SetOwner(owner, gameObject);
+        _acceptedSequence = 6;
+        _acceptedKind = PossessionState;
+        _acceptedHold = HoldGlove;
+        _acceptedHolderId = owner.playerId;
+        _acceptedPublisherId = owner.playerId;
+        Assert.IsTrue(HasConfirmedHold(), "a glove hold published by the owner counts");
+        Assert.AreEqual(HoldGlove, ConfirmedHoldMode());
+        _pending = true;
+        Assert.IsTrue(IsHeld());
+        Assert.IsFalse(HasConfirmedHold(), "a local action waiting for ownership is not confirmed");
+        _pending = false;
+        _lossSuspected = true;
+        Assert.IsFalse(HasConfirmedHold(), "neither is a suspected loss");
+        _lossSuspected = false;
+        _acceptedHold = HoldFree;
+        _localHold = HoldGlove;
+        Assert.IsTrue(IsHeld(), "IsHeld includes the unconfirmed local hold");
+        Assert.IsFalse(HasConfirmedHold());
+        Assert.AreEqual(HoldFree, ConfirmedHoldMode());
+        _acceptedHold = HoldGlove;
+        localOnly = true;
+        Assert.IsFalse(HasConfirmedHold(), "a LocalRig ball never confirms a hold");
+    }
+
     [TsukimiTest]
     public void AnOlderSnapshotOfTheOwnerDoesNotRollBack()
     {

@@ -135,8 +135,8 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
     // and reports the change (Pending) to every panel itself.
     private void PressRole(int role)
     {
-        if (manager == null || manager.HasPendingRequest()) return;
-        int state = RoleState(manager.GetPlayerAtRole(team, role), LocalId(), manager.IsLocalOperator(), manager.IsRosterReady(), false);
+        if (manager == null || manager.HasPendingRequest() || manager.IsLiveLocked()) return;
+        int state =RoleState(manager.GetPlayerAtRole(team, role), LocalId(), manager.IsLocalOperator(), manager.IsRosterReady(), false);
         if (state != StateEmpty && state != StateMine && state != StateOtherOperable) return;
         manager.SubmitRole(team, role);
     }
@@ -238,7 +238,8 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
         bool ready = manager.IsRosterReady();
         int local = LocalId();
         bool isOperator = manager.IsLocalOperator();
-        bool busy = manager.HasPendingRequest();
+        // While live play locks the roster nothing can be pressed (the Owner refuses it as well).
+        bool busy = manager.HasPendingRequest() || manager.IsLiveLocked();
         int pendingKind = busy && manager.GetPendingRequestTeam() == team ? manager.GetPendingRequestKind() : RosterRules.RequestNone;
         int pendingIndex = manager.GetPendingRequestIndex();
         for (int role = 0; role < RosterRules.RoleCount; role++)
@@ -307,6 +308,7 @@ public partial class RosterPanelBehaviour : TsukimiBehaviour
         if (statusText == null) return;
         string text;
         if (!ready) text = "Syncing roster…";
+        else if (manager.IsLiveLocked()) text = "Live play: the roster is locked until Time.";
         else if (busy) text = "Waiting for the roster owner…";
         else
         {

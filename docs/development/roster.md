@@ -4,14 +4,16 @@ Team registration (Away / Home), the ten roles per team, the 1-9 batting order w
 shared slot, position teleports and team respawn. Match flow, umpiring and out/run judgement
 are not part of the roster; they read it through the query API below.
 
-Source: `Packages/org.vvbc.core/Runtime/Roster/`.
+Source: `Packages/org.vvbc.core/Runtime/Match/Roster/` (below the match module, which must see the
+roster types; see [match state](match-state.md)).
 
 | File | Responsibility |
 |---|---|
 | `RosterRules.cs` | Constants, return conventions, the pure rules applied to the tables and the invariant check |
 | `RosterManagerBehaviour.cs` | The only authority of the shared state (Manual sync), request handling, Owner recovery, send retries, query API, change event, the local player's outstanding request |
 | `RosterPanelBehaviour.cs` | Local UI of one team, TP buttons, team respawn |
-| `MatchOperatorAuthorityBehaviour.cs` | Abstract adapter to the future match operation authority |
+| `MatchOperatorAuthorityBehaviour.cs` | Abstract adapter to the match operation authority |
+| `ProductionMatchOperatorAuthorityBehaviour.cs` | The production authority: the match umpire ([match state](match-state.md#umpire-authority)) |
 | `RosterTestOperatorAuthorityBehaviour.cs` | Development-only authority by display name (sample scene) |
 
 ## Data
@@ -66,9 +68,9 @@ e.g. the Owner leaves) is the single writer. Nobody takes Ownership to edit or t
 
 1. The panel calls `SubmitRole / SubmitOrder / SubmitOrderMove`. The manager records the request
    locally (one outstanding request per client, shared by both panels) and sends
-   `RequestRole(team, role, expected, expectedOwnSlot, seq)`,
-   `RequestOrder(team, row, expectedSourceRow, seq)` or
-   `RequestOrderMove(team, row, direction, expectedKey, expectedTargetKey, seq)` to
+   `RequestRole(team, role, expected, expectedOwnSlot, lockGeneration, seq)`,
+   `RequestOrder(team, row, expectedSourceRow, lockGeneration, seq)` or
+   `RequestOrderMove(team, row, direction, expectedKey, expectedTargetKey, lockGeneration, seq)` to
    `NetworkEventTarget.Owner` (`[NetworkCallable]` methods with parameters, SDK 3.10.5).
 2. The Owner identifies the requester from `NetworkCalling.CallingPlayer`; no request carries a
    requester id. Operator rights are looked up for that player at this point.
@@ -223,9 +225,10 @@ of the local outstanding request. Components must not read the synced arrays.
 
 ## Match operator authority
 
-No match operation authority exists yet. `operatorAuthority` takes a component deriving from
-`MatchOperatorAuthorityBehaviour` (`bool IsMatchOperator(int playerId)`), placed in
-`Runtime/Roster/` or below for T# type visibility. **While it is unset nobody is an operator**;
+`operatorAuthority` takes a component deriving from `MatchOperatorAuthorityBehaviour`
+(`bool IsMatchOperator(int playerId)`), placed in `Runtime/Match/Roster/` or below for T# type
+visibility. In a match world it is `ProductionMatchOperatorAuthorityBehaviour` on the MatchManager:
+the operator is the umpire. **While it is unset nobody is an operator**;
 Instance Master and Roster Owner are never operators by themselves. The answer must agree on all
 clients, because the UI uses it for display and the Owner checks it again for the requester
 before committing a forced release or a reorder of another player's row.
@@ -234,6 +237,29 @@ before committing a forced release or a reorder of another player's row.
 names in `operatorDisplayNames` (empty = nobody). It is in no prefab and grants nothing unless a
 scene places it and assigns it to `operatorAuthority`; the sample scene does, with an empty list
 to fill in locally. Do not ship it in a published world.
+
+## Live lock
+
+While the match is live the roster is fixed (see [match state](match-state.md#roster-lock)).
+
+- Synced with the tables: `_lockPlayId` (0 = unlocked), `_lockHighPlayId` (highest play id ever
+  locked), `_lockGeneration` (+1 on every lock and unlock). Every lock change is a commit (revision
+  + 1) and part of the recovery snapshot, so a new Roster Owner keeps the lock.
+- `liveLockAuthority` (Inspector) is the MatchManager object. `RequestLiveLock(playId)` and
+  `RequestLiveUnlock(playId)` (sent by `SubmitLiveLock` / `SubmitLiveUnlock`) are accepted only from
+  the caller who owns that object as the Roster Owner sees it. Unset = the roster never locks.
+- Lock: a repeated request for the held play id sends the state again; a play id not above
+  `_lockHighPlayId` is stale (a late copy can never lock again after the unlock). Unlock: only the
+  play id holding the lock, so a late unlock of an older play never opens a newer lock.
+- While locked every change is rejected on the Owner with `RejectedLocked`: registration, release,
+  team change, order moves and swaps, and the operator's forced release or reorder. The panels
+  disable their buttons and show the lock; `SubmitRole/Order/OrderMove` send nothing.
+- Requests carry the lock generation the sender saw (`RequestRole(..., lockGeneration, seq)` etc.).
+  A different generation is rejected even when the tables still match, so a request sent before a
+  lock and delivered after the unlock never applies by surprise.
+- Players who leave while locked stay registered (`IsAbsentSweepDeferred()`); the unlock schedules
+  the absent sweep. Recovery does not sweep while locked either.
+- Queries: `IsLiveLocked()`, `GetLockPlayId()`, `GetLockHighPlayId()`, `GetLockGeneration()`.
 
 ## UI (`RosterPanel.prefab`)
 
@@ -283,7 +309,10 @@ must exist once in the scene (`RosterManager.prefab`), shared by both panels.
   changes, a taken target, rejections, the Owner's own request), and with `Mimic`: commit and
   delivery, non-owner, new instance, revision 0, requests during recovery, Owner leaving, newest
   snapshot, empty start only when nobody has a roster, late join, leaving, send failure retry
-  with a newer change, slower retries and no retries without Ownership.
+  with a newer change, slower retries and no retries without Ownership; the live lock (every change
+  refused while locked, unlock only for the locking play id, late lock/unlock copies, a request sent
+  before the lock rejected after the unlock, deferred removal of leavers, the lock across an Owner
+  change and in a recovered snapshot).
 - `RosterPanelBehaviour.Tests.cs`: the display and button rules.
 - `RosterTestOperatorAuthorityBehaviour.Tests.cs`: only listed names, empty list grants nobody.
 - Not covered by `test`: `NetworkCalling.CallingPlayer` delivery, network events with two or more

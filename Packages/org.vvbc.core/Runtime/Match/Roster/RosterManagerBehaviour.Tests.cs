@@ -18,6 +18,10 @@ public partial class RosterManagerBehaviour
         _lastResult = 0;
         _reqKind = RosterRules.RequestNone;
         _firstViolation = 0;
+        _lockPlayId = 0;
+        _lockHighPlayId = 0;
+        _lockGeneration = 0;
+        _sweepDeferred = false;
     }
 
     // Every roster change made through these helpers is followed by the full invariant check;
@@ -1010,6 +1014,137 @@ public partial class RosterManagerBehaviour
         Assert.IsFalse(_retryScheduled, "a client that does not own the object does not resend");
         Assert.IsFalse(RetryNeeded());
         Assert.AreEqual(0, Violation(), "roster invariants hold");
+    }
+
+    // ---- Live lock ----
+
+    [TsukimiTest]
+    public void LiveLockRejectsEveryRosterChange()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        ResetForTest();
+        ApplyRoleRequest(A, RosterRules.RoleC, 0, -1, 5, false);
+        ApplyRoleRequest(A, RosterRules.RoleCF, 0, -1, 6, false);
+        int revision = _revision;
+        Assert.AreEqual(RosterRules.Applied, ApplyLiveLock(1, true));
+        Assert.IsTrue(IsLiveLocked());
+        Assert.AreEqual(revision + 1, _revision, "the lock is published with a new revision");
+        Assert.AreEqual(1, GetLockGeneration());
+        revision = _revision;
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyRoleRequest(A, RosterRules.RoleSS, 0, -1, 7, false), "registration");
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyRoleRequest(A, RosterRules.RoleC, 5, RosterRules.RoleSlot(A, RosterRules.RoleC), 5, false), "release");
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyRoleRequest(H, RosterRules.RoleC, 0, RosterRules.RoleSlot(A, RosterRules.RoleCF), 6, false), "team change");
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyRoleRequest(A, RosterRules.RoleCF, 6, -1, 9, true), "operator release of another player");
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyOrderRequest(A, 5, 0, 5), "order move");
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyOrderMoveRequest(A, 0, 1, 5, 6, 5, false), "order swap");
+        Assert.AreEqual(revision, _revision, "nothing was committed");
+        Assert.AreEqual(5, GetPlayerAtRole(A, RosterRules.RoleC));
+        Assert.AreEqual(2, GetOrderOfPlayer(6));
+        Assert.IsFalse(SubmitRole(A, RosterRules.RoleSS), "the local submission is refused as well");
+        Assert.AreEqual(0, Violation(), "roster invariants hold");
+    }
+
+    [TsukimiTest]
+    public void UnlockReopensTheRosterForTheSamePlayOnly()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        ResetForTest();
+        ApplyLiveLock(3, true);
+        Assert.AreEqual(RosterRules.RejectedStale, ApplyLiveUnlock(2, true), "an older play id does not unlock");
+        Assert.IsTrue(IsLiveLocked());
+        Assert.AreEqual(RosterRules.RejectedDenied, ApplyLiveUnlock(3, false), "only the MatchManager Owner unlocks");
+        Assert.AreEqual(RosterRules.Applied, ApplyLiveUnlock(3, true));
+        Assert.IsFalse(IsLiveLocked());
+        Assert.AreEqual(2, GetLockGeneration());
+        Assert.AreEqual(RosterRules.Applied, ApplyRoleRequest(A, RosterRules.RoleSS, 0, -1, 7, false), "roster works again while dead");
+        Assert.AreEqual(RosterRules.RejectedStale, ApplyLiveLock(3, true), "a late copy of the lock request does not lock again");
+        Assert.AreEqual(RosterRules.RejectedStale, ApplyLiveUnlock(3, true), "a repeated unlock changes nothing");
+        Assert.AreEqual(RosterRules.Applied, ApplyLiveLock(4, true), "the next play locks");
+        Assert.AreEqual(RosterRules.RejectedStale, ApplyLiveUnlock(3, true), "the old play's late unlock keeps the new lock");
+        Assert.IsTrue(IsLiveLocked());
+        Assert.AreEqual(RosterRules.RejectedDenied, ApplyLiveLock(5, false), "a non-authority cannot lock");
+        Assert.AreEqual(0, Violation(), "roster invariants hold");
+    }
+
+    [TsukimiTest]
+    public void RequestSentBeforeTheLockIsRejectedAfterTheUnlock()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        ResetForTest();
+        int seenGeneration = GetLockGeneration();
+        ApplyLiveLock(1, true);
+        ApplyLiveUnlock(1, true);
+        // The tables did not change while locked, so only the generation tells the request is old.
+        Assert.AreNotEqual(seenGeneration, GetLockGeneration());
+        Assert.AreEqual(RosterRules.RejectedStale, ApplyRoleRequestSeen(A, RosterRules.RoleCF, 0, -1, seenGeneration, other.playerId, false));
+        Assert.AreEqual(RosterRules.NoPlayer, GetPlayerAtRole(A, RosterRules.RoleCF), "it never applies by surprise");
+        ApplyLiveLock(2, true);
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyRoleRequestSeen(A, RosterRules.RoleCF, 0, -1, seenGeneration, other.playerId, false), "and while locked it reads as locked");
+        ApplyLiveUnlock(2, true);
+        Assert.AreEqual(RosterRules.Applied, ApplyRoleRequestSeen(A, RosterRules.RoleCF, 0, -1, GetLockGeneration(), other.playerId, false), "a request sent with the current generation applies");
+        Assert.AreEqual(0, Violation(), "roster invariants hold");
+    }
+
+    [TsukimiTest]
+    public void LeavingPlayersAreRemovedOnlyAfterTheUnlock()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        ResetForTest();
+        ApplyRoleRequest(A, RosterRules.RoleCF, 0, -1, 5, false);
+        ApplyLiveLock(1, true);
+        RemoveAbsentPlayers(new int[] { owner.playerId }, 1);
+        Assert.AreEqual(5, GetPlayerAtRole(A, RosterRules.RoleCF), "the leaver stays registered during live play");
+        Assert.IsTrue(IsAbsentSweepDeferred());
+        RemoveLeftPlayer(5);
+        Assert.AreEqual(5, GetPlayerAtRole(A, RosterRules.RoleCF));
+        ApplyLiveUnlock(1, true);
+        Assert.IsTrue(_sweepScheduled, "the unlock schedules the sweep");
+        RemoveAbsentPlayers(new int[] { owner.playerId }, 1);
+        Assert.AreEqual(RosterRules.NoPlayer, GetPlayerAtRole(A, RosterRules.RoleCF));
+        Assert.IsFalse(IsAbsentSweepDeferred());
+        Assert.AreEqual(0, Violation(), "roster invariants hold");
+    }
+
+    [TsukimiTest]
+    public void LockSurvivesAnOwnerChange()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        ResetForTest();
+        ApplyRoleRequest(A, RosterRules.RoleC, 0, -1, other.playerId, false);
+        ApplyLiveLock(2, true);
+        Mimic.Deliver();
+        Mimic.Become(other);
+        Assert.IsTrue(IsLiveLocked(), "the lock is part of the synced roster");
+        int generation = GetLockGeneration();
+        Mimic.Leave(owner);
+        Assert.IsTrue(IsRosterReady(), "recovered from its own copy");
+        Assert.IsTrue(IsLiveLocked(), "the new Owner keeps the lock");
+        Assert.AreEqual(2, GetLockPlayId());
+        Assert.AreEqual(generation, GetLockGeneration());
+        Assert.AreEqual(RosterRules.RejectedLocked, ApplyRoleRequest(A, RosterRules.RoleCF, 0, -1, other.playerId, false));
+        RemoveAbsentPlayers(new int[] { other.playerId }, 1);
+        Assert.AreEqual(other.playerId, GetPlayerAtRole(A, RosterRules.RoleC));
+        Assert.AreEqual(0, Violation(), "roster invariants hold");
+    }
+
+    [TsukimiTest]
+    public void RecoveredSnapshotCarriesTheLock()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        ResetForTest();
+        ApplyLiveLock(7, true);
+        int[] snapshot = Snapshot();
+        ResetForTest();
+        _stateKnown = false;
+        _recovering = true;
+        _bestRevision = -1;
+        ConsiderSnapshot(snapshot);
+        Assert.IsTrue(ConcludeRecoveryRound(2));
+        Assert.AreEqual(7, GetLockPlayId());
+        Assert.AreEqual(7, GetLockHighPlayId());
+        Assert.AreEqual(1, GetLockGeneration());
     }
 
     [TsukimiTest]

@@ -86,6 +86,25 @@ public partial class BallBehaviour
     public int LocalHoldState() { return _localHold; }
     public int LocalHolderId() { return _localHolderId; }
 
+    // ---- Confirmed possession (match rules) ----
+    // Unlike IsHeld, only the accepted possession published by the current owner counts: no
+    // local catch or pickup still waiting for ownership, no suspected loss, no LocalRig copy.
+    // GloveHeld and HandHeld both count. Read-only; nothing of the ball's sync changes.
+
+    public bool HasConfirmedHold()
+    {
+        return !localOnly && !_pending && !_lossSuspected && _acceptedSequence > 0
+            && _acceptedKind == PossessionState && _acceptedHold != HoldFree && _acceptedHolderId > 0
+            && _acceptedPublisherId == OwnerId();
+    }
+
+    // HoldGlove / HoldHand, or HoldFree when no possession is confirmed.
+    public int ConfirmedHoldMode() { return HasConfirmedHold() ? _acceptedHold : HoldFree; }
+    public int ConfirmedHolderId() { return HasConfirmedHold() ? _acceptedHolderId : 0; }
+    // Sequence and server time of the accepted snapshot that confirms it (0 when none).
+    public int ConfirmedHoldSequence() { return HasConfirmedHold() ? _acceptedSequence : 0; }
+    public double ConfirmedHoldServerTime() { return HasConfirmedHold() ? _acceptedServerTime : 0.0; }
+
     private bool HeldLocally()
     {
         return _localHold != HoldFree && _localHolderId == LocalId() && _localHolderId > 0;

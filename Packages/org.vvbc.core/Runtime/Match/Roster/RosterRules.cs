@@ -50,6 +50,8 @@ public static class RosterRules
     public const int RejectedDenied = -3;
     public const int RejectedNotEligible = -4;
     public const int RejectedNotReady = -5;
+    // The roster is locked for a live period (docs/development/match-state.md, roster lock).
+    public const int RejectedLocked = -6;
 
     // Kinds of a client's outstanding request.
     public const int RequestNone = 0;

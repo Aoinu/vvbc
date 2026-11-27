@@ -16,19 +16,30 @@ using VRC.Udon.Common.Interfaces;
 // duplicate resend or a slot that changed in flight is rejected instead of overwriting.
 // UIs and other components only read through the query API and listen for "_OnRosterChanged";
 // they never touch the synced arrays.
+//
+// Live lock (docs/development/match-state.md): while the match is live the roster is fixed.
+// Only the Owner of liveLockAuthority (the MatchManager object) may lock it for a play id and
+// unlock that same play id. Every lock change increments the lock generation and the
+// revision; every request carries the generation its sender saw, so a request sent before a
+// lock is rejected while locked and also after the unlock. Players who leave meanwhile are
+// removed only after the unlock.
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public partial class RosterManagerBehaviour : TsukimiBehaviour
 {
     public const string ChangedEventName = "_OnRosterChanged";
 
     // Recovery snapshot: [0] revision, then the role table, then the order table.
-    private const int SnapshotLength = 1 + RosterRules.RoleTableLength + RosterRules.OrderTableLength;
+    // Then the lock: play id, highest play id locked, generation.
+    private const int SnapshotLock = 1 + RosterRules.RoleTableLength + RosterRules.OrderTableLength;
+    private const int SnapshotLength = SnapshotLock + 3;
     private const int MaxReporters = 128;
     private const int RequestSequenceRange = 256;
     private const int MaxPresentPlayers = 128;
 
     [Tooltip("Optional. Decides who may release other players and reorder any row. Unset = nobody.")]
     public MatchOperatorAuthorityBehaviour operatorAuthority;
+    [Tooltip("The MatchManager object. Only its Owner may lock the roster for live play and unlock it. Unset = the roster is never locked.")]
+    public GameObject liveLockAuthority;
     [Tooltip("Behaviours that receive the _OnRosterChanged custom event. Panels also register themselves at Start.")]
     public UdonBehaviour[] changeListeners = new UdonBehaviour[0];
 
@@ -51,6 +62,11 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     // 0 until the first Owner of the instance published the roster; every commit increments it.
     // A received revision of 0 is never taken as a roster.
     [UdonSynced] private int _revision;
+    // Live lock: the play id holding the lock (0 = unlocked), the highest play id ever locked
+    // (an older or repeated lock request is stale) and the generation (+1 on every change).
+    [UdonSynced] private int _lockPlayId;
+    [UdonSynced] private int _lockHighPlayId;
+    [UdonSynced] private int _lockGeneration;
 
     // This client holds a roster that came from an Owner (received, recovered or initialized).
     private bool _stateKnown;
@@ -74,6 +90,7 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     private int _failureTotal;
     private int _lastFailedRevision;
     private bool _sweepScheduled;
+    private bool _sweepDeferred;
     private readonly int[] _presentIds = new int[MaxPresentPlayers];
     private readonly VRCPlayerApi[] _players = new VRCPlayerApi[MaxPresentPlayers];
 
@@ -107,6 +124,12 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     public int GetSerializationFailureStreak() { return _failureStreak; }
     public int GetSerializationFailureTotal() { return _failureTotal; }
     public int GetLastFailedRevision() { return _lastFailedRevision; }
+    public bool IsLiveLocked() { return _lockPlayId != 0; }
+    public int GetLockPlayId() { return _lockPlayId; }
+    public int GetLockHighPlayId() { return _lockHighPlayId; }
+    public int GetLockGeneration() { return _lockGeneration; }
+    // A player left while locked: they are removed after the unlock.
+    public bool IsAbsentSweepDeferred() { return _sweepDeferred; }
 
     public int GetTeamOfPlayer(int playerId)
     {
@@ -233,7 +256,7 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
         int expected = _rolePlayerIds[RosterRules.RoleSlot(team, role)];
         int ownSlot = RosterRules.FindRoleSlot(_rolePlayerIds, LocalId());
         int sequence = BeginRequest(RosterRules.RequestRoleKind, team, role, 0, expected, ownSlot, Time.time);
-        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestRole), team, role, expected, ownSlot, sequence);
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestRole), team, role, expected, ownSlot, _lockGeneration, sequence);
         return true;
     }
 
@@ -245,7 +268,7 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
         int source = RosterRules.FindOrderRow(_battingKeys, team, RosterRules.KeyOf(_rolePlayerIds, team, LocalId()));
         if (source < 0 || _battingKeys[RosterRules.OrderSlot(team, row)] != RosterRules.NoPlayer) return false;
         int sequence = BeginRequest(RosterRules.RequestRowKind, team, row, 0, source, 0, Time.time);
-        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestOrder), team, row, source, sequence);
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestOrder), team, row, source, _lockGeneration, sequence);
         return true;
     }
 
@@ -259,13 +282,13 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
         int expectedTarget = _battingKeys[RosterRules.OrderSlot(team, row + direction)];
         if (expected == expectedTarget) return false;
         int sequence = BeginRequest(RosterRules.RequestMoveKind, team, row, direction, expected, expectedTarget, Time.time);
-        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestOrderMove), team, row, direction, expected, expectedTarget, sequence);
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestOrderMove), team, row, direction, expected, expectedTarget, _lockGeneration, sequence);
         return true;
     }
 
     private bool CanSubmit()
     {
-        return IsRosterReady() && _reqKind == RosterRules.RequestNone && LocalId() > 0;
+        return IsRosterReady() && _lockPlayId == 0 && _reqKind == RosterRules.RequestNone && LocalId() > 0;
     }
 
     // Recorded before the event is sent: an Owner's own request is decided on the spot.
@@ -323,27 +346,42 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     // ---- Owner: network requests ----
 
     [NetworkCallable(maxEventsPerSecond: 10)]
-    public void RequestRole(int team, int role, int expected, int expectedOwnSlot, int sequence)
+    public void RequestRole(int team, int role, int expected, int expectedOwnSlot, int lockGeneration, int sequence)
     {
         int requester = CallerId();
         if (requester <= 0) return;
-        Answer(requester, sequence, ApplyRoleRequest(team, role, expected, expectedOwnSlot, requester, IsOperator(requester)));
+        Answer(requester, sequence, ApplyRoleRequestSeen(team, role, expected, expectedOwnSlot, lockGeneration, requester, IsOperator(requester)));
+    }
+
+    private int ApplyRoleRequestSeen(int team, int role, int expected, int expectedOwnSlot, int lockGeneration, int requester, bool isOperator)
+    {
+        if (lockGeneration != _lockGeneration) return LockRejection();
+        return ApplyRoleRequest(team, role, expected, expectedOwnSlot, requester, isOperator);
     }
 
     [NetworkCallable(maxEventsPerSecond: 10)]
-    public void RequestOrder(int team, int row, int expectedSourceRow, int sequence)
+    public void RequestOrder(int team, int row, int expectedSourceRow, int lockGeneration, int sequence)
     {
         int requester = CallerId();
         if (requester <= 0) return;
-        Answer(requester, sequence, ApplyOrderRequest(team, row, expectedSourceRow, requester));
+        if (lockGeneration != _lockGeneration) Answer(requester, sequence, LockRejection());
+        else Answer(requester, sequence, ApplyOrderRequest(team, row, expectedSourceRow, requester));
     }
 
     [NetworkCallable(maxEventsPerSecond: 10)]
-    public void RequestOrderMove(int team, int row, int direction, int expectedKey, int expectedTargetKey, int sequence)
+    public void RequestOrderMove(int team, int row, int direction, int expectedKey, int expectedTargetKey, int lockGeneration, int sequence)
     {
         int requester = CallerId();
         if (requester <= 0) return;
-        Answer(requester, sequence, ApplyOrderMoveRequest(team, row, direction, expectedKey, expectedTargetKey, requester, IsOperator(requester)));
+        if (lockGeneration != _lockGeneration) Answer(requester, sequence, LockRejection());
+        else Answer(requester, sequence, ApplyOrderMoveRequest(team, row, direction, expectedKey, expectedTargetKey, requester, IsOperator(requester)));
+    }
+
+    // The sender saw another lock generation: the request was sent before a lock or an unlock
+    // that has happened since, so it is never applied, even when the tables still match.
+    private int LockRejection()
+    {
+        return Reject(_lockPlayId != 0 ? RosterRules.RejectedLocked : RosterRules.RejectedStale);
     }
 
     private int CallerId()
@@ -367,18 +405,21 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     private int ApplyRoleRequest(int team, int role, int expected, int expectedOwnSlot, int requester, bool isOperator)
     {
         if (!CanCommit()) return Reject(RosterRules.RejectedNotReady);
+        if (_lockPlayId != 0) return Reject(RosterRules.RejectedLocked);
         return Finish(RosterRules.ApplyRole(_rolePlayerIds, _battingKeys, team, role, expected, expectedOwnSlot, requester, isOperator));
     }
 
     private int ApplyOrderRequest(int team, int row, int expectedSourceRow, int requester)
     {
         if (!CanCommit()) return Reject(RosterRules.RejectedNotReady);
+        if (_lockPlayId != 0) return Reject(RosterRules.RejectedLocked);
         return Finish(RosterRules.ApplyOrder(_rolePlayerIds, _battingKeys, team, row, expectedSourceRow, requester));
     }
 
     private int ApplyOrderMoveRequest(int team, int row, int direction, int expectedKey, int expectedTargetKey, int requester, bool isOperator)
     {
         if (!CanCommit()) return Reject(RosterRules.RejectedNotReady);
+        if (_lockPlayId != 0) return Reject(RosterRules.RejectedLocked);
         return Finish(RosterRules.ApplyOrderMove(_rolePlayerIds, _battingKeys, team, row, direction, expectedKey, expectedTargetKey, requester, isOperator));
     }
 
@@ -406,6 +447,75 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
         _revision++;
         RequestSerialization();
         StateChanged();
+    }
+
+    // ---- Live lock (asked by MatchControllerBehaviour) ----
+
+    // Sent by the Owner of liveLockAuthority; the Roster Owner decides and answers through the
+    // synced state (lock play id, generation and revision).
+    public void SubmitLiveLock(int playId)
+    {
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestLiveLock), playId);
+    }
+
+    public void SubmitLiveUnlock(int playId)
+    {
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestLiveUnlock), playId);
+    }
+
+    [NetworkCallable(maxEventsPerSecond: 5)]
+    public void RequestLiveLock(int playId)
+    {
+        ApplyLiveLock(playId, IsLockAuthority(CallerId()));
+    }
+
+    [NetworkCallable(maxEventsPerSecond: 5)]
+    public void RequestLiveUnlock(int playId)
+    {
+        ApplyLiveUnlock(playId, IsLockAuthority(CallerId()));
+    }
+
+    // The caller owns the MatchManager object as this client sees it. Becoming Owner of this
+    // object does not make anyone a lock authority.
+    private bool IsLockAuthority(int caller)
+    {
+        if (caller <= 0 || liveLockAuthority == null) return false;
+        VRCPlayerApi owner = Networking.GetOwner(liveLockAuthority);
+        return Utilities.IsValid(owner) && owner.playerId == caller;
+    }
+
+    // Locks for playId. A repeated request for the held play id sends the state again (the
+    // previous send may have been lost); a play id not above every play id locked before is a
+    // late or duplicate request and changes nothing, so nothing locks again after an unlock.
+    private int ApplyLiveLock(int playId, bool authorized)
+    {
+        if (!CanCommit()) return Reject(RosterRules.RejectedNotReady);
+        if (!authorized) return Reject(RosterRules.RejectedDenied);
+        if (playId <= 0) return Reject(RosterRules.RejectedInvalid);
+        if (playId == _lockPlayId)
+        {
+            RequestSerialization();
+            return Reject(RosterRules.Applied);
+        }
+        if (playId <= _lockHighPlayId) return Reject(RosterRules.RejectedStale);
+        _lockPlayId = playId;
+        _lockHighPlayId = playId;
+        _lockGeneration++;
+        return Finish(RosterRules.Applied);
+    }
+
+    // Unlocks only the play id holding the lock, so a late unlock of an older play never opens
+    // the lock of a newer one. Players who left meanwhile are removed afterwards.
+    private int ApplyLiveUnlock(int playId, bool authorized)
+    {
+        if (!CanCommit()) return Reject(RosterRules.RejectedNotReady);
+        if (!authorized) return Reject(RosterRules.RejectedDenied);
+        if (playId <= 0 || playId != _lockPlayId) return Reject(RosterRules.RejectedStale);
+        _lockPlayId = 0;
+        _lockGeneration++;
+        Finish(RosterRules.Applied);
+        if (_sweepDeferred) ScheduleAbsentSweep();
+        return RosterRules.Applied;
     }
 
     // ---- Owner: serialization results ----
@@ -530,6 +640,9 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
             _rolePlayerIds = new int[RosterRules.RoleTableLength];
             _battingKeys = new int[RosterRules.OrderTableLength];
             _revision = 0;
+            _lockPlayId = 0;
+            _lockHighPlayId = 0;
+            _lockGeneration = 0;
         }
         _stateKnown = true;
         RosterRules.Repair(_rolePlayerIds, _battingKeys);
@@ -588,6 +701,9 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
         snapshot[0] = _revision;
         for (int i = 0; i < RosterRules.RoleTableLength; i++) snapshot[1 + i] = _rolePlayerIds[i];
         for (int i = 0; i < RosterRules.OrderTableLength; i++) snapshot[1 + RosterRules.RoleTableLength + i] = _battingKeys[i];
+        snapshot[SnapshotLock] = _lockPlayId;
+        snapshot[SnapshotLock + 1] = _lockHighPlayId;
+        snapshot[SnapshotLock + 2] = _lockGeneration;
         return snapshot;
     }
 
@@ -596,6 +712,9 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
         _revision = snapshot[0];
         for (int i = 0; i < RosterRules.RoleTableLength; i++) _rolePlayerIds[i] = snapshot[1 + i];
         for (int i = 0; i < RosterRules.OrderTableLength; i++) _battingKeys[i] = snapshot[1 + RosterRules.RoleTableLength + i];
+        _lockPlayId = snapshot[SnapshotLock];
+        _lockHighPlayId = snapshot[SnapshotLock + 1];
+        _lockGeneration = snapshot[SnapshotLock + 2];
     }
 
     public override void OnOwnershipTransferred(VRCPlayerApi player)
@@ -629,6 +748,12 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     {
         _sweepScheduled = false;
         if (!CanCommit()) return;
+        // Leaving players are not removed during live play; the unlock schedules the sweep.
+        if (_lockPlayId != 0)
+        {
+            _sweepDeferred = true;
+            return;
+        }
         int count = VRCPlayerApi.GetPlayerCount();
         VRCPlayerApi.GetPlayers(_players);
         int present = 0;
@@ -642,13 +767,19 @@ public partial class RosterManagerBehaviour : TsukimiBehaviour
     private void RemoveAbsentPlayers(int[] present, int presentCount)
     {
         if (!CanCommit()) return;
+        if (_lockPlayId != 0)
+        {
+            _sweepDeferred = true;
+            return;
+        }
+        _sweepDeferred = false;
         if (RosterRules.RemoveAbsent(_rolePlayerIds, _battingKeys, present, presentCount)) Commit();
     }
 
     // Removes one player (tests and callers that know the id).
     private void RemoveLeftPlayer(int playerId)
     {
-        if (!CanCommit()) return;
+        if (!CanCommit() || _lockPlayId != 0) return;
         if (RosterRules.RemovePlayer(_rolePlayerIds, _battingKeys, playerId)) Commit();
     }
 
