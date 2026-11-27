@@ -268,22 +268,22 @@ public partial class ManualPitchBehaviour
     // ---- Control error ----
 
     [TsukimiTest]
-    public void AtZeroStrengthThePitchLeavesAlongTheSolvedDirection()
+    public void AScore100ReleaseLeavesAlongTheSolvedDirection()
     {
         Mimic.Join();
         Assert.IsTrue(PlateReadyForTest());
-        SetControlSettings(0f, 60f, 0.4f);
+        SetTimingCap(60f);
         SetControlDraw(0.3f, 1f, 1f, 1f, 1f);
-        CrossForTest(new Vector2(0.2f, 0.2f), TowardPlate(), IdealHand(TestChest));
+        CrossForTest(Vector2.zero, TowardPlate(), IdealHand(TestChest));
         Vector3 hand = HandAt(TestChest, Overhand);
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.AreEqual(100f, _resultScore);
         Assert.AreEqual(Vector2.zero, _resultDrawError);
-        Assert.AreEqual(0f, _resultDrawSigma);
-        Assert.IsTrue(_resultSigma > 0.3f, "the score's limit is still shown: " + _resultSigma);
+        Assert.AreEqual(0f, _resultSigma);
         Assert.IsTrue(Vector3.Distance(_defaultDirection, releaseVelocity.normalized) < 0.000001f, "the solver's direction (no turn at all)");
     }
 
-    // The error is drawn at most up to the limit of the score, scaled by the strength; it turns
+    // The error is drawn at most up to the sigma of the score (no strength factor); it turns
     // only the launch direction (P0, speed, spin and SSW are the same), and the side of the
     // plate the hand passed never changes it.
     [TsukimiTest]
@@ -292,21 +292,22 @@ public partial class ManualPitchBehaviour
         Mimic.Join();
         Assert.IsTrue(PlateReadyForTest());
         Vector3 hand = HandAt(TestChest, Overhand);
-        SetControlSettings(0f, 60f, 0.4f);
+        SetTimingCap(60f);
+        SetControlDraw(0.3f, 0.5f, 0.5f, 0.5f, 0.5f);
         CrossForTest(new Vector2(0.2f, 0.2f), TowardPlate(), IdealHand(TestChest));
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
+        Assert.AreEqual(Vector2.zero, _resultDrawError, "a zero draw (z = 0) gives no error");
         Vector3 cleanVelocity = releaseVelocity;
         float cleanRpm = debugSpinRpm;
         float cleanWake = releaseWakeCoefficient;
         Vector3 cleanPosition = releasePosition;
 
-        SetControlSettings(1f, 60f, 0.4f);
         SetControlDraw(0.3f, 1f, 1f, 1f, 1f);
         CrossForTest(new Vector2(0.2f, 0.2f), TowardPlate(), IdealHand(TestChest));
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
         float score = ReleasePlateMath.PositionScore(new Vector2(0.2f, 0.2f), 0.25f, 0.25f);
-        Assert.IsTrue(Near(_resultDrawSigma, 0.4f * (1f - score / 100f), 0.0001f), "sigma " + _resultDrawSigma);
-        Assert.IsTrue(Near(_resultDrawError.magnitude, _resultDrawSigma * ReleasePlateMath.MaxSigmas, 0.0001f), "the largest draw is 2 sqrt(3) sigma");
+        Assert.IsTrue(Near(_resultSigma, 0.9f * (1f - score / 100f), 0.0001f), "sigma " + _resultSigma);
+        Assert.IsTrue(Near(_resultDrawError.magnitude, _resultSigma * ReleasePlateMath.MaxSigmas, 0.0001f), "the largest draw is 2 sqrt(3) sigma");
         float distance = Vector3.Dot(_defaultRelease - TestPlate, TestNormal);
         Vector3 expected = ManualPitchMath.ControlDirection(_defaultDirection, _resultDrawError.x, _resultDrawError.y, 1f, 1f, distance);
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, expected) < 0.000001f, "turned by the drawn offset");
@@ -328,8 +329,8 @@ public partial class ManualPitchBehaviour
         SetControlDraw(0.3f, 0.5f, 0.5f, 0.5f, 0.52f);
         CrossForTest(new Vector2(0.25f, 0.25f), TowardPlate(), IdealHand(TestChest));
         Assert.IsTrue(ResolveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger));
-        Assert.IsTrue(_resultDrawSigma > 0.39f && _resultDrawError.magnitude < 0.03f, "score 0 (sigma 0.4 m), small draw " + _resultDrawError.magnitude);
-        Assert.IsTrue(ReleaseDetailText().Contains("random  strength 100%"), ReleaseDetailText());
+        Assert.IsTrue(_resultSigma > 0.89f && _resultDrawError.magnitude < 0.07f, "score 0 (sigma 0.9 m), small draw " + _resultDrawError.magnitude);
+        Assert.IsTrue(ReleaseDetailText().Contains("random  sigma 90"), ReleaseDetailText());
     }
 
     // ---- Hand trail ----

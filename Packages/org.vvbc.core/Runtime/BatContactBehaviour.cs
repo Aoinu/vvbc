@@ -25,6 +25,9 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public float maxSpinRpm = 2000f;
     [Tooltip("Input: abs(normalized Y contact offset), 0..1. Output: fraction of Max Spin Rpm, 0..1. Spin direction comes from the sign of the offset. Default is x^2.")]
     public AnimationCurve spinCurve;
+    [Header("Diagnostics")]
+    [Tooltip("Log one line per confirmed contact with its Bunt and Homing evaluation.")]
+    public bool debugLogging;
 
     private int _sequence = -1;
     private int _collisionSequence = -1;
@@ -45,6 +48,20 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     private Vector3 _core, _coreVelocity, _batOmega, _axis, _y, _normal, _referenceVelocity;
     private Quaternion _rotation;
     private float _planeValue;
+    // Bunt Pattern A evidence for the current pitch: the last scanned time the
+    // Ball was outside the zone, and the sweet-spot state just before entry.
+    private int _buntEntryState;
+    private bool _hasLastOutside;
+    private float _lastOutsideTime, _buntEntryTime;
+    // Written by ClassifyCandidate / BuntPower for the candidate being accepted.
+    private int _candidatePattern;
+    private float _candidateUpperGrip, _candidateX, _candidateY, _candidateLocalY;
+    private float _candidateNormalWidth, _candidateWidth, _candidateHomingRate;
+    private float _candidateForwardSpeed, _candidateBuntCap;
+    private bool _candidatePulled;
+    // Batting perks of the candidate: its signed timing sine (positive early) and where it lies
+    // in a Contact Range band (0 inside the normal width).
+    private float _candidateTimingSine, _candidateExtension;
     [HideInInspector] public float feedbackCandidateTime;
     [HideInInspector] public bool feedbackTrailActive;
     // Set by Feedback: bat poses are only worth forwarding while its trail is entered.
@@ -72,6 +89,19 @@ public partial class BatContactBehaviour : TsukimiBehaviour
     public bool snapshotBallRotationValid;
     public float snapshotReferenceSpeed, snapshotRawPower, snapshotPowerCap;
     public int snapshotPowerCapReason, snapshotHeldHands;
+    // Bunt / Homing diagnostics of the confirmed contact. snapshotPlaneX/Y stay
+    // the physical Ball coordinates; the corrected pair is what the result used.
+    public bool contactIsBunt;
+    public int contactBuntPattern;
+    public int snapshotBuntEntryState;
+    public float snapshotBuntEntryTime, snapshotUpperGripFraction;
+    public float snapshotBuntPowerCap, snapshotContactForwardSpeed;
+    public bool snapshotPulled;
+    public float snapshotNormalWidth, snapshotEffectiveWidth, snapshotHomingRate;
+    public float snapshotCorrectedPlaneX, snapshotCorrectedPlaneY;
+    // Batting perk diagnostics of the confirmed contact (neutral values without perks).
+    public float snapshotTimingSine, snapshotExtensionFraction, snapshotSpeedGamma;
+    public float snapshotSpeedBonusMax, snapshotSpeedCap;
 
     public void Start()
     {
@@ -198,6 +228,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         _enteredZone = false;
         _opportunityEnded = false;
         _hasPreviousY = false; _pendingY = false;
+        ResetBuntEntry();
     }
 
     public void OnBallPitchStarted()
@@ -245,6 +276,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             _opportunityEnded = false;
             _hasPreviousY = false; _pendingY = false;
             _historyRevision = motion.contactHistoryRevision;
+            ResetBuntEntry();
         }
         if (_opportunityEnded) return;
         if (_historyRevision != motion.contactHistoryRevision)
@@ -252,6 +284,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             _historyRevision = motion.contactHistoryRevision;
             _scannedUntil = Mathf.Max(motion.contactOldestTime, _activationTime);
             _hasPreviousY = false; _pendingY = false;
+            OnBuntHistoryReset();
         }
         float start = Mathf.Max(_scannedUntil, Mathf.Max(motion.contactOldestTime, flight.oldestMotionTime));
         float end = Mathf.Min(motion.contactLatestTime, flight.latestMotionTime + Mathf.Clamp(maxExtrapolation, 0f, 0.03f));
@@ -266,6 +299,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             if (!_enteredZone && flight.ContactPathOutsideBox(start, boundary, maxExtrapolation, contactZone, zoneHalfSize))
             {
                 _pendingY = true; _pendingYTime = boundary;
+                _hasLastOutside = true; _lastOutsideTime = boundary;
                 _scannedUntil = boundary;
                 start = boundary;
                 continue;
@@ -290,6 +324,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         bool startsInside = InsideZone(_ballPosition);
         if (startsInside) _enteredZone = true;
         else if (_enteredZone) { _opportunityEnded = true; return true; }
+        else { _hasLastOutside = true; _lastOutsideTime = left; }
         float leftValue = _planeValue;
         for (int i = 1; i <= 4; i++)
         {
@@ -314,6 +349,7 @@ public partial class BatContactBehaviour : TsukimiBehaviour
             }
             if (rightInside) _enteredZone = true;
             else if (_enteredZone) { _opportunityEnded = true; return true; }
+            else { _hasLastOutside = true; _lastOutsideTime = right; }
             left = right;
             leftValue = rightValue;
         }
@@ -375,23 +411,34 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         return Mathf.Abs(p.x) <= zoneHalfSize.x && Mathf.Abs(p.y) <= zoneHalfSize.y && Mathf.Abs(p.z) <= zoneHalfSize.z;
     }
 
+    // Shared path for normal swings and Bunts: one candidate search, timing
+    // gate, quality, BallResultMath and hand-off. A Bunt only widens the
+    // contact width and limits Power; Homing only moves the virtual contact
+    // coordinates of a normal swing. Both are decided before any width test,
+    // so the standard width never rejects a candidate they would accept.
     private bool AcceptCandidate(float time)
     {
         if (!InsideZone(_ballPosition)) return false;
         Vector3 center = _centerDirectionSnapshot;
-        if (!ValidTiming(_axis, center, motion.timingYawDegrees)) return false;
+        // One gate wide enough for either kind of swing; the kind's own gate follows once the
+        // candidate is classified (a normal swing's early / late tolerances, a Bunt's symmetric).
+        _candidateTimingSine = BattingAssist.TimingSine(_axis, center);
+        if (!BattingAssist.TimingAccepts(_candidateTimingSine, Mathf.Max(motion.NormalSwingEarlyYaw(), motion.timingYawDegrees),
+            Mathf.Max(motion.NormalSwingLateYaw(), motion.timingYawDegrees))) return false;
         Vector3 batRootPosition = motion.contactSampleRootPosition;
         Vector3 delta = _ballPosition - _core;
         float px = Vector3.Dot(delta, _axis);
         float py = Vector3.Dot(delta, _y);
-        float localY = motion.ContactPlaneDistanceToLocalY(px);
-        if (!motion.IsInsideContactRange(localY) || flight.ballCollider == null) return false;
+        if (flight.ballCollider == null) return false;
         float ballRadius = BatGeometry.EffectiveSphereRadius(
             flight.ballCollider.radius, flight.ballCollider.transform.lossyScale);
-        float width = motion.ContactWidthAtLocalY(localY, ballRadius);
-        if (width <= 0.00001f || Mathf.Abs(py) > width) return false;
+        float referenceSpeed = _referenceVelocity.magnitude;
+        float rawPower = EvaluateRawPower(referenceSpeed);
+        if (!ClassifyCandidate(time, px, py, rawPower, ballRadius)) return false;
+        bool bunt = _candidatePattern != BattingAssist.BuntNone;
+        if (!KindTimingAccepts(bunt)) return false;
         BallResultSnapshot snapshot = new BallResultSnapshot();
-        snapshot.contactPosition = _ballPosition;
+        snapshot.contactPosition = CalculationContactPosition(px, py);
         snapshot.batCorePosition = _core;
         snapshot.batCoreVelocity = _coreVelocity;
         snapshot.batAngularVelocity = _batOmega;
@@ -401,22 +448,24 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         snapshot.normal = _normal;
         snapshot.centerDirection = center.normalized;
         snapshot.worldUp = Vector3.up;
-        snapshot.normalizedY = Mathf.Clamp(py / width, -1f, 1f);
-        snapshot.quality = motion.ContactQualityAtLocalY(localY);
-        float rawPower = EvaluateRawPower(_referenceVelocity.magnitude);
+        // A normal swing's launch and spin keep the normal width's scale, so a Contact Range
+        // band only weakens the speed (extensionFraction), never the angle or the spin.
+        snapshot.normalizedY = Mathf.Clamp(_candidateY / (bunt ? _candidateWidth : _candidateNormalWidth), -1f, 1f);
+        snapshot.quality = motion.ContactQualityAtLocalY(_candidateLocalY);
         float powerCap = motion.ContactPowerCap(time, center.normalized, rawPower);
         int capReason = motion.contactPowerCapReason;
         snapshot.power = Mathf.Min(rawPower, powerCap);
+        if (_candidatePattern != BattingAssist.BuntNone) snapshot.power = BuntPower(snapshot.power, delta, center);
         snapshot.sprayScale = sprayScale;
         snapshot.launchScale = launchScale;
         snapshot.maxSpinRpm = maxSpinRpm;
         snapshot.spinRatio = EvaluateSpinRatio(snapshot.normalizedY);
+        snapshot = WithPerks(snapshot, bunt);
         BallResult result = BallResultMath.Calculate(snapshot);
         bool ballExtrapolated = time > flight.latestMotionTime;
         bool batExtrapolated = time > motion.contactLatestTime;
         bool ballRotationValid = flight.TrySampleFeedbackRotation(time, maxExtrapolation);
         Quaternion ballRotation = flight.sampledRotation;
-        float referenceSpeed = _referenceVelocity.magnitude;
         int heldHands = motion.LocalHeldHands();
         if (!result.valid) return false;
         feedbackCandidateTime = time;
@@ -428,21 +477,21 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         FeedbackImpactAudioBehaviour effects = bat != null ? bat.GetComponentInChildren<FeedbackImpactAudioBehaviour>(true) : null;
         if (!flight.ApplyContactResult(_sequence, time, _ballPosition, _ballVelocity, _ballSpin,
             result.linearVelocity, result.angularVelocity, batterId, strength)) return false;
-        if (effects != null) effects.PlayLocalContact(snapshot.contactPosition, strength, heldHands);
+        if (effects != null) effects.PlayLocalContact(_ballPosition, strength, heldHands);
         contactTime = time;
         contactPitchSequence = _sequence;
         contactSequence++;
         contactValid = true;
         ballSampleExtrapolated = ballExtrapolated;
         batSampleExtrapolated = batExtrapolated;
-        contactPosition = snapshot.contactPosition;
+        contactPosition = _ballPosition;
         snapshotBatCorePosition = snapshot.batCorePosition;
         snapshotBatRootPosition = batRootPosition;
         snapshotBatRotation = _rotation;
         snapshotBatCoreVelocity = snapshot.batCoreVelocity;
         snapshotBatAngularVelocity = snapshot.batAngularVelocity;
         snapshotX = snapshot.axisX; snapshotY = snapshot.axisY; snapshotN = snapshot.normal;
-        snapshotPlaneX = px; snapshotPlaneY = py; snapshotNormalizedX = motion.NormalizedContactXAtLocalY(localY);
+        snapshotPlaneX = px; snapshotPlaneY = py; snapshotNormalizedX = motion.NormalizedContactXAtLocalY(_candidateLocalY);
         snapshotNormalizedY = snapshot.normalizedY;
         snapshotIncomingVelocity = snapshot.incomingVelocity;
         snapshotIncomingSpin = _ballSpin;
@@ -457,20 +506,203 @@ public partial class BatContactBehaviour : TsukimiBehaviour
         finalBatPower = snapshot.power;
         resultVelocity = result.linearVelocity;
         resultSpin = result.angularVelocity;
+        snapshotSpeedGamma = snapshot.speedQualityGamma;
+        snapshotSpeedBonusMax = snapshot.speedBonusMax;
+        snapshotSpeedCap = snapshot.speedCap;
+        StoreAssistDiagnostics();
         _previousY = _y;
         _hasPreviousY = true;
         _opportunityEnded = true;
         if (feedbackListener != null) feedbackListener.SendCustomEvent("OnContactConfirmed");
         motion.SetContactListenerActive(GetComponent<UdonBehaviour>(), false);
+        if (debugLogging) LogContact();
         return true;
     }
 
+    // Batting perks of a normal swing (Bat Motion settings): speed gamma, Batted Ball Speed bonus
+    // or cap, and the Contact Range band. A Bunt keeps the shared model (its Power cap) and gets
+    // only the debuff's cap.
+    private BallResultSnapshot WithPerks(BallResultSnapshot snapshot, bool bunt)
+    {
+        snapshot.speedCap = motion.battedSpeedCapKmh > 0f ? motion.battedSpeedCapKmh / 3.6f : 0f;
+        snapshot.speedQualityGamma = bunt ? 1f : motion.speedQualityGamma;
+        snapshot.speedBonusMax = !bunt && motion.battedSpeedBonusTopKmh > MaxExitSpeedKmh
+            ? (motion.battedSpeedBonusTopKmh - MaxExitSpeedKmh) / 3.6f : 0f;
+        snapshot.extensionFraction = bunt ? 0f : _candidateExtension;
+        snapshot.extensionMinimumScale = motion.contactExtensionMinimumScale;
+        return snapshot;
+    }
+
+    // 8 + 37 m/s: the formula's top exit speed, the Batted Ball Speed standard.
+    public const float MaxExitSpeedKmh = (BallResultMath.MinimumExitSpeed + BallResultMath.ExitSpeedRange) * 3.6f;
+
+    // Physical Ball position unless Homing moved the virtual contact point
+    // within the contact plane; the normal coordinate is never changed.
+    private Vector3 CalculationContactPosition(float px, float py)
+    {
+        if (_candidateHomingRate <= 0f) return _ballPosition;
+        return _ballPosition + _axis * (_candidateX - px) + _y * (_candidateY - py);
+    }
+
+    // Decides Bunt or normal swing for a candidate that already passed the zone
+    // and timing gates, applies Homing to a normal swing, then tests the Bat
+    // length range (never widened) and the possibly widened contact width.
+    private bool ClassifyCandidate(float time, float px, float py, float rawPower, float ballRadius)
+    {
+        _candidatePattern = BattingAssist.BuntNone;
+        _candidateUpperGrip = float.NaN;
+        if (motion.buntEnabled)
+        {
+            if (_buntEntryState == BattingAssist.EntryUnknown) ResolveZoneEntry(time);
+            _candidateUpperGrip = motion.ContactUpperGripFraction(time);
+            _candidatePattern = BattingAssist.BuntPattern(_buntEntryState, rawPower,
+                motion.buntPatternARawPowerThreshold, _candidateUpperGrip, motion.buntUpperGripThreshold);
+        }
+        float homingRate = _candidatePattern == BattingAssist.BuntNone ? motion.EffectiveHomingRate() : 0f;
+        float sweetSpotX = homingRate > 0f ? motion.PlaneDistanceFromLocalY(motion.SweetSpotLocalY()) : 0f;
+        return ResolveContactPlane(px, py, sweetSpotX, homingRate, ballRadius);
+    }
+
+    // Homing (normal swing only) and the width test on the resulting
+    // coordinates. A Bunt keeps the physical coordinates and multiplies the
+    // whole standard width.
+    private bool ResolveContactPlane(float px, float py, float sweetSpotX, float homingRate, float ballRadius)
+    {
+        ApplyHoming(px, py, sweetSpotX, homingRate);
+        _candidateLocalY = motion.ContactPlaneDistanceToLocalY(_candidateX);
+        if (!motion.IsInsideContactRange(_candidateLocalY)) return false;
+        return WithinKindWidth(motion.ContactWidthAtLocalY(_candidateLocalY, ballRadius));
+    }
+
+    // A Bunt multiplies the standard width; a normal swing adds the Contact Range offset.
+    private bool WithinKindWidth(float normalWidth)
+    {
+        bool bunt = _candidatePattern != BattingAssist.BuntNone;
+        return WithinContactWidth(normalWidth, bunt ? motion.buntContactWidthMultiplier : 1f, bunt ? 0f : motion.contactWidthOffset);
+    }
+
+    private void ApplyHoming(float px, float py, float sweetSpotX, float homingRate)
+    {
+        _candidateHomingRate = homingRate > 0f ? homingRate : 0f;
+        _candidateX = px;
+        _candidateY = py;
+        if (_candidateHomingRate <= 0f) return;
+        _candidateX = BattingAssist.HomingX(px, sweetSpotX, _candidateHomingRate);
+        _candidateY = BattingAssist.HomingY(py, _candidateHomingRate);
+    }
+
+    // normalWidth is the standard ContactWidthAtLocalY result; a Bunt
+    // multiplies all of it, a normal swing adds the Contact Range offset (on the
+    // Homing-corrected coordinates). NaN or invalid widths reject the candidate.
+    private bool WithinContactWidth(float normalWidth, float multiplier)
+    {
+        return WithinContactWidth(normalWidth, multiplier, 0f);
+    }
+
+    private bool WithinContactWidth(float normalWidth, float multiplier, float offset)
+    {
+        _candidateNormalWidth = normalWidth;
+        _candidateWidth = offset != 0f ? BattingAssist.OffsetHalfWidth(normalWidth, offset) : normalWidth * multiplier;
+        // Only a Contact Range offset makes the weak band; a Bunt's wider width is a full contact.
+        _candidateExtension = offset > 0f ? BattingAssist.ExtensionFraction(Mathf.Abs(_candidateY), normalWidth, _candidateWidth) : 0f;
+        return normalWidth > 0.00001f && Mathf.Abs(_candidateY) <= _candidateWidth;
+    }
+
+    // Bunt Power: the existing cap is already applied; the Bunt cap follows,
+    // and pulling the Bat back at the contact point gives zero Power.
+    private float BuntPower(float power, Vector3 contactOffset, Vector3 center)
+    {
+        _candidateForwardSpeed = BattingAssist.ContactForwardSpeed(_coreVelocity, _batOmega, contactOffset, center);
+        _candidatePulled = BattingAssist.IsPull(_candidateForwardSpeed, motion.buntPullThreshold);
+        _candidateBuntCap = motion.buntPowerCap;
+        return BattingAssist.BuntPower(power, _candidateBuntCap, _candidatePulled);
+    }
+
+    private void ResetBuntEntry()
+    {
+        _buntEntryState = BattingAssist.EntryUnknown;
+        _hasLastOutside = false;
+        _buntEntryTime = 0f;
+    }
+
+    // Bat history restarted (grip or authority change): pre-entry evidence from
+    // the old history no longer describes the Bat held now.
+    private void OnBuntHistoryReset()
+    {
+        _hasLastOutside = false;
+        if (_enteredZone) _buntEntryState = BattingAssist.EntryHistoryMissing;
+    }
+
+    // Bisects the Ball history for the zone boundary between the last scanned
+    // outside time and insideTime, then checks the sweet spot of the Bat pose
+    // interpolated at the outside side of that boundary (just before entry).
+    private void ResolveZoneEntry(float insideTime)
+    {
+        _buntEntryState = BattingAssist.EntryHistoryMissing;
+        if (!_hasLastOutside || !(_lastOutsideTime < insideTime)) return;
+        float a = _lastOutsideTime, b = insideTime;
+        for (int i = 0; i < 8; i++)
+        {
+            float mid = (a + b) * 0.5f;
+            if (!flight.TrySampleContactMotion(mid, maxExtrapolation)) return;
+            if (InsideZone(flight.sampledPosition)) b = mid; else a = mid;
+        }
+        if (!motion.TrySampleContactPose(a, maxExtrapolation)) return;
+        Vector3 sweetSpot = motion.contactSamplePosition + (motion.contactSampleRotation * Vector3.up) *
+            motion.PlaneDistanceFromLocalY(motion.SweetSpotLocalY());
+        _buntEntryTime = a;
+        _buntEntryState = InsideZone(sweetSpot) ? BattingAssist.EntrySweetSpotInside : BattingAssist.EntrySweetSpotOutside;
+    }
+
+    private void StoreAssistDiagnostics()
+    {
+        contactIsBunt = _candidatePattern != BattingAssist.BuntNone;
+        contactBuntPattern = _candidatePattern;
+        snapshotBuntEntryState = _buntEntryState;
+        snapshotBuntEntryTime = _buntEntryTime;
+        snapshotUpperGripFraction = _candidateUpperGrip;
+        snapshotBuntPowerCap = contactIsBunt ? _candidateBuntCap : 1f;
+        snapshotContactForwardSpeed = contactIsBunt ? _candidateForwardSpeed : 0f;
+        snapshotPulled = contactIsBunt && _candidatePulled;
+        snapshotNormalWidth = _candidateNormalWidth;
+        snapshotEffectiveWidth = _candidateWidth;
+        snapshotHomingRate = _candidateHomingRate;
+        snapshotCorrectedPlaneX = _candidateX;
+        snapshotCorrectedPlaneY = _candidateY;
+        snapshotTimingSine = _candidateTimingSine;
+        snapshotExtensionFraction = contactIsBunt ? 0f : _candidateExtension;
+    }
+
+    private void LogContact()
+    {
+        Debug.Log("[VVBC Contact] bunt=" + contactIsBunt + " pattern=" + contactBuntPattern +
+            " entry=" + snapshotBuntEntryState + "@" + snapshotBuntEntryTime.ToString("F3") +
+            " upperGrip=" + snapshotUpperGripFraction.ToString("F3") +
+            " raw=" + snapshotRawPower.ToString("F3") + " cap=" + snapshotPowerCap.ToString("F3") +
+            " buntCap=" + snapshotBuntPowerCap.ToString("F3") + " final=" + finalBatPower.ToString("F3") +
+            " forward=" + snapshotContactForwardSpeed.ToString("F2") + " pulled=" + snapshotPulled +
+            " width=" + snapshotNormalWidth.ToString("F4") + "/" + snapshotEffectiveWidth.ToString("F4") +
+            " homing=" + snapshotHomingRate.ToString("F2") +
+            " x=" + snapshotPlaneX.ToString("F4") + "->" + snapshotCorrectedPlaneX.ToString("F4") +
+            " y=" + snapshotPlaneY.ToString("F4") + "->" + snapshotCorrectedPlaneY.ToString("F4") +
+            " timing=" + snapshotTimingSine.ToString("F3") + " band=" + snapshotExtensionFraction.ToString("F2") +
+            " gamma=" + snapshotSpeedGamma.ToString("F2") + " bonus=" + snapshotSpeedBonusMax.ToString("F2") + " cap=" + snapshotSpeedCap.ToString("F2") +
+            " quality=" + contactQuality.ToString("F3") + " exit=" + resultVelocity.magnitude.ToString("F2") +
+            " spin=" + resultSpin.magnitude.ToString("F1"));
+    }
+
+    // The candidate's own gate once classified: a Bunt's symmetric yaw, a normal swing's early
+    // and late tolerances (Timing Tolerance perk; both the symmetric yaw without it).
+    private bool KindTimingAccepts(bool bunt)
+    {
+        if (bunt) return BattingAssist.TimingAccepts(_candidateTimingSine, motion.timingYawDegrees, motion.timingYawDegrees);
+        return BattingAssist.TimingAccepts(_candidateTimingSine, motion.NormalSwingEarlyYaw(), motion.NormalSwingLateYaw());
+    }
+
+    // The symmetric gate (a Bunt's, and a normal swing's without Timing Tolerance).
     private bool ValidTiming(Vector3 axis, Vector3 centerDirectionValue, float yawDegrees)
     {
-        Vector3 horizontal = axis - Vector3.Dot(axis, Vector3.up) * Vector3.up;
-        Vector3 center = centerDirectionValue - Vector3.Dot(centerDirectionValue, Vector3.up) * Vector3.up;
-        if (horizontal.sqrMagnitude < 0.000001f || center.sqrMagnitude < 0.000001f) return false;
-        return Mathf.Abs(Vector3.Dot(horizontal.normalized, center.normalized)) <= Mathf.Sin(yawDegrees * Mathf.Deg2Rad);
+        return BattingAssist.TimingAccepts(BattingAssist.TimingSine(axis, centerDirectionValue), yawDegrees, yawDegrees);
     }
 
 }

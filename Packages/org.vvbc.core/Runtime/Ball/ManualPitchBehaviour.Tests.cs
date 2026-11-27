@@ -66,7 +66,8 @@ public partial class ManualPitchBehaviour
         _lockType = _selectedType;
         _lockBuild = BuildFor(_lockType);
         _lockSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_lockBuild);
-        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
+        _lockMaxSpeedKmh = PitchSpeedCapKmh();
+        _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(_lockMaxSpeedKmh, solverSpeedRatio) * _lockSpeedMultiplier;
         _lockConverged = true;
         _lockIdeal = IdealFor(_lockType);
         state = StateLockedReady;
@@ -82,7 +83,8 @@ public partial class ManualPitchBehaviour
         _defaultType = _selectedType;
         _defaultBuild = BuildFor(_defaultType);
         _defaultSpeedMultiplier = PitchPropertiesCalculator.SpeedMultiplier(_defaultBuild);
-        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
+        _defaultMaxSpeedKmh = PitchSpeedCapKmh();
+        _defaultSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(_defaultMaxSpeedKmh, solverSpeedRatio) * _defaultSpeedMultiplier;
         _defaultConverged = true;
         _defaultSolverError = 0f;
         _defaultPredicted = target;
@@ -717,7 +719,7 @@ public partial class ManualPitchBehaviour
         Vector3 locked = LockedDirection();
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, locked) < 0.00001f);
-        Assert.IsTrue(Mathf.Abs(releaseVelocity.magnitude - 140f / 3.6f) < 0.001f);
+        Assert.IsTrue(Mathf.Abs(releaseVelocity.magnitude - 120f / 3.6f) < 0.001f);
     }
 
     // ---- Solver and flight ----
@@ -1119,7 +1121,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(CalibrateForTest(Overhand));
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), TowardPlate()));
-        Assert.IsTrue(ReleaseResultText(true).Contains("Release speed  140.0 km/h"), ReleaseResultText(true));
+        Assert.IsTrue(ReleaseResultText(true).Contains("Release speed  120.0 km/h"), ReleaseResultText(true));
         // A throw: the pitch's velocity is cleared, and the speed is the throw's own once launched.
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsFalse(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), Vector3.back * 0.5f));
@@ -1246,7 +1248,10 @@ public partial class ManualPitchBehaviour
     [TsukimiTest]
     public void TheSpeedDefaultsAreTheMaximumAndTheSolverRatio()
     {
-        Assert.AreEqual(140f, maxPitchSpeedKmh);
+        Assert.AreEqual(120f, maxPitchSpeedKmh, "the perk standard");
+        Assert.AreEqual(2200f, fourSeamSpinRpm, "the Spin perk standard");
+        Assert.AreEqual(0.90f, controlSigmaMeters, "the Control perk standard");
+        Assert.AreEqual(60f, timingScoreCap);
         Assert.AreEqual(0.97f, solverSpeedRatio);
         Assert.AreEqual(1f, minArmSpeed, "recognition keeps its own minimum");
     }
@@ -1262,7 +1267,7 @@ public partial class ManualPitchBehaviour
         Quaternion ideal = IdealHand(TestChest);
         Vector3 target = new Vector3(0f, 0.75f, 0f);
         float[] outputs = { 0.30f, 0.65f, 0.97f, 0.98f, 1f, 1.4f };
-        float[] expected = { 42f, 91f, 135.8f, 137.2f, 140f, 140f };
+        float[] expected = { 36f, 78f, 116.4f, 117.6f, 120f, 120f };
         for (int i = 0; i < outputs.Length; i++)
         {
             LockForTest(target);
@@ -1280,7 +1285,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(CurveReleaseForTest(new Vector3(0.3f, -0.2f, 0.2f),
             ManualPitchMath.Multiply(ideal, ManualPitchMath.AxisAngle(Vector3.right, 40f)), TowardPlate(), 0.97f));
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, first.normalized) < 0.000001f);
-        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 135.8f, 0.01f), "speed " + releaseVelocity.magnitude * 3.6f);
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 116.4f, 0.01f), "speed " + releaseVelocity.magnitude * 3.6f);
         // An invalid maximum gives no speed rather than NaN.
         maxPitchSpeedKmh = float.NaN;
         LockForTest(target);
@@ -1298,7 +1303,7 @@ public partial class ManualPitchBehaviour
         armSpeedCurve = null;
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(ReleaseForTest(TestChest, Vector3.zero, IdealHand(TestChest), Vector3.back * 1.5f));
-        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 140f, 0.01f));
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 120f, 0.01f));
         Assert.IsTrue(ReleaseDetailText().Contains("curve has no keys: full speed"), ReleaseDetailText());
     }
 
@@ -1317,7 +1322,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(ReleaseDetailText().Contains("SPEED  not a pitch: arm-speed curve not applied"), ReleaseDetailText());
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.back * 1.2f, 0.32f), "a slow pitch is still a pitch");
-        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 44.8f, 0.01f));
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 38.4f, 0.01f));
     }
 
     // The solver aims with maxPitchSpeedKmh x solverSpeedRatio taken at the lock; later setting
@@ -1332,12 +1337,12 @@ public partial class ManualPitchBehaviour
         Vector3 eye = new Vector3(0f, 1.6f, 18f);
         Assert.IsTrue(UpdateCursor(eye, (new Vector3(0f, 0.72f, 0f) - eye).normalized, TestPlate, TestNormal, 0.016f));
         Assert.IsTrue(BeginLockAt(TestP0(), TestPlate, TestNormal, TestGravity, 0.02f));
-        Assert.IsTrue(Near(_lockSolverSpeedKmh, 135.8f, 0.001f), "solver speed " + _lockSolverSpeedKmh);
+        Assert.IsTrue(Near(_lockSolverSpeedKmh, 116.4f, 0.001f), "solver speed " + _lockSolverSpeedKmh);
         maxPitchSpeedKmh = 90f;
         solverSpeedRatio = 0.5f;
         for (int i = 0; i < 200 && state == StateSolving; i++) AdvanceSolve();
         Assert.AreEqual(StateLockedReady, state);
-        Assert.IsTrue(Near(_lockSolverSpeedKmh, 135.8f, 0.001f), "setting changes after the lock are not used");
+        Assert.IsTrue(Near(_lockSolverSpeedKmh, 116.4f, 0.001f), "setting changes after the lock are not used");
         // The failure flight's aim follows in the background, before the pitch.
         FinishLockFailureForTest();
         Assert.IsTrue(_lockFailureReady);
@@ -1345,11 +1350,11 @@ public partial class ManualPitchBehaviour
         int iterations = aimSolver.iterations;
         Vector3 hand = HandAt(TestChest, Overhand);
         Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 0.5f));
-        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 45f, 0.01f), "the release reads the maximum at the release");
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 60f, 0.01f), "the release uses the maximum its course was solved with (120), not the later 90");
         Assert.IsFalse(aimSolver.solving, "the release does not solve again");
         Assert.AreEqual(iterations, aimSolver.iterations);
         Assert.AreEqual(lockDirection, _lockDirection);
-        Assert.IsTrue(ReleaseDetailText().Contains("solver 135.8 km/h"), ReleaseDetailText());
+        Assert.IsTrue(ReleaseDetailText().Contains("solver 116.4 km/h"), ReleaseDetailText());
     }
 
     // Actual speed = solver speed with the ideal spin and SSW, the ideal release and ball centre
@@ -1381,7 +1386,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(fast.y > matched.y + 0.02f, "faster arrives higher: " + (fast.y - matched.y));
 
         state = StateLockedReady;
-        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 95f / 140f));
+        Assert.IsTrue(CrossedCurveReleaseAt(hand, IdealHand(TestChest), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, 95f / 120f));
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, direction) < 0.000001f, "slower: same direction");
         Vector3 slow = FlyToPlate(releasePosition, releaseVelocity, releaseSpin, releaseWakeMode, releaseWakeCoefficient, releaseWakeDirection);
         Assert.IsTrue(slow.y < matched.y - 0.3f, "a 95 km/h pitch drops well below the course: " + (slow.y - matched.y));
@@ -1399,26 +1404,26 @@ public partial class ManualPitchBehaviour
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), TowardPlate(), 1f));
         string text = SpeedText();
-        Assert.IsTrue(text.Contains("arm 20.0 m/s   curve 100.0%   max 140.0 km/h"), text);
-        Assert.IsTrue(text.Contains("solver 135.8 km/h   release 140.0 km/h   delta +4.2 km/h"), text);
+        Assert.IsTrue(text.Contains("arm 20.0 m/s   curve 100.0%   max 120.0 km/h"), text);
+        Assert.IsTrue(text.Contains("solver 116.4 km/h   release 120.0 km/h   delta +3.6 km/h"), text);
         maxPitchSpeedKmh = 100f;
         solverSpeedRatio = 0.5f;
         Assert.AreEqual(text, SpeedText(), "later setting changes do not rewrite the result");
 
-        maxPitchSpeedKmh = 140f;
+        maxPitchSpeedKmh = 120f;
         solverSpeedRatio = 0.97f;
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsTrue(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), TowardPlate(), 0.68f));
         text = SpeedText();
-        Assert.IsTrue(text.Contains("curve 68.0%") && text.Contains("release 95.2 km/h   delta -40.6 km/h"), text);
+        Assert.IsTrue(text.Contains("curve 68.0%") && text.Contains("release 81.6 km/h   delta -34.8 km/h"), text);
         RecordLaunch(releasePosition, releaseVelocity);
-        Assert.IsTrue(releaseDetailText.Contains("delta -40.6 km/h"), "the launched speed is the release's: " + releaseDetailText);
+        Assert.IsTrue(releaseDetailText.Contains("delta -34.8 km/h"), "the launched speed is the release's: " + releaseDetailText);
 
         // A throw after a pitch shows none of the pitch's speed model.
         LockForTest(new Vector3(0f, 0.75f, 0f));
         Assert.IsFalse(CurveReleaseForTest(Vector3.zero, IdealHand(TestChest), Vector3.back * 0.5f, 1f));
         text = ReleaseDetailText();
-        Assert.IsTrue(text.Contains("SPEED  not a pitch") && !text.Contains("delta") && !text.Contains("solver 135.8"), text);
+        Assert.IsTrue(text.Contains("SPEED  not a pitch") && !text.Contains("delta") && !text.Contains("solver 116.4"), text);
     }
 
     // ---- Arm motion: controller samples, speed and direction ----
@@ -1666,6 +1671,7 @@ public partial class ManualPitchBehaviour
         _lockTarget = new Vector3(0f, 0.75f, 0f);
         _lockRelease = p0;
         _lockDirection = (_lockTarget - p0).normalized;
+        _lockMaxSpeedKmh = maxPitchSpeedKmh;
         _lockSolverSpeedKmh = ManualPitchMath.ScaledSpeedKmh(maxPitchSpeedKmh, solverSpeedRatio);
         _lockConverged = true;
         state = StateLockedReady;

@@ -38,7 +38,7 @@ class Toolchain:
     def check(self):
         metadata = read_json(self.root / CORE / 'package.json')
         if metadata['name'] != 'org.vvbc.core' or metadata['vpmDependencies'] != {
-                'com.vrchat.worlds': '3.10.5', TSUKIMI: '0.10.1', 'org.vvbc.assets': '0.0.1', VRCUI: '0.14.2'}:
+                'com.vrchat.worlds': '3.10.6', TSUKIMI: '0.10.2', 'org.vvbc.assets': '0.0.1', VRCUI: '0.14.2'}:
             raise ValueError('Core must declare exactly the verified Worlds/Tsukimi/assets/VRCUI dependencies')
         if metadata.get('dependencies'):
             raise ValueError('Core dependencies are resolved through its reviewed VPM declarations')
@@ -109,7 +109,7 @@ class Toolchain:
         if not (project / 'ProjectSettings/ProjectVersion.txt').is_file():
             raise ValueError('Consumer must be an initialized Unity project')
         installed = read_json(compiler / 'package.json')
-        if installed['name'] != TSUKIMI or installed['version'] != '0.10.1':
+        if installed['name'] != TSUKIMI or installed['version'] != '0.10.2':
             raise ValueError('Installed Tsukimi metadata does not match core dependency')
         assets = self.root / ASSETS
         asset_metadata = read_json(assets / 'package.json')

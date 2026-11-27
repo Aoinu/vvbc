@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "environment": {
-    "tsukimiVersion": "0.10.1",
+    "tsukimiVersion": "0.10.2",
     "measurementMethod": "Tsukimi MCP test runner, default Udon path (steps = instructions, externs = extern calls), run minus setup",
-    "recordedAt": "2026-11-08",
-    "recordedAgainstProductionCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
+    "recordedAt": "2026-11-26",
+    "recordedAgainstProductionCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
     "note": "Steps and externs are Udon instruction and extern counts from the Tsukimi test runner, not CPU time. Production sources are compiled with the reviewed stub rules in perf/harness.py."
   },
   "scenarios": [
@@ -32,18 +32,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 14073,
-        "externs": 2885
+        "steps": 11368,
+        "externs": 2496
       },
       "limits": {
-        "steps": 18295,
-        "externs": 3751
+        "steps": 14779,
+        "externs": 3245
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 21110,
-        "externs": 4328
+        "steps": 17052,
+        "externs": 3744
       }
     },
     {
@@ -70,18 +70,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 33079,
-        "externs": 6404
+        "steps": 27077,
+        "externs": 5707
       },
       "limits": {
-        "steps": 43003,
-        "externs": 8326
+        "steps": 35201,
+        "externs": 7420
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 49619,
-        "externs": 9606
+        "steps": 40616,
+        "externs": 8561
       }
     },
     {
@@ -108,18 +108,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 53589,
-        "externs": 10775
+        "steps": 40574,
+        "externs": 8596
       },
       "limits": {
-        "steps": 69666,
-        "externs": 14008
+        "steps": 52747,
+        "externs": 11175
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 80384,
-        "externs": 16163
+        "steps": 60861,
+        "externs": 12894
       }
     },
     {
@@ -146,18 +146,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 73467,
-        "externs": 14999
+        "steps": 54125,
+        "externs": 11502
       },
       "limits": {
-        "steps": 95508,
-        "externs": 19499
+        "steps": 70363,
+        "externs": 14953
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 110201,
-        "externs": 22499
+        "steps": 81188,
+        "externs": 17253
       }
     },
     {
@@ -184,18 +184,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 254893,
-        "externs": 53565
+        "steps": 202890,
+        "externs": 43873
       },
       "limits": {
-        "steps": 331361,
-        "externs": 69635
+        "steps": 263757,
+        "externs": 57035
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 382340,
-        "externs": 80348
+        "steps": 304335,
+        "externs": 65810
       }
     },
     {
@@ -222,18 +222,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 254893,
-        "externs": 53565
+        "steps": 202890,
+        "externs": 43873
       },
       "limits": {
-        "steps": 331361,
-        "externs": 69635
+        "steps": 263757,
+        "externs": 57035
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 382340,
-        "externs": 80348
+        "steps": 304335,
+        "externs": 65810
       }
     },
     {
@@ -260,18 +260,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 39197,
-        "externs": 7916
+        "steps": 28783,
+        "externs": 6127
       },
       "limits": {
-        "steps": 50957,
-        "externs": 10291
+        "steps": 37418,
+        "externs": 7966
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 58796,
-        "externs": 11874
+        "steps": 43175,
+        "externs": 9191
       }
     },
     {
@@ -298,18 +298,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 242015,
-        "externs": 48575
+        "steps": 180372,
+        "externs": 38372
       },
       "limits": {
-        "steps": 314620,
-        "externs": 63148
+        "steps": 234484,
+        "externs": 49884
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 363023,
-        "externs": 72863
+        "steps": 270558,
+        "externs": 57558
       }
     },
     {
@@ -336,18 +336,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 421044,
-        "externs": 86083
+        "steps": 321840,
+        "externs": 70345
       },
       "limits": {
-        "steps": 547358,
-        "externs": 111908
+        "steps": 418392,
+        "externs": 91449
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 631566,
-        "externs": 129125
+        "steps": 482760,
+        "externs": 105518
       }
     },
     {
@@ -374,18 +374,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 600231,
-        "externs": 123591
+        "steps": 463552,
+        "externs": 102322
       },
       "limits": {
-        "steps": 780301,
-        "externs": 160669
+        "steps": 602618,
+        "externs": 133019
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 900347,
-        "externs": 185387
+        "steps": 695328,
+        "externs": 153483
       }
     },
     {
@@ -412,18 +412,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 780194,
-        "externs": 161232
+        "steps": 606040,
+        "externs": 134432
       },
       "limits": {
-        "steps": 1014253,
-        "externs": 209602
+        "steps": 787852,
+        "externs": 174762
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1170291,
-        "externs": 241848
+        "steps": 909060,
+        "externs": 201648
       }
     },
     {
@@ -450,18 +450,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 3412325,
-        "externs": 706259
+        "steps": 2259333,
+        "externs": 505749
       },
       "limits": {
-        "steps": 4436023,
-        "externs": 918137
+        "steps": 2937133,
+        "externs": 657474
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 5118488,
-        "externs": 1059389
+        "steps": 3389000,
+        "externs": 758624
       }
     },
     {
@@ -488,18 +488,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 3427373,
-        "externs": 708656
+        "steps": 2270460,
+        "externs": 507795
       },
       "limits": {
-        "steps": 4455585,
-        "externs": 921253
+        "steps": 2951598,
+        "externs": 660134
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 5141060,
-        "externs": 1062984
+        "steps": 3405690,
+        "externs": 761693
       }
     },
     {
@@ -526,18 +526,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 372375,
-        "externs": 76374
+        "steps": 296447,
+        "externs": 65304
       },
       "limits": {
-        "steps": 484088,
-        "externs": 99287
+        "steps": 385382,
+        "externs": 84896
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 558563,
-        "externs": 114561
+        "steps": 444671,
+        "externs": 97956
       }
     },
     {
@@ -564,18 +564,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 172765,
-        "externs": 35782
+        "steps": 148635,
+        "externs": 32245
       },
       "limits": {
-        "steps": 224595,
-        "externs": 46517
+        "steps": 193226,
+        "externs": 41919
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 259148,
-        "externs": 53673
+        "steps": 222953,
+        "externs": 48368
       }
     },
     {
@@ -602,18 +602,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 315011,
-        "externs": 67386
+        "steps": 271428,
+        "externs": 60744
       },
       "limits": {
-        "steps": 409515,
-        "externs": 87602
+        "steps": 352857,
+        "externs": 78968
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 472517,
-        "externs": 101079
+        "steps": 407142,
+        "externs": 91116
       }
     },
     {
@@ -640,18 +640,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 457415,
-        "externs": 98990
+        "steps": 394465,
+        "externs": 89247
       },
       "limits": {
-        "steps": 594640,
-        "externs": 128687
+        "steps": 512805,
+        "externs": 116022
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 686123,
-        "externs": 148485
+        "steps": 591698,
+        "externs": 133871
       }
     },
     {
@@ -678,18 +678,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 600595,
-        "externs": 130727
+        "steps": 518278,
+        "externs": 117883
       },
       "limits": {
-        "steps": 780774,
-        "externs": 169946
+        "steps": 673762,
+        "externs": 153248
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 900893,
-        "externs": 196091
+        "steps": 777417,
+        "externs": 176825
       }
     },
     {
@@ -716,18 +716,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 2717764,
-        "externs": 593098
+        "steps": 1966146,
+        "externs": 450986
       },
       "limits": {
-        "steps": 3533094,
-        "externs": 771028
+        "steps": 2555990,
+        "externs": 586282
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 4076646,
-        "externs": 889647
+        "steps": 2949219,
+        "externs": 676479
       }
     },
     {
@@ -754,18 +754,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 2732812,
-        "externs": 595495
+        "steps": 1977273,
+        "externs": 453032
       },
       "limits": {
-        "steps": 3552656,
-        "externs": 774144
+        "steps": 2570455,
+        "externs": 588942
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 4099218,
-        "externs": 893243
+        "steps": 2965910,
+        "externs": 679548
       }
     },
     {
@@ -792,18 +792,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 298809,
-        "externs": 64566
+        "steps": 259097,
+        "externs": 58356
       },
       "limits": {
-        "steps": 388452,
-        "externs": 83936
+        "steps": 336827,
+        "externs": 75863
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 448214,
-        "externs": 96849
+        "steps": 388646,
+        "externs": 87534
       }
     },
     {
@@ -830,18 +830,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1097243,
-        "externs": 213360
+        "steps": 861747,
+        "externs": 173444
       },
       "limits": {
-        "steps": 1426416,
-        "externs": 277368
+        "steps": 1120272,
+        "externs": 225478
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1645865,
-        "externs": 320040
+        "steps": 1292621,
+        "externs": 260166
       }
     },
     {
@@ -868,18 +868,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1104564,
-        "externs": 219179
+        "steps": 868489,
+        "externs": 179184
       },
       "limits": {
-        "steps": 1435934,
-        "externs": 284933
+        "steps": 1129036,
+        "externs": 232940
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1656846,
-        "externs": 328769
+        "steps": 1302734,
+        "externs": 268776
       }
     },
     {
@@ -906,18 +906,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 925856,
-        "externs": 192790
+        "steps": 715508,
+        "externs": 158432
       },
       "limits": {
-        "steps": 1203613,
-        "externs": 250627
+        "steps": 930161,
+        "externs": 205962
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1388784,
-        "externs": 289185
+        "steps": 1073262,
+        "externs": 237648
       }
     },
     {
@@ -944,18 +944,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1149934,
-        "externs": 238102
+        "steps": 891620,
+        "externs": 197612
       },
       "limits": {
-        "steps": 1494915,
-        "externs": 309533
+        "steps": 1159106,
+        "externs": 256896
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1724901,
-        "externs": 357153
+        "steps": 1337430,
+        "externs": 296418
       }
     },
     {
@@ -982,18 +982,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 4611701,
-        "externs": 947184
+        "steps": 3162472,
+        "externs": 702192
       },
       "limits": {
-        "steps": 5995212,
-        "externs": 1231340
+        "steps": 4111214,
+        "externs": 912850
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 6917552,
-        "externs": 1420776
+        "steps": 4743708,
+        "externs": 1053288
       }
     },
     {
@@ -1020,18 +1020,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 3651046,
-        "externs": 743454
+        "steps": 2392088,
+        "externs": 534077
       },
       "limits": {
-        "steps": 4746360,
-        "externs": 966491
+        "steps": 3109715,
+        "externs": 694301
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 5476569,
-        "externs": 1115181
+        "steps": 3588132,
+        "externs": 801116
       }
     },
     {
@@ -1058,18 +1058,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 365484,
-        "externs": 75920
+        "steps": 290826,
+        "externs": 64606
       },
       "limits": {
-        "steps": 475130,
-        "externs": 98696
+        "steps": 378074,
+        "externs": 83988
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 548226,
-        "externs": 113880
+        "steps": 436239,
+        "externs": 96909
       }
     },
     {
@@ -1096,18 +1096,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 761976,
-        "externs": 149106
+        "steps": 594453,
+        "externs": 120660
       },
       "limits": {
-        "steps": 990569,
-        "externs": 193838
+        "steps": 772789,
+        "externs": 156858
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1142964,
-        "externs": 223659
+        "steps": 891680,
+        "externs": 180990
       }
     },
     {
@@ -1134,18 +1134,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 784938,
-        "externs": 157178
+        "steps": 611141,
+        "externs": 128315
       },
       "limits": {
-        "steps": 1020420,
-        "externs": 204332
+        "steps": 794484,
+        "externs": 166810
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1177407,
-        "externs": 235767
+        "steps": 916712,
+        "externs": 192473
       }
     },
     {
@@ -1172,18 +1172,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 804681,
-        "externs": 165548
+        "steps": 618695,
+        "externs": 136648
       },
       "limits": {
-        "steps": 1046086,
-        "externs": 215213
+        "steps": 804304,
+        "externs": 177643
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1207022,
-        "externs": 248322
+        "steps": 928043,
+        "externs": 204972
       }
     },
     {
@@ -1210,18 +1210,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 998878,
-        "externs": 205316
+        "steps": 771571,
+        "externs": 170900
       },
       "limits": {
-        "steps": 1298542,
-        "externs": 266911
+        "steps": 1003043,
+        "externs": 222170
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1498317,
-        "externs": 307974
+        "steps": 1157357,
+        "externs": 256350
       }
     },
     {
@@ -1248,18 +1248,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 4167945,
-        "externs": 852453
+        "steps": 2807010,
+        "externs": 624531
       },
       "limits": {
-        "steps": 5418329,
-        "externs": 1108189
+        "steps": 3649113,
+        "externs": 811891
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 6251918,
-        "externs": 1278680
+        "steps": 4210515,
+        "externs": 936797
       }
     },
     {
@@ -1286,18 +1286,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 3651034,
-        "externs": 743451
+        "steps": 2392079,
+        "externs": 534074
       },
       "limits": {
-        "steps": 4746345,
-        "externs": 966487
+        "steps": 3109703,
+        "externs": 694297
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 5476551,
-        "externs": 1115177
+        "steps": 3588119,
+        "externs": 801111
       }
     },
     {
@@ -1324,18 +1324,18 @@
         "run": "m2"
       },
       "baseline": {
-        "steps": 391747,
-        "externs": 79560
+        "steps": 308582,
+        "externs": 68073
       },
       "limits": {
-        "steps": 509272,
-        "externs": 103428
+        "steps": 401157,
+        "externs": 88495
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above (optimized practice-feedback Scan with cached outline). Regression limit = baseline +30%; absolute ceiling = baseline +50% so repeated reviewed bumps cannot walk away. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 587621,
-        "externs": 119340
+        "steps": 462873,
+        "externs": 102110
       }
     },
     {
@@ -1363,18 +1363,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 15209,
-        "externs": 3463
+        "steps": 11985,
+        "externs": 2795
       },
       "limits": {
-        "steps": 19772,
-        "externs": 4502
+        "steps": 15581,
+        "externs": 3634
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 22814,
-        "externs": 5195
+        "steps": 17978,
+        "externs": 4193
       }
     },
     {
@@ -1402,18 +1402,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 49258,
-        "externs": 9229
+        "steps": 42304,
+        "externs": 8139
       },
       "limits": {
-        "steps": 64036,
-        "externs": 11998
+        "steps": 54996,
+        "externs": 10581
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 73887,
-        "externs": 13844
+        "steps": 63456,
+        "externs": 12209
       }
     },
     {
@@ -1441,18 +1441,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 120512,
-        "externs": 22085
+        "steps": 95063,
+        "externs": 17679
       },
       "limits": {
-        "steps": 156666,
-        "externs": 28711
+        "steps": 123582,
+        "externs": 22983
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 180768,
-        "externs": 33128
+        "steps": 142595,
+        "externs": 26519
       }
     },
     {
@@ -1480,18 +1480,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 108590,
-        "externs": 19722
+        "steps": 82154,
+        "externs": 14935
       },
       "limits": {
-        "steps": 141167,
-        "externs": 25639
+        "steps": 106801,
+        "externs": 19416
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 162885,
-        "externs": 29583
+        "steps": 123231,
+        "externs": 22403
       }
     },
     {
@@ -1519,18 +1519,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 136074,
-        "externs": 25798
+        "steps": 107128,
+        "externs": 20512
       },
       "limits": {
-        "steps": 176897,
-        "externs": 33538
+        "steps": 139267,
+        "externs": 26666
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 204111,
-        "externs": 38697
+        "steps": 160692,
+        "externs": 30768
       }
     },
     {
@@ -1558,18 +1558,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 136149,
-        "externs": 25811
+        "steps": 107191,
+        "externs": 20525
       },
       "limits": {
-        "steps": 176994,
-        "externs": 33555
+        "steps": 139349,
+        "externs": 26683
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 204224,
-        "externs": 38717
+        "steps": 160787,
+        "externs": 30788
       }
     },
     {
@@ -1597,18 +1597,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 170660,
-        "externs": 34560
+        "steps": 129611,
+        "externs": 27017
       },
       "limits": {
-        "steps": 221858,
-        "externs": 44928
+        "steps": 168495,
+        "externs": 35123
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 255990,
-        "externs": 51840
+        "steps": 194417,
+        "externs": 40526
       }
     },
     {
@@ -1636,18 +1636,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 284660,
-        "externs": 56630
+        "steps": 225315,
+        "externs": 46372
       },
       "limits": {
-        "steps": 370058,
-        "externs": 73619
+        "steps": 292910,
+        "externs": 60284
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 426990,
-        "externs": 84945
+        "steps": 337973,
+        "externs": 69558
       }
     },
     {
@@ -1675,18 +1675,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 232373,
-        "externs": 50770
+        "steps": 179061,
+        "externs": 39414
       },
       "limits": {
-        "steps": 302085,
-        "externs": 66001
+        "steps": 232780,
+        "externs": 51239
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering).",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded after the broad-phase / pruned-contour / deferred-metrics optimization (reviewed lowering). Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 348560,
-        "externs": 76155
+        "steps": 268592,
+        "externs": 59121
       }
     },
     {
@@ -1714,18 +1714,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 594291,
-        "externs": 118461
+        "steps": 461013,
+        "externs": 95437
       },
       "limits": {
-        "steps": 772579,
-        "externs": 154000
+        "steps": 599317,
+        "externs": 124069
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Ball hand-off (ApplyContactResult) is stubbed and excluded. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 891437,
-        "externs": 177692
+        "steps": 691520,
+        "externs": 143156
       }
     },
     {
@@ -1749,18 +1749,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1303,
-        "externs": 148
+        "steps": 690,
+        "externs": 68
       },
       "limits": {
-        "steps": 1694,
-        "externs": 193
+        "steps": 897,
+        "externs": 89
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1955,
-        "externs": 222
+        "steps": 1035,
+        "externs": 102
       }
     },
     {
@@ -1784,18 +1784,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1367,
-        "externs": 164
+        "steps": 690,
+        "externs": 68
       },
       "limits": {
-        "steps": 1778,
-        "externs": 214
+        "steps": 897,
+        "externs": 89
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 2051,
-        "externs": 246
+        "steps": 1035,
+        "externs": 102
       }
     },
     {
@@ -1819,18 +1819,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1733,
-        "externs": 235
+        "steps": 918,
+        "externs": 126
       },
       "limits": {
-        "steps": 2253,
-        "externs": 306
+        "steps": 1194,
+        "externs": 164
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 2600,
-        "externs": 353
+        "steps": 1377,
+        "externs": 189
       }
     },
     {
@@ -1855,18 +1855,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1717,
-        "externs": 200
+        "steps": 837,
+        "externs": 84
       },
       "limits": {
-        "steps": 2233,
-        "externs": 260
+        "steps": 1089,
+        "externs": 110
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 2576,
-        "externs": 300
+        "steps": 1256,
+        "externs": 126
       }
     },
     {
@@ -1889,18 +1889,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 1094,
-        "externs": 244
+        "steps": 137,
+        "externs": 12
       },
       "limits": {
-        "steps": 1423,
-        "externs": 318
+        "steps": 179,
+        "externs": 16
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 1641,
-        "externs": 366
+        "steps": 206,
+        "externs": 18
       }
     },
     {
@@ -1924,18 +1924,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 31834,
-        "externs": 7387
+        "steps": 6581,
+        "externs": 1353
       },
       "limits": {
-        "steps": 41385,
-        "externs": 9604
+        "steps": 8556,
+        "externs": 1759
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 47751,
-        "externs": 11081
+        "steps": 9872,
+        "externs": 2030
       }
     },
     {
@@ -1959,18 +1959,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 31834,
-        "externs": 7387
+        "steps": 6581,
+        "externs": 1353
       },
       "limits": {
-        "steps": 41385,
-        "externs": 9604
+        "steps": 8556,
+        "externs": 1759
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 47751,
-        "externs": 11081
+        "steps": 9872,
+        "externs": 2030
       }
     },
     {
@@ -1994,18 +1994,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 31834,
-        "externs": 7387
+        "steps": 6581,
+        "externs": 1353
       },
       "limits": {
-        "steps": 41385,
-        "externs": 9604
+        "steps": 8556,
+        "externs": 1759
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 47751,
-        "externs": 11081
+        "steps": 9872,
+        "externs": 2030
       }
     },
     {
@@ -2029,18 +2029,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 32069,
-        "externs": 7433
+        "steps": 6754,
+        "externs": 1402
       },
       "limits": {
-        "steps": 41690,
-        "externs": 9663
+        "steps": 8781,
+        "externs": 1823
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 48104,
-        "externs": 11150
+        "steps": 10131,
+        "externs": 2103
       }
     },
     {
@@ -2064,18 +2064,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 31695,
-        "externs": 7355
+        "steps": 6451,
+        "externs": 1321
       },
       "limits": {
-        "steps": 41204,
-        "externs": 9562
+        "steps": 8387,
+        "externs": 1718
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 47543,
-        "externs": 11033
+        "steps": 9677,
+        "externs": 1982
       }
     },
     {
@@ -2099,18 +2099,18 @@
         "run": "m1"
       },
       "baseline": {
-        "steps": 31834,
-        "externs": 7387
+        "steps": 6581,
+        "externs": 1353
       },
       "limits": {
-        "steps": 41385,
-        "externs": 9604
+        "steps": 8556,
+        "externs": 1759
       },
-      "baselineCommit": "2c6511a21b5d709ae0c238c2c0ef296f27c71326",
-      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes.",
+      "baselineCommit": "3c46a6eb0a50c80f915e8eeea693ee31ee646e4c",
+      "rationale": "Baseline measured at the production commit above. Regression limit = baseline +30%; absolute ceiling = baseline +50%. Pickup events are replaced by the Configure/StopMotion calls the controller makes. Re-recorded for Tsukimi 0.10.2 (same harness and scenario, reviewed lowering; see perf/README.md \"Tsukimi 0.10.2 re-record\").",
       "absoluteLimits": {
-        "steps": 47751,
-        "externs": 11081
+        "steps": 9872,
+        "externs": 2030
       }
     }
   ]

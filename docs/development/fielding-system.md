@@ -78,7 +78,10 @@ The placeholder visual is a primitive and a two-state Animator controller
 (`Runtime/Animations/GloveAnimator.controller`) with a `Closed` bool. A real
 glove model replaces `GloveVisual` children; the controller only needs the same
 parameter. `CatchTrigger` is a sphere whose `center` must stay at zero; its
-radius times the Mount scale is the catch radius.
+radius times the Mount scale is the catch radius. The Catch Radius
+[perk](player-perks.md) sets `SetCatchRadiusMultiplier(m)`: the trigger radius becomes the
+authored radius times `m` (local, owner only, not synced), and the Mount scale still applies, so
+calibration and the perk stay independent.
 
 ## Scene setup
 
@@ -503,8 +506,10 @@ All values are decided once on the releasing client:
   Difference from the earlier specification (changed on purpose): the ball's
   position was sampled, averaged over 0.08 s, and a sample faster than
   `maxTrackingSpeed` (40 m/s) was discarded, which dropped real fast arms.
-- **Speed**: arm speed ≤ 2 m/s → 90 km/h, ≥ 10 m/s → 145 km/h, smoothstep in
-  between. Unchanged.
+- **Speed**: arm speed ≤ 2 m/s → 90 km/h, ≥ 10 m/s → `maxThrowSpeedKmh` (120 km/h, the
+  perk standard; 145 before the perk system), smoothstep in between. With the player perk system the top is the thrower's Ball Speed perk
+  limit (120 km/h standard, 90-155; `perkMaxThrowSpeedKmh`, given by the Ball per throw) and the
+  minimum never exceeds it ([Player perks](player-perks.md#ball-speed-pitch-and-throw-limits-one-perk)).
 - **Target**: among the shown targets, the one whose marker is closest to the
   forward arm ray (perpendicular distance). Below `minDirectionSpeed` the ray
   uses the head's horizontal forward.

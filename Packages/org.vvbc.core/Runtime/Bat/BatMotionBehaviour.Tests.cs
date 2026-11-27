@@ -511,4 +511,93 @@ public partial class BatMotionBehaviour
         UnregisterContactListener(self);
         Assert.AreEqual(0, ContactListenerCount());
     }
+
+    // Three samples 10 ms apart; hand distances in metres (-1 = not a two-hand free pose).
+    private void SetGripHistory(float d0, float d1, float d2)
+    {
+        _contactCount = 3; _contactNext = 3;
+        _contactTimes[0] = 1f; _contactTimes[1] = 1.01f; _contactTimes[2] = 1.02f;
+        _contactHandDistances[0] = d0; _contactHandDistances[1] = d1; _contactHandDistances[2] = d2;
+        batLength = 1f;
+        _poseLowerGripY = 0.1f;
+    }
+
+    [TsukimiTest]
+    public void UpperGripFractionAddsLowerGripOffsetAndUsesContactTime()
+    {
+        SetGripHistory(0.40f, 0.50f, 0.60f);
+        // lower grip 0.10 + interpolated 0.45 m at t=1.005.
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.005f) - 0.55f) < 0.0001f);
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.01f) - 0.60f) < 0.0001f);
+        // Extrapolated tail keeps the latest recorded grip.
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.03f) - 0.70f) < 0.0001f);
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(0.99f)), "before the history");
+        batLength = 2f;
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.02f) - 0.35f) < 0.0001f, "fraction of Bat length");
+    }
+
+    [TsukimiTest]
+    public void UpperGripFractionIsUnavailableForLockOrOneHandSamples()
+    {
+        SetGripHistory(0.55f, -1f, 0.55f);
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.005f)));
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.015f)));
+        // A grip change after the contact time does not leak back into it.
+        SetGripHistory(0.55f, 0.55f, -1f);
+        Assert.IsTrue(Mathf.Abs(ContactUpperGripFraction(1.005f) - 0.65f) < 0.0001f);
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.02f)));
+        ResetContactHistory();
+        Assert.IsTrue(float.IsNaN(ContactUpperGripFraction(1.005f)), "reset history has no grip");
+    }
+
+    [TsukimiTest]
+    public void HomingAndBuntSettingsValidateAndRestoreDefaults()
+    {
+        Assert.IsFalse(buntEnabled, "no perk: no Bunt");
+        Assert.IsFalse(homingEnabled, "no perk: no Homing");
+        Assert.AreEqual(0f, homingRate);
+        Assert.AreEqual(0f, EffectiveHomingRate());
+        Assert.AreEqual(30f, timingYawDegrees);
+        Assert.AreEqual(30f, NormalSwingEarlyYaw());
+        Assert.AreEqual(30f, NormalSwingLateYaw());
+        CaptureBattingDefaults();
+        Assert.IsFalse(SetHoming(true, 1.1f));
+        Assert.IsFalse(SetHoming(true, float.NaN));
+        Assert.AreEqual(0f, homingRate);
+        Assert.IsTrue(SetHoming(true, 0.75f));
+        Assert.AreEqual(0.75f, EffectiveHomingRate());
+        Assert.IsTrue(SetHoming(false, 0.25f));
+        Assert.AreEqual(0f, EffectiveHomingRate(), "disabled Homing applies no correction");
+        SetBuntEnabled(true);
+        Assert.IsTrue(buntEnabled, "a perk turns Bunt on");
+        ResetBattingSettings();
+        Assert.IsFalse(buntEnabled);
+        Assert.IsFalse(homingEnabled);
+        Assert.AreEqual(0f, homingRate);
+    }
+
+    [TsukimiTest]
+    public void BattingPerkSettersRejectInvalidValuesAndResetRestoresThem()
+    {
+        Assert.IsFalse(SetBattedBallSpeed(float.NaN, 0f));
+        Assert.IsFalse(SetBattedBallSpeed(-1f, 0f));
+        Assert.IsFalse(SetSpeedQualityGamma(0f));
+        Assert.IsFalse(SetSpeedQualityGamma(float.PositiveInfinity));
+        Assert.IsFalse(SetContactWidthOffset(1f));
+        Assert.IsFalse(SetTimingTolerance(91f, 30f));
+        Assert.AreEqual(0f, battedSpeedBonusTopKmh, "a rejected value changes nothing");
+        Assert.AreEqual(1f, speedQualityGamma);
+        Assert.IsTrue(SetBattedBallSpeed(200f, 0f));
+        Assert.IsTrue(SetSpeedQualityGamma(0.7f));
+        Assert.IsTrue(SetContactWidthOffset(-0.02f));
+        Assert.IsTrue(SetTimingTolerance(60f, 45f));
+        Assert.AreEqual(60f, NormalSwingEarlyYaw());
+        Assert.AreEqual(45f, NormalSwingLateYaw());
+        ResetBattingSettings();
+        Assert.AreEqual(0f, battedSpeedBonusTopKmh);
+        Assert.AreEqual(1f, speedQualityGamma);
+        Assert.AreEqual(0f, contactWidthOffset);
+        Assert.AreEqual(timingYawDegrees, NormalSwingEarlyYaw(), "0: the symmetric yaw");
+        Assert.AreEqual(timingYawDegrees, NormalSwingLateYaw());
+    }
 }

@@ -139,7 +139,7 @@ public partial class ThrowAimBehaviour
         Assert.AreEqual(1, selectedTarget, "second base");
         Assert.IsTrue(releaseMiss < 0.01f, "the arm ray passes through the marker");
         float speed = releaseVelocity.magnitude;
-        Assert.IsTrue(Mathf.Abs(speed - FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, 145f / 3.6f)) < 0.01f, "arm speed 8 m/s");
+        Assert.IsTrue(Mathf.Abs(speed - FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, 120f / 3.6f)) < 0.01f, "arm speed 8 m/s (the default 120 km/h maximum)");
         Vector3 flat = new Vector3(releaseVelocity.x, 0f, releaseVelocity.z).normalized;
         Vector3 wanted = new Vector3(-release.x, 0f, 38.8f - release.z).normalized;
         Assert.IsTrue(Vector3.Dot(flat, wanted) > 0.9999f, "heading at the base itself, not the marker");
@@ -876,6 +876,46 @@ public partial class ThrowAimBehaviour
         ShowReleaseFeedback(10f);
         EndHold();
         Assert.IsFalse(gameObject.activeSelf);
+    }
+
+    // Ball Speed perk (player-perks.md): the throw's top speed is the perk's absolute limit
+    // (120 km/h standard), the arm-speed curve and the minimum are kept, and a limit under the
+    // minimum lowers the minimum with it.
+    private float ThrowSpeedKmhWith(float perkLimit, float armStep)
+    {
+        SetBases();
+        Vector3 origin = new Vector3(0f, 1.5f, 10f);
+        PlaceMarkersAt(origin);
+        Vector3 release = origin + new Vector3(0.3f, -0.2f, 0f);
+        Vector3 toSecond = (_markerPositions[1] - release).normalized;
+        ResetSamples();
+        for (int i = 0; i < 5; i++) Sample(i * 0.02f, release - toSecond * (armStep * (4 - i)));
+        perkMaxThrowSpeedKmh = perkLimit;
+        Release(release, 0f, 0f);
+        return releaseVelocity.magnitude * 3.6f;
+    }
+
+    [TsukimiTest]
+    public void TheBallSpeedPerkSetsTheThrowLimit()
+    {
+        Assert.IsTrue(Mathf.Abs(ThrowSpeedKmhWith(0f, 0.4f) - 120f) < 0.05f, "no perk system: the Inspector 120 km/h, the same as the standard");
+        float[] limits = { 90f, 120f, 135f, 145f, 155f };
+        for (int i = 0; i < limits.Length; i++)
+        {
+            float fast = ThrowSpeedKmhWith(limits[i], 0.4f);
+            Assert.IsTrue(Mathf.Abs(fast - limits[i]) < 0.05f, "a fast arm reaches the limit " + limits[i] + ": " + fast);
+            Assert.AreEqual(limits[i], releaseMaxSpeedKmh);
+            Assert.AreEqual(Mathf.Min(90f, limits[i]), releaseMinSpeedKmh, "the minimum never exceeds the limit");
+            float slow = ThrowSpeedKmhWith(limits[i], 0.02f);
+            Assert.IsTrue(Mathf.Abs(slow - 90f) < 0.05f, "a slow arm keeps the 90 km/h minimum: " + slow);
+            float middle = ThrowSpeedKmhWith(limits[i], 0.16f);
+            float expected = FieldingMath.ThrowSpeed(8f, 2f, 10f, 25f, limits[i] / 3.6f) * 3.6f;
+            Assert.IsTrue(Mathf.Abs(middle - expected) < 0.05f, "the arm-speed curve is unchanged");
+        }
+        Assert.AreEqual(120f, maxThrowSpeedKmh, "the Inspector setting is not changed");
+        Assert.AreEqual(90f, minThrowSpeedKmh);
+        Assert.AreEqual(145f, ThrowMaxSpeedKmh(145f, float.NaN));
+        Assert.AreEqual(145f, ThrowMaxSpeedKmh(145f, -1f));
     }
 
     // ---- helpers ----

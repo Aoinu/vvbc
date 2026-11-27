@@ -5,8 +5,8 @@ Virtual Venue Baseball Components (VVBC) is a modular, open-source baseball syst
 ## Requirements
 
 - Unity 2022.3.22f1
-- VRChat SDK - Worlds 3.10.5
-- TsukimiSharp (`com.tsukimicode.udon-tools`) 0.10.1
+- VRChat SDK - Worlds 3.10.6
+- TsukimiSharp (`com.tsukimicode.udon-tools`) 0.10.2
 
 Runtime sources are T# in `Runtime/`; Program Assets belong in
 `Runtime/TsukimiProgramAssets/`. No generated UdonSharp implementation is distributed.
