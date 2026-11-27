@@ -226,13 +226,6 @@ public static class ReleasePlateMath
         return sigmaAtZero * (1f - s / 100f);
     }
 
-    // The sigma after the penalty strength (0..1). Exactly 0 at strength 0.
-    public static float ScaledControlError(float sigma, float strength)
-    {
-        if (!(strength > 0f) || !ManualPitchMath.Finite(strength) || !(sigma > 0f)) return 0f;
-        return sigma * Mathf.Min(1f, strength);
-    }
-
     // The largest distance a draw can give: |z| <= 2 sqrt(3) of the four-uniform normal.
     public const float MaxSigmas = 3.4641016f;
 

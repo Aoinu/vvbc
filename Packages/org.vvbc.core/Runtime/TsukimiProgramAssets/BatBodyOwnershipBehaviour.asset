@@ -19,49 +19,53 @@ MonoBehaviour:
     __refl_typeids: %SystemInt64Array, null\n    onOwnershipTransferredPlayer: %VRCSDKBaseVRCPlayerApi,
     null\n    __OnOwnershipTransferred___t0: %VRCUdonUdonBehaviour, null\n    __OnOwnershipTransferred_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __const_0: %VRCUdonUdonBehaviour, null\n    __const_1: %UnityEngineObject,
-    null\n    __OnOwnershipTransferred_intnl_0: %SystemBoolean, null\n    __OnOwnershipTransferred_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __const_2: %SystemInt32, 1\n    __const_3: %SystemString,
-    \"BodyOwnershipChanged\"\n.data_end\n.code_start\n    .export _onOwnershipTransferred\n   
-    _onOwnershipTransferred:\n        PUSH, bat\n        PUSH, __const_1\n       
-    PUSH, __OnOwnershipTransferred_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    %SystemInt32, 0\n    __const_0: %UnityEngineObject, null\n    __OnOwnershipTransferred_intnl_0:
+    %SystemBoolean, null\n    __OnOwnershipTransferred_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_1: %SystemInt32, 1\n    __const_2: %SystemString, \"BodyOwnershipChanged\"\n.data_end\n.code_start\n   
+    .export _onOwnershipTransferred\n    _onOwnershipTransferred:\n        PUSH,
+    __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    bat\n        PUSH, __const_0\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __OnOwnershipTransferred_intnl_0\n        JUMP_IF_FALSE, __OnOwnershipTransferred_L1\n       
     PUSH, bat\n        PUSH, __OnOwnershipTransferred_intnl_1\n        COPY\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnOwnershipTransferred_intnl_1\n        PUSH, __const_3\n        EXTERN,
+    PUSH, __OnOwnershipTransferred_intnl_1\n        PUSH, __const_2\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred___t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnOwnershipTransferred_L1:\n       
     JUMP_INDIRECT, __OnOwnershipTransferred_retjump\n.code_end\n"
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 568b711f6ef752044bce3def95d2814d, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 5b8365dc6e1c7407914937e8cedd1942e4947437e843787476614b9dd0b40dab
-  compilerVersion: 0.10.1|b2ccd91235a44f5485b6319b48087aeb+ff0f37965d1242d08ef549bd855818b0.b2f633174e2242de8b52aae7a00c87bf.34c079d590e64f0a8b2dbd8ef73a0cc0.439d278d03b34394a2f73ed90a891ba2.bd85973f3645403f97eb545b1b138412
+  sourceFingerprint: 3e579b47413b5196bde4f4c0f1de8f27ff9a91cd925466f3ff3e3664184c8a3e
+  compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
   generatedGpuMaterials: []
@@ -76,45 +80,48 @@ MonoBehaviour:
     __refl_typeids: %SystemInt64Array, null\n    onOwnershipTransferredPlayer: %VRCSDKBaseVRCPlayerApi,
     null\n    __OnOwnershipTransferred___t0: %VRCUdonUdonBehaviour, null\n    __OnOwnershipTransferred_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __const_0: %VRCUdonUdonBehaviour, null\n    __const_1: %UnityEngineObject,
-    null\n    __OnOwnershipTransferred_intnl_0: %SystemBoolean, null\n    __OnOwnershipTransferred_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __const_2: %SystemInt32, 1\n    __const_3: %SystemString,
-    \"BodyOwnershipChanged\"\n.data_end\n.code_start\n    .export _onOwnershipTransferred\n   
-    _onOwnershipTransferred:\n        PUSH, __const_0\n        PUSH, __OnOwnershipTransferred___t0\n       
-    COPY\n        PUSH, bat\n        PUSH, __const_1\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
+    %SystemInt32, 0\n    __const_0: %UnityEngineObject, null\n    __OnOwnershipTransferred_intnl_0:
+    %SystemBoolean, null\n    __OnOwnershipTransferred_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_1: %SystemInt32, 1\n    __const_2: %SystemString, \"BodyOwnershipChanged\"\n.data_end\n.code_start\n   
+    .export _onOwnershipTransferred\n    _onOwnershipTransferred:\n        PUSH,
+    __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    bat\n        PUSH, __const_0\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __OnOwnershipTransferred_intnl_0\n        JUMP_IF_FALSE, __OnOwnershipTransferred_L1\n       
     PUSH, bat\n        PUSH, __OnOwnershipTransferred___t0\n        COPY\n       
     PUSH, __OnOwnershipTransferred___t0\n        PUSH, __OnOwnershipTransferred_intnl_1\n       
     COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred___t0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_1\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnOwnershipTransferred_intnl_1\n        PUSH, __const_3\n        EXTERN,
+    PUSH, __OnOwnershipTransferred_intnl_1\n        PUSH, __const_2\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred___t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnOwnershipTransferred_L1:\n       
     JUMP_INDIRECT, __OnOwnershipTransferred_retjump\n.code_end\n"
@@ -123,41 +130,45 @@ MonoBehaviour:
     __refl_typeids: %SystemInt64Array, null\n    onOwnershipTransferredPlayer: %VRCSDKBaseVRCPlayerApi,
     null\n    __OnOwnershipTransferred___t0: %VRCUdonUdonBehaviour, null\n    __OnOwnershipTransferred_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __recStack: %SystemObjectArray, null\n    __recSp:
-    %SystemInt32, 0\n    __const_0: %VRCUdonUdonBehaviour, null\n    __const_1: %UnityEngineObject,
-    null\n    __OnOwnershipTransferred_intnl_0: %SystemBoolean, null\n    __OnOwnershipTransferred_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __const_2: %SystemInt32, 1\n    __const_3: %SystemString,
-    \"BodyOwnershipChanged\"\n.data_end\n.code_start\n    .export _onOwnershipTransferred\n   
-    _onOwnershipTransferred:\n        PUSH, bat\n        PUSH, __const_1\n       
-    PUSH, __OnOwnershipTransferred_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    %SystemInt32, 0\n    __const_0: %UnityEngineObject, null\n    __OnOwnershipTransferred_intnl_0:
+    %SystemBoolean, null\n    __OnOwnershipTransferred_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_1: %SystemInt32, 1\n    __const_2: %SystemString, \"BodyOwnershipChanged\"\n.data_end\n.code_start\n   
+    .export _onOwnershipTransferred\n    _onOwnershipTransferred:\n        PUSH,
+    __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    bat\n        PUSH, __const_0\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __OnOwnershipTransferred_intnl_0\n        JUMP_IF_FALSE, __OnOwnershipTransferred_L1\n       
     PUSH, bat\n        PUSH, __OnOwnershipTransferred_intnl_1\n        COPY\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, bat\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __OnOwnershipTransferred_intnl_1\n        PUSH, __const_3\n        EXTERN,
+    PUSH, __OnOwnershipTransferred_intnl_1\n        PUSH, __const_2\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
-    PUSH, __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN,
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_1\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred_intnl_0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __OnOwnershipTransferred___t0\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
-    __recSp\n        PUSH, __const_2\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack\n        PUSH, __recSp\n        PUSH, onOwnershipTransferredPlayer\n       
     EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n    __OnOwnershipTransferred_L1:\n       
     JUMP_INDIRECT, __OnOwnershipTransferred_retjump\n.code_end\n"
@@ -170,10 +181,10 @@ MonoBehaviour:
   - "=__refl_typeids\tArrayConst\t=SystemInt64Array\t1\t\t\t\t\t=Int64:=-1036626357872055157"
   - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 18
-  optExternAfter: 18
-  optInsnBefore: 83
-  optInsnAfter: 77
-  optBytesBefore: 652
-  optBytesAfter: 612
+  optExternBefore: 20
+  optExternAfter: 20
+  optInsnBefore: 88
+  optInsnAfter: 85
+  optBytesBefore: 696
+  optBytesAfter: 676
   optStage: ran

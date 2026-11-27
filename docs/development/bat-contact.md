@@ -121,6 +121,12 @@ not affect quality. Timing allows horizontal Bat yaw within 30 degrees of
 perpendicular to the configured center direction. The contact zone remains a
 local-space box with 1.5 m half extents.
 
+The batting perks (Batted Ball Speed, Sweet Spot Tolerance, Contact Range, Timing Tolerance; see
+[Player perks](player-perks.md#new-batting-perks-batting-normal-swing-only)) are Bat Motion
+settings on the same path: a normal swing's early / late yaw tolerance, a half width offset with a
+weak outer band, and the exit speed of `BallResultMath.ExitSpeed`. Their neutral values give the
+previous contact and result exactly; a Bunt keeps the symmetric yaw and the 1.5x width.
+
 In the `BatMotionBehaviour` Inspector, the **Bat Geometry** section edits
 `Bat Length (m)`, the standard Unity `Radius Curve (m)` editor, and Sweet Spot,
 Contact Range Start and End as percentages, plus `Contact Margin (m)`. Invalid
@@ -229,6 +235,102 @@ at most 10° hand and Bat rotation and direction dot products above 0.9 for push
 for a hand tracking spike. Their caps are respectively 0.40, 0.30, 0.35 and
 0.20. Missing tracking history does not impose a cap. These are adjustable
 starting values, not validated anti-cheat thresholds.
+
+## Bunt and Homing
+
+Bunt and Homing are local batting assists evaluated inside the same contact
+path as a normal swing. Neither adds a separate candidate search, quality
+curve, ball-result model, synchronization or effect: the candidate time, zone
+and timing gates, `ContactQualityAtLocalY`, `ContactPowerCap`,
+`BallResultMath.Calculate()`, `ApplyContactResult` and the contact sound are
+shared. The pure rules live in `BattingAssist`; their settings are on the
+local Bat Motion, and `debugLogging` is on Bat Contact. The
+[player perks](player-perks.md) set them on the player's own Bat (`PerkEffectsBehaviour`: off
+without the Bunt or Homing perk); without a perk system the Inspector defaults below apply.
+
+For each accepted candidate, Bat Contact:
+
+1. finds the plane-crossing candidate and checks the zone and timing gates as before;
+2. evaluates Bunt Pattern A and B (`isBunt = A || B`), only when `buntEnabled`;
+3. for a normal swing, applies Homing to the plane coordinates;
+4. checks the Bat length range and the width (widened for a Bunt) on those coordinates;
+5. computes quality, raw Power and the existing cap as before;
+6. for a Bunt, applies the Bunt Power cap and the pull rule;
+7. calls the shared result calculation and hand-off.
+
+The standard width is never tested before the Bunt and Homing decisions, so a
+candidate either assist would accept is not discarded early.
+
+**Pattern A (waiting bunt).** The sweet spot (`sweetSpotNormalized`, through the
+Body axis and axial scale) was inside the contact zone just before the Ball
+entered it, and raw Power (before any cap) at the candidate is below
+`buntPatternARawPowerThreshold` (0.20). Bat Contact records the last scanned
+time the Ball was outside the zone, including broad-phase skips. On the first
+candidate of a pitch it bisects the Ball history (eight steps) between that time
+and the candidate for the zone boundary, interpolates the Bat history at the
+outside side of it and tests the sweet spot. Without an outside sample, or when
+the Bat history does not cover that time, Pattern A fails for the pitch. The
+state is cleared per pitch and on occupancy changes; a Bat history reset after
+the Ball has entered invalidates it.
+
+**Pattern B (bunt grip).** The pose is the two-hand free pose (not Lock Grip, not
+one hand, hands at least `minimumTwoHandSeparation` apart) and the upper hand is
+at or beyond `buntUpperGripThreshold` (0.65) of Bat length. Because that pose
+aligns the Bat axis from the lower to the upper hand, the upper grip is
+`lowerGrip.localPosition.y + handDistance / axialScale`. The hand distance of
+each recorded contact pose (or -1 for other poses) is stored in the contact
+history and interpolated at the candidate time; if either bracketing sample is
+not a two-hand free pose the pattern fails. Speed is not limited. Grip and
+authority changes already reset that history.
+
+**Bunt contact.** Only the width test changes: the whole `ContactWidthAtLocalY`
+result (radius, Ball radius and margin) is multiplied by
+`buntContactWidthMultiplier` (1.5). The contact zone, the Bat length range and
+quality are unchanged; `normalizedY` is taken against the widened width. Final
+Power is `min(raw, existing cap, buntPowerCap)` with `buntPowerCap` 0.30. The
+contact-point velocity `batCoreVelocity + Cross(batAngularVelocity, ballPosition
+- batOrigin)` is projected on the batting direction; below `buntPullThreshold`
+(-0.1 m/s) Power is zero and the contact still occurs. The shared result keeps
+its 8 m/s minimum exit speed.
+
+**Homing** applies only to a normal swing (never to a Bunt), to candidates that
+already passed the zone and timing gates, whether or not they would have hit.
+With rate `r` and the sweet spot plane X `sx`:
+`x' = sx + (x - sx)(1 - r)`, `y' = y(1 - r)`; the normal coordinate and the
+crossing time are unchanged, so early or late timing is not corrected. The
+range, width, quality, `normalizedY`, spin and the contact position given to
+`BallResultMath` use the corrected coordinates. The Ball and Bat are not moved,
+and the hand-off, sound and `contactPosition` keep the physical Ball position.
+With Homing disabled or at rate 0, the calculation is the previous one exactly.
+Intended steps are 0, 0.25, 0.50 and 0.75 (Homing I–III); the default is off
+at 0 (no perk), as is Bunt.
+
+| Bat Motion field | Default |
+|---|---|
+| `buntEnabled` | false |
+| `buntPatternARawPowerThreshold` | 0.20 |
+| `buntUpperGripThreshold` | 0.65 |
+| `buntContactWidthMultiplier` | 1.5 |
+| `buntPowerCap` | 0.30 |
+| `buntPullThreshold` | -0.1 m/s |
+| `homingEnabled` | false |
+| `homingRate` | 0 |
+
+Local code can call `SetHoming(enabled, rate)` (rate 0–1, otherwise rejected)
+and `SetBuntEnabled(enabled)` on the local Bat Motion; `ResetBattingSettings()`
+restores both with the other batting settings. The Bunt numbers are plain
+public fields. None of these values is synchronized; the batted result is.
+
+After a contact, Bat Contact exposes `contactIsBunt`, `contactBuntPattern`
+(1 A, 2 B, 3 both), `snapshotBuntEntryState` (`BattingAssist.Entry*`) and
+`snapshotBuntEntryTime`, `snapshotUpperGripFraction`, `snapshotBuntPowerCap`,
+`snapshotContactForwardSpeed`, `snapshotPulled`, `snapshotNormalWidth`,
+`snapshotEffectiveWidth`, `snapshotHomingRate` and
+`snapshotCorrectedPlaneX/Y`, next to the existing raw Power, cap, final Power,
+quality and result. `snapshotPlaneX/Y` stay the physical coordinates;
+`snapshotNormalizedX/Y` are those used for the result. Feedback adds the contact
+type, Homing rate or Bunt cap and pull to its metrics text. `debugLogging` logs
+one line per confirmed contact and is off by default.
 
 ## Client validation and tuning
 

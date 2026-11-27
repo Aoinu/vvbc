@@ -413,4 +413,96 @@ public partial class BallBehaviour
         BallResult b = BallResultMath.Calculate(s);
         Assert.IsTrue((a.linearVelocity - b.linearVelocity).magnitude < 0.00001f);
     }
+
+    // ---- Batting perks on the exit speed (player-perks.md) ----
+
+    private static bool CloseTo(float a, float b, float tolerance) { return Mathf.Abs(a - b) <= tolerance; }
+
+    [TsukimiTest]
+    public void WithoutPerksTheExitSpeedIsThePreviousFormula()
+    {
+        for (int i = 0; i <= 10; i++)
+            for (int j = 0; j <= 10; j++)
+            {
+                float p = i * 0.1f, q = j * 0.1f;
+                Assert.AreEqual(8f + 37f * p * q, BallResultMath.ExitSpeed(p, q, 0f, 0f, 0f, 0f, 0f), "P " + p + " Q " + q);
+                Assert.AreEqual(8f + 37f * p * q, BallResultMath.ExitSpeed(p, q, 1f, 0f, 0f, 0f, 0.25f));
+            }
+        BallResultSnapshot s = ResultExample();
+        Assert.IsTrue(CloseTo(BallResultMath.Calculate(s).linearVelocity.magnitude, 8f + 37f * 0.7f * 0.8f, 0.0001f));
+    }
+
+    [TsukimiTest]
+    public void TheBattedBallSpeedBonusOnlyLiftsTheStrongestHits()
+    {
+        float[] tops = { 172f, 185f, 200f };
+        for (int i = 0; i < tops.Length; i++)
+        {
+            float bonus = (tops[i] - 162f) / 3.6f;
+            Assert.IsTrue(CloseTo(BallResultMath.ExitSpeed(1f, 1f, 1f, bonus, 0f, 0f, 0f) * 3.6f, tops[i], 0.01f), "P = Q = 1 reaches " + tops[i]);
+            Assert.AreEqual(8f + 37f * 0.85f * 1f, BallResultMath.ExitSpeed(0.85f, 1f, 1f, bonus, 0f, 0f, 0f), "Power 0.85: no bonus");
+            Assert.AreEqual(8f + 37f * 1f * 0.9f, BallResultMath.ExitSpeed(1f, 0.9f, 1f, bonus, 0f, 0f, 0f), "quality 0.90: no bonus");
+            Assert.AreEqual(8f + 37f * 0.6f * 0.6f, BallResultMath.ExitSpeed(0.6f, 0.6f, 1f, bonus, 0f, 0f, 0f), "ordinary hits unchanged");
+            float previous = 0f;
+            for (int k = 0; k <= 15; k++)
+            {
+                float p = 0.85f + k * 0.01f;
+                float extra = BallResultMath.ExitSpeed(p, 1f, 1f, bonus, 0f, 0f, 0f) - (8f + 37f * p);
+                Assert.IsTrue(extra >= previous - 0.00001f, "the bonus grows continuously with Power");
+                previous = extra;
+            }
+            Assert.IsTrue(CloseTo(previous, bonus, 0.0001f));
+        }
+    }
+
+    [TsukimiTest]
+    public void TheBattedBallSpeedDebuffIsAHardCapOnly()
+    {
+        float cap = 144f / 3.6f;
+        Assert.IsTrue(CloseTo(BallResultMath.ExitSpeed(1f, 1f, 1f, 0f, cap, 0f, 0f) * 3.6f, 144f, 0.001f), "45 m/s is capped at 144 km/h");
+        Assert.AreEqual(8f + 37f * 0.5f * 0.8f, BallResultMath.ExitSpeed(0.5f, 0.8f, 1f, 0f, cap, 0f, 0f), "a slower hit is not slowed");
+        Assert.AreEqual(8f, BallResultMath.ExitSpeed(0f, 0f, 1f, 0f, cap, 0f, 0f));
+    }
+
+    [TsukimiTest]
+    public void SweetSpotGammaChangesOnlyTheSpeed()
+    {
+        Assert.AreEqual(BallResultMath.ExitSpeed(0.8f, 0.7f, 1f, 0f, 0f, 0f, 0f), 8f + 37f * 0.8f * 0.7f, "gamma 1: unchanged");
+        float[] gammas = { 1.25f, 0.9f, 0.8f, 0.7f };
+        for (int i = 0; i < gammas.Length; i++)
+        {
+            Assert.IsTrue(CloseTo(BallResultMath.ExitSpeed(0.8f, 0.7f, gammas[i], 0f, 0f, 0f, 0f), 8f + 37f * 0.8f * Mathf.Pow(0.7f, gammas[i]), 0.0001f));
+            Assert.IsTrue(CloseTo(BallResultMath.ExitSpeed(0.8f, 1f, gammas[i], 0f, 0f, 0f, 0f), 8f + 37f * 0.8f, 0.0001f), "the sweet spot itself is unchanged");
+        }
+        // The bonus weight reads the quality before gamma, so the two perks do not multiply.
+        float bonus = (200f - 162f) / 3.6f;
+        float withGamma = BallResultMath.ExitSpeed(1f, 0.95f, 0.7f, bonus, 0f, 0f, 0f) - 8f - 37f * Mathf.Pow(0.95f, 0.7f);
+        float without = BallResultMath.ExitSpeed(1f, 0.95f, 1f, bonus, 0f, 0f, 0f) - 8f - 37f * 0.95f;
+        Assert.IsTrue(CloseTo(withGamma, without, 0.0001f), "the same bonus with or without gamma");
+        // Direction, launch and spin of the result are untouched by every speed perk.
+        BallResultSnapshot s = ResultExample();
+        BallResult plain = BallResultMath.Calculate(s);
+        s.speedQualityGamma = 0.7f;
+        s.speedBonusMax = bonus;
+        s.speedCap = 50f;
+        s.extensionFraction = 0.5f;
+        s.extensionMinimumScale = 0.25f;
+        BallResult perked = BallResultMath.Calculate(s);
+        Assert.IsTrue((perked.linearVelocity.normalized - plain.linearVelocity.normalized).magnitude < 0.00001f, "same direction");
+        Assert.IsTrue((perked.angularVelocity - plain.angularVelocity).magnitude < 0.00001f, "same spin");
+        Assert.IsTrue(!CloseTo(perked.linearVelocity.magnitude, plain.linearVelocity.magnitude, 0.01f), "only the speed changed");
+    }
+
+    [TsukimiTest]
+    public void TheContactRangeBandWeakensTheSpeedOutward()
+    {
+        float inside = BallResultMath.ExitSpeed(0.9f, 0.9f, 1f, 0f, 0f, 0f, 0.25f);
+        Assert.AreEqual(8f + 37f * 0.9f * 0.9f, inside, "inside the normal width: unchanged");
+        float middle = BallResultMath.ExitSpeed(0.9f, 0.9f, 1f, 0f, 0f, 0.5f, 0.25f);
+        float edge = BallResultMath.ExitSpeed(0.9f, 0.9f, 1f, 0f, 0f, 1f, 0.25f);
+        Assert.IsTrue(CloseTo(middle, 8f + 37f * 0.81f * 0.625f, 0.0001f), "half way: scale 0.625");
+        Assert.IsTrue(CloseTo(edge, 8f + 37f * 0.81f * 0.25f, 0.0001f), "the widened edge: scale 0.25");
+        Assert.IsTrue(edge < middle && middle < inside);
+        Assert.AreEqual(1f, BallResultMath.ExitSpeed(0f, 0f, 1f, 0f, 0f, 0.5f, 0.25f) / 8f, "the 8 m/s minimum stays");
+    }
 }

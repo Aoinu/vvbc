@@ -1009,6 +1009,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1134600683 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4931559420146926455, guid: 6db3659beb04e574d8a878c430f455fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 1690705112}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1220278385
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1483,6 +1489,10 @@ MonoBehaviour:
     ID: 52
     SerializedTypeNames:
     - VRC.SDK3.Components.VRCPickup
+  - gameObject: {fileID: 1134600683}
+    ID: 53
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
   portraitCameraPositionOffset: {x: 0, y: 0, z: 0}
   portraitCameraRotationOffset: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   PlayerPersistence:

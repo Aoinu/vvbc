@@ -11,7 +11,7 @@ class McpError(RuntimeError):
 def server_dll(root):
     dll = Path(root) / 'Packages' / 'com.tsukimicode.udon-tools' / 'Server~' / 'TsukimiCode.Mcp.dll'
     if not dll.is_file():
-        raise McpError('Tsukimi MCP server not found (install com.tsukimicode.udon-tools 0.10.1): ' + str(dll))
+        raise McpError('Tsukimi MCP server not found (install com.tsukimicode.udon-tools 0.10.2): ' + str(dll))
     return dll
 
 

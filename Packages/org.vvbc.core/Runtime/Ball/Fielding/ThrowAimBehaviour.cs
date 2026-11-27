@@ -37,8 +37,8 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     [Header("Throw Speed")]
     [Tooltip("Throw speed at or below the slow arm speed, in km/h. Default 90.")]
     public float minThrowSpeedKmh = 90f;
-    [Tooltip("Throw speed at or above the fast arm speed, in km/h. Default 145.")]
-    public float maxThrowSpeedKmh = 145f;
+    [Tooltip("Throw speed at or above the fast arm speed, in km/h, in a world without the player perk system (with it, the thrower's Ball Speed perk). Default 120, the perk standard.")]
+    public float maxThrowSpeedKmh = 120f;
     [Tooltip("Arm speed giving the minimum throw speed, in m/s. Default 2.")]
     public float slowArmSpeed = 2f;
     [Tooltip("Arm speed giving the maximum throw speed, in m/s. Default 10.")]
@@ -89,6 +89,11 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
     // Perpendicular distance from the arm ray to the selected marker; drives the control error.
     [HideInInspector] public float releaseMiss;
     [HideInInspector] public float releaseArmSpeed;
+    // The releasing player's throw speed limit (km/h) from the Ball Speed perk, given by the Ball
+    // for each throw; 0 or less: maxThrowSpeedKmh (no perk system).
+    [HideInInspector] public float perkMaxThrowSpeedKmh;
+    // The limits the last throw used, km/h.
+    [HideInInspector] public float releaseMinSpeedKmh, releaseMaxSpeedKmh;
     // Where the arm ray left the marker sphere (centre: the marker origin, radius: aimDistance).
     // Recorded for feedback only; it never affects the throw.
     [HideInInspector] public bool releaseAimValid;
@@ -145,6 +150,13 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
 
     // Called by the Ball before each hold, whenever its mound enters or leaves pitcher mode
     // during a hold, and before each release.
+    // The throw's top speed: the perk's limit when one is given (its absolute design value, not a
+    // ratio of the Inspector's), else the Inspector maximum. Non-finite or non-positive: none.
+    public static float ThrowMaxSpeedKmh(float inspectorMax, float perkMax)
+    {
+        return perkMax > 0f && perkMax < 1000f ? perkMax : inspectorMax;
+    }
+
     public void SetPitcherMode(bool pitcherMode)
     {
         if (pitcherMode == _pitcherMode) return;
@@ -426,8 +438,10 @@ public partial class ThrowAimBehaviour : TsukimiBehaviour
             best = miss;
             selectedTarget = i;
         }
+        releaseMaxSpeedKmh = ThrowMaxSpeedKmh(maxThrowSpeedKmh, perkMaxThrowSpeedKmh);
+        releaseMinSpeedKmh = Mathf.Min(minThrowSpeedKmh, releaseMaxSpeedKmh);
         float speed = FieldingMath.ThrowSpeed(releaseArmSpeed, slowArmSpeed, fastArmSpeed,
-            minThrowSpeedKmh / 3.6f, maxThrowSpeedKmh / 3.6f);
+            releaseMinSpeedKmh / 3.6f, releaseMaxSpeedKmh / 3.6f);
         Vector3 heading;
         float elevation;
         float error = 0f;

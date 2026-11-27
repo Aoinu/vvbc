@@ -1,7 +1,7 @@
 # Direct TsukimiSharp package toolchain
 
 VVBC runtime is authored directly in `Packages/org.vvbc.core`. Required versions:
-Unity 2022.3.22f1, Worlds SDK 3.10.5, and `com.tsukimicode.udon-tools` 0.10.1.
+Unity 2022.3.22f1, Worlds SDK 3.10.6, and `com.tsukimicode.udon-tools` 0.10.2.
 The compiler ID/version were verified against installed `package.json` metadata.
 Both SDK and compiler are formal VPM dependencies of core, as is the UI theme
 `black.kit.vrcui` 0.14.2 (with its `black.kit.launchpadicons` and `black.kit.toybox`
@@ -40,7 +40,7 @@ and their Program Assets are present; do not reserve empty modules or directorie
 Development Editor tooling stays out
 of the distributed package. Never duplicate runtime source in development Assets.
 
-`VVBC.Runtime` requires the four baseline references from verified Tsukimi 0.10.1's
+`VVBC.Runtime` requires the four baseline references from verified Tsukimi 0.10.2's
 `Editor/TsukimiScriptCreator.cs` template: `TsukimiCode.UdonTools.Runtime`,
 `UdonSharp.Runtime`, `VRC.Udon`, `Unity.TextMeshPro`. Additional runtime references
 are allowed when required by implemented subsystems. Development-only references
@@ -163,10 +163,11 @@ Static checks intentionally reject fixture code left in the distributable packag
 ```
 
 Requires Windows PowerShell, Python 3.11+, .NET 8+, official VPM/network access,
-a licensed Unity install and a separately acquired, licensed Tsukimi 0.10.1 install.
+a licensed Unity install and a separately acquired, licensed Tsukimi 0.10.2 install.
 The default compiler location is this project's installed package directory.
-The runner creates a fresh Base project in a unique OS temporary directory,
-installs Worlds 3.10.5 via official VPM CLI 0.1.28, embeds core's snapshot and
+The runner creates a fresh project from the VCC `World 2022` template (Unity 2022.3.22f1;
+the unversioned templates now target Unity 6) in a unique OS temporary directory,
+installs Worlds 3.10.6 via official VPM CLI 0.1.28, embeds core's snapshot and
 the tracked files of the local `org.vvbc.assets` package snapshot
 and deploys the independent validator. It never copies development Assets,
 Library, the development manifest, UnityMCP, or Tsukimi source/binaries.

@@ -133,6 +133,12 @@ RULES = [
     # VRCPlayerApi Set*Speed / SetVoiceDistance* calls the runner does not model.
     rule('World settings join', '            if (!Utilities.IsValid(player)) return;\n            if (player.isLocal)',
          '            return;\n            if (player.isLocal)', 1, files=['WorldSettingsBehaviour.cs']),
+    # Locomotion: not part of any scenario, but Mimic.Join() raises its OnPlayerJoined, whose delayed
+    # ActivateLocalPlayer send inside another Behaviour the runner cannot run.
+    rule('Locomotion join',
+         'if (!Utilities.IsValid(player) || !player.isLocal || _active || _activationPending) return;\n'
+         '            _activationPending = true;',
+         'return;\n            _activationPending = true;', 1, files=['LocomotionBehaviour.cs']),
     # Ball collider / contact zone Transform (feedback).
     rule('Feedback ball collider presence', 'flight.ballCollider != null', 'flight.perfBallRadius > 0f', 1,
          files=['BattingFeedbackBehaviour.Scan.cs']),

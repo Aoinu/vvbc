@@ -96,6 +96,9 @@ public partial class GloveBehaviour : TsukimiBehaviour
     private bool _catchVolumeShown;
     private float _catchVolumeRadius = -1f;
     private Vector3 _catchVolumeCenter;
+    // Catch radius perk: the trigger radius before any multiplier (-1 until first set).
+    private float _authoredCatchRadius = -1f;
+    private float _catchRadiusMultiplier = 1f;
 
     private void Start()
     {
@@ -154,6 +157,33 @@ public partial class GloveBehaviour : TsukimiBehaviour
     public bool IsCatchCollider(Collider other)
     {
         return other != null && other == catchTrigger;
+    }
+
+    // ---- Catch radius modifier (player perks; local, never synced) ----
+    // The trigger's authored radius times this multiplier, then the glove scale as before: the
+    // calibration fit and the perk stay independent, and multiplier 1 is the authored catch.
+    // Both catch paths (swept test and trigger) and the debug display follow the trigger radius.
+
+    public bool SetCatchRadiusMultiplier(float multiplier)
+    {
+        if (!(multiplier > 0f) || !(multiplier < 100f)) return false;
+        if (catchTrigger == null) return false;
+        if (_authoredCatchRadius < 0f) _authoredCatchRadius = catchTrigger.radius;
+        _catchRadiusMultiplier = multiplier;
+        catchTrigger.radius = _authoredCatchRadius * multiplier;
+        // Recomputes catchRadius on the next mount update (it is cached per scale change).
+        _appliedScale = -1f;
+        return true;
+    }
+
+    public float CatchRadiusMultiplier() { return _catchRadiusMultiplier; }
+
+    // Catch radius of this glove at a multiplier, in metres: authored radius x multiplier x glove scale.
+    public float CatchRadiusAt(float multiplier)
+    {
+        if (catchTrigger == null) return 0f;
+        float authored = _authoredCatchRadius >= 0f ? _authoredCatchRadius : catchTrigger.radius;
+        return authored * multiplier * Mathf.Abs(_activeScale);
     }
 
     public void SetListener(GloveLockerBehaviour listener)

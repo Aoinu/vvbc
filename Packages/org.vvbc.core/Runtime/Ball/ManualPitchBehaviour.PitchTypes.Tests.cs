@@ -181,7 +181,7 @@ public partial class ManualPitchBehaviour
             Assert.AreEqual(type, releasePitchType, name);
             Assert.AreEqual(1f, debugQuality, name + ": the ideal palm at the ideal timing");
             float multiplier = PitchPropertiesCalculator.SpeedMultiplier(BuildFor(type));
-            Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 140f * 0.97f * multiplier, 0.01f), name + " speed " + releaseVelocity.magnitude * 3.6f);
+            Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 120f * 0.97f * multiplier, 0.01f), name + " speed " + releaseVelocity.magnitude * 3.6f);
             PitchProperties ideal = ManualPitchQuality.IdealProperties(BuildFor(type), FourSeamRpm(), false);
             Assert.IsTrue(Near(ReleaseRpm(), ideal.spinRpm, 0.5f), name + " rpm " + ReleaseRpm());
             Assert.IsTrue(Vector3.Distance(debugSpinAxis, ideal.spinAxisLocal) < 0.0001f, name + " axis");
@@ -206,7 +206,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(TypeReleaseForTest(PitchType.Slider, TwistHand(IdealTwist(PitchType.Slider) + 80f)));
         Assert.IsTrue(Near(debugPoseAngle, 80f, 0.1f), "palm error " + debugPoseAngle);
         Assert.AreEqual(0f, debugQuality);
-        Assert.IsTrue(Near(ReleaseRpm(), 0.7f * 2500f, 0.5f), "70 % of the 4-Seam rpm: " + ReleaseRpm());
+        Assert.IsTrue(Near(ReleaseRpm(), 0.7f * 2200f, 0.5f), "70 % of the 4-Seam rpm: " + ReleaseRpm());
         Assert.IsTrue(Vector3.Distance(debugSpinAxis, FourSeamAxis()) < 0.0001f, "the 4-Seam axis");
         Assert.AreEqual(BallAerodynamics.WakeFixed, releaseWakeMode);
         Assert.AreEqual(PitchPropertiesCalculator.FourSeamWake().coefficient, releaseWakeCoefficient, "the 4-Seam SSW");
@@ -215,8 +215,8 @@ public partial class ManualPitchBehaviour
         float middle = 0.5f * (PoseGoodAngle(PitchType.Slider) + PoseBadAngle(PitchType.Slider));
         Assert.IsTrue(TypeReleaseForTest(PitchType.Slider, TwistHand(IdealTwist(PitchType.Slider) + middle)));
         Assert.IsTrue(Near(debugQuality, 0.5f, 0.01f), "half quality " + debugQuality);
-        float slider = 0.9f * 2500f;
-        Assert.IsTrue(Near(ReleaseRpm(), 0.5f * (slider + 1750f), 2f), "rpm between " + ReleaseRpm());
+        float slider = 0.9f * 2200f;
+        Assert.IsTrue(Near(ReleaseRpm(), 0.5f * (slider + 1540f), 2f), "rpm between " + ReleaseRpm());
         Assert.IsTrue(Vector3.Distance(releaseVelocity, idealVelocity) < 0.00001f, "quality never changes the speed");
         // Within the good angle: full quality, either way round.
         Assert.IsTrue(TypeReleaseForTest(PitchType.Slider, TwistHand(IdealTwist(PitchType.Slider) + PoseGoodAngle(PitchType.Slider) - 1f)));
@@ -236,7 +236,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(TrackedReleaseForTest(4, PlatePointForTest(Vector2.zero, 0.2f), 21, InputTrigger), debugReason);
         Assert.AreEqual(ReleasePlateMath.TimingIdeal, _resultTiming);
         Assert.AreEqual(1f, debugQuality);
-        Assert.IsTrue(Near(ReleaseRpm(), 2500f, 0.5f));
+        Assert.IsTrue(Near(ReleaseRpm(), 2200f, 0.5f));
         Vector3 axis = releaseSpin.normalized;
         float speed = releaseVelocity.magnitude;
         // The auto release is the ideal timing for quality (the control score is capped).
@@ -254,7 +254,7 @@ public partial class ManualPitchBehaviour
         Assert.IsTrue(TrackedReleaseForTest(3, PlatePointForTest(Vector2.zero, -0.15f), 23, InputTrigger), debugReason);
         Assert.AreEqual(ReleasePlateMath.TimingEarly, _resultTiming);
         Assert.AreEqual(qualityTimingCap, debugQuality, "early: the quality cap");
-        Assert.IsTrue(Near(ReleaseRpm(), 1750f + 750f * qualityTimingCap, 0.5f), "rpm toward the failure " + ReleaseRpm());
+        Assert.IsTrue(Near(ReleaseRpm(), 1540f + 660f * qualityTimingCap, 0.5f), "rpm toward the failure " + ReleaseRpm());
         Assert.IsTrue(Vector3.Angle(axis, releaseSpin.normalized) < 2f, "the axis is the 4-Seam's either way");
         Assert.IsTrue(Near(releaseVelocity.magnitude, speed, 0.0001f), "the same speed");
         Assert.AreEqual(PitchPropertiesCalculator.FourSeamWake().coefficient, releaseWakeCoefficient);
@@ -408,7 +408,7 @@ public partial class ManualPitchBehaviour
         Assert.AreEqual(StateTargeting, state, "the lock could not be solved again here (no ball): it is released");
         Assert.IsTrue(TrackedReleaseForTest(5, PlatePointForTest(Vector2.zero, 0.3f), 31, InputAuto), debugReason);
         Assert.AreEqual(PitchType.Slider, releasePitchType, "the type of the crossing");
-        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 140f * PitchPropertiesCalculator.SpeedMultiplier(BuildFor(PitchType.Slider)), 0.01f),
+        Assert.IsTrue(Near(releaseVelocity.magnitude * 3.6f, 120f * PitchPropertiesCalculator.SpeedMultiplier(BuildFor(PitchType.Slider)), 0.01f),
             "the Slider's speed " + releaseVelocity.magnitude * 3.6f);
         Assert.IsTrue(Vector3.Distance(releaseVelocity.normalized, sliderDirection) < 0.00001f, "the Slider's own course");
         Assert.AreEqual(PitchType.Curve, SelectedPitchType(), "the selection stays");
@@ -508,7 +508,7 @@ public partial class ManualPitchBehaviour
         SelectPitchTypeAt(seed, TestGravity, 0.02f);
         Assert.IsTrue(SolveLock(new Vector3(0.1f, 0.75f, 0f)), PitchType.Name(seed) + " solved");
         Assert.AreEqual(seed, _lockType);
-        Assert.IsTrue(Near(_lockSolverSpeedKmh, 140f * 0.97f * PitchPropertiesCalculator.SpeedMultiplier(BuildFor(seed)), 0.01f), "the type's solver speed");
+        Assert.IsTrue(Near(_lockSolverSpeedKmh, 120f * 0.97f * PitchPropertiesCalculator.SpeedMultiplier(BuildFor(seed)), 0.01f), "the type's solver speed");
         Vector3 hand = HandAt(TestChest, Overhand);
         Assert.IsTrue(CrossedCurveReleaseAt(hand, TwistHand(IdealTwist(seed)), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Assert.AreEqual(1f, debugQuality);
@@ -523,7 +523,7 @@ public partial class ManualPitchBehaviour
         state = StateLockedReady;
         Assert.IsTrue(CrossedCurveReleaseAt(hand, TwistHand(IdealTwist(seed) + 90f), hand, TowardPlate(), TestPlate, TestNormal, InputTrigger, solverSpeedRatio));
         Assert.AreEqual(0f, debugQuality);
-        Assert.IsTrue(Near(ReleaseRpm(), 0.7f * 2500f, 0.5f), "the failure flight");
+        Assert.IsTrue(Near(ReleaseRpm(), 0.7f * 2200f, 0.5f), "the failure flight");
         Vector3 failed = FlyReleaseToPlate();
         Assert.IsTrue(Vector3.Distance(failed, LockedTarget()) <= aimSolver.tolerance + 0.005f,
             PitchType.Name(seed) + " failed arrives " + Vector3.Distance(failed, LockedTarget()));

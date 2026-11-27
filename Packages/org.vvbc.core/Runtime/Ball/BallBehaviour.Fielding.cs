@@ -171,6 +171,13 @@ public partial class BallBehaviour
         return _flightGrounded;
     }
 
+    // The ball is flying freely in a batted flight (normal hit or bunt, local or received);
+    // pitches, throws, holds and staged balls are not.
+    public bool BattedFlight()
+    {
+        return flying && _flightOrigin == HitState;
+    }
+
     // Forces the ball into the local player's glove as a catch would, without catch effects,
     // whatever its state: in the air, out of play, held by anyone, or behind a local action
     // that still waits for ownership (the recall replaces it). Published as an ordinary
@@ -231,6 +238,17 @@ public partial class BallBehaviour
             found = candidate;
         }
         return found;
+    }
+
+    // The releasing (local) player's throw speed limit from the Ball Speed perk (120 km/h without
+    // one); 0 in a world without the perk system. Only the releasing client computes a throw, so
+    // the limit is never applied for a remote player.
+    private PlayerPerkBehaviour _localPerks;
+
+    private float LocalThrowSpeedCapKmh()
+    {
+        if (_localPerks == null) _localPerks = PerkLookup.Local();
+        return _localPerks != null ? _localPerks.GetValueOrStandard(PerkCatalog.AbilityThrowSpeedCap) : 0f;
     }
 
     private int LocalThrowHand()
@@ -602,6 +620,7 @@ public partial class BallBehaviour
         {
             // A recognition that failed in pitcher mode falls back to a throw without HomePlate.
             throwAim.SetPitcherMode(manualPitcher != null);
+            throwAim.perkMaxThrowSpeedKmh = LocalThrowSpeedCapKmh();
             throwAim.RefreshMarkers();
             throwAim.ComputeRelease(position, forward, dragCoefficient, magnusCoefficient, ThrowSpinHalfLife,
                 -Physics.gravity.y, Time.fixedDeltaTime, Random.Range(0f, 2f * Mathf.PI), Random.value);
@@ -628,7 +647,7 @@ public partial class BallBehaviour
         _catchBlockedUntil = now + Mathf.Max(0f, selfCatchDelay);
         if (pitched)
         {
-            LaunchPitch(position, velocity, spin, wake, 0f);
+            LaunchPitch(position, velocity, position, velocity, spin, wake, 0f);
             _lineage = _releaseLineage;
             MarkHandPitchApplied(_lineage);
             if (pitchSyncDiagnostics) PitchDiagRelease(position, velocity, spin, wake, serverTime);

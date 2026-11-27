@@ -14,19 +14,25 @@ namespace VVBC.Locomotion
     {
         [Header("Speed control (m/s, m/s²)")]
         public float maximumSpeed = 8f;
-        [Tooltip("Acceleration at rest (m/s²). It falls linearly with speed and reaches zero at the maximum: a(v) = a0 (1 - v / max).")]
-        public float acceleration = 10f;
+        [Tooltip("Acceleration at rest (m/s²). It falls linearly with speed and reaches zero at the maximum: a(v) = a0 (1 - v / max). With the 3 m/s initial speed, 6.24 covers home to first base in 4.2 s (docs/development/player-perks.md).")]
+        public float acceleration = 6.24f;
         [Tooltip("Rate (m/s²) at which inertia slows down or turns. Independent of the maximum speed.")]
         public float deceleration = 10f;
+        [Tooltip("Run/Strafe speed (m/s) given at once when the stick leaves the deadzone from rest. Not scaled by Speed Multiplier; never above the maximum or the feedback limit, and never lowers the applied speed.")]
+        public float initialSpeed = 3f;
+        [Tooltip("Initial Speed is given only while both the measured and the inertial speed are below this (m/s).")]
+        public float restSpeedThreshold = 0.2f;
         public float minimumAppliedSpeed = 0.1f;
         public float feedbackGain = 1f;
         [Range(0f, 1f)] public float inputDeadzone = 0.15f;
         [Range(0.01f, 0.99f)] public float walkSpeedRatio = 0.5f;
+        [Tooltip("Turn braking B_turn = strength x |inertia| x (1 - cos angle): |inertia| at 90°, twice it at 180°. 0 disables it.")]
+        public float turnBrakingStrength = 1f;
         [Tooltip("Below this speed (m/s) a velocity has no direction for turn braking. Keep it under Minimum Applied Speed so braking does not toggle at the floor.")]
         public float directionMinimumSpeed = 0.05f;
 
         [Header("Modifiers (abilities, buffs and debuffs)")]
-        [Tooltip("Multiplies Maximum Speed.")]
+        [Tooltip("Multiplies Maximum Speed and the acceleration at rest together, so max / a0 (the shape of the speed curve) is kept. Initial Speed is not scaled.")]
         public float speedMultiplier = 1f;
         [Tooltip("Multiplies Acceleration (at rest). Deceleration is not affected.")]
         public float accelerationMultiplier = 1f;
@@ -67,6 +73,10 @@ namespace VVBC.Locomotion
         private const int JumpReady = 0;
         private const int JumpAirborne = 1;
         private const int JumpCooldown = 2;
+        // Turn braking is logged as started above the first penalty (m/s) and as ended at or
+        // below the second, so direction noise while running does not log every step.
+        private const float BrakingLogStart = 0.25f;
+        private const float BrakingLogEnd = 0.1f;
 
         private bool _active;
         private bool _activationPending;
@@ -81,6 +91,8 @@ namespace VVBC.Locomotion
         private Vector3 _lastPosition;
         private bool _positionReady;
         private Vector3 _effective;
+        // A sample was taken since the last reset; until then _effective is unknown, not rest.
+        private bool _measured;
         private float _velocitySpeed;
         private float _pendingTime;
         private float _sampleTime;
@@ -96,6 +108,9 @@ namespace VVBC.Locomotion
         private float _directionDifference;
         private float _lastRun = -1f;
         private float _lastWalk = -1f;
+        // Initial speed: how often it was given, and the outcome of the latest push.
+        private int _initialCount;
+        private string _initialStatus = "-";
 
         // Jump limit: JumpImpulse is 0 while _jumpLocked; _savedJumpImpulse restores it.
         private int _jumpState;
@@ -166,7 +181,9 @@ namespace VVBC.Locomotion
         {
             return "max=" + maximumSpeed.ToString("F2") + "x" + speedMultiplier.ToString("F2") + "=" + Maximum().ToString("F2")
                 + " accel=" + acceleration.ToString("F2") + "x" + accelerationMultiplier.ToString("F2") + "=" + AccelerationAtRest().ToString("F2")
-                + " decel=" + deceleration.ToString("F2") + " min=" + minimumAppliedSpeed.ToString("F2")
+                + " decel=" + deceleration.ToString("F2") + " initial=" + initialSpeed.ToString("F2") + "=" + EffectiveInitialSpeed().ToString("F2")
+                + " rest=" + restSpeedThreshold.ToString("F2") + " turnBrake=" + turnBrakingStrength.ToString("F2")
+                + " min=" + minimumAppliedSpeed.ToString("F2")
                 + " gain=" + feedbackGain.ToString("F2") + " deadzone=" + inputDeadzone.ToString("F2") + " walkRatio=" + walkSpeedRatio.ToString("F2")
                 + " dirMin=" + directionMinimumSpeed.ToString("F2") + " jumpCooldown=" + JumpCooldownTime().ToString("F2")
                 + " landingRatio=" + LandingRatio().ToString("F2") + " limit=" + speedLimitEnabled + " inertia=" + inertiaEnabled;
@@ -179,6 +196,9 @@ namespace VVBC.Locomotion
         public void SetMaximumSpeed(float value) { maximumSpeed = Mathf.Max(0.1f, value); ParametersChanged(); }
         public void SetAcceleration(float value) { acceleration = Mathf.Max(0f, value); ParametersChanged(); }
         public void SetDeceleration(float value) { deceleration = Mathf.Max(0f, value); ParametersChanged(); }
+        public void SetInitialSpeed(float value) { initialSpeed = Mathf.Max(0f, value); ParametersChanged(); }
+        public void SetRestSpeedThreshold(float value) { restSpeedThreshold = Mathf.Max(0f, value); ParametersChanged(); }
+        public void SetTurnBrakingStrength(float value) { turnBrakingStrength = Mathf.Max(0f, value); ParametersChanged(); }
         public void SetSpeedMultiplier(float value) { speedMultiplier = Mathf.Max(0f, value); ParametersChanged(); }
         public void SetAccelerationMultiplier(float value) { accelerationMultiplier = Mathf.Max(0f, value); ParametersChanged(); }
         public void SetMinimumAppliedSpeed(float value) { minimumAppliedSpeed = Mathf.Max(0.01f, value); ParametersChanged(); }
@@ -197,13 +217,63 @@ namespace VVBC.Locomotion
         public void SetJumpImpulse(float value)
         {
             _savedJumpImpulse = Mathf.Max(0f, value);
-            VRCPlayerApi player = Networking.LocalPlayer;
-            if (_active && !_jumpLocked && Utilities.IsValid(player)) player.SetJumpImpulse(_savedJumpImpulse);
+            RefreshJumpImpulse();
             Log("jump impulse set; " + _savedJumpImpulse.ToString("F2") + (_jumpLocked ? " after the lockout" : ""));
+        }
+
+        // ---- Fence jump zones ----------------------------------------------------------
+        // FenceJumpZoneBehaviour counts the local player in (overlapping zones add up). Inside
+        // one, a jump uses the fence impulse when a system set one (Jump I perk), else the normal
+        // impulse. Applied like SetJumpImpulse: at once while jumping is allowed, otherwise when
+        // the lockout ends, so a jump in progress is never changed.
+
+        private int _fenceZoneCount;
+        private float _fenceJumpImpulse;
+
+        // 0 (or invalid): no fence impulse; the normal one is used everywhere.
+        public void SetFenceJumpImpulse(float value)
+        {
+            _fenceJumpImpulse = value > 0f && value < 1000f ? value : 0f;
+            RefreshJumpImpulse();
+        }
+
+        public void EnterFenceZone()
+        {
+            _fenceZoneCount++;
+            RefreshJumpImpulse();
+        }
+
+        public void ExitFenceZone()
+        {
+            if (_fenceZoneCount > 0) _fenceZoneCount--;
+            RefreshJumpImpulse();
+        }
+
+        public bool InFenceZone() { return _fenceZoneCount > 0; }
+        public float GetFenceJumpImpulse() { return _fenceJumpImpulse; }
+
+        // The impulse the next jump takes off with.
+        public float EffectiveJumpImpulse()
+        {
+            return _fenceZoneCount > 0 && _fenceJumpImpulse > 0f ? _fenceJumpImpulse : _savedJumpImpulse;
+        }
+
+        private void RefreshJumpImpulse()
+        {
+            if (!_active || _jumpLocked) return;
+            VRCPlayerApi player = Networking.LocalPlayer;
+            if (Utilities.IsValid(player)) player.SetJumpImpulse(EffectiveJumpImpulse());
         }
         public void SetLogEnabled(bool value) { logEnabled = value; }
 
         public float GetEffectiveMaximumSpeed() { return Maximum(); }
+        // Acceleration at rest after both multipliers, and the initial speed a push from rest
+        // gets (before the feedback limit).
+        public float GetEffectiveAcceleration() { return AccelerationAtRest(); }
+        public float GetEffectiveInitialSpeed() { return EffectiveInitialSpeed(); }
+        // The JumpImpulse jumps use (the saved one; the player's is 0 during the lockout).
+        // 0 until the local player is activated.
+        public float GetJumpImpulse() { return _active ? _savedJumpImpulse : 0f; }
         public float GetAppliedSpeed() { return _applied; }
 
         private void ParametersChanged()
@@ -215,7 +285,7 @@ namespace VVBC.Locomotion
         {
             if (!Utilities.IsValid(player) || !player.isLocal || !_active) return;
             ResetControl();
-            if (ResetJump()) player.SetJumpImpulse(_savedJumpImpulse);
+            if (ResetJump()) player.SetJumpImpulse(EffectiveJumpImpulse());
             Apply(player);
             Log("respawn; measurement, inertia and jump reset");
         }
@@ -260,6 +330,7 @@ namespace VVBC.Locomotion
             _pendingTime = 0f;
             _sampleTime = 0f;
             _effective = Vector3.zero;
+            _measured = false;
             _inertial = Vector3.zero;
             _applied = Floor();
             _feedbackLimit = Maximum();
@@ -280,25 +351,68 @@ namespace VVBC.Locomotion
             if (!Utilities.IsValid(player)) return;
             float dt = Time.fixedDeltaTime;
             bool inputActive = Mathf.Sqrt(_x * _x + _y * _y) > Mathf.Clamp01(inputDeadzone);
+            bool grounded = player.IsPlayerGrounded();
             _velocitySpeed = Horizontal(player.GetVelocity()).magnitude;
             int sample = Measure(player.GetPosition(), dt);
             if (sample == SampleDiscontinuity)
                 Log("position discontinuity; measurement and inertia reset");
-            else if (sample == SampleReady)
-                Step(inputActive, _sampleTime);
-            else if (!inputActive)
-                _applied = Floor();
-            // After Step, so the landing cut is what this physics step applies.
+            bool inputChanged = Control(inputActive, sample, grounded);
+            // After Control, so the landing cut is what this physics step applies.
             _now = Time.time;
-            JumpStep(player.IsPlayerGrounded(), _now);
+            JumpStep(grounded, _now);
             SyncJumpImpulse(player);
             Apply(player);
-            LogTransitions(player, inputActive, dt);
+            LogTransitions(player, inputChanged, dt);
             if (diagnostics != null && Time.time >= _nextDisplay)
             {
                 _nextDisplay = Time.time + 0.1f;
                 diagnostics.text = Diagnostics(player);
             }
+        }
+
+        // Speed control for one physics step. Returns true when the stick crossed the deadzone.
+        // Step runs only on a new sample; the initial speed does not wait for one.
+        private bool Control(bool inputActive, int sample, bool grounded)
+        {
+            bool changed = inputActive != _inputActive;
+            _inputActive = inputActive;
+            if (sample == SampleReady)
+                Step(inputActive, _sampleTime);
+            else if (!inputActive)
+                _applied = Floor();
+            // After Step, so the normal control of this step does not undo it.
+            if (changed && inputActive) StartFromRest(grounded);
+            return changed;
+        }
+
+        // Once per push: when the stick leaves the deadzone while grounded, with the latest
+        // measured speed (held from an earlier step if no new sample came) and the inertia
+        // both below Rest Speed Threshold, the applied speed is raised to the initial speed.
+        // A moving start, a quick release and re-push, or a turn keep the inertia above the
+        // threshold, so they never get it. Unmeasured speed after a reset is not taken as rest.
+        private void StartFromRest(bool grounded)
+        {
+            float rest = Mathf.Max(0f, restSpeedThreshold);
+            float speed = Mathf.Min(EffectiveInitialSpeed(), _feedbackLimit);
+            if (!_measured) _initialStatus = "skipped: no sample since reset";
+            else if (!grounded) _initialStatus = "skipped: airborne";
+            else if (_effective.magnitude >= rest) _initialStatus = "skipped: moving " + _effective.magnitude.ToString("F2");
+            else if (_inertial.magnitude >= rest) _initialStatus = "skipped: inertia " + _inertial.magnitude.ToString("F2");
+            else if (_applied >= speed) _initialStatus = "skipped: applied " + _applied.ToString("F2") + " >= " + speed.ToString("F2");
+            else
+            {
+                float from = _applied;
+                _applied = speed;
+                _initialCount++;
+                _initialStatus = "applied " + speed.ToString("F2");
+                Log("initial speed applied; " + from.ToString("F2") + " -> " + speed.ToString("F2") + " count=" + _initialCount);
+            }
+        }
+
+        // The first step is its own setting: not scaled by Speed Multiplier, never above the maximum.
+        private float EffectiveInitialSpeed()
+        {
+            return Mathf.Clamp(Mathf.Max(0f, initialSpeed), 0f, Maximum());
         }
 
         // ---- Jump limit ----------------------------------------------------------------
@@ -362,8 +476,10 @@ namespace VVBC.Locomotion
         private float ToggleJumpLock(float current)
         {
             _jumpLocked = _jumpState != JumpReady;
-            if (!_jumpLocked) return _savedJumpImpulse;
-            if (current > 0f) _savedJumpImpulse = current;
+            if (!_jumpLocked) return EffectiveJumpImpulse();
+            // The fence impulse this Behaviour applied is not another system's value.
+            if (current > 0f && !(_fenceZoneCount > 0 && _fenceJumpImpulse > 0f && current == _fenceJumpImpulse))
+                _savedJumpImpulse = current;
             return 0f;
         }
 
@@ -420,6 +536,7 @@ namespace VVBC.Locomotion
                 return SampleDiscontinuity;
             }
             _effective = effective;
+            _measured = true;
             return SampleReady;
         }
 
@@ -436,16 +553,11 @@ namespace VVBC.Locomotion
                 ? Mathf.Clamp(_applied + Mathf.Max(0f, feedbackGain) * (maximum - speed), floor, maximum)
                 : maximum;
 
-            // The turn is judged against the direction carried into this frame, so a 90° cut
-            // counts; the speed penalty is what inertia could not follow within this frame.
-            Vector3 carried = _inertial;
+            // The turn is judged against the inertia carried into this frame (before it is
+            // updated); the speed penalty is what inertia could not follow within this frame.
+            _turnPenalty = TurnPenalty(_effective, _inertial);
             UpdateInertia(dt);
             _accelPenalty = Mathf.Max(0f, speed - _inertial.magnitude);
-            float threshold = Mathf.Max(0.01f, directionMinimumSpeed);
-            bool directional = speed > threshold && carried.magnitude > threshold;
-            _directionDifference = directional ? Vector3.Angle(_effective, carried) : 0f;
-            _turnPenalty = directional && Vector3.Dot(_effective, carried) <= 0f
-                ? (_effective - _inertial).magnitude : 0f;
             _inertiaLimit = inertiaEnabled
                 ? Mathf.Clamp(maximum - Mathf.Max(_accelPenalty, _turnPenalty), floor, maximum)
                 : maximum;
@@ -457,6 +569,25 @@ namespace VVBC.Locomotion
             // Released input stops at once in VRChat; restart the next push from the floor.
             if (!inputActive) next = floor;
             _applied = Mathf.Clamp(next, floor, maximum);
+        }
+
+        // B_turn = k |v_i| (1 - cos θ) between the measured velocity and the carried inertia
+        // (both horizontal): 0 when aligned, |v_i| at 90°, 2 |v_i| at 180°. It is continuous in
+        // θ, so turning in small steps or rotating the stick cannot slip under a threshold.
+        // Skipped while either speed has no reliable direction; sets _directionDifference.
+        private float TurnPenalty(Vector3 velocity, Vector3 carried)
+        {
+            float threshold = Mathf.Max(0.01f, directionMinimumSpeed);
+            float speed = velocity.magnitude;
+            float inertial = carried.magnitude;
+            if (speed <= threshold || inertial <= threshold)
+            {
+                _directionDifference = 0f;
+                return 0f;
+            }
+            float cosine = Mathf.Clamp(Vector3.Dot(velocity, carried) / (speed * inertial), -1f, 1f);
+            _directionDifference = Mathf.Acos(cosine) * Mathf.Rad2Deg;
+            return Mathf.Max(0f, turnBrakingStrength) * inertial * (1f - cosine);
         }
 
         // Inertia turns and slows down at the deceleration, which does not depend on the
@@ -480,7 +611,7 @@ namespace VVBC.Locomotion
         {
             float maximum = Maximum();
             if (speed >= maximum) return speed;
-            float next =maximum - (maximum - speed) * Mathf.Exp(-AccelerationAtRest() * Mathf.Max(0f, dt) / maximum);
+            float next = maximum -(maximum - speed) * Mathf.Exp(-AccelerationAtRest() * Mathf.Max(0f, dt) / maximum);
             return maximum - next < MaximumSnap ? maximum : next;
         }
 
@@ -489,7 +620,11 @@ namespace VVBC.Locomotion
             return AccelerationAtRest() * Mathf.Max(0f, 1f - speed / Maximum());
         }
 
-        private float AccelerationAtRest() { return Mathf.Max(0f, acceleration) * Mathf.Max(0f, accelerationMultiplier); }
+        // Speed Multiplier scales the acceleration with the maximum, keeping max / a0.
+        private float AccelerationAtRest()
+        {
+            return Mathf.Max(0f, acceleration) * Mathf.Max(0f, accelerationMultiplier) * Mathf.Max(0f, speedMultiplier);
+        }
 
         private void Apply(VRCPlayerApi player)
         {
@@ -519,13 +654,12 @@ namespace VVBC.Locomotion
 
         // ---- Logging -------------------------------------------------------------------
 
-        private void LogTransitions(VRCPlayerApi player, bool inputActive, float dt)
+        private void LogTransitions(VRCPlayerApi player, bool inputChanged, float dt)
         {
             float speed = _effective.magnitude;
-            if (inputActive != _inputActive)
+            if (inputChanged)
             {
-                _inputActive = inputActive;
-                if (inputActive)
+                if (_inputActive)
                 {
                     _segmentStart = Time.time;
                     _segmentPeak = 0f;
@@ -536,7 +670,7 @@ namespace VVBC.Locomotion
                     _segmentDistance = 0f;
                     _segmentReachedMaximum = false;
                     _segmentReachedBase = false;
-                    Log("input started; " + Sample(player));
+                    Log("input started; initial=" + _initialStatus + " grounded=" + _grounded + "; " + Sample(player));
                 }
                 else
                 {
@@ -551,7 +685,7 @@ namespace VVBC.Locomotion
                 _segmentSpeedSum += speed * dt;
                 _segmentTime += dt;
                 if (speed > Maximum() + OverSpeedTolerance) _segmentOverTime += dt;
-                if (_turnPenalty > 0f) _segmentBrakeTime += dt;
+                if (_braking) _segmentBrakeTime += dt;
                 _segmentDistance += speed * dt;
                 if (!_segmentReachedMaximum && _applied >= Maximum())
                 {
@@ -564,14 +698,14 @@ namespace VVBC.Locomotion
                     Log("base distance " + BaseDistance.ToString("F2") + "m covered; " + SegmentProgress() + "; " + Sample(player));
                 }
             }
-            bool braking = _turnPenalty > 0f;
+            bool braking = _turnPenalty > (_braking ? BrakingLogEnd : BrakingLogStart);
             if (braking != _braking)
             {
                 _braking = braking;
                 Log((braking ? "turn braking started; " : "turn braking ended; ") + Sample(player));
             }
             if (!logEnabled || logInterval <= 0f || Time.time < _nextLog) return;
-            if (!inputActive && speed < MovingSpeed && _inertial.magnitude < MovingSpeed) return;
+            if (!_inputActive && speed < MovingSpeed && _inertial.magnitude < MovingSpeed) return;
             _nextLog = Time.time + logInterval;
             Log("sample; " + Sample(player));
         }
@@ -621,7 +755,10 @@ namespace VVBC.Locomotion
                 + "Inertia Limit: " + _inertiaLimit.ToString("F2") + "\n"
                 + "Applied Speed: " + _applied.ToString("F2") + "  (Run/Strafe/Walk " + player.GetRunSpeed().ToString("F2") + "/" + player.GetStrafeSpeed().ToString("F2") + "/" + player.GetWalkSpeed().ToString("F2") + ")\n"
                 + "Acceleration Penalty: " + _accelPenalty.ToString("F2") + "\n"
-                + "Direction Penalty: " + _turnPenalty.ToString("F2") + "\n"
+                + "Turn Penalty: " + _turnPenalty.ToString("F2") + "  (strength " + turnBrakingStrength.ToString("F2") + (_braking ? ", braking" : "") + ")\n"
+                + "Initial Speed: " + EffectiveInitialSpeed().ToString("F2") + "  (set " + initialSpeed.ToString("F2") + ", rest < " + restSpeedThreshold.ToString("F2")
+                + ")  Applied " + _initialCount + "x\n"
+                + "Last Push: " + _initialStatus + "\n"
                 + "Acceleration a(v): " + AccelerationAt(_applied).ToString("F2") + " m/s²  (rest " + AccelerationAtRest().ToString("F2") + ", decel " + deceleration.ToString("F2") + ")\n"
                 + "Maximum Speed: " + Maximum().ToString("F2") + "  (x" + speedMultiplier.ToString("F2") + ")\n"
                 + "Input: " + _x.ToString("F2") + ", " + _y.ToString("F2") + "  Limit " + (speedLimitEnabled ? "on" : "off") + "  Inertia " + (inertiaEnabled ? "on" : "off") + "\n"
