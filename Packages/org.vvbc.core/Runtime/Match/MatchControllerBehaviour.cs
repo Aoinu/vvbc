@@ -256,6 +256,15 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
 
     // The play's roster snapshot: the role slot (team * 10 + role) of a player, -1 when none.
     public int GetSnapshotRoleSlot(int playerId) { return IsLive() ? PlayRules.SnapRole(_play, playerId) : -1; }
+    // The player in role slot (team * 10 + role) of the play's snapshot, 0 when none or not live.
+    public int GetSnapshotRolePlayer(int roleSlot)
+    {
+        if (!IsLive() || roleSlot < 0 || roleSlot >= RosterRules.RoleTableLength) return 0;
+        return _play[PlayRules.SnapRoles + roleSlot];
+    }
+    // Server time the live play started (BaseSnapshot), 0 when not live. Contact events are
+    // placed in a play by their own server time against it (PlayerEventCollectorBehaviour).
+    public double GetPlayStartServerTime() { return IsLive() ? _playTimes[PlayRules.TimeStart] : 0.0; }
 
     // Recent manual corrections, newest first: field 0 operator, 1 revision before, 2 after, 3 reason.
     public int GetCorrectionEntry(int index, int field)

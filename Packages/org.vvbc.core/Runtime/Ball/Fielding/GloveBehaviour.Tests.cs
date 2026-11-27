@@ -236,4 +236,30 @@ public partial class GloveBehaviour
     {
         PostLateUpdate();
     }
+    // The tag sensor is a separate region: usable only with the ball in this glove and a valid
+    // hand pose, and the catch trigger stays off then as before.
+    [TsukimiTest]
+    public void TheTagSensorWorksOnlyWithTheBallInTheGlove()
+    {
+        tagSensor = null;
+        equipped = true;
+        _ballMode = BallInSocket;
+        _mountValid = true;
+        Assert.IsFalse(TagSensorReady(), "no sensor assigned");
+        Assert.AreEqual(0f, TagSensorRadius());
+        tagSensor = transform;
+        tagSensorRadius = 0.1f;
+        Assert.IsTrue(TagSensorReady());
+        Assert.IsFalse(CatchTriggerEnabled(), "catching stays off while the ball is in the glove");
+        _mountValid = false;
+        Assert.IsFalse(TagSensorReady(), "the hand pose is not valid");
+        _mountValid = true;
+        _ballMode = BallInRemoteHand;
+        Assert.IsFalse(TagSensorReady(), "the ball is in the hand: the ball's region is used instead");
+        _ballMode = BallNone;
+        Assert.IsFalse(TagSensorReady());
+        _ballMode = BallInSocket;
+        equipped = false;
+        Assert.IsFalse(TagSensorReady(), "not worn");
+    }
 }

@@ -43,6 +43,8 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
 
     public MatchControllerBehaviour controller;
     public ProductionMatchOperatorAuthorityBehaviour authority;
+    [Tooltip("Contact event receiver (MatchManager). Empty = no contact log.")]
+    public MatchEventReceiverBehaviour contacts;
 
     [Header("Display")]
     public TextMeshProUGUI statusText;
@@ -53,6 +55,9 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
     public TextMeshProUGUI answerText;
     public TextMeshProUGUI editText;
     public TextMeshProUGUI rulingText;
+    [Tooltip("Recent contact events (base touch / tag), newest first. Facts only, not rulings.")]
+    public TextMeshProUGUI contactText;
+    [Range(1, 16)] public int contactLines = 4;
 
     [Header("Match")]
     public Button initializeButton;
@@ -99,10 +104,12 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
         UdonBehaviour self = (UdonBehaviour)GetComponent(typeof(UdonBehaviour));
         if (controller != null) controller.AddChangeListener(self);
         if (authority != null) authority.AddChangeListener(self);
+        if (contacts != null) contacts.AddChangeListener(self);
     }
 
     public void _OnMatchChanged() { Refresh(); }
     public void _OnAuthorityChanged() { Refresh(); }
+    public void _OnContactsChanged() { RefreshContacts(); }
 
     // ---- Buttons ----
 
@@ -408,6 +415,26 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
         SetText(rulingText, "Runner on " + (_rulingBase == 0 ? "home" : _rulingBase + "B") + ": " + Name(PlayerOnRulingBase())
             + "   target " + (_rulingTarget == 4 ? "home" : _rulingTarget + "B"));
         SetButtons(true, live, umpire);
+        RefreshContacts();
+    }
+
+    // The receiver's recent checked contact events: play, type, who, base or target, result.
+    private void RefreshContacts()
+    {
+        if (contactText == null || contacts == null) return;
+        int count = Mathf.Min(contacts.GetLogCount(), contactLines);
+        string text = "Contacts (" + contacts.GetLogTotal() + ")";
+        for (int i = 0; i < count; i++)
+        {
+            int type = contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogType);
+            text += "\n" + contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogPlay) + "-" + contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogSeq)
+                + " " + ContactRules.TypeName(type) + " " + Name(contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogSource))
+                + (type == ContactRules.TypeTagContactEnter ? " > " + Name(contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogTarget))
+                    : " " + ContactRules.BaseName(contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogBase)))
+                + " " + ContactRules.PartName(ContactRules.PrimaryPart(contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogParts)))
+                + " [" + contacts.GetLogEntry(i, MatchEventReceiverBehaviour.LogResult) + "]";
+        }
+        SetText(contactText, text);
     }
 
     private int PlayerOnRulingBase()

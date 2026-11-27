@@ -391,6 +391,7 @@ owned. Recovering or unsynced states refuse new live starts and rulings; physics
   `GetSnapshotRoleSlot(playerId)`, `GetLogEntry(index, field)` (live play log), `GetCorrectionEntry(index, field)`.
 - History: `GetHistoryPlayCount`, `GetHistoryPlayField`, `GetHistoryEntryCount`, `GetHistoryEntry`,
   `GetHistoryEntryTime`.
+- Contact context: `GetSnapshotRolePlayer(roleSlot)`, `GetPlayStartServerTime()`.
 - Events: `EngineSourceId()`, `ManualSourceId(playerId)`, `GetEventWatermark(source)`,
   `IsEventSettled(source, seq)`, `DeclareEventMissing(playId, source, seq, serverTime)`.
 - Recovery: `IsRecoveryFailed`, `GetLastSnapshotViolation`, `GetInvalidReceivedCount`, `SubmitRecoveryReset`.
@@ -415,8 +416,14 @@ owned. Recovering or unsynced states refuse new live starts and rulings; physics
   keep an event whose result is `RejectedFull` and send it again after the umpire clears the
   capacity flag. Results that are request errors (`RejectedInvalid`, `RejectedUnknownRunner`,
   `RejectedNotReady`) are not settled and can be sent again; settled ones are final.
-- **Base contact, tags, forces** (later design): contact from the runner's five volumes is reported
-  as `BaseTouch`; a ruling then awards. Tag timing correction and force timing produce TagOut/Safe
+- **Raw contact events (Phase 2A, [player event collector](player-event-collector.md))**: base
+  touch / release and tag contact are PlayerObject events collected by `MatchEventReceiverBehaviour`
+  on the Owner, with their own identity table and capacity (32 sources), separate from `PlayEvents`.
+  They are facts, never rulings: they are not passed to `ApplyRuling` / `PlayRules.Apply`, and they
+  change no MatchState, PlayState, RunnerState, out or run. Queries added for them:
+  `GetSnapshotRolePlayer(roleSlot)`, `GetPlayStartServerTime()`.
+- **Base contact, tags, forces** (later design): the UmpireEngine turns the accepted contact events
+  into `BaseTouch`, TagOut / TagSafe and force rulings; a ruling then awards. Tag timing correction and force timing produce TagOut/Safe
   and ForceOut/Safe with the corrected server time; simultaneous force arrival is safe.
 - **Scoreboard / event log UI** read the query API above and refresh on `_OnMatchChanged`.
 

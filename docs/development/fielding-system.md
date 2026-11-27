@@ -47,7 +47,8 @@ VVBCPlayerObjectTemplate (VRCPlayerObject)
     │   ├── GloveVisual (Animator, placeholder mesh)
     │   ├── CatchTrigger (SphereCollider trigger, kinematic Rigidbody; Default layer)
     │   │   └── CatchVolume (debug sphere mesh, no collider, inactive)
-    │   └── BallSocket
+    │   ├── BallSocket
+    │   └── TagSensor (no collider; tag region, see player-event-collector.md)
     ├── CatchAudio1, CatchAudio2           3D AudioSources, moved only when a catch sound starts
     └── CalibrationHandle (VRCPickup, kinematic Rigidbody, collider; Pickup layer, inactive)
 
@@ -162,6 +163,17 @@ PlayerData keys `vvbc.glove.throwHand`, `vvbc.glove.position`,
 `OnPlayerRestored` for the local player. Invalid stored values are ignored. No
 version field is stored. Remote clients never read PlayerData for the glove;
 they use the synced fitting.
+
+### Tag sensor
+
+`Mount/TagSensor` (`tagSensor`, `tagSensorRadius` 0.10 m at glove scale 1) is the glove's tag
+region for `TagContactDetectorBehaviour` ([player event collector](player-event-collector.md#tag-contact)).
+It is separate from `CatchTrigger`, which keeps its behaviour (off while the ball is in the glove).
+`TagSensorReady()` is true only while worn, with the ball in the socket and a valid hand pose;
+`TagSensorCenter()` / `TagSensorRadius()` follow the calibrated mount and the glove scale. A hand
+hold uses a sphere around the ball instead (`MatchBallQueryAdapterBehaviour.handTagRadius`). The
+match ball query also exposes `ConfirmedHoldSequence()`. Nothing of the ball's possession, sync,
+collider, layer or pickup changed.
 
 ## Ball possession
 

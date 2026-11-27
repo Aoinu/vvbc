@@ -32,6 +32,12 @@ public partial class GloveBehaviour : TsukimiBehaviour
     [SerializeField] private Animator animator;
     [Tooltip("Pickup used only during calibration. Not a child of Mount.")]
     [SerializeField] private VRC_Pickup calibrationHandle;
+    [Tooltip("Tag region centre (child of Mount, so it follows the calibrated glove). Separate from the catch trigger: it has no collider and is used only while the ball is in this glove.")]
+    [SerializeField] private Transform tagSensor;
+
+    [Header("Tag Sensor")]
+    [Tooltip("Radius of the tag region at glove scale 1, in metres; it scales with the glove. Move the TagSensor child to change its offset. Default 0.10.")]
+    public float tagSensorRadius = 0.10f;
 
     [Header("Defaults")]
     [Tooltip("Throwing hand before calibration: 1 Left, 2 Right. The glove is worn on the other hand.")]
@@ -99,6 +105,8 @@ public partial class GloveBehaviour : TsukimiBehaviour
     // Catch radius perk: the trigger radius before any multiplier (-1 until first set).
     private float _authoredCatchRadius = -1f;
     private float _catchRadiusMultiplier = 1f;
+    // The last mount update had a valid hand pose (the tag sensor is usable).
+    private bool _mountValid;
 
     private void Start()
     {
@@ -111,6 +119,8 @@ public partial class GloveBehaviour : TsukimiBehaviour
         _initialized = true;
         if (calibrationHandle != null) _handleTransform = calibrationHandle.transform;
         if (catchTrigger != null) _catchTransform = catchTrigger.transform;
+        // A scene instance that keeps its own variable table may predate the TagSensor reference.
+        if (tagSensor == null && mount != null) tagSensor = mount.Find("TagSensor");
         RefreshOwner();
         // Every client starts from the same prefab defaults; a received fitting wins.
         if (!_received)
@@ -152,6 +162,20 @@ public partial class GloveBehaviour : TsukimiBehaviour
     {
         return FieldingMath.FittingValid(_activePosition, _activeScale, maxOffsetDistance, minScale, maxScale) &&
             FieldingMath.ValidRotation(_activeRotation);
+    }
+
+    // ---- Tag sensor (TagContactDetectorBehaviour through the match ball query) ----
+    // Usable only while the ball sits in this glove and the glove follows a valid hand pose. The
+    // catch trigger is unaffected: it stays off while the ball is in the glove, as before.
+
+    public bool TagSensorReady() { return tagSensor != null && equipped && _ballMode == BallInSocket && _mountValid; }
+    public Vector3 TagSensorCenter() { return tagSensor != null ? tagSensor.position : Vector3.zero; }
+
+    public float TagSensorRadius()
+    {
+        if (tagSensor == null) return 0f;
+        Vector3 lossy = tagSensor.lossyScale;
+        return tagSensorRadius * Mathf.Max(Mathf.Abs(lossy.x), Mathf.Max(Mathf.Abs(lossy.y), Mathf.Abs(lossy.z)));
     }
 
     public bool IsCatchCollider(Collider other)
@@ -308,6 +332,7 @@ public partial class GloveBehaviour : TsukimiBehaviour
         Vector3 bonePosition = _owner.GetBonePosition(bone);
         Quaternion boneRotation = _owner.GetBoneRotation(bone);
         bool valid = FieldingMath.ValidPose(bonePosition, boneRotation);
+        _mountValid = valid;
         if (_calibrating && _handleTransform != null) UpdateCalibration(valid, bonePosition, boneRotation);
         else if (valid) mount.SetPositionAndRotation(bonePosition + boneRotation * _activePosition, boneRotation * _activeRotation);
         if (_appliedScale != _activeScale)
