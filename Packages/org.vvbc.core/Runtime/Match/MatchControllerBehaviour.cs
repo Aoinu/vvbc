@@ -48,6 +48,8 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
     public const int RejectedNoBatter = -10;
     public const int RejectedRunnerConflict = -11;
     public const int RejectedLockTimeout = -12;
+    public const int RejectedBatterChanged = -13;   // the batter of the plate appearance in progress changed
+    public const int RejectedRecoveryFailed = -14;
 
     [Header("References")]
     [Tooltip("The scene's RosterManager. Its liveLockAuthority must be this MatchManager object.")]
@@ -121,7 +123,9 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
     // The local player's last answered command (panels).
     private int _lastCommand;
     private int _lastCommandResult;
+    // Manual rulings are numbered per play from 1 (PlayEvents).
     private int _rulingSequence;
+    private int _rulingPlayId;
     // Diagnostics: rulings that arrived after their play was committed (never applied).
     private int _lateEventCount;
     private int _lastLateEventPlayId;
@@ -253,14 +257,6 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
     // The play's roster snapshot: the role slot (team * 10 + role) of a player, -1 when none.
     public int GetSnapshotRoleSlot(int playerId) { return IsLive() ? PlayRules.SnapRole(_play, playerId) : -1; }
 
-    // Recent rulings of the live play, newest first (index 0..7): code, runner id, arg, result.
-    public int GetLogEntry(int index, int field)
-    {
-        if (!IsLive() || index < 0 || index >= PlayRules.MaxLog || field < 0 || field >= PlayRules.LogStride) return 0;
-        int at = (_play[PlayRules.LogNext] - 1 - index + PlayRules.MaxLog * 2) % PlayRules.MaxLog;
-        return _play[PlayRules.Log + at * PlayRules.LogStride + field];
-    }
-
     // Recent manual corrections, newest first: field 0 operator, 1 revision before, 2 after, 3 reason.
     public int GetCorrectionEntry(int index, int field)
     {
@@ -329,6 +325,12 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
     // umpire's rulings entered by hand. The sequence makes a resend a duplicate.
     public void SubmitRuling(int code, int runnerId, int arg)
     {
+        int playId = GetPlayId();
+        if (playId != _rulingPlayId)
+        {
+            _rulingPlayId = playId;
+            _rulingSequence = 0;
+        }
         _rulingSequence++;
         SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestRuling), GetPlayId(), _rulingSequence, Networking.GetServerTimeInSeconds(), code, runnerId, arg);
     }
@@ -391,7 +393,7 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
         int result;
         if (!umpire) result = PlayRules.RejectedDenied;
         else if (code < PlayRules.RulingAwardBase && !allowDevelopmentRulings) result = PlayRules.RejectedDenied;
-        else result = ApplyRuling(playId, caller, sequence, serverTime, code, runnerId, arg, true);
+        else result = ApplyRuling(playId, ManualSourceId(caller), sequence, serverTime, code, runnerId, arg, true);
         Answer(caller, CommandRuling, result);
     }
 

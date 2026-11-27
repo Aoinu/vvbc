@@ -401,7 +401,7 @@ public partial class MatchControllerBehaviour
         Rule(PlayRules.JudgeFairBall);
         int onSecond = RunnerOn(2);
         Assert.IsFalse(RunnerRules.IsForced(_tp, RunnerRules.FindById(_tp, onSecond)), "1B was empty: 2B is not forced");
-        Assert.AreEqual(PlayRules.RejectedInvalid, Rule(PlayRules.JudgeForceOut, onSecond, 3));
+        Assert.AreEqual(PlayRules.RejectedContradiction, Rule(PlayRules.JudgeForceOut, onSecond, 3), "contradicts the play: flagged, not a request error");
         Assert.IsTrue((_tp[PlayRules.DAttention] & MatchRules.AttentionInvalidRuling) != 0);
         Assert.AreEqual(0, PlayRules.Outs(_tp, _tm));
         int batter = RunnerOn(0);
@@ -436,7 +436,7 @@ public partial class MatchControllerBehaviour
         BeginForTest(1);
         Rule(PlayRules.JudgeFairBall);
         int batter = RunnerOn(0);
-        Assert.AreEqual(PlayRules.RejectedInvalid, Rule(PlayRules.JudgeRunnerAdvance, batter, 2));
+        Assert.AreEqual(PlayRules.RejectedContradiction, Rule(PlayRules.JudgeRunnerAdvance, batter, 2));
         Assert.IsTrue((_tp[PlayRules.DAttention] & MatchRules.AttentionInvalidRuling) != 0);
         Assert.AreEqual(PlayRules.ResultApplied, Rule(PlayRules.RulingClearPending));
         Assert.AreEqual(0, _tp[PlayRules.DAttention] & MatchRules.AttentionInvalidRuling);
@@ -453,7 +453,7 @@ public partial class MatchControllerBehaviour
         Rule(PlayRules.JudgeFairBall);
         int second = RunnerOn(0);
         Assert.AreNotEqual(first, second, "a new runner id for the next batter-runner, even in the same slot");
-        Assert.AreEqual(PlayRules.RejectedInvalid, Rule(PlayRules.JudgeRunnerAdvance, first, 1), "the out runner's id still names them, not the new runner");
+        Assert.AreEqual(PlayRules.RejectedContradiction, Rule(PlayRules.JudgeRunnerAdvance, first, 1), "the out runner's id still names them (an out runner advancing later contradicts), not the new runner");
         Assert.AreEqual(12, _tp[RunnerRules.At(RunnerRules.FindById(_tp, second), RunnerRules.Player)]);
         Assert.AreEqual(2, _tp[RunnerRules.At(RunnerRules.FindById(_tp, second), RunnerRules.SourcePa)], "the source plate appearance");
     }

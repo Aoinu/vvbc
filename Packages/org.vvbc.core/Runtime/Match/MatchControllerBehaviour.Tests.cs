@@ -428,10 +428,11 @@ public partial class MatchControllerBehaviour
         VRCPlayerApi other = Mimic.Join();
         Mimic.Become(other);
         ResetControllerForTest();
+        // A valid live play (the validator checks the whole PlayState now), then its pairing.
+        _match[MatchRules.Revision] = 4;
+        PlayRules.TakeRoster(_play, _snapRoles, _snapBatters);
+        PlayRules.Begin(_play, _playTimes, _match, 3, 100.0, 1, 1, 9);
         _match[MatchRules.Revision] = 5;
-        _play[PlayRules.Live] = 1;
-        _play[PlayRules.PlayId] = 3;
-        _play[PlayRules.BaseMatchRevision] = 4;
         OnDeserialization();
         Assert.IsTrue(IsStateKnown());
         Assert.IsFalse(IsLive(), "based on revision 4, paired with 5");
@@ -443,31 +444,34 @@ public partial class MatchControllerBehaviour
         Assert.IsFalse(IsLive(), "a play already committed");
     }
 
-    private int[] SnapshotForTest(int matchRevision, bool live, int baseRevision, int playRevision, int balls)
+    private double[] _snapshotTimesForTest;
+
+    // A recovery candidate built the way the Owner builds it: a live play begun on a MatchState
+    // of baseRevision, `balls` balls ruled, paired with a MatchState of matchRevision.
+    private int[] SnapshotForTest(int matchRevision, bool live, int baseRevision, int balls)
     {
         int[] m = MatchRules.NewState();
-        m[MatchRules.Revision] = matchRevision;
+        m[MatchRules.Revision] = live ? baseRevision : matchRevision;
         m[MatchRules.Phase] = MatchRules.PhaseInProgress;
         int[] p = PlayRules.NewPlay();
+        double[] t = PlayRules.NewTimes();
         if (live)
         {
             PlayRules.TakeRoster(p, _snapRoles, _snapBatters);
-            p[PlayRules.Live] = 1;
-            p[PlayRules.PlayId] = 9;
-            p[PlayRules.BaseMatchRevision] = baseRevision;
-            p[PlayRules.Revision] = playRevision;
-            p[PlayRules.DPaSet] = 1;
-            p[PlayRules.DPaId] = 1;
-            p[PlayRules.DPaBatter] = 11;
-            p[PlayRules.DCountSet] = 1;
-            p[PlayRules.DBalls] = balls;
+            PlayRules.Begin(p, t, m, 9, 100.0, 1, 1, 9);
+            for (int i = 0; i < balls; i++) PlayRules.Apply(p, t, m, PlayRules.JudgeBall, 0, 0, 5, i + 1, 101.0 + i, true);
         }
+        m[MatchRules.Revision] = matchRevision;
         int[] snapshot = new int[SnapshotLength];
         for (int i = 0; i < MatchRules.Length; i++) snapshot[i] = m[i];
         for (int i = 0; i < PlayRules.Length; i++) snapshot[SnapshotPlay + i] = p[i];
         snapshot[SnapshotIssued] = 9;
+        _snapshotTimesForTest = new double[SnapshotTimesLength];
+        for (int i = 0; i < PlayRules.TimesLength; i++) _snapshotTimesForTest[i] = t[i];
         return snapshot;
     }
+
+    private bool ConsiderForTest(int[] snapshot) { return ConsiderSnapshot(snapshot, _snapshotTimesForTest); }
 
     [TsukimiTest]
     public void RecoveryTakesTheNewestConsistentSetAndResumes()
@@ -480,16 +484,15 @@ public partial class MatchControllerBehaviour
         _bestMatchRevision = -1;
         _bestPlayRevision = -1;
         _noStateCount = 0;
-        double[] times = PlayRules.NewTimes();
-        Assert.IsTrue(ConsiderSnapshot(SnapshotForTest(3, true, 3, 2, 1), times));
-        Assert.IsTrue(ConsiderSnapshot(SnapshotForTest(3, true, 3, 5, 3), times), "same MatchState, newer play");
-        Assert.IsFalse(ConsiderSnapshot(SnapshotForTest(4, true, 3, 9, 2), times), "a play not based on its MatchState is never mixed in");
-        Assert.IsFalse(ConsiderSnapshot(SnapshotForTest(2, false, 0, 0, 0), times), "older");
+        Assert.IsTrue(ConsiderForTest(SnapshotForTest(3, true, 3, 1)));
+        Assert.IsTrue(ConsiderForTest(SnapshotForTest(3, true, 3, 3)), "same MatchState, newer play");
+        Assert.IsFalse(ConsiderForTest(SnapshotForTest(4, true, 3, 2)), "a play not based on its MatchState is never mixed in");
+        Assert.IsFalse(ConsiderForTest(SnapshotForTest(2, false, 0, 0)), "older");
         Assert.AreEqual(1, GetInconsistentSnapshotCount());
         Assert.IsTrue(ConcludeRecoveryRound(3));
         Assert.IsTrue(IsMatchReady());
         Assert.IsTrue(IsLive(), "live play resumes");
-        Assert.AreEqual(5, GetPlayRevision());
+        Assert.AreEqual(4, GetPlayRevision(), "begun at 1, three rulings");
         Assert.AreEqual(3, GetBalls());
         Assert.AreEqual(3, GetMatchRevision(), "republished as it was");
         StartLiveForTest();
@@ -536,7 +539,7 @@ public partial class MatchControllerBehaviour
         Assert.IsTrue(IsLive());
         Assert.AreEqual(playId, GetPlayId());
         Assert.AreEqual(2, GetBalls());
-        Assert.AreEqual(PlayRules.ResultApplied, ApplyRuling(playId, 5, 50, 200.0, PlayRules.JudgeBall, 0, 0, true), "rulings are taken again");
+        Assert.AreEqual(PlayRules.ResultApplied, ApplyRuling(playId, 5, 3, 200.0, PlayRules.JudgeBall, 0, 0, true), "rulings are taken again");
         Assert.AreEqual(3, GetBalls());
     }
 

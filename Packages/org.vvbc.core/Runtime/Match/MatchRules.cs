@@ -33,7 +33,10 @@ public static class MatchRules
     public const int AttentionInningCapacity = 8;     // the game went past MaxInnings
     public const int AttentionGameEndReview = 16;     // an end condition the rules do not decide alone
     public const int AttentionInvalidRuling = 32;     // a ruling contradicted the play state during the live period
-    public const int AttentionRecovery = 64;          // an Owner recovery could not verify everything
+    public const int AttentionRecovery = 64;          // an Owner recovery found no valid state (the umpire reset it)
+    public const int AttentionBatterChanged = 128;    // the batter of the plate appearance in progress changed in the roster
+    public const int AttentionEventCapacity = 256;    // a ruling found no room (event window, sources or pending list)
+    public const int AttentionLimit = 512;            // every bit is below this
 
     // ---- Layout ----
     public const int Revision = 0;              // 0 = never published; every commit or correction +1
@@ -158,7 +161,7 @@ public static class MatchRules
             if (id > 0 && BaseOfRunner(m, id) != b + 1) return 10;
         }
         if (m[PaBatter] > 0 && BaseOfRunner(m, m[PaBatter]) > 0) return 11;
-        if (m[Attention] < 0 || m[Attention] >= AttentionRecovery * 2) return 12;
+        if (m[Attention] < 0 || m[Attention] >= AttentionLimit) return 12;
         return 0;
     }
 

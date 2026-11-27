@@ -107,7 +107,8 @@ public partial class MatchControllerBehaviour
         int blocked = PlayRules.Begin(next, times, _match, _preparePlayId, serverNow, rosterRevision, lockGeneration, regulationInnings);
         if (blocked != 0)
         {
-            _lastStartRejection = blocked == MatchRules.AttentionNoBatter ? RejectedNoBatter : RejectedRunnerConflict;
+            _lastStartRejection = blocked == MatchRules.AttentionNoBatter ? RejectedNoBatter
+                : blocked == MatchRules.AttentionBatterChanged ? RejectedBatterChanged : RejectedRunnerConflict;
             if (roster != null) roster.SubmitLiveUnlock(_preparePlayId);
             NotifyChanged();
             return _lastStartRejection;
@@ -264,6 +265,7 @@ public partial class MatchControllerBehaviour
         _play[PlayRules.Revision]++;
         int[] next = new int[MatchRules.Length];
         PlayRules.Commit(_baseMatch, _play, next, Mathf.Clamp(maxInnings, 1, MatchRules.MaxInnings), allowTie);
+        ArchivePlay(next[MatchRules.Attention] | _play[PlayRules.DAttention]);
         _match = next;
         _playConsistent = false;
         Publish();

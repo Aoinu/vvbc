@@ -10,18 +10,20 @@
 //
 //   EffectiveState = Compose(BaseMatchState, PlayState)
 //
-// Rulings (from the umpire engine, the umpire or development input) enter through Apply only,
-// which checks the play, the event identity (source player + sequence, duplicates ignored),
-// the server time, the runner and the current state before touching the Delta. Nothing here
-// writes MatchState: Commit produces the next MatchState from the base and the Delta, and only
-// MatchControllerBehaviour publishes it. Data stay bounded however long the live period runs:
-// pitches are folded into the count, and only a ring of recent rulings is kept.
+// Rulings (from the umpire engine, the umpire or development input) enter through Apply only.
+// Every ruling is an event (play, source, sequence, server time; PlayEvents). Arrival order is
+// never taken as the order of events: a ruling earlier than what a runner or the pitch sequence
+// has already been ruled with is either implied by it (superseded, no change) or contradicts it
+// (attention, no change); a ruling that needs a runner ahead to move first waits in the pending
+// list and is applied by server time once it can be. Nothing here writes MatchState: Commit
+// produces the next MatchState from the base and the Delta, and only MatchControllerBehaviour
+// publishes it. Data stay bounded however long the live period runs.
 public static class PlayRules
 {
     // ---- Layout: metadata and BaseSnapshot ----
     public const int PlayId = 0;
     public const int Live = 1;                 // 1 while live; 0 once committed
-    public const int Revision = 2;             // +1 for every accepted change
+    public const int Revision = 2;             // +1 for every change (Delta, events, log, attention)
     public const int BaseMatchRevision = 3;
     public const int RosterRevision = 4;
     public const int LockGeneration = 5;
@@ -54,23 +56,21 @@ public static class PlayRules
     public const int PendingStrikeout = 30;    // third strike: caught / not caught still to be ruled
     public const int RecentRuns = 31;          // runs since the last pitch (times in TimeRecentRuns)
     public const int EndReason = 32;           // dead-ball cause of the commit
-    public const int AppliedNext = 33;
+    public const int SourceCount = 33;         // PlayEvents sources in use
     public const int LogNext = 34;
     public const int PendingCount = 35;
+    public const int LogTotal = 36;            // rulings logged in this play (older entries overwritten)
 
     public const int SnapRoles = 40;           // 20: team * 10 + role -> playerId, as at the start
     public const int SnapBatters = 60;         // 18: team * 9 + row -> resolved batter (P/DH resolved)
     public const int RunnerSlots = 78;         // RunnerRules.SlotCount * RunnerRules.Stride
     public const int Pending = 110;            // MaxPending * PendingStride: rulings waiting for a base
-    public const int Applied = 130;            // MaxApplied * 2: (source, seq) of applied rulings
-    public const int Log = 162;                // MaxLog * LogStride: recent rulings and results
-    public const int Length = 194;
+    public const int Sources = 130;            // PlayEvents.MaxSources * SourceStride: dedup per source
+    public const int Log = 166;                // PlayEvents.MaxLog * LogStride: display log
+    public const int Length = 250;
 
     public const int MaxPending = 4;
     public const int PendingStride = 5;        // code, runnerId, base, source, seq
-    public const int MaxApplied = 16;
-    public const int MaxLog = 8;
-    public const int LogStride = 4;            // code, runnerId, arg, result
     public const int MaxRecentRuns = 4;
 
     // Server times.
@@ -78,7 +78,14 @@ public static class PlayRules
     public const int TimeThirdOut = 1;
     public const int TimeRecentRuns = 2;       // MaxRecentRuns
     public const int TimePending = 6;          // MaxPending
-    public const int TimesLength = 10;
+    public const int TimeRunner = 10;          // RunnerRules.SlotCount: last state change of the runner in the slot
+    public const int TimeLastPitch = 14;       // last pitch-level ruling applied
+    public const int TimeLog = 15;             // PlayEvents.MaxLog
+    public const int TimesLength = 27;
+
+    // Server times of one play may differ from its start by corrections (SimulationTime), so
+    // the checks of a recovered play allow this much before the start.
+    public const double TimeSkew = 10.0;
 
     // ---- Ruling codes ----
     public const int JudgeBall = 1;
@@ -107,21 +114,29 @@ public static class PlayRules
     public const int RulingHit = 32;           // arg = team
     public const int RulingError = 33;         // arg = team
     public const int RulingClearPending = 34;
+    // Log only: the sender declared the sequence will never come (PlayEvents hole closed).
+    public const int EventMissing = 40;
 
     // ---- Results ----
+    // Settled results: the event is recorded in PlayEvents and the log, and a copy of it is a
+    // duplicate. Request errors (a bad argument, an unknown runner, no right, not live, outside
+    // the play, no room) change nothing and are not recorded, so the sender may send it again.
     public const int ResultApplied = 1;
     public const int ResultEndsLive = 2;       // accepted; the controller ends the live period with the cause
     public const int ResultStashed = 3;        // waits until a runner ahead is ruled
-    public const int ResultDuplicate = 4;      // already applied: nothing changes
+    public const int ResultDuplicate = 4;      // already settled: nothing changes
+    public const int ResultSuperseded = 5;     // earlier than what is already ruled, and implied by it
+    public const int ResultAppliedFromPending = 6; // log only: a stashed ruling applied later
     public const int RejectedNotLive = -1;
     public const int RejectedWrongPlay = -2;
     public const int RejectedBeforePlay = -3;
-    public const int RejectedNotAccepting = -4;
+    public const int RejectedNotAccepting = -4;    // settled: the state does not take it (e.g. a pitch after the third out)
     public const int RejectedInvalid = -5;
     public const int RejectedUnknownRunner = -6;
     public const int RejectedDenied = -7;
     public const int RejectedNotReady = -8;
-    public const int RejectedFull = -9;
+    public const int RejectedFull = -9;            // no room for the event: AttentionEventCapacity
+    public const int RejectedContradiction = -10;  // settled: contradicts the play, AttentionInvalidRuling
 
     // ---- Plate appearance results ----
     public const int PaNone = 0;
@@ -144,7 +159,11 @@ public static class PlayRules
     // Attention raised in a play that is carried into MatchState at commit. Runner conflicts
     // and a missing batter are checked again whenever live play starts, so they stay in the play.
     public const int StickyAttention = MatchRules.AttentionUnresolvedRuling | MatchRules.AttentionInvalidRuling
-        | MatchRules.AttentionGameEndReview | MatchRules.AttentionInningCapacity;
+        | MatchRules.AttentionGameEndReview | MatchRules.AttentionInningCapacity | MatchRules.AttentionEventCapacity;
+    // Attention that stops new pitches and plate appearances until the umpire resolves it.
+    // Runner rulings, Time, the umpire's Time and dead balls still go through.
+    public const int BlockingAttention = MatchRules.AttentionInvalidRuling | MatchRules.AttentionEventCapacity
+        | MatchRules.AttentionRunnerConflict | MatchRules.AttentionNoBatter;
 
     public static int[] NewPlay() { return new int[Length]; }
     public static double[] NewTimes() { return new double[TimesLength]; }
@@ -152,7 +171,10 @@ public static class PlayRules
     // ---- Start ----
 
     // Whether live play can start from m with this roster snapshot (18 resolved batters at
-    // SnapBatters of p): 0, or the attention bit that stops it.
+    // SnapBatters of p): 0, or the attention bit that stops it. A plate appearance in progress
+    // continues only with the same batter in the same row; any change of that batter (another
+    // player registered there, the order changed, the P/DH batter changed, the batter left)
+    // stops the start, so nothing is carried over to another player by itself.
     public static int CheckStart(int[] m, int[] p)
     {
         int off = MatchRules.OffenseTeam(m);
@@ -160,6 +182,7 @@ public static class PlayRules
         {
             int batter = GameFlowRules.BatterAt(p, off, m[MatchRules.Cursor + off]);
             if (batter <= 0) return MatchRules.AttentionNoBatter;
+            if (batter != m[MatchRules.PaBatter]) return MatchRules.AttentionBatterChanged;
             return MatchRules.BaseOfRunner(m, batter) > 0 ? MatchRules.AttentionRunnerConflict : 0;
         }
         int row = GameFlowRules.NextBatterRow(p, off, m[MatchRules.Cursor + off]);
@@ -176,9 +199,9 @@ public static class PlayRules
     }
 
     // A new live period on top of m (TakeRoster first). The committed runners become runners of
-    // this play; a plate appearance in progress continues (a substitute in the same row inherits
-    // the count), otherwise the next batter's plate appearance starts. Returns 0, or the
-    // attention bit of CheckStart, in which case the play must not go live.
+    // this play; a plate appearance in progress continues with its batter, otherwise the next
+    // batter's plate appearance starts. Returns 0, or the attention bit of CheckStart, in which
+    // case the play must not go live.
     public static int Begin(int[] p, double[] t, int[] m, int playId, double startTime, int rosterRevision, int lockGeneration, int regulation)
     {
         int blocked = CheckStart(m, p);
@@ -192,23 +215,15 @@ public static class PlayRules
         p[Regulation] = regulation;
         for (int i = 0; i < TimesLength; i++) t[i] = 0.0;
         t[TimeStart] = startTime;
+        t[TimeLastPitch] = startTime;
         for (int b = 1; b <= 3; b++)
         {
             int runner = m[MatchRules.Runners + b - 1];
-            if (runner > 0) RunnerRules.Add(p, runner, 0, b);
+            if (runner <= 0) continue;
+            int slot = RunnerRules.Add(p, runner, 0, b);
+            t[TimeRunner + slot] = startTime;
         }
-        int off = MatchRules.OffenseTeam(m);
-        if (m[MatchRules.PaBatter] > 0)
-        {
-            int batter = GameFlowRules.BatterAt(p, off, m[MatchRules.Cursor + off]);
-            if (batter != m[MatchRules.PaBatter])
-            {
-                p[DPaSet] = 1;
-                p[DPaId] = m[MatchRules.PaId];
-                p[DPaBatter] = batter;
-            }
-        }
-        else StartNextPa(p, m);
+        if (m[MatchRules.PaBatter] <= 0) StartNextPa(p, m);
         return 0;
     }
 
@@ -225,11 +240,12 @@ public static class PlayRules
     }
 
     // A new pitch can be ruled: a batter is up, nothing of the previous pitch is still open,
-    // and neither the half-inning nor the game is over.
+    // no blocking attention, and neither the half-inning nor the game is over.
     public static bool AcceptingPitch(int[] p, int[] m)
     {
         return p[Live] == 1 && PaBatter(p, m) > 0 && p[DHalfEnd] == 0 && p[DGameEnd] == 0
-            && p[PendingStrikeout] == 0 && p[PendingCount] == 0 && RunnerRules.FindBatterRunner(p) < 0;
+            && p[PendingStrikeout] == 0 && p[PendingCount] == 0 && RunnerRules.FindBatterRunner(p) < 0
+            && (p[DAttention] & BlockingAttention) == 0;
     }
 
     // The resolved batter of team's order row in the snapshot; the role a player holds in it.
@@ -273,28 +289,33 @@ public static class PlayRules
         e[MatchRules.Attention] |= p[DAttention] & StickyAttention;
     }
 
+    // Something of the play is still open: a third strike not ruled, a ruling waiting for a
+    // base, a batter-runner not awarded 1B (unless the half-inning is over, which clears bases).
+    public static bool HasOpenRulings(int[] p)
+    {
+        if (p[PendingStrikeout] != 0 || p[PendingCount] > 0) return true;
+        return p[DHalfEnd] == 0 && RunnerRules.FindBatterRunner(p) >= 0;
+    }
+
     // The MatchState that the play commits to: the composition, plus what is still open
-    // flagged for the umpire, then the half-inning or the game ended.
+    // flagged for the umpire (also when the third out then clears bases and count), then the
+    // half-inning or the game ended.
     public static void Commit(int[] m, int[] p, int[] next, int maxInnings, bool allowTie)
     {
         Compose(m, p, next);
+        if (HasOpenRulings(p)) next[MatchRules.Attention] |= MatchRules.AttentionUnresolvedRuling;
         int regulation = p[Regulation];
         if (p[DHalfEnd] != 0)
         {
             GameFlowRules.EndHalf(next, regulation, maxInnings, allowTie);
         }
-        else
+        else if (GameFlowRules.WalkOff(next, regulation))
         {
-            if (p[PendingStrikeout] != 0 || p[PendingCount] > 0 || RunnerRules.FindBatterRunner(p) >= 0)
-                next[MatchRules.Attention] |= MatchRules.AttentionUnresolvedRuling;
-            if (GameFlowRules.WalkOff(next, regulation))
-            {
-                // Only the runs needed to win count unless the ball left the park; that is not
-                // known here, so a lead of more than one run on the final play is reviewed.
-                int lead = MatchRules.TeamRuns(next, RosterRules.TeamHome) - MatchRules.TeamRuns(next, RosterRules.TeamAway);
-                GameFlowRules.EndGame(next, MatchRules.ResultHomeWin);
-                if (lead > 1 && p[DRuns] > 1) next[MatchRules.Attention] |= MatchRules.AttentionGameEndReview;
-            }
+            // Only the runs needed to win count unless the ball left the park; that is not
+            // known here, so a lead of more than one run on the final play is reviewed.
+            int lead = MatchRules.TeamRuns(next, RosterRules.TeamHome) - MatchRules.TeamRuns(next, RosterRules.TeamAway);
+            GameFlowRules.EndGame(next, MatchRules.ResultHomeWin);
+            if (lead > 1 && p[DRuns] > 1) next[MatchRules.Attention] |= MatchRules.AttentionGameEndReview;
         }
         next[MatchRules.LastCommittedPlayId] = p[PlayId];
         next[MatchRules.Revision] = m[MatchRules.Revision] + 1;
@@ -302,25 +323,179 @@ public static class PlayRules
 
     // ---- Rulings ----
 
-    // Applies one ruling to a live play. source/seq identify the event (seq 0 = not deduplicated),
-    // serverTime places it in the play. The caller has checked the play id and who may send it.
+    public static bool IsUmpireCode(int code) { return code >= RulingAwardBase && code <= RulingClearPending; }
+
+    private static bool Settles(int result)
+    {
+        return result == ResultApplied || result == ResultEndsLive || result == ResultStashed || result == ResultSuperseded
+            || result == RejectedNotAccepting || result == RejectedContradiction;
+    }
+
+    // Applies one ruling to a live play. (source, seq) identify the event within the play (seq
+    // from 1 per source), serverTime places it. The caller has checked the play id and the
+    // sender. Every change of the array (Delta, events, log, attention) increments Revision.
     public static int Apply(int[] p, double[] t, int[] m, int code, int runnerId, int arg, int source, int seq, double serverTime, bool umpire)
     {
         if (p[Live] != 1) return RejectedNotLive;
+        if (!PlayEvents.ValidSource(source) || seq <= 0 || !ValidTime(serverTime)) return RejectedInvalid;
         if (serverTime < t[TimeStart]) return RejectedBeforePlay;
-        if (seq > 0 && AlreadyApplied(p, source, seq)) return ResultDuplicate;
-        int result = Dispatch(p, t, m, code, runnerId, arg, source, seq, serverTime, umpire);
-        if (result == ResultApplied || result == ResultStashed || result == ResultEndsLive)
+        if (IsUmpireCode(code) && !umpire) return RejectedDenied;
+        int attention = p[DAttention];
+        int seen = PlayEvents.Check(p, source, seq);
+        if (seen == PlayEvents.Seen) return ResultDuplicate;
+        if (seen != PlayEvents.Unseen)
         {
-            if (seq > 0) RecordApplied(p, source, seq);
+            p[DAttention] |= MatchRules.AttentionEventCapacity;
+            if (p[DAttention] != attention) p[Revision]++;
+            return RejectedFull;
+        }
+        int result = Dispatch(p, t, m, code, runnerId, arg, source, seq, serverTime, umpire);
+        if (Settles(result))
+        {
+            PlayEvents.Settle(p, source, seq);
+            PlayEvents.Log(p, t, code, source, seq, runnerId, arg, result, serverTime);
             if (result == ResultApplied) RetryPending(p, t, m);
             p[Revision]++;
         }
-        RecordLog(p, code, runnerId, arg, result);
+        else if (p[DAttention] != attention) p[Revision]++;
         return result;
     }
 
+    // The sender says (source, seq) will never come: the hole is closed as settled, so later
+    // sequences can move the watermark. Nothing else changes.
+    public static int DeclareMissing(int[] p, double[] t, int source, int seq, double serverTime)
+    {
+        if (p[Live] != 1) return RejectedNotLive;
+        if (!PlayEvents.ValidSource(source) || seq <= 0) return RejectedInvalid;
+        int seen = PlayEvents.Check(p, source, seq);
+        if (seen == PlayEvents.Seen) return ResultDuplicate;
+        if (seen != PlayEvents.Unseen) return RejectedFull;
+        PlayEvents.Settle(p, source, seq);
+        PlayEvents.Log(p, t, EventMissing, source, seq, 0, 0, ResultApplied, ValidTime(serverTime) ? serverTime : t[TimeStart]);
+        p[Revision]++;
+        return ResultApplied;
+    }
+
+    public static bool ValidTime(double time)
+    {
+        return time == time && time > -1e12 && time < 1e12;
+    }
+
+    private static bool IsPitchCode(int code)
+    {
+        return (code >= JudgeBall && code <= JudgeFairBall) || code == JudgeCatch;
+    }
+
     private static int Dispatch(int[] p, double[] t, int[] m, int code, int runnerId, int arg, int source, int seq, double time, bool umpire)
+    {
+        if (code == JudgeNoCatch) return ResultApplied;
+        if (code == JudgeDeadBall) return arg > DeadNone && arg <= DeadOther ? ResultEndsLive : RejectedInvalid;
+        if (code == RulingHit || code == RulingError)
+        {
+            if (!RosterRules.ValidTeam(arg)) return RejectedInvalid;
+            p[(code == RulingHit ? DHits : DErrors) + arg]++;
+            return ResultApplied;
+        }
+        if (code == RulingClearPending)
+        {
+            p[PendingCount] = 0;
+            for (int i = 0; i < MaxPending * PendingStride; i++) p[Pending + i] = 0;
+            p[DAttention] &= ~(MatchRules.AttentionInvalidRuling | MatchRules.AttentionEventCapacity);
+            return ResultApplied;
+        }
+        if (code == RulingOut && runnerId == 0) return BatterOut(p, t, m, ScoringRules.OutOther, PaNone, time);
+        bool batterCatch = code == JudgeCatch && runnerId == 0;
+        if (IsPitchCode(code) && (code != JudgeCatch || batterCatch))
+        {
+            // The pitch sequence is one line in time: a pitch ruling earlier than one already
+            // applied (or from before the third out, which closed the half) cannot be placed.
+            if (time < t[TimeLastPitch]) return Contradiction(p);
+            if (p[DHalfEnd] != 0) return time <= t[TimeThirdOut] ? Contradiction(p) : RejectedNotAccepting;
+            int pitch = Pitch(p, t, m, code, time);
+            if (pitch == ResultApplied || pitch == ResultEndsLive) t[TimeLastPitch] = time;
+            return pitch;
+        }
+        int slot = RunnerRules.FindById(p, runnerId);
+        if (slot < 0) return RejectedUnknownRunner;
+        if (code == JudgeBaseTouch) return BaseTouch(p, slot, arg, seq);
+        if (code == RulingAwardBase || code == RulingOut)
+        {
+            if (!RunnerRules.IsActive(p, slot)) return RejectedInvalid;
+            if (code == RulingOut) return RunnerOut(p, t, m, slot, ScoringRules.OutOther, time);
+            return UmpireAward(p, t, m, slot, arg, time);
+        }
+        int target = RunnerTarget(code, arg);
+        if (target < 0) return RejectedInvalid;
+        return RunnerEvent(p, t, m, slot, code, target, source, seq, time);
+    }
+
+    // The base a runner ruling names (4 = scored; for a force out the force base), -1 for a code
+    // that is not a runner ruling or an invalid base. A tag out or a catch answers 0.
+    private static int RunnerTarget(int code, int arg)
+    {
+        if (code == JudgeRunScored) return RunnerRules.Scored;
+        if (code == JudgeTagOut || code == JudgeCatch) return 0;
+        if (code == JudgeForceOut) return arg >= 1 && arg <= RunnerRules.Scored ? arg : -1;
+        if (code == JudgeForceSafe || code == JudgeTagSafe) return arg >= 0 && arg <= RunnerRules.Scored ? arg : -1;
+        if (code == JudgeRunnerAdvance) return arg >= 1 && arg <= 3 ? arg : -1;
+        return -1;
+    }
+
+    private static bool IsOutCode(int code) { return code == JudgeForceOut || code == JudgeTagOut || code == JudgeCatch; }
+
+    // A runner ruling, in time order with what this runner has already been ruled with.
+    private static int RunnerEvent(int[] p, double[] t, int[] m, int slot, int code, int target, int source, int seq, double time)
+    {
+        if (!RunnerRules.IsActive(p, slot) || time < t[TimeRunner + slot]) return LateRunnerEvent(p, t, slot, code, target, time);
+        if (p[DHalfEnd] != 0 && time > t[TimeThirdOut]) return RejectedNotAccepting;
+        int baseIndex = p[RunnerRules.At(slot, RunnerRules.Base)];
+        switch (code)
+        {
+            case JudgeForceOut:
+                if (!RunnerRules.IsForced(p, slot) || target != RunnerRules.ForceTarget(p, slot)) return Contradiction(p);
+                return RunnerOut(p, t, m, slot, p[RunnerRules.At(slot, RunnerRules.StartBase)] == RunnerRules.HomePlate ? ScoringRules.OutBatterBeforeFirst : ScoringRules.OutForce, time);
+            case JudgeTagOut:
+                return RunnerOut(p, t, m, slot, baseIndex == RunnerRules.HomePlate ? ScoringRules.OutBatterBeforeFirst : ScoringRules.OutTag, time);
+            case JudgeCatch:
+                if (baseIndex != RunnerRules.HomePlate) return Contradiction(p);
+                p[DLastPaResult] = PaFlyOut;
+                return RunnerOut(p, t, m, slot, ScoringRules.OutBatterBeforeFirst, time);
+            case JudgeForceSafe:
+                if (!RunnerRules.IsForced(p, slot) || target != RunnerRules.ForceTarget(p, slot)) return Contradiction(p);
+                return Advance(p, t, m, slot, target, code, source, seq, time);
+            case JudgeTagSafe:
+                if (target == baseIndex) return ResultApplied;
+                return Advance(p, t, m, slot, target, code, source, seq, time);
+        }
+        return Advance(p, t, m, slot, target, code, source, seq, time);
+    }
+
+    // A ruling for a runner who is no longer active, or earlier than the runner's last ruling.
+    // When what is already ruled implies it (an earlier advance to a base the runner has since
+    // passed, or an earlier out of a runner who is out) it is superseded and changes nothing; an
+    // earlier out of a runner ruled to have moved on, or any ruling after an out or a score,
+    // contradicts the play.
+    private static int LateRunnerEvent(int[] p, double[] t, int slot, int code, int target, double time)
+    {
+        int status = p[RunnerRules.At(slot, RunnerRules.Status)];
+        bool before = time <= t[TimeRunner + slot];
+        bool outCode = IsOutCode(code);
+        if (!before) return Contradiction(p);
+        if (status == RunnerRules.StatusOut)
+            return outCode || target < RunnerRules.Scored ? ResultSuperseded : Contradiction(p);
+        if (status == RunnerRules.StatusScored)
+            return outCode ? Contradiction(p) : ResultSuperseded;
+        if (outCode) return Contradiction(p);
+        return target <= p[RunnerRules.At(slot, RunnerRules.Base)] ? ResultSuperseded : Contradiction(p);
+    }
+
+    private static int Contradiction(int[] p)
+    {
+        p[DAttention] |= MatchRules.AttentionInvalidRuling;
+        return RejectedContradiction;
+    }
+
+    private static int Pitch(int[] p, double[] t, int[] m, int code, double time)
     {
         switch (code)
         {
@@ -333,60 +508,9 @@ public static class PlayRules
             case JudgeWalk: return AcceptingPitch(p, m) ? Award(p, t, m, PaWalk, time) : RejectedNotAccepting;
             case JudgeStrikeoutCaught: return StrikeoutCaught(p, t, m, time);
             case JudgeThirdStrikeUncaught: return ThirdStrikeUncaught(p, t, m, time);
-            case JudgeFairBall: return FairBall(p, m);
-            case JudgeCatch: return Catch(p, t, m, runnerId, time);
-            case JudgeNoCatch: return ResultApplied;
-            case JudgeDeadBall: return arg > DeadNone && arg <= DeadOther ? ResultEndsLive : RejectedInvalid;
-            case RulingHit:
-            case RulingError:
-                if (!umpire) return RejectedDenied;
-                if (!RosterRules.ValidTeam(arg)) return RejectedInvalid;
-                p[(code == RulingHit ? DHits : DErrors) + arg]++;
-                return ResultApplied;
-            case RulingClearPending:
-                if (!umpire) return RejectedDenied;
-                p[PendingCount] = 0;
-                p[DAttention] &= ~MatchRules.AttentionInvalidRuling;
-                return ResultApplied;
-            case RulingOut:
-                if (!umpire) return RejectedDenied;
-                if (runnerId == 0) return BatterOut(p, t, m, ScoringRules.OutOther, PaNone, time);
-                break;
+            case JudgeFairBall: return FairBall(p, t, m, time);
+            case JudgeCatch: return BatterCatch(p, t, m, time);
         }
-        int slot = RunnerRules.FindById(p, runnerId);
-        if (slot < 0) return RejectedUnknownRunner;
-        if (code == JudgeBaseTouch) return BaseTouch(p, slot, arg, seq);
-        if (!RunnerRules.IsActive(p, slot)) return RejectedInvalid;
-        switch (code)
-        {
-            case JudgeForceOut:
-                if (!RunnerRules.IsForced(p, slot) || arg != RunnerRules.ForceTarget(p, slot)) return Invalid(p);
-                return RunnerOut(p, t, m, slot, p[RunnerRules.At(slot, RunnerRules.StartBase)] == RunnerRules.HomePlate ? ScoringRules.OutBatterBeforeFirst : ScoringRules.OutForce, time);
-            case JudgeForceSafe:
-                if (!RunnerRules.IsForced(p, slot) || arg != RunnerRules.ForceTarget(p, slot)) return Invalid(p);
-                return Advance(p, t, m, slot, arg, code, source, seq, time, false);
-            case JudgeTagOut:
-                return RunnerOut(p, t, m, slot, p[RunnerRules.At(slot, RunnerRules.Base)] == RunnerRules.HomePlate ? ScoringRules.OutBatterBeforeFirst : ScoringRules.OutTag, time);
-            case JudgeTagSafe:
-                if (arg == p[RunnerRules.At(slot, RunnerRules.Base)]) return ResultApplied;
-                return Advance(p, t, m, slot, arg, code, source, seq, time, false);
-            case JudgeRunnerAdvance:
-                if (arg < 1 || arg > 3) return RejectedInvalid;
-                return Advance(p, t, m, slot, arg, code, source, seq, time, false);
-            case JudgeRunScored:
-                return Advance(p, t, m, slot, RunnerRules.Scored, code, source, seq, time, false);
-            case RulingAwardBase:
-                if (!umpire) return RejectedDenied;
-                return Advance(p, t, m, slot, arg, code, source, seq, time, true);
-            case RulingOut:
-                return RunnerOut(p, t, m, slot, ScoringRules.OutOther, time);
-        }
-        return RejectedInvalid;
-    }
-
-    private static int Invalid(int[] p)
-    {
-        p[DAttention] |= MatchRules.AttentionInvalidRuling;
         return RejectedInvalid;
     }
 
@@ -437,10 +561,18 @@ public static class PlayRules
     // Walk or hit-by-pitch: the batter to 1B, forced runners up one base.
     private static int Award(int[] p, double[] t, int[] m, int paResult, double time)
     {
-        NewPitch(p);
         int batter = PaBatter(p, m);
+        if (RunnerRules.ActiveCount(p) >= RunnerRules.SlotCount) return Contradiction(p);
+        NewPitch(p);
+        int on1 = RunnerRules.FindActiveOnBase(p, 1);
+        int on2 = on1 >= 0 ? RunnerRules.FindActiveOnBase(p, 2) : -1;
+        int on3 = on2 >= 0 ? RunnerRules.FindActiveOnBase(p, 3) : -1;
         int runs = RunnerRules.AwardBatterFirst(p, batter, PaId(p, m));
-        if (runs < 0) return Invalid(p);
+        if (on1 >= 0) t[TimeRunner + on1] = time;
+        if (on2 >= 0) t[TimeRunner + on2] = time;
+        if (on3 >= 0) t[TimeRunner + on3] = time;
+        int added = RunnerRules.FindActiveByPlayer(p, batter);
+        if (added >= 0) t[TimeRunner + added] = time;
         for (int i = 0; i < runs; i++) CountRun(p, t, m, time);
         EndPa(p, m, paResult);
         return ResultApplied;
@@ -472,46 +604,47 @@ public static class PlayRules
     private static int ThirdStrikeUncaught(int[] p, double[] t, int[] m, double time)
     {
         if (p[PendingStrikeout] == 0) return RejectedNotAccepting;
-        p[PendingStrikeout] = 0;
         if (RunnerRules.FindActiveOnBase(p, 1) >= 0 && Outs(p, m) < 2)
+        {
+            p[PendingStrikeout] = 0;
             return BatterOut(p, t, m, ScoringRules.OutBatterBeforeFirst, PaStrikeout, time);
+        }
+        if (RunnerRules.ActiveCount(p) >= RunnerRules.SlotCount) return Contradiction(p);
+        p[PendingStrikeout] = 0;
         RunnerRules.MarkStartBases(p);
         p[BattedBall] = 1;
-        if (RunnerRules.Add(p, PaBatter(p, m), PaId(p, m), RunnerRules.HomePlate) < 0) return Invalid(p);
+        int slot = RunnerRules.Add(p, PaBatter(p, m), PaId(p, m), RunnerRules.HomePlate);
+        t[TimeRunner + slot] = time;
         EndPa(p, m, PaStrikeoutReached);
         return ResultApplied;
     }
 
-    private static int FairBall(int[] p, int[] m)
+    private static int FairBall(int[] p, double[] t, int[] m, double time)
     {
         if (!AcceptingPitch(p, m)) return RejectedNotAccepting;
+        if (RunnerRules.ActiveCount(p) >= RunnerRules.SlotCount) return Contradiction(p);
         NewPitch(p);
         RunnerRules.MarkStartBases(p);
         p[BattedBall] = 1;
-        if (RunnerRules.Add(p, PaBatter(p, m), PaId(p, m), RunnerRules.HomePlate) < 0) return Invalid(p);
+        int slot = RunnerRules.Add(p, PaBatter(p, m), PaId(p, m), RunnerRules.HomePlate);
+        t[TimeRunner + slot] = time;
         EndPa(p, m, PaInPlay);
         return ResultApplied;
     }
 
-    private static int Catch(int[] p, double[] t, int[] m, int runnerId, double time)
+    private static int BatterCatch(int[] p, double[] t, int[] m, double time)
     {
-        if (runnerId == 0)
-        {
-            if (!AcceptingPitch(p, m)) return RejectedNotAccepting;
-            NewPitch(p);
-            return BatterOut(p, t, m, ScoringRules.OutBatterBeforeFirst, PaFlyOut, time);
-        }
-        int slot = RunnerRules.FindById(p, runnerId);
-        if (slot < 0) return RejectedUnknownRunner;
-        if (!RunnerRules.IsActive(p, slot) || p[RunnerRules.At(slot, RunnerRules.Base)] != RunnerRules.HomePlate) return Invalid(p);
-        p[DLastPaResult] = PaFlyOut;
-        return RunnerOut(p, t, m, slot, ScoringRules.OutBatterBeforeFirst, time);
+        if (!AcceptingPitch(p, m)) return RejectedNotAccepting;
+        NewPitch(p);
+        return BatterOut(p, t, m, ScoringRules.OutBatterBeforeFirst, PaFlyOut, time);
     }
 
+    // Contact reports only: the newest report of the runner's own sequence is kept.
     private static int BaseTouch(int[] p, int slot, int arg, int seq)
     {
         int baseIndex = arg / 2;
         if (arg < 0 || baseIndex > RunnerRules.Scored) return RejectedInvalid;
+        if (seq < p[RunnerRules.At(slot, RunnerRules.TouchSeq)]) return ResultSuperseded;
         p[RunnerRules.At(slot, RunnerRules.Touch)] = (arg & 1) != 0 ? baseIndex : -1;
         p[RunnerRules.At(slot, RunnerRules.TouchSeq)] = seq;
         return ResultApplied;
@@ -520,16 +653,20 @@ public static class PlayRules
     // The batter at the plate is out (no runner slot) and the plate appearance ends.
     private static int BatterOut(int[] p, double[] t, int[] m, int kind, int paResult, double time)
     {
-        if (p[DHalfEnd] != 0 || PaBatter(p, m) <= 0) return RejectedNotAccepting;
+        if (p[DHalfEnd] != 0) return time < t[TimeThirdOut] ? Contradiction(p) : RejectedNotAccepting;
+        if (PaBatter(p, m) <= 0) return RejectedNotAccepting;
         RecordOut(p, t, m, kind, time);
         EndPa(p, m, paResult);
         return ResultApplied;
     }
 
+    // After the third out another out is either later (not taken) or earlier, which would make
+    // it the third out and change which runs count: that is left to the umpire.
     private static int RunnerOut(int[] p, double[] t, int[] m, int slot, int kind, double time)
     {
-        if (p[DHalfEnd] != 0) return RejectedNotAccepting;
+        if (p[DHalfEnd] != 0) return time < t[TimeThirdOut] ? Contradiction(p) : RejectedNotAccepting;
         RunnerRules.PutOut(p, slot);
+        t[TimeRunner + slot] = time;
         RecordOut(p, t, m, kind, time);
         return ResultApplied;
     }
@@ -544,26 +681,30 @@ public static class PlayRules
         ScoringRules.ApplyThirdOut(p, t, kind, time);
     }
 
-    private static int Advance(int[] p, double[] t, int[] m, int slot, int target, int code, int source, int seq, double time, bool umpire)
+    private static int Advance(int[] p, double[] t, int[] m, int slot, int target, int code, int source, int seq, double time)
     {
-        if (umpire)
-        {
-            // The umpire places a runner on any base (back included) that nobody else holds.
-            if (target < 0 || target > RunnerRules.Scored || target == p[RunnerRules.At(slot, RunnerRules.Base)]) return RejectedInvalid;
-            if (target < RunnerRules.Scored && RunnerRules.FindActiveOnBase(p, target) >= 0) return RejectedInvalid;
-        }
-        else
-        {
-            int check = RunnerRules.CanAdvance(p, slot, target);
-            if (check == RunnerRules.AdvanceOccupied)
-                return Stash(p, t, code, p[RunnerRules.At(slot, RunnerRules.Id)], target, source, seq, time);
-            if (check != RunnerRules.AdvanceOk) return Invalid(p);
-        }
-        if (RunnerRules.Award(p, slot, target))
-        {
-            if (p[DHalfEnd] == 0) CountRun(p, t, m, time);
-            else if (ScoringRules.RunCounts(p[ThirdOutKind], t[TimeThirdOut], time)) p[DRuns]++;
-        }
+        int check = RunnerRules.CanAdvance(p, slot, target);
+        if (check == RunnerRules.AdvanceOccupied)
+            return Stash(p, t, code, p[RunnerRules.At(slot, RunnerRules.Id)], target, source, seq, time);
+        if (check != RunnerRules.AdvanceOk) return Contradiction(p);
+        AwardAt(p, t, m, slot, target, time);
+        return ResultApplied;
+    }
+
+    private static void AwardAt(int[] p, double[] t, int[] m, int slot, int target, double time)
+    {
+        t[TimeRunner + slot] = time;
+        if (!RunnerRules.Award(p, slot, target)) return;
+        if (p[DHalfEnd] == 0) CountRun(p, t, m, time);
+        else if (ScoringRules.RunCounts(p[ThirdOutKind], t[TimeThirdOut], time)) p[DRuns]++;
+    }
+
+    // The umpire places a runner on any base (back included) that nobody else holds.
+    private static int UmpireAward(int[] p, double[] t, int[] m, int slot, int target, double time)
+    {
+        if (target < 0 || target > RunnerRules.Scored || target == p[RunnerRules.At(slot, RunnerRules.Base)]) return RejectedInvalid;
+        if (target < RunnerRules.Scored && RunnerRules.FindActiveOnBase(p, target) >= 0) return RejectedInvalid;
+        AwardAt(p, t, m, slot, target, time);
         return ResultApplied;
     }
 
@@ -633,7 +774,11 @@ public static class PlayRules
     private static int Stash(int[] p, double[] t, int code, int runnerId, int target, int source, int seq, double time)
     {
         int n = p[PendingCount];
-        if (n >= MaxPending) return RejectedFull;
+        if (n >= MaxPending)
+        {
+            p[DAttention] |= MatchRules.AttentionEventCapacity;
+            return RejectedFull;
+        }
         int at = Pending + n * PendingStride;
         p[at] = code;
         p[at + 1] = runnerId;
@@ -645,43 +790,33 @@ public static class PlayRules
         return ResultStashed;
     }
 
-    // Tries the waiting rulings again, earliest server time first, until none can move.
+    // Tries the waiting rulings again, earliest server time first, until none can move. Each
+    // one is run as the ruling it was (time order with its runner included); what it ends in
+    // is logged under its own event id.
     private static void RetryPending(int[] p, double[] t, int[] m)
     {
-        bool progressed = true;
-        while (progressed && p[PendingCount] > 0)
+        for (int guard = 0; guard < MaxPending * 2 && p[PendingCount] > 0; guard++)
         {
-            progressed = false;
             int best = -1;
             for (int i = 0; i < p[PendingCount]; i++)
             {
                 int slot = RunnerRules.FindById(p, p[Pending + i * PendingStride + 1]);
-                if (slot < 0 || !RunnerRules.IsActive(p, slot))
-                {
-                    RemovePending(p, t, i);
-                    progressed = true;
-                    break;
-                }
-                int check = RunnerRules.CanAdvance(p, slot, p[Pending + i * PendingStride + 2]);
-                if (check == RunnerRules.AdvanceOccupied) continue;
+                if (slot >= 0 && RunnerRules.IsActive(p, slot)
+                    && RunnerRules.CanAdvance(p, slot, p[Pending + i * PendingStride + 2]) == RunnerRules.AdvanceOccupied) continue;
                 if (best < 0 || t[TimePending + i] < t[TimePending + best]) best = i;
             }
-            if (progressed || best < 0) continue;
+            if (best < 0) return;
             int at = Pending + best * PendingStride;
-            int runner = RunnerRules.FindById(p, p[at + 1]);
+            int code = p[at];
+            int runnerId = p[at + 1];
             int target = p[at + 2];
+            int source = p[at + 3];
+            int seq = p[at + 4];
             double time = t[TimePending + best];
             RemovePending(p, t, best);
-            if (RunnerRules.CanAdvance(p, runner, target) != RunnerRules.AdvanceOk)
-            {
-                p[DAttention] |= MatchRules.AttentionInvalidRuling;
-            }
-            else if (RunnerRules.Award(p, runner, target))
-            {
-                if (p[DHalfEnd] == 0) CountRun(p, t, m, time);
-                else if (ScoringRules.RunCounts(p[ThirdOutKind], t[TimeThirdOut], time)) p[DRuns]++;
-            }
-            progressed = true;
+            int runner = RunnerRules.FindById(p, runnerId);
+            int result = runner < 0 ? Contradiction(p) : RunnerEvent(p, t, m, runner, code, target, source, seq, time);
+            PlayEvents.Log(p, t, code, source, seq, runnerId, target, result == ResultApplied ? ResultAppliedFromPending : result, time);
         }
     }
 
@@ -693,34 +828,9 @@ public static class PlayRules
             for (int f = 0; f < PendingStride; f++) p[Pending + i * PendingStride + f] = p[Pending + (i + 1) * PendingStride + f];
             t[TimePending + i] = t[TimePending + i + 1];
         }
+        for (int f = 0; f < PendingStride; f++) p[Pending + (n - 1) * PendingStride + f] = 0;
+        t[TimePending + n - 1] = 0.0;
         p[PendingCount] = n - 1;
-    }
-
-    // ---- Event identity and log ----
-
-    public static bool AlreadyApplied(int[] p, int source, int seq)
-    {
-        for (int i = 0; i < MaxApplied; i++)
-            if (p[Applied + i * 2 + 1] == seq && p[Applied + i * 2] == source) return true;
-        return false;
-    }
-
-    private static void RecordApplied(int[] p, int source, int seq)
-    {
-        int at = p[AppliedNext];
-        p[Applied + at * 2] = source;
-        p[Applied + at * 2 + 1] = seq;
-        p[AppliedNext] = (at + 1) % MaxApplied;
-    }
-
-    private static void RecordLog(int[] p, int code, int runnerId, int arg, int result)
-    {
-        int at = p[LogNext];
-        p[Log + at * LogStride] = code;
-        p[Log + at * LogStride + 1] = runnerId;
-        p[Log + at * LogStride + 2] = arg;
-        p[Log + at * LogStride + 3] = result;
-        p[LogNext] = (at + 1) % MaxLog;
     }
 
     // ---- Consistency of a received or recovered play ----
@@ -731,5 +841,113 @@ public static class PlayRules
         if (p == null || p.Length != Length) return false;
         if (p[Live] != 1) return true;
         return p[BaseMatchRevision] == m[MatchRules.Revision] && p[PlayId] > m[MatchRules.LastCommittedPlayId];
+    }
+
+    private static bool Flag(int value) { return value == 0 || value == 1; }
+
+    // The first broken PlayState invariant, or 0. An all-empty play (no play yet) is valid.
+    //  1 lengths, 2 metadata, 3 pairing with m, 4 outs / third out, 5 count / strikeout,
+    //  6 additive delta, 7 plate appearance and cursor, 8 runtime fields and attention,
+    //  9 runner slots, 10 runners against each other and the batter, 11 pending rulings,
+    // 12 events and log (PlayEvents), 13 server times, 14 roster snapshot.
+    public static int FindViolation(int[] p, double[] t, int[] m)
+    {
+        if (p == null || p.Length != Length || t == null || t.Length != TimesLength || m == null || m.Length != MatchRules.Length) return 1;
+        if (p[PlayId] == 0 && p[Live] == 0)
+        {
+            for (int i = 0; i < Length; i++) if (p[i] != 0) return 2;
+            return 0;
+        }
+        if (!Flag(p[Live]) || p[PlayId] <= 0 || p[Revision] < 1 || p[BaseMatchRevision] < 1 || p[RosterRevision] < 0
+            || p[LockGeneration] < 0 || p[Regulation] < 1 || p[Regulation] > MatchRules.MaxInnings) return 2;
+        if (!ConsistentWith(p, m)) return 3;
+
+        int outs = Outs(p, m);
+        if (p[DOuts] < 0 || outs > 3 || !Flag(p[DHalfEnd]) || (outs == 3) != (p[DHalfEnd] == 1)) return 4;
+        if (p[ThirdOutKind] < ScoringRules.OutNone || p[ThirdOutKind] > ScoringRules.OutOther
+            || (p[DHalfEnd] == 1) != (p[ThirdOutKind] != ScoringRules.OutNone)) return 4;
+
+        if (!Flag(p[DCountSet]) || !Flag(p[PendingStrikeout])) return 5;
+        int balls = Balls(p, m);
+        int strikes = Strikes(p, m);
+        if (balls < 0 || balls > 3 || strikes < 0 || strikes > 3 || (strikes == 3) != (p[PendingStrikeout] == 1)) return 5;
+
+        if (p[DRuns] < 0 || p[DHits] < 0 || p[DHits + 1] < 0 || p[DErrors] < 0 || p[DErrors + 1] < 0) return 6;
+
+        if (!Flag(p[DPaSet]) || !Flag(p[DCursorSet]) || p[DPaEnded] < 0 || p[DLastPaResult] < PaNone || p[DLastPaResult] > PaFlyOut) return 7;
+        if (p[DPaSet] == 1 && (p[DPaId] < m[MatchRules.PaId] || p[DPaBatter] < 0)) return 7;
+        if (p[DCursorSet] == 1 && !RosterRules.ValidRow(p[DCursor])) return 7;
+        int batter = PaBatter(p, m);
+        if (batter > 0 && PaId(p, m) <= 0) return 7;
+
+        if (!Flag(p[DGameEnd]) || !Flag(p[BattedBall]) || p[PitchSeq] < 0 || p[RecentRuns] < 0 || p[RecentRuns] > MaxRecentRuns
+            || p[EndReason] < DeadNone || p[EndReason] > DeadOther || p[PendingCount] < 0 || p[PendingCount] > MaxPending
+            || p[DAttention] < 0 || p[DAttention] >= MatchRules.AttentionLimit) return 8;
+        if (p[Live] == 1 && p[EndReason] != DeadNone) return 8;
+
+        int runnerSeq = p[RunnerSeq];
+        if (runnerSeq < 0) return 9;
+        for (int s = 0; s < RunnerRules.SlotCount; s++)
+        {
+            int status = p[RunnerRules.At(s, RunnerRules.Status)];
+            int id = p[RunnerRules.At(s, RunnerRules.Id)];
+            int baseIndex = p[RunnerRules.At(s, RunnerRules.Base)];
+            if (status < RunnerRules.StatusEmpty || status > RunnerRules.StatusScored) return 9;
+            if (status == RunnerRules.StatusEmpty)
+            {
+                for (int f = 0; f < RunnerRules.Stride; f++) if (p[RunnerRules.At(s, f)] != 0) return 9;
+                continue;
+            }
+            if (id <= 0 || id > runnerSeq || p[RunnerRules.At(s, RunnerRules.Player)] <= 0 || p[RunnerRules.At(s, RunnerRules.SourcePa)] < 0) return 9;
+            int start = p[RunnerRules.At(s, RunnerRules.StartBase)];
+            int touch = p[RunnerRules.At(s, RunnerRules.Touch)];
+            if (baseIndex < 0 || baseIndex > RunnerRules.Scored || start < 0 || start > 3 || touch < -1 || touch > RunnerRules.Scored
+                || p[RunnerRules.At(s, RunnerRules.TouchSeq)] < 0) return 9;
+            if ((status == RunnerRules.StatusScored) != (baseIndex == RunnerRules.Scored)) return 9;
+            for (int o = 0; o < s; o++)
+            {
+                if (p[RunnerRules.At(o, RunnerRules.Status)] == RunnerRules.StatusEmpty) continue;
+                if (p[RunnerRules.At(o, RunnerRules.Id)] == id) return 10;
+                if (status != RunnerRules.StatusActive || p[RunnerRules.At(o, RunnerRules.Status)] != RunnerRules.StatusActive) continue;
+                if (p[RunnerRules.At(o, RunnerRules.Player)] == p[RunnerRules.At(s, RunnerRules.Player)]) return 10;
+                if (p[RunnerRules.At(o, RunnerRules.Base)] == baseIndex) return 10;
+            }
+            if (status == RunnerRules.StatusActive && batter > 0 && p[RunnerRules.At(s, RunnerRules.Player)] == batter) return 10;
+        }
+
+        int pending = p[PendingCount];
+        for (int i = 0; i < MaxPending; i++)
+        {
+            int at = Pending + i * PendingStride;
+            if (i >= pending)
+            {
+                for (int f = 0; f < PendingStride; f++) if (p[at + f] != 0) return 11;
+                continue;
+            }
+            int code = p[at];
+            if (code != JudgeForceSafe && code != JudgeTagSafe && code != JudgeRunnerAdvance && code != JudgeRunScored) return 11;
+            if (RunnerRules.FindById(p, p[at + 1]) < 0 || p[at + 2] < 1 || p[at + 2] > RunnerRules.Scored) return 11;
+            if (!PlayEvents.ValidSource(p[at + 3]) || p[at + 4] <= 0 || !PlayEvents.IsSettled(p, p[at + 3], p[at + 4])) return 11;
+        }
+
+        if (PlayEvents.FindViolation(p) != 0) return 12;
+
+        for (int i = 0; i < TimesLength; i++) if (!ValidTime(t[i])) return 13;
+        double earliest = t[TimeStart] - TimeSkew;
+        if (t[TimeStart] <= 0.0 || t[TimeLastPitch] < earliest) return 13;
+        if (p[DHalfEnd] == 1 && t[TimeThirdOut] < earliest) return 13;
+        for (int i = 0; i < p[RecentRuns]; i++) if (t[TimeRecentRuns + i] < earliest) return 13;
+        for (int i = 0; i < pending; i++) if (t[TimePending + i] < earliest) return 13;
+        for (int s = 0; s < RunnerRules.SlotCount; s++)
+            if (p[RunnerRules.At(s, RunnerRules.Status)] != RunnerRules.StatusEmpty && t[TimeRunner + s] < earliest) return 13;
+
+        for (int i = 0; i < RosterRules.RoleTableLength; i++)
+        {
+            int id = p[SnapRoles + i];
+            if (id < 0) return 14;
+            for (int j = 0; j < i && id > 0; j++) if (p[SnapRoles + j] == id) return 14;
+        }
+        for (int i = 0; i < RosterRules.OrderTableLength; i++) if (p[SnapBatters + i] < 0) return 14;
+        return 0;
     }
 }

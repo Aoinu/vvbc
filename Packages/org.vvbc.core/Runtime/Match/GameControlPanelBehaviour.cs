@@ -106,7 +106,12 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
 
     // ---- Buttons ----
 
-    public void _Initialize() { if (Umpire()) controller.SubmitInitializeMatch(); }
+    public void _Initialize()
+    {
+        // After a recovery that found only invalid states, Initialize is the umpire's reset.
+        if (controller != null && controller.IsRecoveryFailed() && controller.IsLocalUmpire()) controller.SubmitRecoveryReset();
+        else if (Umpire()) controller.SubmitInitializeMatch();
+    }
     public void _StartMatch() { if (Umpire()) controller.SubmitStartMatch(); }
     public void _EndMatch() { if (Umpire()) controller.SubmitEndMatch(ResultByScore(controller.GetRuns(0), controller.GetRuns(1))); }
     public void _StartLive() { if (Umpire()) controller.SubmitStartLive(); }
@@ -362,11 +367,14 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
         bool umpire = ready && controller.IsLocalUmpire();
         if (!ready || !controller.CopyEffectiveState(_view))
         {
-            SetText(statusText, controller.IsRecovering() ? "Recovering the match state…" : "Syncing the match…");
+            bool failed = controller.IsRecoveryFailed();
+            SetText(statusText, failed ? "Recovery found no valid match state.\nUmpire: Initialize starts a new match (flagged)."
+                : controller.IsRecovering() ? "Recovering the match state…" : "Syncing the match…");
             SetText(scoreText, "");
             SetText(situationText, "");
             SetText(playersText, "");
             SetButtons(false, false, false);
+            SetInteractable(initializeButton, failed && controller.IsLocalUmpire());
             return;
         }
         string status = (live ? "LIVE" : "DEAD") + "   " + PhaseName(_view[MatchRules.Phase], _view[MatchRules.Result])
