@@ -15,17 +15,23 @@ using VRC.Udon.Common.Interfaces;
 // source id it publishes), then each event of the live play: identity (play id, source, sequence)
 // against its own table, server time within the play, and the roster snapshot and RunnerState of
 // the play (base events: a player of the snapshot; tags: a fielder of the defense touching an
-// active runner while the ball's confirmed hold matches). An event that passes is Accepted; one
-// that fails a check is settled with that reason (the sender stops resending it); a duplicate
-// changes nothing; a request it cannot decide yet (not ready, ball state behind, no room) is left
-// unsettled, counted, and taken again when the collector resends.
+// active runner with a hold the ball's local history confirms: ContactRules.VerifyHold). An event
+// that passes is Accepted; one that fails a check is settled with that reason (the sender stops
+// resending it); a duplicate changes nothing; a request it cannot decide yet (not ready, the hold
+// not received here yet, no room) is left unsettled, counted, and taken again when the collector
+// resends. A tag whose hold is still unknown after holdVerifyTimeoutSeconds is settled as
+// RejectedHoldUnverifiable, so the sender is never blocked by it.
 //
-// Accepting is not ruling: nothing here changes MatchState, PlayState, outs, runs or bases. A
-// later UmpireEngine reads the accepted events (GetLog*) and rules through ApplyRuling.
+// Accepting is not ruling: nothing here changes MatchState, PlayState, outs, runs or bases.
 //
-// Synced: the table for the current play (the senders read their settled events there), a log of
-// the last MaxLog checked events with times and positions, and a revision. An accepted tag is
-// announced to everyone with one network event for the contact feedback.
+// Three separate structures: the identity table (duplicates, settled events for the senders),
+// the inbox (accepted events of the live play waiting for a consumer such as the UmpireEngine,
+// removed only by AcknowledgeContact) and the display log (the last MaxLog checked events,
+// rejected ones included; overwriting it never touches the inbox). With a consumer attached a
+// full inbox refuses new events unsettled (PendingInboxFull: the senders keep and resend them);
+// without one the oldest entry gives way and is counted. A new play releases what is left of the
+// previous play's inbox (counted). All three are synced (Manual) apart from the controller, with a
+// revision; an accepted tag is announced to everyone with one network event for the feedback.
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
 {
@@ -38,18 +44,21 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     public const int RejectedNotParticipant = -2;  // source not in the play's roster snapshot
     public const int RejectedNotFielder = -3;      // tag source not a fielder of the defense
     public const int RejectedTarget = -4;          // tag target not an active runner of the play
-    public const int RejectedHold = -5;            // tag hold contradicts the ball's confirmed hold
+    public const int RejectedHold = -5;            // that hold was another player's, another mode, or not a hold
     public const int RejectedInvalid = -6;         // malformed event (type, base, ids)
+    public const int RejectedHoldTime = -7;        // the tag is before that hold began or after it ended
+    public const int RejectedHoldUnverifiable = -8; // that hold cannot be known here (skipped, too old, timed out)
     public const int PendingNotReady = -10;        // controller not ready / recovering / not live
     public const int PendingWrongPlay = -11;       // another play (the sender withdraws it)
     public const int PendingFull = -12;            // no room in the table
-    public const int PendingBallBehind = -13;      // the ball's confirmed hold here is older than the tag
+    public const int PendingBallBehind = -13;      // the tag's hold has not reached this client yet
     public const int RejectedSource = -14;         // collector owner and source id differ (nothing read)
+    public const int PendingInboxFull = -15;       // the consumer has not taken enough events yet
     private const int ResultCodes = 32;
     private const int ResultOffset = 16;
 
     public const int MaxCollectors = 96;
-    public const int MaxLog = 16;
+    public const int MaxLog = 8;
     public const int LogStride = 8;
     public const int LogPlay = 0;
     public const int LogSource = 1;
@@ -59,6 +68,10 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     public const int LogBase = 5;
     public const int LogParts = 6;
     public const int LogResult = 7;
+    // Inbox entries use LogPlay .. LogParts.
+    public const int MaxInbox = 24;
+    public const int InboxStride = 7;
+    private const int MaxHistory = 16;
 
     [Header("References")]
     [Tooltip("MatchController on this MatchManager object.")]
@@ -70,6 +83,12 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     [Tooltip("Behaviours that receive _OnContactsChanged. Panels also register themselves.")]
     public UdonBehaviour[] changeListeners = new UdonBehaviour[0];
 
+    [Header("Tag hold verification")]
+    [Tooltip("Allowed difference between a tag's server time and the start / end of its hold, in seconds. Default 0.5.")]
+    public float holdTimeToleranceSeconds = 0.5f;
+    [Tooltip("Seconds after the tag after which a hold this client has still not received makes the tag unverifiable. Default 5.")]
+    public float holdVerifyTimeoutSeconds = 5f;
+
     [UdonSynced] private int _ackPlayId;
     [UdonSynced] private int[] _acks = new int[ContactEvents.TableLength];
     [UdonSynced] private int[] _log = new int[MaxLog * LogStride];
@@ -77,6 +96,10 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     [UdonSynced] private Vector3[] _logPositions = new Vector3[MaxLog];
     [UdonSynced] private int _logNext;
     [UdonSynced] private int _logTotal;
+    [UdonSynced] private int[] _inbox = new int[MaxInbox * InboxStride];
+    [UdonSynced] private double[] _inboxTimes = new double[MaxInbox];
+    [UdonSynced] private Vector3[] _inboxPositions = new Vector3[MaxInbox];
+    [UdonSynced] private int _inboxCount;
     [UdonSynced] private int _revision;
 
     // ---- Local ----
@@ -101,9 +124,14 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     private int _ctxDefense = -1;
     private readonly int[] _ctxRoles = new int[RosterRules.RoleTableLength];
     private readonly int[] _ctxRunners = new int[RunnerRules.SlotCount];
-    private int _ctxHolder;
-    private int _ctxHoldMode;
-    private int _ctxHoldSeq;
+    private bool _ctxHasBall;
+    private readonly int[] _ctxHistory = new int[MaxHistory * MatchBallQueryBehaviour.HistoryFields];
+    private readonly double[] _ctxHistoryTimes = new double[MaxHistory];
+    private int _ctxHistoryCount;
+    private int _ctxHistoryCapacity;
+
+    // The consumer of the inbox on this client (UmpireEngine, later), if any.
+    private UdonBehaviour _consumer;
 
     // ---- Diagnostics (Owner) ----
     private readonly int[] _resultCounts = new int[ResultCodes];
@@ -116,6 +144,8 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     private int _feedbackSent;
     private int _invalidReceived;
     private int _lastResult;
+    private int _inboxDropped;
+    private int _inboxExpired;
 
     void Start()
     {
@@ -166,6 +196,82 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     public int GetPendingAnnouncementCount() { return _announceCount; }
     public int GetInvalidReceivedCount() { return _invalidReceived; }
     public int GetCollectorCount() { return _collectorCount; }
+    public int GetInboxDroppedWithoutConsumerCount() { return _inboxDropped; }
+    public int GetInboxExpiredCount() { return _inboxExpired; }
+
+    // ---- Inbox (accepted events of the live play for a consumer; index 0 = oldest) ----
+
+    public int GetInboxCount() { return _inboxCount; }
+    public int GetInboxCapacity() { return MaxInbox; }
+    // Fields LogPlay, LogSource, LogSeq, LogType, LogTarget, LogBase, LogParts.
+    public int GetInboxField(int index, int field)
+    {
+        if (index < 0 || index >= _inboxCount || field < 0 || field >= InboxStride) return 0;
+        return _inbox[index * InboxStride + field];
+    }
+    public double GetInboxTime(int index) { return index >= 0 && index < _inboxCount ? _inboxTimes[index] : 0.0; }
+    public Vector3 GetInboxPosition(int index) { return index >= 0 && index < _inboxCount ? _inboxPositions[index] : Vector3.zero; }
+    public bool HasConsumer() { return _consumer != null; }
+
+    // The consumer (on every client; it acts on the Owner) attaches itself; null detaches. While
+    // attached, a full inbox holds new events back instead of letting the oldest give way.
+    public void SetConsumer(UdonBehaviour consumer)
+    {
+        _consumer = consumer;
+        if (consumer != null) AddChangeListener(consumer);
+    }
+
+    // The consumer has handled (play, source, seq): it leaves the inbox. Owner only; true when it
+    // was there. Handled means taken by the consumer, not ruled in any particular way.
+    public bool AcknowledgeContact(int playId, int source, int seq)
+    {
+        if (!Networking.IsOwner(gameObject) || !RemoveInbox(playId, source, seq)) return false;
+        _dirty = true;
+        Flush();
+        return true;
+    }
+
+    public bool RemoveInbox(int playId, int source, int seq)
+    {
+        for (int i = 0; i < _inboxCount; i++)
+        {
+            int at = i * InboxStride;
+            if (_inbox[at + LogPlay] != playId || _inbox[at + LogSource] != source || _inbox[at + LogSeq] != seq) continue;
+            RemoveInboxAt(i);
+            return true;
+        }
+        return false;
+    }
+
+    private void RemoveInboxAt(int index)
+    {
+        for (int i = index; i < _inboxCount - 1; i++)
+        {
+            for (int f = 0; f < InboxStride; f++) _inbox[i * InboxStride + f] = _inbox[(i + 1) * InboxStride + f];
+            _inboxTimes[i] = _inboxTimes[i + 1];
+            _inboxPositions[i] = _inboxPositions[i + 1];
+        }
+        _inboxCount--;
+        int last = _inboxCount * InboxStride;
+        for (int f = 0; f < InboxStride; f++) _inbox[last + f] = 0;
+        _inboxTimes[_inboxCount] = 0.0;
+        _inboxPositions[_inboxCount] = Vector3.zero;
+    }
+
+    private void AddInbox(int source, int[] r, int at, double time, Vector3 position)
+    {
+        int to = _inboxCount * InboxStride;
+        _inbox[to + LogPlay] = r[at + ContactRules.RecPlay];
+        _inbox[to + LogSource] = source;
+        _inbox[to + LogSeq] = r[at + ContactRules.RecSeq];
+        _inbox[to + LogType] = r[at + ContactRules.RecType];
+        _inbox[to + LogTarget] = r[at + ContactRules.RecTarget];
+        _inbox[to + LogBase] = r[at + ContactRules.RecBase];
+        _inbox[to + LogParts] = r[at + ContactRules.RecParts];
+        _inboxTimes[_inboxCount] = time;
+        _inboxPositions[_inboxCount] = position;
+        _inboxCount++;
+    }
 
     // ---- Listeners ----
 
@@ -272,19 +378,38 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         for (int i = 0; i < RosterRules.RoleTableLength; i++) _ctxRoles[i] = match.GetSnapshotRolePlayer(i);
         for (int s = 0; s < RunnerRules.SlotCount; s++)
             _ctxRunners[s] = match.GetRunnerStatus(s) == RunnerRules.StatusActive ? match.GetRunnerPlayer(s) : 0;
-        _ctxHolder = ballQuery != null ? ballQuery.ConfirmedHolderId() : 0;
-        _ctxHoldMode = ballQuery != null ? ballQuery.ConfirmedHoldMode() : ContactRules.HoldFree;
-        _ctxHoldSeq = ballQuery != null ? ballQuery.ConfirmedHoldSequence() : 0;
+        LoadHoldHistory();
         BeginPlay(_ctxPlayId);
         return true;
     }
 
-    // A new play starts a new table (events of other plays are never settled here).
+    // The ball's local history of accepted states (a copy for this batch).
+    private void LoadHoldHistory()
+    {
+        _ctxHasBall = ballQuery != null;
+        _ctxHistoryCount = 0;
+        _ctxHistoryCapacity = 0;
+        if (!_ctxHasBall) return;
+        _ctxHistoryCapacity = Mathf.Min(ballQuery.HoldHistoryCapacity(), MaxHistory);
+        int count = Mathf.Min(ballQuery.HoldHistoryCount(), _ctxHistoryCapacity);
+        for (int i = 0; i < count; i++)
+        {
+            for (int f = 0; f < MatchBallQueryBehaviour.HistoryFields; f++)
+                _ctxHistory[i * MatchBallQueryBehaviour.HistoryFields + f] = ballQuery.HoldHistoryField(i, f);
+            _ctxHistoryTimes[i] = ballQuery.HoldHistoryTime(i);
+        }
+        _ctxHistoryCount = count;
+    }
+
+    // A new play starts a new table (events of other plays are never settled here); what the
+    // consumer did not take of the previous play's inbox is released and counted.
     private void BeginPlay(int playId)
     {
         if (playId == _ackPlayId) return;
         _ackPlayId = playId;
         ContactEvents.ClearTable(_acks);
+        _inboxExpired += _inboxCount;
+        while (_inboxCount > 0) RemoveInboxAt(_inboxCount - 1);
         _dirty = true;
     }
 
@@ -325,7 +450,14 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         if (check != ContactEvents.Unseen) return Count(PendingFull);
         int result = Validate(source, r, at, time, serverNow);
         if (result == PendingBallBehind) return Count(result);
+        if (result == ResultAccepted && _inboxCount >= MaxInbox)
+        {
+            if (_consumer != null) return Count(PendingInboxFull);
+            RemoveInboxAt(0);
+            _inboxDropped++;
+        }
         ContactEvents.Settle(_acks, source, seq);
+        if (result == ResultAccepted) AddInbox(source, r, at, time, position);
         Log(source, r, at, time, position, result);
         _dirty = true;
         if (result == ResultAccepted && r[at + ContactRules.RecType] == ContactRules.TypeTagContactEnter)
@@ -352,10 +484,19 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         if (target <= 0 || target == source || !IsActiveRunner(target)) return RejectedTarget;
         int mode = r[at + ContactRules.RecHoldMode];
         int holdSeq = r[at + ContactRules.RecHoldSeq];
-        if ((mode != ContactRules.HoldGlove && mode != ContactRules.HoldHand) || holdSeq <= 0) return RejectedHold;
-        if (_ctxHoldSeq < holdSeq) return PendingBallBehind;
-        if (_ctxHoldSeq == holdSeq && (_ctxHolder != source || _ctxHoldMode != mode)) return RejectedHold;
-        return ResultAccepted;
+        int publisher = r[at + ContactRules.RecHoldPublisher];
+        if ((mode != ContactRules.HoldGlove && mode != ContactRules.HoldHand) || holdSeq <= 0 || publisher <= 0) return RejectedHold;
+        if (!_ctxHasBall) return RejectedHoldUnverifiable;
+        int verdict = ContactRules.VerifyHold(source, mode, holdSeq, publisher, time, _ctxHistory, _ctxHistoryTimes,
+            _ctxHistoryCount, _ctxHistoryCapacity, MatchBallQueryBehaviour.HistoryFields, holdTimeToleranceSeconds);
+        switch (verdict)
+        {
+            case ContactRules.HoldVerified: return ResultAccepted;
+            case ContactRules.HoldMismatch: return RejectedHold;
+            case ContactRules.HoldOutOfTime: return RejectedHoldTime;
+            case ContactRules.HoldNotYetSeen: return serverNow - time > holdVerifyTimeoutSeconds ? RejectedHoldUnverifiable : PendingBallBehind;
+        }
+        return RejectedHoldUnverifiable;
     }
 
     private int RoleSlotOf(int playerId)
@@ -436,7 +577,9 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     {
         if (_log == null || _log.Length != MaxLog * LogStride || _logTimes == null || _logTimes.Length != MaxLog
             || _logPositions == null || _logPositions.Length != MaxLog || ContactEvents.FindTableViolation(_acks) != 0
-            || _logNext < 0 || _logNext >= MaxLog)
+            || _logNext < 0 || _logNext >= MaxLog
+            || _inbox == null || _inbox.Length != MaxInbox * InboxStride || _inboxTimes == null || _inboxTimes.Length != MaxInbox
+            || _inboxPositions == null || _inboxPositions.Length != MaxInbox || _inboxCount < 0 || _inboxCount > MaxInbox)
         {
             _invalidReceived++;
             _acks = new int[ContactEvents.TableLength];
@@ -446,6 +589,10 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
             _logNext = 0;
             _logTotal = 0;
             _ackPlayId = 0;
+            _inbox = new int[MaxInbox * InboxStride];
+            _inboxTimes = new double[MaxInbox];
+            _inboxPositions = new Vector3[MaxInbox];
+            _inboxCount = 0;
             return;
         }
         AfterTableChanged();

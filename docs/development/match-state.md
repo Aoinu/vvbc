@@ -421,7 +421,12 @@ owned. Recovering or unsynced states refuse new live starts and rulings; physics
   on the Owner, with their own identity table and capacity (32 sources), separate from `PlayEvents`.
   They are facts, never rulings: they are not passed to `ApplyRuling` / `PlayRules.Apply`, and they
   change no MatchState, PlayState, RunnerState, out or run. Queries added for them:
-  `GetSnapshotRolePlayer(roleSlot)`, `GetPlayStartServerTime()`.
+  `GetSnapshotRolePlayer(roleSlot)`, `GetPlayStartServerTime()`. Accepted events wait in the
+  receiver's inbox (`GetInbox*`, `AcknowledgeContact`, `SetConsumer`) for the engine, apart from the
+  display log; a tag is accepted only when the ball's local possession history verifies its hold.
+- **Glove equipment** ([roster glove equipment](roster-glove-equipment.md)): during a match each
+  client equips its own glove from `GetDefenseTeam()` and the roster (live: the play snapshot; dead:
+  the RosterManager). The controller and the roster have no glove logic; they are only read.
 - **Base contact, tags, forces** (later design): the UmpireEngine turns the accepted contact events
   into `BaseTouch`, TagOut / TagSafe and force rulings; a ruling then awards. Tag timing correction and force timing produce TagOut/Safe
   and ForceOut/Safe with the corrected server time; simultaneous force arrival is safe.

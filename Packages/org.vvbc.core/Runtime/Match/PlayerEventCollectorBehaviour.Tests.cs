@@ -34,8 +34,8 @@ public partial class PlayerEventCollectorBehaviour
         unassignedTimeoutSeconds = 3f;
     }
 
-    private int Touch(int play, double time) { return RecordAt(ContactRules.TypeBaseTouchEnter, 0, 1, ContactRules.PartLeftFoot, Here, 0, 0, time, play, 100.0); }
-    private int Tag(int play, double time) { return RecordAt(ContactRules.TypeTagContactEnter, 11, ContactRules.NoBase, ContactRules.PartCapsule, Here, ContactRules.HoldGlove, 4, time, play, 100.0); }
+    private int Touch(int play, double time) { return RecordAt(ContactRules.TypeBaseTouchEnter, 0, 1, ContactRules.PartLeftFoot, Here, 0, 0, 0, time, play, 100.0); }
+    private int Tag(int play, double time) { return RecordAt(ContactRules.TypeTagContactEnter, 11, ContactRules.NoBase, ContactRules.PartCapsule, Here, ContactRules.HoldGlove, 4, 21, time, play, 100.0); }
     private int Seq(int slot) { return GetRecordField(slot, ContactRules.RecSeq); }
     private int PlayOf(int slot) { return GetRecordField(slot, ContactRules.RecPlay); }
 
@@ -52,7 +52,7 @@ public partial class PlayerEventCollectorBehaviour
         ResetCollectorForTest(21);
         int a = Touch(5, 101.0);
         int b = Tag(5, 102.0);
-        int c = RecordAt(ContactRules.TypeBaseTouchExit, 0, 1, 0, Here, 0, 0, 103.0, 5, 100.0);
+        int c = RecordAt(ContactRules.TypeBaseTouchExit, 0, 1, 0, Here, 0, 0, 0, 103.0, 5, 100.0);
         Assert.AreEqual(1, Seq(a));
         Assert.AreEqual(2, Seq(b), "touches and tags share one sequence");
         Assert.AreEqual(3, Seq(c));
@@ -64,6 +64,7 @@ public partial class PlayerEventCollectorBehaviour
         Assert.AreEqual(102.0, GetRecordTimes()[b], "the detection time, never a receive time");
         Assert.AreEqual(ContactRules.HoldGlove, GetRecordField(b, ContactRules.RecHoldMode));
         Assert.AreEqual(11, GetRecordField(b, ContactRules.RecTarget));
+        Assert.AreEqual(21, GetRecordField(b, ContactRules.RecHoldPublisher), "the hold is identified with its publisher");
     }
 
     [TsukimiTest]

@@ -64,6 +64,7 @@ public partial class TagContactDetectorBehaviour : TsukimiBehaviour
     private bool _polling;
     private int _holdMode;
     private int _holdSeq;
+    private int _holdPublisher;
 
     private const int MaxQueued = Targets;
     private readonly int[] _queuedTarget = new int[MaxQueued];
@@ -128,6 +129,7 @@ public partial class TagContactDetectorBehaviour : TsukimiBehaviour
             SetTarget(s, match.GetRunnerStatus(s) == RunnerRules.StatusActive ? match.GetRunnerPlayer(s) : 0, localId);
         int mode = holding ? ballQuery.ConfirmedHoldMode() : ContactRules.HoldFree;
         int seq = holding ? ballQuery.ConfirmedHoldSequence() : 0;
+        _holdPublisher = holding ? ballQuery.ConfirmedHoldPublisher() : 0;
         if (Arm(localId, roleSlot, defense, mode, seq)) enabled = true;
         else Disarm();
     }
@@ -293,7 +295,7 @@ public partial class TagContactDetectorBehaviour : TsukimiBehaviour
 
     private void RecordTag(PlayerEventCollectorBehaviour collector, int target, int parts, Vector3 position)
     {
-        int slot = collector != null ? collector.Record(ContactRules.TypeTagContactEnter, target, ContactRules.NoBase, parts, position, _holdMode, _holdSeq) : -1;
+        int slot = collector != null ? collector.Record(ContactRules.TypeTagContactEnter, target, ContactRules.NoBase, parts, position, _holdMode, _holdSeq, _holdPublisher) : -1;
         if (slot < 0)
         {
             _unrecorded++;

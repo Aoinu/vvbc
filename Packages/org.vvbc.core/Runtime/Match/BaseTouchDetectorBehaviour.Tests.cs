@@ -178,4 +178,29 @@ public partial class BaseTouchDetectorBehaviour
         _touchMask = 2;
         Assert.IsTrue(ShouldTrack(new Vector3(10f, 0f, 10f)), "until the exit is sent");
     }
+
+    // The zones' trigger stay sets the capsule flag again and again (or after a missed enter);
+    // only the OR of the regions sends an event.
+    [TsukimiTest]
+    public void StaysFillInAMissedEnterAndNeverRepeatIt()
+    {
+        ResetDetectorForTest();
+        for (int i = 0; i < 5; i++)
+        {
+            SetCapsuleFlag(1, true);      // stay, the enter was missed
+            Evaluate(NearFirst);
+        }
+        Assert.AreEqual(1, GetEnterCount(1), "one enter however many stays");
+        SetCapsuleFlag(1, false);         // exit
+        Evaluate(NearFirst);
+        Assert.AreEqual(1, GetExitCount(1));
+        SetCapsuleFlag(1, true);          // a stay after coming back in
+        Evaluate(NearFirst);
+        Assert.AreEqual(2, GetEnterCount(1), "re-entering is a new touch");
+        SetCapsuleFlag(1, false);
+        SetCapsuleFlag(1, true);          // exit and stay out of order within one frame
+        Evaluate(NearFirst);
+        Assert.AreEqual(2, GetEnterCount(1), "no flicker between frames");
+        Assert.AreEqual(1, GetExitCount(1));
+    }
 }

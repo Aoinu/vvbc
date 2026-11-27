@@ -21,6 +21,11 @@ public partial class MatchBallQueryAdapterBehaviour : MatchBallQueryBehaviour
     public override int ConfirmedHoldMode() { return ball != null ? ball.ConfirmedHoldMode() : HoldFree; }
     public override int ConfirmedHolderId() { return ball != null ? ball.ConfirmedHolderId() : 0; }
     public override int ConfirmedHoldSequence() { return ball != null ? ball.ConfirmedHoldSequence() : 0; }
+    public override int ConfirmedHoldPublisher() { return ball != null ? ball.ConfirmedHoldPublisher() : 0; }
+    public override int HoldHistoryCount() { return ball != null ? ball.GetPossessionHistoryCount() : 0; }
+    public override int HoldHistoryCapacity() { return BallBehaviour.PossessionHistoryCapacity; }
+    public override int HoldHistoryField(int entry, int field) { return ball != null ? ball.GetPossessionHistoryField(entry, field) : 0; }
+    public override double HoldHistoryTime(int entry) { return ball != null ? ball.GetPossessionHistoryTime(entry) : 0.0; }
 
     public override bool LocalTagSensorReady()
     {

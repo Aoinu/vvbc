@@ -32,7 +32,7 @@ public static class ContactRules
     public const int HoldHand = 2;
 
     // ---- Event record: Stride ints per event (times and positions in parallel arrays) ----
-    public const int Stride = 9;
+    public const int Stride = 10;
     public const int RecPlay = 0;        // play id (0 = not assigned yet)
     public const int RecSeq = 1;         // sequence in (play, source), from 1
     public const int RecType = 2;
@@ -42,7 +42,15 @@ public static class ContactRules
     public const int RecHoldMode = 6;    // tag: HoldGlove / HoldHand
     public const int RecHoldSeq = 7;     // tag: the ball's confirmed hold sequence at the event
     public const int RecFlags = 8;       // FlagInvalid: withdrawn by the sender, never to be read
+    public const int RecHoldPublisher = 9; // tag: the publisher of that hold (sequences are per publisher)
     public const int FlagInvalid = 1;
+
+    // ---- Tag hold verification (VerifyHold) ----
+    public const int HoldVerified = 0;
+    public const int HoldMismatch = 1;       // that hold was another player's, another mode, or not a hold
+    public const int HoldOutOfTime = 2;      // the tag is before that hold began or after it ended
+    public const int HoldNotYetSeen = 3;     // this client has not received that hold (yet)
+    public const int HoldUnverifiable = 4;   // that hold can no longer be known here (skipped, or older than the history)
 
     public static bool ValidType(int type) { return type >= TypeBaseTouchEnter && type <= TypeMax; }
     public static bool IsBaseType(int type) { return type == TypeBaseTouchEnter || type == TypeBaseTouchExit; }
@@ -113,6 +121,51 @@ public static class ContactRules
             case 3: return "3B";
         }
         return "-";
+    }
+
+    // Checks the hold a tag was made with against a ball's local history of accepted states
+    // (newest first: sequence, publisher, is-possession, hold, holder per entry, and its server
+    // time). Only a hold found in the history can verify a tag; nothing is inferred from the
+    // current state or from neighbouring entries:
+    // * found: it must be a possession of the tagging player in the same mode, and the tag time
+    //   must lie between its start and the next state that is not the same possession (a
+    //   republish of the same hold by a new ball owner continues it), within tolerance;
+    // * not found, but the same publisher has a newer state here: it was never received here
+    //   (skipped), so it cannot be known: unverifiable;
+    // * not found and the full history starts after the tag: unverifiable;
+    // * otherwise it has not arrived yet (the caller gives up after a timeout).
+    public static int VerifyHold(int source, int mode, int sequence, int publisher, double tagTime,
+        int[] history, double[] times, int count, int capacity, int stride, double tolerance)
+    {
+        if (history == null || times == null || count < 0 || count * stride > history.Length || count > times.Length) return HoldUnverifiable;
+        int found = -1;
+        bool newer = false;
+        for (int i = 0; i < count; i++)
+        {
+            int at = i * stride;
+            if (history[at + 1] != publisher) continue;
+            if (history[at] == sequence) { found = i; break; }
+            if (history[at] > sequence) newer = true;
+        }
+        if (found < 0)
+        {
+            if (newer) return HoldUnverifiable;
+            if (count >= capacity && count > 0 && times[count - 1] > tagTime + tolerance) return HoldUnverifiable;
+            return HoldNotYetSeen;
+        }
+        int f = found * stride;
+        if (history[f + 2] != 1 || history[f + 4] != source || history[f + 3] != mode) return HoldMismatch;
+        if (tagTime < times[found] - tolerance) return HoldOutOfTime;
+        int next = found - 1;
+        while (next >= 0)
+        {
+            int n = next * stride;
+            bool same = history[n + 2] == 1 && history[n + 4] == source && history[n + 3] == mode;
+            if (!same) break;
+            next--;
+        }
+        if (next >= 0 && tagTime > times[next] + tolerance) return HoldOutOfTime;
+        return HoldVerified;
     }
 
     // ---- Geometry ----

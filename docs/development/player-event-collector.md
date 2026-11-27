@@ -37,7 +37,7 @@ glove side, the only place that sees both `Ball/` and `Match/`).
 
 ## Event data
 
-Each event of a collector is one record (`ContactRules.Stride` = 9 ints) plus a server time and a
+Each event of a collector is one record (`ContactRules.Stride` = 10 ints) plus a server time and a
 world position in parallel arrays:
 
 | Field | Content |
@@ -48,7 +48,7 @@ world position in parallel arrays:
 | `RecTarget` | Tagged runner's playerId (0 = none) |
 | `RecBase` | 0 Home, 1 1B, 2 2B, 3 3B (`NoBase` -1 for a tag) |
 | `RecParts` | Parts touching at the event (diagnostic): `PartCapsule` 1, `PartLeftHand` 2, `PartRightHand` 4, `PartLeftFoot` 8, `PartRightFoot` 16 |
-| `RecHoldMode`, `RecHoldSeq` | Tag: `HoldGlove` / `HoldHand` and the ball's confirmed hold sequence at the event |
+| `RecHoldMode`, `RecHoldSeq`, `RecHoldPublisher` | Tag: `HoldGlove` / `HoldHand`, the ball's confirmed hold sequence and its publisher at the event (sequences are per publisher) |
 | `RecFlags` | `FlagInvalid`: withdrawn by the sender, never read |
 | time | `Networking.GetServerTimeInSeconds()` at the detection, never a receive time |
 | position | World position of the contact (part position for a base, tag region for a tag) |
@@ -126,18 +126,65 @@ source id it publishes, and the id must be a player id, else nothing of it is re
 | Source not in the play's roster snapshot | `RejectedNotParticipant` |
 | Tag: source not a fielder of the defense (P..RF; not DH) | `RejectedNotFielder` |
 | Tag: target not an active runner of the RunnerState | `RejectedTarget` |
-| Tag: no hold, or the confirmed hold of that sequence is someone else's / another mode | `RejectedHold` |
-| Tag: the ball's confirmed hold here is older than the tag's | `PendingBallBehind`, not settled (taken on the resend) |
+| Tag: no hold, or that hold (found in the history) is someone else's / another mode / not a possession | `RejectedHold` |
+| Tag: before that hold began or after it ended | `RejectedHoldTime` |
+| Tag: that hold cannot be known here (skipped, older than the history, no ball, still unknown after `holdVerifyTimeoutSeconds`) | `RejectedHoldUnverifiable` (settled, diagnostic) |
+| Tag: that hold has not reached this client yet | `PendingBallBehind`, not settled (taken on the resend) |
+| Accepted, but the inbox is full and a consumer is attached | `PendingInboxFull`, not settled |
 | Otherwise | `ResultAccepted` |
+
+### Tag hold verification
+
+A tag is accepted only when the hold it was made with is verified, never because the ball has
+simply moved on since. `BallBehaviour` keeps a local, fixed history of the last 8 accepted states it
+has seen (`BallBehaviour.PossessionHistory.cs`: sequence, publisher, possession or not, hold mode,
+holder, server time; recorded at each change of the accepted state, never synced, nothing sent per
+frame), exposed through `MatchBallQueryBehaviour.HoldHistory*` and copied once per batch.
+`ContactRules.VerifyHold`:
+
+- the tag's (sequence, publisher) is in the history: it must be a possession of the tagging player
+  in the tag's mode, and the tag time must lie between its start and the next state that is not the
+  same possession (a republish of the same hold after the ball's Ownership moved continues it),
+  within `holdTimeToleranceSeconds` (0.5 s): otherwise `RejectedHold` / `RejectedHoldTime`;
+- not in it, but the same publisher has a newer state here: the hold was never received here (an
+  intermediate snapshot overwritten before it arrived) and cannot be known: unverifiable;
+- not in it and the full history starts after the tag (or there is no ball): unverifiable;
+- otherwise it has not arrived yet: pending, and unverifiable once `holdVerifyTimeoutSeconds` (5 s)
+  have passed since the tag, so a sender is never blocked by it.
+
+Nothing is inferred from the current state or from neighbouring entries. A new MatchManager Owner
+uses its own history: a hold from before it received the ball's states cannot be confirmed there.
+The fielder still sees the effect at once; everyone else only for a verified tag.
 
 Events of other plays are not read (`PendingWrongPlay`; the sender withdraws them); while the
 controller is not ready, recovering or not live nothing is read (`PendingNotReady`) and a full scan
 is due. Settled results (Accepted and Rejected*) go into the table and the log; one serialization
 per batch; accepted tags are announced afterwards (below).
 
-Synced: `_ackPlayId`, `_acks int[97]` (count + 32 x (source, watermark, mask)), `_log int[16 x 8]`
-(play, source, seq, type, target, base, parts, result), `_logTimes`, `_logPositions`, `_logNext`,
-`_logTotal`, `_revision`. A received table that is malformed is dropped (`GetInvalidReceivedCount`).
+Synced: `_ackPlayId`, `_acks int[97]` (count + 32 x (source, watermark, mask)), the inbox
+(`_inbox int[24 x 7]`, times, positions, count), the display log (`_log int[8 x 8]`: play, source,
+seq, type, target, base, parts, result; times, positions, next, total) and `_revision`.
+
+### Identity table, inbox and display log
+
+Three separate structures:
+
+1. **Identity table** (`_acks`): duplicates and what the senders see as settled.
+2. **Inbox** (24 entries): the accepted events of the live play, oldest first, for a consumer (the
+   UmpireEngine of a later phase). An entry leaves only by `AcknowledgeContact(play, source, seq)`
+   on the Owner (handled by the consumer; not a ruling of any kind). Queries: `GetInboxCount`,
+   `GetInboxField(index, LogPlay .. LogParts)`, `GetInboxTime`, `GetInboxPosition`,
+   `GetInboxCapacity`. A consumer attaches with `SetConsumer` (on every client; it acts on the
+   Owner) and is told of changes by `_OnContactsChanged`.
+3. **Display log** (8 entries, rejections included): for panels only; it wraps freely and never
+   touches the inbox.
+
+Capacity: with a consumer attached a full inbox refuses new events unsettled (`PendingInboxFull`),
+so they stay in the senders' rings and are resent; nothing is dropped. With no consumer (Phase 2A:
+none exists yet) the oldest entry gives way and is counted (`GetInboxDroppedWithoutConsumerCount`),
+so the senders are never blocked waiting for a consumer that does not exist. A new play releases
+what is left of the previous play's inbox and counts it (`GetInboxExpiredCount`): an engine rules
+within the play. The inbox is synced, so a new Owner's consumer finds what was not taken yet. A received table that is malformed is dropped (`GetInvalidReceivedCount`).
 The raw-event table is separate from `PlayEvents` (which numbers rulings in the PlayState): a raw
 event is never put through `PlayRules.Apply`, and the two source tables never mix.
 
@@ -184,7 +231,9 @@ standing on the ground). It is a trigger: nothing is pushed. The base meshes are
 regions changing while the base stays touched send nothing. The four bases are independent. A bone
 that cannot be read disables only its sphere. Missed capsule exits: the capsule flag is cleared at a
 respawn of the local player and when the player is more than `capsuleReleaseMargin` (1 m)
-horizontally outside the box. `OnPlayerTriggerStay` is not used.
+horizontally outside the box. Missed capsule enters: `OnPlayerTriggerStay` of the local player sets
+the flag again when it is not set (no event of its own; repeated stays change nothing, and the
+detector still sends one enter on the OR). Remote players' trigger events are ignored.
 
 Only the local player's own client detects; no client scans other players' bones for bases.
 
@@ -280,8 +329,8 @@ the display time is the Particle System's start lifetime (0.35 s), its size the 
 
 | What | When | Size (payload, estimated from field sizes) |
 |---|---|---|
-| Collector ring | each contact transition, each touch-bit change, resends of open events (2, 4, 8, 16 s) | ~0.9 KB (144 ints, 16 doubles, 16 Vector3, 3 ints) |
-| Receiver table + log | once per batch with a settled event | ~1.2 KB (97 + 128 ints, 16 doubles, 16 Vector3, 4 ints) |
+| Collector ring | each contact transition, each touch-bit change, resends of open events (2, 4, 8, 16 s) | ~1.0 KB (160 ints, 16 doubles, 16 Vector3, 3 ints) |
+| Receiver table + inbox + log | once per batch with a settled event, and per acknowledgement | ~2.2 KB (97 + 168 + 64 ints, 32 doubles, 32 Vector3, 5 ints) |
 | Tag announcement | one network event per accepted tag | ~40 B of arguments |
 | MatchController state | never for a contact | (3.5 KB, unchanged) |
 
@@ -305,19 +354,32 @@ VRChat clients.
 
 ## Toward the UmpireEngine
 
-The engine (Owner, later phase) reads the receiver's accepted events of the live play (base touch
-enter / exit with time, tag contact with target, time and hold), corrects timing, and calls
-`ApplyRuling(playId, EngineSourceId(), seq, serverTime, TagOut / TagSafe / BaseTouch / ...)`. The
-receiver's log keeps the last 16 checked events; the engine is expected to consume them as they
-are settled (`_OnContactsChanged`), not to rely on the display log as storage.
+The engine (Owner, later phase) attaches with `SetConsumer`, reads the inbox of the live play
+(base touch enter / exit with time, verified tag contact with target and time), corrects timing,
+calls `ApplyRuling(playId, EngineSourceId(), seq, serverTime, TagOut / TagSafe / BaseTouch / ...)`
+and then `AcknowledgeContact` for each entry it handled. The display log is never its storage.
+
+## Network IDs (Match.unity)
+
+Checked with the SDK's `NetworkIDAssignment.ConfigureNetworkIDs` (what a build runs): the existing
+IDs 10-13 (RosterManager, both roster panels, VRCWorld) were kept, and IDs were assigned to every
+other networked object, the PlayerObject template's children included (Bat, Body, GripA/B, the
+initially inactive Motion, EventCollector, Glove, CalibrationHandle, PerkEffects, Perks), the
+MatchManager (controller, umpire authority, receiver) and its children, the Ball, the bases and the
+panels; no ID conflict or type mismatch was reported. The list is saved in the scene. PlayerObject
+copies are created by VRChat per player from the template with their own ownership; each
+collector's ring is written only by its owner (`Networking.IsOwner` guards every write) and every
+client registers every collector it sees, so the MatchManager Owner reads remote players'
+collectors from their synced copies.
 
 ## Validation
 
 Tsukimi tests (default path):
 
-- `BaseTouchDetectorBehaviour.Tests.cs` (9): capsule only, each hand and foot, several regions as
+- `BaseTouchDetectorBehaviour.Tests.cs` (10): capsule only, each hand and foot, several regions as
   one, region swap without exit, all regions leaving, touching again, several bases, missing bone,
-  rotated box, surface boundary, a missed capsule exit, activation.
+  rotated box, surface boundary, a missed capsule exit, activation, stays filling in a missed enter
+  without repeating it (and exit / stay out of order).
 - `TagContactDetectorBehaviour.Tests.cs` (6): arming (glove, hand, free / flight, unconfirmed,
   offense, spectator, DH, no runner, self), capsule, hands and feet, several parts as one event,
   continuous contact once, full release and new contact, a fast swing, a teleport, unknown positions.
@@ -325,14 +387,20 @@ Tsukimi tests (default path):
   events placed or withdrawn by time, committed plays, a full ring never overwriting unsettled
   events, evicting waiting detections first, settling by source and play and out of order, same ids
   on other clients and after a resend, late joiner's current contact.
-- `MatchEventReceiverBehaviour.Tests.cs` (12): one acceptance and duplicates, out-of-order, source vs
+- `MatchEventReceiverBehaviour.Tests.cs` (21): one acceptance and duplicates, out-of-order, source vs
   owner, other plays and withdrawn events, participants, tag rules (fielder, DH, offense, spectator,
-  target, hold), ball state behind, capacity (window, 33rd source), new play, table and log to
-  other clients, a new Owner and a late joiner without double acceptance or announcement, not
-  ready, accepting never changes the controller.
+  target, hold), capacity (window, 33rd source), new play, table and log to other clients, a new
+  Owner and a late joiner without double acceptance or announcement, not ready, accepting never
+  changes the controller; hold verification (current hold: player and mode; an older hold from the
+  history; after the throw / before the catch; another player's hold; a republished hold; a hold
+  never received here; not received yet, then timed out; a new Owner without the history; no ball);
+  inbox (kept beyond the display log, acknowledged once, rejections not queued; full with a consumer
+  holds back unsettled; without one the oldest gives way counted; a new play releases it; it
+  reaches a new Owner).
 - `TagContactFeedbackBehaviour.Tests.cs` (3), `BaseHighlightBehaviour.Tests.cs` (1),
-  `GloveBehaviour.Tests.cs` (+1: the tag sensor and the catch trigger).
-- Regression: the 166 Match / Roster / panel tests, the Glove tests and the 1094 Ball tests pass.
+  `GloveBehaviour.Tests.cs` (+4: the tag sensor and the catch trigger; automatic equipment),
+  `BallBehaviour.PossessionHistory.Tests.cs` (2), `RosterGloveEquipmentBehaviour.Tests.cs` (5).
+- Regression: the 166 Match / Roster / panel tests, the Glove tests and the Ball tests pass.
 
 Not covered by `test`: `NetworkCalling.CallingPlayer`, network events with several arguments (the
 tag announcement), `OnPlayerTriggerEnter/Exit`, `GetBonePosition` / `GetPosition` /
@@ -348,7 +416,26 @@ became settled, the panel showed both, and the outs did not change. The
 `IsNetworkingSupported cannot be changed …` error at scene load also appears in the untouched
 `Roster.unity` and is not from this change. Tags, other clients and real sizes were not checked.
 
+ClientSim, one client, after the review fixes (2026-11-27): registered as Home P and starting the
+match equipped the glove automatically (locker: `Equipment: Automatic (Defense)`, button
+Automatic); moving to Away C while dead took it off and the locker's Equip was refused; ending the
+match released the automatic control and the locker equipped it again. Several clients (ClientSim
+remote players do not run their own clients), tags and the held-ball pending case were not checked
+in ClientSim; the pending case is covered by `GloveBehaviour.Tests.cs`.
+
 ### ClientSim (several clients) / real-device checklist (not yet run)
+
+Glove equipment:
+
+1. Register players to Away and Home, start the match: only Home's P..RF wear the glove; Home's
+   DH, all of Away and unregistered players do not.
+2. Three outs: nothing changes until Time; after the commit that changes sides the gloves switch.
+3. The old defense player holding the ball in the glove at the change keeps it until the ball is
+   released, then it comes off; the ball is never dropped.
+4. Late joiner and MatchManager Owner change: every client ends with the same equipment.
+5. Before / after the match the locker works by hand; during it the locker shows Automatic.
+
+Contacts:
 
 1. Runner and fielder: a tag with the glove; the fielder sees the effect at once.
 2. The runner sees the same effect after the event is accepted.

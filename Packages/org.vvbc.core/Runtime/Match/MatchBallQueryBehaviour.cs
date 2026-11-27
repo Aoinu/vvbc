@@ -22,6 +22,21 @@ public abstract class MatchBallQueryBehaviour : TsukimiBehaviour
     public abstract int ConfirmedHolderId();
     // Sequence of the accepted possession that confirms it (0 when none); grows with each change.
     public abstract int ConfirmedHoldSequence();
+    // Publisher of that possession (sequences are compared only within one publisher's stream).
+    public abstract int ConfirmedHoldPublisher();
+
+    // The accepted states this client has seen, newest first (entry 0), a fixed short history kept
+    // locally by the ball and never synced. A state that never reached this client is not in it.
+    public const int HistorySequence = 0;
+    public const int HistoryPublisher = 1;
+    public const int HistoryIsPossession = 2;
+    public const int HistoryHold = 3;
+    public const int HistoryHolder = 4;
+    public const int HistoryFields = 5;
+    public abstract int HoldHistoryCount();
+    public abstract int HoldHistoryCapacity();
+    public abstract int HoldHistoryField(int entry, int field);
+    public abstract double HoldHistoryTime(int entry);
 
     // The local player holds the ball (confirmed) and the region for that hold is usable now.
     public abstract bool LocalTagSensorReady();

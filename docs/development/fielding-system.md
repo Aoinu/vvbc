@@ -172,8 +172,26 @@ It is separate from `CatchTrigger`, which keeps its behaviour (off while the bal
 `TagSensorReady()` is true only while worn, with the ball in the socket and a valid hand pose;
 `TagSensorCenter()` / `TagSensorRadius()` follow the calibrated mount and the glove scale. A hand
 hold uses a sphere around the ball instead (`MatchBallQueryAdapterBehaviour.handTagRadius`). The
-match ball query also exposes `ConfirmedHoldSequence()`. Nothing of the ball's possession, sync,
-collider, layer or pickup changed.
+match ball query also exposes `ConfirmedHoldSequence()` and `ConfirmedHoldPublisher()`. Nothing of
+the ball's possession, sync, collider, layer or pickup changed.
+
+### Possession history (tag verification)
+
+`BallBehaviour.PossessionHistory.cs` keeps, on every client, the last 8 accepted states it has seen
+(sequence, publisher, possession or not, hold, holder, server time), recorded wherever the
+accepted state changes (own publish, a received snapshot, an accepted candidate, an adoption or
+conflict republish). It is local and read-only for the match (the tag hold check in
+[player event collector](player-event-collector.md#tag-hold-verification)); it is never synced and
+changes nothing of possession, ownership or the network protocol.
+
+### Automatic equipment (match roster)
+
+During a match `RosterGloveEquipmentBehaviour` decides who wears the glove
+([roster glove equipment](roster-glove-equipment.md)) through `SetAutomaticEquipment`. While it is
+active `SetEquipped` (the locker) is refused, unequipping waits while the ball is in the glove or
+calibration is open and is applied by `ReleaseBall` / the end of calibration, and `BeginCalibration`
+is allowed only when the automatic control allows it (a fielder of the defense with the ball dead).
+Saved fittings are untouched. The locker shows `Equipment: Automatic (...)` or `Manual`.
 
 ## Ball possession
 

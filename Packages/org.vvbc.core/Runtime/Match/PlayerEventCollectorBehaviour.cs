@@ -152,19 +152,19 @@ public partial class PlayerEventCollectorBehaviour : TsukimiBehaviour
 
     // A contact detected on this client now. Returns the slot, -1 when it was not recorded.
     // A tag needs a live play (it is only detected in one); a base event without one waits.
-    public int Record(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence)
+    public int Record(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, int holdPublisher)
     {
         if (!Networking.IsOwner(gameObject)) return -1;
         double now = Networking.GetServerTimeInSeconds();
         int playId = match != null ? match.GetPlayId() : 0;
         double playStart = match != null ? match.GetPlayStartServerTime() : 0.0;
-        int slot = RecordAt(type, target, baseIndex, parts, position, holdMode, holdSequence, now, playId, playStart);
+        int slot = RecordAt(type, target, baseIndex, parts, position, holdMode, holdSequence, holdPublisher, now, playId, playStart);
         if (slot >= 0) AfterLocalChange();
         return slot;
     }
 
     // The recording rules with the clock and the play passed in (tests call this).
-    public int RecordAt(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, double serverTime, int livePlayId, double playStart)
+    public int RecordAt(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, int holdPublisher, double serverTime, int livePlayId, double playStart)
     {
         if (!ContactRules.ValidType(type)) return -1;
         if (livePlayId <= 0 && !ContactRules.IsBaseType(type))
@@ -194,6 +194,7 @@ public partial class PlayerEventCollectorBehaviour : TsukimiBehaviour
         _events[at + ContactRules.RecHoldMode] = holdMode;
         _events[at + ContactRules.RecHoldSeq] = holdSequence;
         _events[at + ContactRules.RecFlags] = 0;
+        _events[at + ContactRules.RecHoldPublisher] = holdPublisher;
         _eventTimes[slot] = serverTime;
         _eventPositions[slot] = position;
         _invalidReason[slot] = ContactEvents.InvalidNone;

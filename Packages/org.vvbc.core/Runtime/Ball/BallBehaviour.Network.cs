@@ -505,6 +505,7 @@ public partial class BallBehaviour
         _publishedSequence = _acceptedSequence;
         _publishedKind = _acceptedKind;
         _serializationRetries = 0;
+        RecordAcceptedHistory();
         CopyAccepted();
         Send();
     }
@@ -539,6 +540,7 @@ public partial class BallBehaviour
         _lossSuspected = false;
         _ownershipRequested = false;
         ClearCandidates();
+        RecordAcceptedHistory();
         CopyAccepted();
         // Fielding actions were applied when they happened; pitcher states apply on publish.
         if (_acceptedKind == StageState)
@@ -652,6 +654,7 @@ public partial class BallBehaviour
         _acceptedPublisherId = _publisherId;
         _acceptedWake = SyncedWake();
         _acceptedLineage = SyncedLineage();
+        RecordAcceptedHistory();
         // The publisher's own older candidate can never be taken any more.
         int slot = FindCandidate(_acceptedPublisherId);
         if (slot >= 0 && !NewerThanAccepted(_candidateSequence[slot], _candidateKind[slot], _acceptedPublisherId))
@@ -752,6 +755,7 @@ public partial class BallBehaviour
         _acceptedWake = _candidateWake[slot];
         _acceptedLineage = _candidateLineage[slot];
         _acceptedPublisherId = publisher;
+        RecordAcceptedHistory();
         return true;
     }
 
@@ -1084,6 +1088,7 @@ public partial class BallBehaviour
         _publishedSequence = _acceptedSequence;
         _publishedKind = _acceptedKind;
         _serializationRetries = 0;
+        RecordAcceptedHistory();
         CopyAccepted();
         Send();
     }

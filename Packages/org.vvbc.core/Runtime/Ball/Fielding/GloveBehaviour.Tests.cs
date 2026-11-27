@@ -262,4 +262,61 @@ public partial class GloveBehaviour
         equipped = false;
         Assert.IsFalse(TagSensorReady(), "not worn");
     }
+
+    // ---- Automatic equipment (match roster) ----
+
+    [TsukimiTest]
+    public void AutomaticEquipmentOverridesTheManualPaths()
+    {
+        Mimic.Join();
+        Start();
+        SetAutomaticEquipment(true, true, false, AutoReasonDefense);
+        Assert.IsTrue(equipped, "a fielder of the defense wears it");
+        Assert.IsTrue(IsAutomaticEquipment());
+        SetEquipped(false);
+        Assert.IsTrue(equipped, "the locker cannot take it off during a match");
+        Assert.IsFalse(BeginCalibration(), "no adjusting while the ball is live");
+        SetAutomaticEquipment(true, false, false, AutoReasonOffense);
+        Assert.IsFalse(equipped, "the offense goes without");
+        SetEquipped(true);
+        Assert.IsFalse(equipped, "and cannot put it on");
+        Assert.IsFalse(BeginCalibration());
+        SetAutomaticEquipment(false, false, true, AutoReasonNone);
+        Assert.IsFalse(IsAutomaticEquipment());
+        Assert.IsFalse(equipped, "the glove is left as it was");
+        SetEquipped(true);
+        Assert.IsTrue(equipped, "manual equipping is back after the match");
+    }
+
+    [TsukimiTest]
+    public void UnequippingWaitsForTheBallToLeaveTheGlove()
+    {
+        Mimic.Join();
+        Start();
+        SetAutomaticEquipment(true, true, false, AutoReasonDefense);
+        HoldBall(transform, BallInSocket, Vector3.zero);
+        SetAutomaticEquipment(true, false, false, AutoReasonOffense);   // sides changed
+        Assert.IsTrue(equipped, "never taken off with the ball inside");
+        Assert.IsTrue(IsAutomaticPending());
+        Assert.IsTrue(HoldsBall(), "the ball is not dropped");
+        ReleaseBall();
+        Assert.IsFalse(equipped, "taken off once the ball left");
+        Assert.IsFalse(IsAutomaticPending());
+    }
+
+    [TsukimiTest]
+    public void CalibrationIsForAFielderWhileDeadAndKeepsTheFitting()
+    {
+        Mimic.Join();
+        Start();
+        Vector3 fitted = offsetPosition;
+        float scale = gloveScale;
+        SetAutomaticEquipment(true, true, true, AutoReasonDefense);    // dead ball, fielder
+        Assert.IsTrue(BeginCalibration());
+        SetAutomaticEquipment(true, false, false, AutoReasonOffense);  // sides changed meanwhile
+        Assert.IsFalse(IsCalibrating(), "an adjustment no longer allowed is cancelled");
+        Assert.IsFalse(equipped, "then the new state applies");
+        Assert.AreEqual(fitted, offsetPosition, "the saved fitting is untouched");
+        Assert.AreEqual(scale, gloveScale);
+    }
 }

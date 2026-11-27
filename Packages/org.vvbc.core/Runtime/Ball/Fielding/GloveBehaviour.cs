@@ -99,6 +99,19 @@ public partial class GloveBehaviour : TsukimiBehaviour
     private Vector3 _ballOffset;
     private bool _closed;
     private GloveLockerBehaviour _listener;
+    // Automatic equipment (the match roster, RosterGloveEquipmentBehaviour; local, owner only).
+    // While active, equipping follows it and the manual paths are refused; unequipping waits while
+    // the ball is in the glove or calibration is open (the existing safety rules) and is applied
+    // when they end. Calibration may be opened only when the automatic control allows it.
+    public const int AutoReasonNone = 0;
+    public const int AutoReasonDefense = 1;
+    public const int AutoReasonOffense = 2;
+    public const int AutoReasonDesignatedHitter = 3;
+    public const int AutoReasonNotRegistered = 4;
+    private bool _autoActive;
+    private bool _autoEquip;
+    private bool _autoCalibrationAllowed;
+    private int _autoReason;
     private bool _catchVolumeShown;
     private float _catchVolumeRadius = -1f;
     private Vector3 _catchVolumeCenter;
@@ -414,6 +427,7 @@ public partial class GloveBehaviour : TsukimiBehaviour
         _ballMode = BallNone;
         ApplyCatchTrigger();
         SetClosed(false);
+        ReapplyAutomatic();
         NotifyListener();
     }
 
@@ -424,21 +438,66 @@ public partial class GloveBehaviour : TsukimiBehaviour
         ApplyClosed();
     }
 
+    // Manual equipping (the locker). Refused while the automatic equipment is in control.
     public void SetEquipped(bool value)
     {
+        if (_autoActive) return;
+        ApplyEquipped(value);
+    }
+
+    // Unequipping is refused while the ball is in the glove or during calibration (unchanged).
+    private bool ApplyEquipped(bool value)
+    {
         Initialize();
-        if (!_isLocalOwner || equipped == value) return;
-        if (!value && (_ballMode != BallNone || _calibrating)) return;
+        if (!_isLocalOwner) return false;
+        if (equipped == value) return true;
+        if (!value && (_ballMode != BallNone || _calibrating)) return false;
         equipped = value;
         RequestSerialization();
         ApplyPresentation();
         NotifyListener();
+        return true;
+    }
+
+    // ---- Automatic equipment ----
+
+    public bool IsAutomaticEquipment() { return _autoActive; }
+    public bool AutomaticEquip() { return _autoEquip; }
+    public int AutomaticReason() { return _autoActive ? _autoReason : AutoReasonNone; }
+    public bool IsCalibrationAllowed() { return !_autoActive || _autoCalibrationAllowed; }
+    // The automatic state is not applied yet (the ball is in the glove, or calibration is open).
+    public bool IsAutomaticPending() { return _autoActive && equipped != _autoEquip; }
+
+    // active false gives control back to the manual paths and leaves the glove as it is. A
+    // calibration open when it is no longer allowed is cancelled (the saved fitting is kept).
+    public void SetAutomaticEquipment(bool active, bool equip, bool calibrationAllowed, int reason)
+    {
+        Initialize();
+        if (!_isLocalOwner) return;
+        if (_autoActive == active && _autoEquip == equip && _autoCalibrationAllowed == calibrationAllowed
+            && _autoReason == (active ? reason : AutoReasonNone) && (!active || equipped == equip)) return;
+        _autoActive = active;
+        _autoEquip = equip;
+        _autoCalibrationAllowed = calibrationAllowed;
+        _autoReason = active ? reason : AutoReasonNone;
+        if (active && _calibrating && !calibrationAllowed) EndCalibration();
+        ReapplyAutomatic();
+        NotifyListener();
+    }
+
+    // Applies the automatic state if it can be now; otherwise it waits for ReleaseBall or the end
+    // of calibration, which call this again.
+    private void ReapplyAutomatic()
+    {
+        if (!_autoActive || equipped == _autoEquip) return;
+        ApplyEquipped(_autoEquip);
     }
 
     public bool BeginCalibration()
     {
         Initialize();
         if (!_isLocalOwner || _calibrating || _ballMode != BallNone) return false;
+        if (_autoActive && !_autoCalibrationAllowed) return false;
         if (!equipped)
         {
             equipped = true;
@@ -514,6 +573,7 @@ public partial class GloveBehaviour : TsukimiBehaviour
         }
         UseSyncedFitting();
         ApplyPresentation();
+        ReapplyAutomatic();
         NotifyListener();
     }
 

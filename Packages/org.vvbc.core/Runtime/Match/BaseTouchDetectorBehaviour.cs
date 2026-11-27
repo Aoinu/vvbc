@@ -12,7 +12,8 @@ using VRC.SDKBase;
 // the first region touches, BaseTouchExit when the last one leaves. Regions changing while the
 // base stays touched send nothing. Each base is independent. A missing bone disables only its
 // sphere. A capsule left inside after a missed exit (respawn, teleport) is cleared when the
-// player is clearly away from the box, or at a respawn.
+// player is clearly away from the box, or at a respawn; a capsule inside whose enter was missed is
+// filled in by the zone's trigger stay.
 //
 // Cost: nothing per frame while the player is away from every base. A poll every pollSeconds
 // checks the distance and enables the per-frame sampling near a base (or while touching one).
@@ -268,7 +269,7 @@ public partial class BaseTouchDetectorBehaviour : TsukimiBehaviour
             return;
         }
         for (int i = 0; i < _queued; i++)
-            if (collector.Record(_queuedType[i], 0, _queuedBase[i], _queuedParts[i], _queuedPosition[i], ContactRules.HoldFree, 0) < 0) _unrecorded++;
+            if (collector.Record(_queuedType[i], 0, _queuedBase[i], _queuedParts[i], _queuedPosition[i], ContactRules.HoldFree, 0, 0) < 0) _unrecorded++;
         _queued = 0;
         if (_touchMask != _publishedMask)
         {

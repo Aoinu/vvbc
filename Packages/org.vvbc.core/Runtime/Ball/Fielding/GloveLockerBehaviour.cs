@@ -24,7 +24,8 @@ public partial class GloveLockerBehaviour : TsukimiBehaviour
     public void ToggleEquip()
     {
         if (!Bind()) return;
-        if (!_glove.IsCalibrating()) _glove.SetEquipped(!_glove.equipped);
+        // During a match the roster decides (the glove refuses manual equipping then).
+        if (!_glove.IsCalibrating() && !_glove.IsAutomaticEquipment()) _glove.SetEquipped(!_glove.equipped);
         Refresh();
     }
 
@@ -110,6 +111,18 @@ public partial class GloveLockerBehaviour : TsukimiBehaviour
         return true;
     }
 
+    private static string ReasonName(int reason)
+    {
+        switch (reason)
+        {
+            case GloveBehaviour.AutoReasonDefense: return "Defense";
+            case GloveBehaviour.AutoReasonOffense: return "Offense";
+            case GloveBehaviour.AutoReasonDesignatedHitter: return "DH";
+            case GloveBehaviour.AutoReasonNotRegistered: return "Not registered";
+        }
+        return "-";
+    }
+
     private void Refresh()
     {
         if (statusText == null && equipLabel == null) return;
@@ -119,12 +132,14 @@ public partial class GloveLockerBehaviour : TsukimiBehaviour
             return;
         }
         bool calibrating = _glove.IsCalibrating();
-        if (equipLabel != null) equipLabel.text = _glove.equipped ? "Unequip" : "Equip";
+        bool automatic = _glove.IsAutomaticEquipment();
+        if (equipLabel != null) equipLabel.text = automatic ? "Automatic" : _glove.equipped ? "Unequip" : "Equip";
         if (statusText == null) return;
         int hand = calibrating ? _glove.DraftThrowHand() : _glove.throwHand;
         float scale = calibrating ? _glove.DraftScale() : _glove.gloveScale;
         float distance = calibrating ? _glove.DraftOffsetDistance() : _glove.offsetPosition.magnitude;
-        string text = (_glove.equipped ? "Glove: worn" : "Glove: not worn") +
+        string text = (_glove.equipped ? "Glove: Equipped" : "Glove: Not equipped") +
+            "\nEquipment: " + (automatic ? "Automatic (" + ReasonName(_glove.AutomaticReason()) + ")" : "Manual") +
             "\nThrowing hand: " + (hand == GloveBehaviour.HandLeft ? "Left (glove on right)" : "Right (glove on left)") +
             "\nScale: " + scale.ToString("F2") +
             "\nOffset: " + distance.ToString("F2") + " m (max " + _glove.maxOffsetDistance.ToString("F2") + ")";
@@ -137,6 +152,8 @@ public partial class GloveLockerBehaviour : TsukimiBehaviour
         }
         if (_saveRejected) text += "\nNot saved: the fitting is outside the limits.";
         if (_glove.HoldsBall()) text += "\nRelease the ball to change the glove.";
+        if (_glove.IsAutomaticPending()) text += "\n" + (_glove.AutomaticEquip() ? "Equipping" : "Unequipping") + " once the ball is released or adjusting ends.";
+        if (automatic && !_glove.IsCalibrationAllowed()) text += "\nAdjusting: only for a fielder while the ball is dead.";
         statusText.text = text;
     }
 }

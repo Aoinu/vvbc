@@ -21,22 +21,45 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    .export ball\n    handTagRadius: %SystemSingle,
     0.06\n    .export handTagRadius\n    _localGlove: %VRCUdonUdonBehaviour, null\n   
     _nextGloveSearch: %SystemSingle, 0\n    HoldFree: %SystemInt32, 0\n    HoldGlove:
-    %SystemInt32, 1\n    HoldHand: %SystemInt32, 2\n    __refl_typeid: %SystemInt64,
-    null\n    __refl_typename: %SystemString, \"MatchBallQueryAdapterBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    __HasConfirmedHold___t0: %SystemBoolean,
-    null\n    __HasConfirmedHold___t1: %VRCUdonUdonBehaviour, null\n    __HasConfirmedHold___t2:
-    %SystemBoolean, null\n    __HasConfirmedHold_ret: %SystemBoolean, null\n    .export
-    __HasConfirmedHold_ret\n    __HasConfirmedHold_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __ConfirmedHoldMode___t0: %SystemInt32, 0\n    __ConfirmedHoldMode___t1: %VRCUdonUdonBehaviour,
-    null\n    __ConfirmedHoldMode___t2: %SystemInt32, 0\n    __ConfirmedHoldMode_ret:
-    %SystemInt32, 0\n    .export __ConfirmedHoldMode_ret\n    __ConfirmedHoldMode_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHolderId___t0: %SystemInt32, 0\n   
-    __ConfirmedHolderId___t1: %VRCUdonUdonBehaviour, null\n    __ConfirmedHolderId___t2:
-    %SystemInt32, 0\n    __ConfirmedHolderId_ret: %SystemInt32, 0\n    .export __ConfirmedHolderId_ret\n   
+    %SystemInt32, 1\n    HoldHand: %SystemInt32, 2\n    HistorySequence: %SystemInt32,
+    0\n    HistoryPublisher: %SystemInt32, 1\n    HistoryIsPossession: %SystemInt32,
+    2\n    HistoryHold: %SystemInt32, 3\n    HistoryHolder: %SystemInt32, 4\n   
+    HistoryFields: %SystemInt32, 5\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"MatchBallQueryAdapterBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __HasConfirmedHold___t0: %SystemBoolean, null\n    __HasConfirmedHold___t1:
+    %VRCUdonUdonBehaviour, null\n    __HasConfirmedHold___t2: %SystemBoolean, null\n   
+    __HasConfirmedHold_ret: %SystemBoolean, null\n    .export __HasConfirmedHold_ret\n   
+    __HasConfirmedHold_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldMode___t0:
+    %SystemInt32, 0\n    __ConfirmedHoldMode___t1: %VRCUdonUdonBehaviour, null\n   
+    __ConfirmedHoldMode___t2: %SystemInt32, 0\n    __ConfirmedHoldMode_ret: %SystemInt32,
+    0\n    .export __ConfirmedHoldMode_ret\n    __ConfirmedHoldMode_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __ConfirmedHolderId___t0: %SystemInt32, 0\n    __ConfirmedHolderId___t1:
+    %VRCUdonUdonBehaviour, null\n    __ConfirmedHolderId___t2: %SystemInt32, 0\n   
+    __ConfirmedHolderId_ret: %SystemInt32, 0\n    .export __ConfirmedHolderId_ret\n   
     __ConfirmedHolderId_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldSequence___t0:
     %SystemInt32, 0\n    __ConfirmedHoldSequence___t1: %VRCUdonUdonBehaviour, null\n   
     __ConfirmedHoldSequence___t2: %SystemInt32, 0\n    __ConfirmedHoldSequence_ret:
     %SystemInt32, 0\n    .export __ConfirmedHoldSequence_ret\n    __ConfirmedHoldSequence_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldPublisher___t0: %SystemInt32, 0\n   
+    __ConfirmedHoldPublisher___t1: %VRCUdonUdonBehaviour, null\n    __ConfirmedHoldPublisher___t2:
+    %SystemInt32, 0\n    __ConfirmedHoldPublisher_ret: %SystemInt32, 0\n    .export
+    __ConfirmedHoldPublisher_ret\n    __ConfirmedHoldPublisher_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __HoldHistoryCount___t0: %SystemInt32, 0\n    __HoldHistoryCount___t1:
+    %VRCUdonUdonBehaviour, null\n    __HoldHistoryCount___t2: %SystemInt32, 0\n   
+    __HoldHistoryCount_ret: %SystemInt32, 0\n    .export __HoldHistoryCount_ret\n   
+    __HoldHistoryCount_retjump: %SystemUInt32, 0xFFFFFFFC\n    __HoldHistoryCapacity_ret:
+    %SystemInt32, 0\n    .export __HoldHistoryCapacity_ret\n    __HoldHistoryCapacity_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __HoldHistoryField__SystemInt32_SystemInt32_p_0:
+    %SystemInt32, 0\n    __HoldHistoryField__SystemInt32_SystemInt32_p_1: %SystemInt32,
+    0\n    __HoldHistoryField__SystemInt32_SystemInt32___t0: %SystemInt32, 0\n   
+    __HoldHistoryField__SystemInt32_SystemInt32___t1: %VRCUdonUdonBehaviour, null\n   
+    __HoldHistoryField__SystemInt32_SystemInt32___t2: %SystemInt32, 0\n    __HoldHistoryField__SystemInt32_SystemInt32_ret:
+    %SystemInt32, 0\n    .export __HoldHistoryField__SystemInt32_SystemInt32_ret\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __HoldHistoryTime__SystemInt32_p_0: %SystemInt32, 0\n    __HoldHistoryTime__SystemInt32___t0:
+    %SystemDouble, 0\n    __HoldHistoryTime__SystemInt32___t1: %VRCUdonUdonBehaviour,
+    null\n    __HoldHistoryTime__SystemInt32___t2: %SystemDouble, 0\n    __HoldHistoryTime__SystemInt32_ret:
+    %SystemDouble, 0\n    .export __HoldHistoryTime__SystemInt32_ret\n    __HoldHistoryTime__SystemInt32_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __LocalTagSensorReady___t0: %SystemBoolean, null\n   
     __LocalTagSensorReady___t1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorReady___t2:
     %SystemBoolean, null\n    __LocalTagSensorReady_local: %VRCSDKBaseVRCPlayerApi,
@@ -97,63 +120,84 @@ MonoBehaviour:
     null\n    __const_9: %SystemString, \"ConfirmedHoldSequence\"\n    __const_10:
     %SystemString, \"__ConfirmedHoldSequence_ret\"\n    __ConfirmedHoldSequence_intnl_2:
     %SystemObject, null\n    __ConfirmedHoldSequence_intnl_3: %SystemInt32, 0\n   
-    __LocalTagSensorReady_intnl_0: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __recStack_SystemBoolean: %SystemBooleanArray,
-    null\n    __recStack_VRCSDKBaseVRCPlayerApi: %VRCSDKBaseVRCPlayerApiArray, null\n   
-    __LocalTagSensorReady_intnl_2: %SystemObject, null\n    __LocalTagSensorReady_intnl_3:
+    __ConfirmedHoldPublisher_intnl_0: %SystemBoolean, null\n    __ConfirmedHoldPublisher_intnl_1:
+    %VRCUdonUdonBehaviour, null\n    __const_11: %SystemString, \"ConfirmedHoldPublisher\"\n   
+    __const_12: %SystemString, \"__ConfirmedHoldPublisher_ret\"\n    __ConfirmedHoldPublisher_intnl_2:
+    %SystemObject, null\n    __ConfirmedHoldPublisher_intnl_3: %SystemInt32, 0\n   
+    __HoldHistoryCount_intnl_0: %SystemBoolean, null\n    __HoldHistoryCount_intnl_1:
+    %VRCUdonUdonBehaviour, null\n    __const_13: %SystemString, \"GetPossessionHistoryCount\"\n   
+    __const_14: %SystemString, \"__GetPossessionHistoryCount_ret\"\n    __HoldHistoryCount_intnl_2:
+    %SystemObject, null\n    __HoldHistoryCount_intnl_3: %SystemInt32, 0\n    __const_15:
+    %SystemInt32, 8\n    __HoldHistoryField__SystemInt32_SystemInt32_intnl_0: %SystemBoolean,
+    null\n    __HoldHistoryField__SystemInt32_SystemInt32_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_16: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_p_0\"\n   
+    __const_17: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_p_1\"\n   
+    __const_18: %SystemString, \"GetPossessionHistoryField__SystemInt32_SystemInt32\"\n   
+    __const_19: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_ret\"\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_intnl_2: %SystemObject, null\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_intnl_3: %SystemInt32, 0\n    __HoldHistoryTime__SystemInt32_intnl_0:
+    %SystemBoolean, null\n    __HoldHistoryTime__SystemInt32_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_20: %SystemString, \"__GetPossessionHistoryTime__SystemInt32_p_0\"\n   
+    __const_21: %SystemString, \"GetPossessionHistoryTime__SystemInt32\"\n    __const_22:
+    %SystemString, \"__GetPossessionHistoryTime__SystemInt32_ret\"\n    __HoldHistoryTime__SystemInt32_intnl_2:
+    %SystemObject, null\n    __HoldHistoryTime__SystemInt32_intnl_3: %SystemDouble,
+    0\n    __const_23: %SystemDouble, 0\n    __LocalTagSensorReady_intnl_0: %SystemBoolean,
+    null\n    __LocalTagSensorReady_intnl_1: %VRCUdonUdonBehaviour, null\n    __recStack_SystemBoolean:
+    %SystemBooleanArray, null\n    __recStack_VRCSDKBaseVRCPlayerApi: %VRCSDKBaseVRCPlayerApiArray,
+    null\n    __LocalTagSensorReady_intnl_2: %SystemObject, null\n    __LocalTagSensorReady_intnl_3:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_4: %SystemBoolean, null\n   
-    __const_11: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_5: %VRCSDKBaseVRCPlayerApi,
+    __const_24: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_5: %VRCSDKBaseVRCPlayerApi,
     null\n    __LocalTagSensorReady_intnl_6: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_7:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_8: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorReady_intnl_9: %SystemObject, null\n    __LocalTagSensorReady_intnl_10:
     %SystemInt32, 0\n    __LocalTagSensorReady_intnl_11: %SystemInt32, 0\n    __LocalTagSensorReady_intnl_12:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_13: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorReady_intnl_14: %SystemObject, null\n    __LocalTagSensorReady_intnl_15:
-    %SystemInt32, 0\n    __const_12: %SystemInt32, 2\n    __LocalTagSensorReady_intnl_16:
-    %SystemBoolean, null\n    __const_13: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_17:
-    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x000033F4\n    __LocalTagSensorReady_intnl_18:
+    %SystemInt32, 0\n    __const_25: %SystemInt32, 2\n    __LocalTagSensorReady_intnl_16:
+    %SystemBoolean, null\n    __const_26: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_17:
+    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x0000443C\n    __LocalTagSensorReady_intnl_18:
     %VRCUdonUdonBehaviour, null\n    __LocalTagSensorReady_intnl_19: %SystemBoolean,
-    null\n    __LocalTagSensorReady_intnl_20: %VRCUdonUdonBehaviour, null\n    __const_14:
-    %SystemString, \"TagSensorReady\"\n    __const_15: %SystemString, \"__TagSensorReady_ret\"\n   
+    null\n    __LocalTagSensorReady_intnl_20: %VRCUdonUdonBehaviour, null\n    __const_27:
+    %SystemString, \"TagSensorReady\"\n    __const_28: %SystemString, \"__TagSensorReady_ret\"\n   
     __LocalTagSensorReady_intnl_21: %SystemObject, null\n    __LocalTagSensorReady_intnl_22:
     %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_0: %SystemBoolean, null\n   
     __LocalTagSensorCenter_intnl_1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorCenter_intnl_2:
     %SystemObject, null\n    __LocalTagSensorCenter_intnl_3: %SystemInt32, 0\n   
     __LocalTagSensorCenter_intnl_4: %SystemBoolean, null\n    __retaddr_1: %SystemUInt32,
-    0x00004C4C\n    __LocalTagSensorCenter_intnl_5: %VRCUdonUdonBehaviour, null\n   
+    0x00005C94\n    __LocalTagSensorCenter_intnl_5: %VRCUdonUdonBehaviour, null\n   
     __LocalTagSensorCenter_intnl_6: %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_7:
-    %VRCUdonUdonBehaviour, null\n    __const_16: %SystemString, \"TagSensorCenter\"\n   
-    __const_17: %SystemString, \"__TagSensorCenter_ret\"\n    __LocalTagSensorCenter_intnl_8:
+    %VRCUdonUdonBehaviour, null\n    __const_29: %SystemString, \"TagSensorCenter\"\n   
+    __const_30: %SystemString, \"__TagSensorCenter_ret\"\n    __LocalTagSensorCenter_intnl_8:
     %SystemObject, null\n    __LocalTagSensorCenter_intnl_9: %UnityEngineVector3,
     null\n    __LocalTagSensorCenter_intnl_10: %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_11:
     %UnityEngineTransform, null\n    __LocalTagSensorRadius_intnl_0: %SystemBoolean,
     null\n    __LocalTagSensorRadius_intnl_1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorRadius_intnl_2:
     %SystemObject, null\n    __LocalTagSensorRadius_intnl_3: %SystemInt32, 0\n   
     __LocalTagSensorRadius_intnl_4: %SystemBoolean, null\n    __retaddr_2: %SystemUInt32,
-    0x00005AA4\n    __LocalTagSensorRadius_intnl_5: %VRCUdonUdonBehaviour, null\n   
+    0x00006AEC\n    __LocalTagSensorRadius_intnl_5: %VRCUdonUdonBehaviour, null\n   
     __LocalTagSensorRadius_intnl_6: %SystemBoolean, null\n    __LocalTagSensorRadius_intnl_7:
-    %VRCUdonUdonBehaviour, null\n    __const_18: %SystemString, \"TagSensorRadius\"\n   
-    __const_19: %SystemString, \"__TagSensorRadius_ret\"\n    __LocalTagSensorRadius_intnl_8:
+    %VRCUdonUdonBehaviour, null\n    __const_31: %SystemString, \"TagSensorRadius\"\n   
+    __const_32: %SystemString, \"__TagSensorRadius_ret\"\n    __LocalTagSensorRadius_intnl_8:
     %SystemObject, null\n    __LocalTagSensorRadius_intnl_9: %SystemSingle, 0\n   
     __LocalGlove_intnl_0: %SystemBoolean, null\n    __LocalGlove_intnl_2: %SystemBoolean,
-    null\n    __const_20: %VRCUdonUdonBehaviour, null\n    __const_21: %SystemSingle,
-    2\n    __LocalGlove_intnl_5: %SystemBoolean, null\n    __const_22: %SystemObject,
+    null\n    __const_33: %VRCUdonUdonBehaviour, null\n    __const_34: %SystemSingle,
+    2\n    __LocalGlove_intnl_5: %SystemBoolean, null\n    __const_35: %SystemObject,
     null\n    __LocalGlove_intnl_7: %SystemBoolean, null\n    __LocalGlove_intnl_8:
     %SystemInt32, 0\n    __LocalGlove_intnl_9: %SystemBoolean, null\n    __LocalGlove_intnl_10:
     %UnityEngineGameObject, null\n    __LocalGlove_intnl_11: %SystemBoolean, null\n   
-    __const_23: %SystemType, null\n    __const_24: %SystemInt64, null\n    __retaddr_3:
-    %SystemUInt32, 0x000065E0\n    __LocalGlove_intnl_15: %VRCUdonUdonBehaviour,
+    __const_36: %SystemType, null\n    __const_37: %SystemInt64, null\n    __retaddr_3:
+    %SystemUInt32, 0x00007628\n    __LocalGlove_intnl_15: %VRCUdonUdonBehaviour,
     null\n    __LocalGlove_intnl_16: %SystemBoolean, null\n    __LocalGlove_intnl_17:
-    %SystemBoolean, null\n    __const_25: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
-    %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean, null\n    __const_26:
+    %SystemBoolean, null\n    __const_38: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
+    %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean, null\n    __const_39:
     %SystemString, \"__refl_typeids\"\n    ____typeid__has_intnl_3: %SystemType,
     null\n    ____typeid__has_intnl_4: %SystemBoolean, null\n    ____typeid__has_intnl_5:
     %SystemObject, null\n    ____typeid__has_intnl_6: %SystemBoolean, null\n    ____typeid__has_intnl_7:
-    %SystemInt32, 0\n    __const_27: %SystemInt32, -1\n    ____typeid__has_intnl_9:
+    %SystemInt32, 0\n    __const_40: %SystemInt32, -1\n    ____typeid__has_intnl_9:
     %SystemType, null\n    ____typeid__has_intnl_10: %SystemBoolean, null\n    ____typeid__has_intnl_11:
     %SystemObject, null\n    ____typeid__has_intnl_12: %SystemBoolean, null\n   
     ____typeid__first_intnl_1: %SystemBoolean, null\n    __retaddr_4: %SystemUInt32,
-    0x00006A4C\n    ____typeid__first_intnl_3: %SystemBoolean, null\n.data_end\n.code_start\n   
+    0x00007A94\n    ____typeid__first_intnl_3: %SystemBoolean, null\n.data_end\n.code_start\n   
     .export HasConfirmedHold\n    HasConfirmedHold:\n        PUSH, ball\n       
     PUSH, __const_0\n        PUSH, __HasConfirmedHold_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __HasConfirmedHold_intnl_0\n        PUSH, __HasConfirmedHold___t0\n       
@@ -352,7 +396,244 @@ MonoBehaviour:
     __ConfirmedHoldSequence_L1:\n        PUSH, __ConfirmedHoldSequence___t0\n       
     PUSH, __ConfirmedHoldSequence_ret\n        COPY\n        PUSH, __ConfirmedHoldSequence___t0\n       
     PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n       
-    JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n    .export LocalTagSensorReady\n   
+    JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n    .export ConfirmedHoldPublisher\n   
+    ConfirmedHoldPublisher:\n        PUSH, ball\n        PUSH, __const_0\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_0\n        JUMP_IF_FALSE, __ConfirmedHoldPublisher_L0\n       
+    PUSH, ball\n        PUSH, __ConfirmedHoldPublisher___t1\n        COPY\n       
+    PUSH, ball\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n        COPY\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_1\n        PUSH, __const_11\n        EXTERN,
+    \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ConfirmedHoldPublisher___t1\n        PUSH, __const_12\n        PUSH, __ConfirmedHoldPublisher_intnl_2\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_2\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    COPY\n        PUSH, __ConfirmedHoldPublisher_intnl_2\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    COPY\n        JUMP, __ConfirmedHoldPublisher_L1\n    __ConfirmedHoldPublisher_L0:\n       
+    PUSH, __const_6\n        PUSH, __ConfirmedHoldPublisher___t0\n        COPY\n   
+    __ConfirmedHoldPublisher_L1:\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    PUSH, __ConfirmedHoldPublisher_ret\n        COPY\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __ConfirmedHoldPublisher_retjump\n       
+    JUMP_INDIRECT, __ConfirmedHoldPublisher_retjump\n    .export HoldHistoryCount\n   
+    HoldHistoryCount:\n        PUSH, ball\n        PUSH, __const_0\n        PUSH,
+    __HoldHistoryCount_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryCount_intnl_0\n        JUMP_IF_FALSE, __HoldHistoryCount_L0\n       
+    PUSH, ball\n        PUSH, __HoldHistoryCount___t1\n        COPY\n        PUSH,
+    ball\n        PUSH, __HoldHistoryCount_intnl_1\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, __HoldHistoryCount___t0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryCount_intnl_1\n        PUSH, __const_13\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryCount___t1\n        PUSH, __const_14\n        PUSH, __HoldHistoryCount_intnl_2\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryCount_intnl_2\n        PUSH, __HoldHistoryCount___t2\n       
+    COPY\n        PUSH, __HoldHistoryCount_intnl_2\n        PUSH, __HoldHistoryCount___t0\n       
+    COPY\n        JUMP, __HoldHistoryCount_L1\n    __HoldHistoryCount_L0:\n       
+    PUSH, __const_6\n        PUSH, __HoldHistoryCount___t0\n        COPY\n    __HoldHistoryCount_L1:\n       
+    PUSH, __HoldHistoryCount___t0\n        PUSH, __HoldHistoryCount_ret\n       
+    COPY\n        PUSH, __HoldHistoryCount___t0\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __HoldHistoryCount_retjump\n        JUMP_INDIRECT,
+    __HoldHistoryCount_retjump\n    .export HoldHistoryCapacity\n    HoldHistoryCapacity:\n       
+    PUSH, __const_15\n        PUSH, __HoldHistoryCapacity_ret\n        COPY\n       
+    PUSH, __const_15\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __HoldHistoryCapacity_retjump\n        JUMP_INDIRECT, __HoldHistoryCapacity_retjump\n   
+    .export HoldHistoryField__SystemInt32_SystemInt32\n    HoldHistoryField__SystemInt32_SystemInt32:\n       
+    PUSH, ball\n        PUSH, __const_0\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n        JUMP_IF_FALSE,
+    __HoldHistoryField__SystemInt32_SystemInt32_L0\n        PUSH, ball\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        COPY\n        PUSH,
+    ball\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_16\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_17\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_18\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        PUSH, __const_19\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    COPY\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n        COPY\n       
+    JUMP, __HoldHistoryField__SystemInt32_SystemInt32_L1\n    __HoldHistoryField__SystemInt32_SystemInt32_L0:\n       
+    PUSH, __const_6\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    COPY\n    __HoldHistoryField__SystemInt32_SystemInt32_L1:\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_ret\n        COPY\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __HoldHistoryField__SystemInt32_SystemInt32_retjump\n       
+    JUMP_INDIRECT, __HoldHistoryField__SystemInt32_SystemInt32_retjump\n    .export
+    HoldHistoryTime__SystemInt32\n    HoldHistoryTime__SystemInt32:\n        PUSH,
+    ball\n        PUSH, __const_0\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n        JUMP_IF_FALSE, __HoldHistoryTime__SystemInt32_L0\n       
+    PUSH, ball\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n        COPY\n       
+    PUSH, ball\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        COPY\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        PUSH, __const_20\n       
+    PUSH, __HoldHistoryTime__SystemInt32_p_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        PUSH, __const_21\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryTime__SystemInt32___t1\n        PUSH, __const_22\n        PUSH,
+    __HoldHistoryTime__SystemInt32_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_2\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    COPY\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_2\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    COPY\n        JUMP, __HoldHistoryTime__SystemInt32_L1\n    __HoldHistoryTime__SystemInt32_L0:\n       
+    PUSH, __const_23\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    COPY\n    __HoldHistoryTime__SystemInt32_L1:\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    PUSH, __HoldHistoryTime__SystemInt32_ret\n        COPY\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __HoldHistoryTime__SystemInt32_retjump\n       
+    JUMP_INDIRECT, __HoldHistoryTime__SystemInt32_retjump\n    .export LocalTagSensorReady\n   
     LocalTagSensorReady:\n        PUSH, ball\n        PUSH, __const_0\n        PUSH,
     __LocalTagSensorReady_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_0\n        PUSH, __LocalTagSensorReady___t0\n       
@@ -481,8 +762,8 @@ MonoBehaviour:
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_4\n        PUSH, __LocalTagSensorReady___t0\n       
     COPY\n    __LocalTagSensorReady_L1:\n        PUSH, __LocalTagSensorReady___t0\n       
-    JUMP_IF_FALSE, __LocalTagSensorReady_L3\n        PUSH, __const_11\n        PUSH,
-    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_11\n        PUSH,
+    JUMP_IF_FALSE, __LocalTagSensorReady_L3\n        PUSH, __const_24\n        PUSH,
+    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_24\n        PUSH,
     __returnValue\n        COPY\n        JUMP_INDIRECT, __LocalTagSensorReady_retjump\n   
     __LocalTagSensorReady_L3:\n        PUSH, __LocalTagSensorReady_intnl_5\n       
     EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
@@ -668,8 +949,8 @@ MonoBehaviour:
     PUSH, __LocalTagSensorReady_intnl_12\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_12\n        PUSH, __LocalTagSensorReady___t3\n       
     COPY\n    __LocalTagSensorReady_L5:\n        PUSH, __LocalTagSensorReady___t3\n       
-    JUMP_IF_FALSE, __LocalTagSensorReady_L7\n        PUSH, __const_11\n        PUSH,
-    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_11\n        PUSH,
+    JUMP_IF_FALSE, __LocalTagSensorReady_L7\n        PUSH, __const_24\n        PUSH,
+    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_24\n        PUSH,
     __returnValue\n        COPY\n        JUMP_INDIRECT, __LocalTagSensorReady_retjump\n   
     __LocalTagSensorReady_L7:\n        PUSH, ball\n        PUSH, __LocalTagSensorReady___t6\n       
     COPY\n        PUSH, ball\n        PUSH, __LocalTagSensorReady_intnl_13\n       
@@ -876,17 +1157,17 @@ MonoBehaviour:
     PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady_intnl_15\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady___t7\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady_mode\n       
-    COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __const_12\n       
+    COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __const_25\n       
     PUSH, __LocalTagSensorReady_intnl_16\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_16\n        JUMP_IF_FALSE, __LocalTagSensorReady_L9\n       
-    PUSH, __const_13\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
-    PUSH, __const_13\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_26\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
+    PUSH, __const_26\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __LocalTagSensorReady_retjump\n    __LocalTagSensorReady_L9:\n        PUSH, __LocalTagSensorReady_mode\n       
     PUSH, __const_1\n        PUSH, __LocalTagSensorReady_intnl_17\n        EXTERN,
     \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_17\n        JUMP_IF_FALSE, __LocalTagSensorReady_L11\n       
-    PUSH, __const_11\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
-    PUSH, __const_11\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_24\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
+    PUSH, __const_24\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __LocalTagSensorReady_retjump\n    __LocalTagSensorReady_L11:\n        PUSH,
     __retaddr_0\n        PUSH, __LocalGlove_retjump\n        COPY\n        JUMP,
     LocalGlove\n        PUSH, __LocalGlove_ret\n        PUSH, __LocalTagSensorReady_intnl_18\n       
@@ -1037,7 +1318,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorReady_intnl_20\n        PUSH, __const_14\n        EXTERN,
+    PUSH, __LocalTagSensorReady_intnl_20\n        PUSH, __const_27\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1146,7 +1427,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorReady___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorReady___t9\n        PUSH, __const_15\n        PUSH, __LocalTagSensorReady_intnl_21\n       
+    __LocalTagSensorReady___t9\n        PUSH, __const_28\n        PUSH, __LocalTagSensorReady_intnl_21\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorReady_intnl_21\n        PUSH, __LocalTagSensorReady___t10\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_21\n        PUSH, __LocalTagSensorReady___t8\n       
@@ -1301,7 +1582,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorCenter_intnl_7\n        PUSH, __const_16\n        EXTERN,
+    PUSH, __LocalTagSensorCenter_intnl_7\n        PUSH, __const_29\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1349,7 +1630,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorCenter___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorCenter___t3\n        PUSH, __const_17\n        PUSH, __LocalTagSensorCenter_intnl_8\n       
+    __LocalTagSensorCenter___t3\n        PUSH, __const_30\n        PUSH, __LocalTagSensorCenter_intnl_8\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorCenter_intnl_8\n        PUSH, __LocalTagSensorCenter___t4\n       
     COPY\n        PUSH, __LocalTagSensorCenter_intnl_8\n        PUSH, __LocalTagSensorCenter_ret\n       
@@ -1503,7 +1784,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorRadius_intnl_7\n        PUSH, __const_18\n        EXTERN,
+    PUSH, __LocalTagSensorRadius_intnl_7\n        PUSH, __const_31\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -1548,7 +1829,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorRadius___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorRadius___t3\n        PUSH, __const_19\n        PUSH, __LocalTagSensorRadius_intnl_8\n       
+    __LocalTagSensorRadius___t3\n        PUSH, __const_32\n        PUSH, __LocalTagSensorRadius_intnl_8\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorRadius_intnl_8\n        PUSH, __LocalTagSensorRadius___t4\n       
     COPY\n        PUSH, __LocalTagSensorRadius_intnl_8\n        PUSH, __LocalTagSensorRadius_ret\n       
@@ -1565,22 +1846,22 @@ MonoBehaviour:
     EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, __LocalGlove___cse_0\n       
     PUSH, _nextGloveSearch\n        PUSH, __LocalGlove_intnl_2\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_2\n        JUMP_IF_FALSE, __LocalGlove_L3\n        PUSH,
-    __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
     __LocalGlove_retjump\n    __LocalGlove_L3:\n        PUSH, __LocalGlove___cse_0\n       
-    PUSH, __const_21\n        PUSH, _nextGloveSearch\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __const_34\n        PUSH, _nextGloveSearch\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __LocalGlove_local\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
     PUSH, __LocalGlove_local\n        PUSH, __LocalGlove_intnl_5\n        EXTERN,
     \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n        PUSH,
     __LocalGlove_intnl_5\n        JUMP_IF_FALSE, __LocalGlove_L4\n        JUMP, __LocalGlove_L5\n   
-    __LocalGlove_L4:\n        PUSH, __const_20\n        PUSH, __LocalGlove_ret\n       
+    __LocalGlove_L4:\n        PUSH, __const_33\n        PUSH, __LocalGlove_ret\n       
     COPY\n        JUMP_INDIRECT, __LocalGlove_retjump\n    __LocalGlove_L5:\n       
     PUSH, __LocalGlove_local\n        PUSH, __LocalGlove_objects\n        EXTERN,
     \"VRCSDKBaseNetworking.__GetPlayerObjects__VRCSDKBaseVRCPlayerApi__UnityEngineGameObjectArray\"\n       
-    PUSH, __LocalGlove_objects\n        PUSH, __const_22\n        PUSH, __LocalGlove_intnl_7\n       
+    PUSH, __LocalGlove_objects\n        PUSH, __const_35\n        PUSH, __LocalGlove_intnl_7\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_7\n        JUMP_IF_FALSE, __LocalGlove_L7\n        PUSH,
-    __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
-    __LocalGlove_retjump\n    __LocalGlove_L7:\n        PUSH, __const_20\n       
+    __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    __LocalGlove_retjump\n    __LocalGlove_L7:\n        PUSH, __const_33\n       
     PUSH, __LocalGlove_found\n        COPY\n        PUSH, __const_6\n        PUSH,
     __LocalGlove_i\n        COPY\n    __LocalGlove_L8:\n        PUSH, __LocalGlove_objects\n       
     PUSH, __LocalGlove_intnl_8\n        EXTERN, \"SystemArray.__get_Length__SystemInt32\"\n       
@@ -1595,11 +1876,11 @@ MonoBehaviour:
     JUMP, __LocalGlove_L12\n    __LocalGlove_L11:\n        PUSH, __LocalGlove_objects\n       
     PUSH, __LocalGlove_i\n        PUSH, __LocalGlove___t0\n        EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
     PUSH, __LocalGlove___t0\n        PUSH, __LocalGlove___t1\n        EXTERN, \"UnityEngineGameObject.__get_transform__UnityEngineTransform\"\n       
-    PUSH, __LocalGlove___t1\n        PUSH, __const_23\n        PUSH, __const_13\n       
+    PUSH, __LocalGlove___t1\n        PUSH, __const_36\n        PUSH, __const_26\n       
     PUSH, __LocalGlove___t2\n        EXTERN, \"UnityEngineComponent.__GetComponentsInChildren__SystemType_SystemBoolean__UnityEngineComponentArray\"\n       
     PUSH, __LocalGlove___t2\n        PUSH, ____typeid__first_p_0\n        COPY\n       
-    PUSH, __const_24\n        PUSH, ____typeid__first_p_1\n        COPY\n       
-    PUSH, __const_11\n        PUSH, ____typeid__first_p_2\n        COPY\n       
+    PUSH, __const_37\n        PUSH, ____typeid__first_p_1\n        COPY\n       
+    PUSH, __const_24\n        PUSH, ____typeid__first_p_2\n        COPY\n       
     PUSH, __retaddr_3\n        PUSH, ____typeid__first_retjump\n        COPY\n       
     JUMP, __typeid__first\n        PUSH, ____typeid__first_ret\n        PUSH, __LocalGlove_candidate\n       
     COPY\n        PUSH, ____typeid__first_ret\n        PUSH, __const_0\n        PUSH,
@@ -1608,7 +1889,7 @@ MonoBehaviour:
     JUMP, __LocalGlove_L12\n    __LocalGlove_L14:\n        PUSH, __LocalGlove_found\n       
     PUSH, __const_0\n        PUSH, __LocalGlove_intnl_17\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_17\n        JUMP_IF_FALSE, __LocalGlove_L16\n       
-    PUSH, __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
     __LocalGlove_retjump\n    __LocalGlove_L16:\n        PUSH, __LocalGlove_candidate\n       
     PUSH, __LocalGlove_found\n        COPY\n    __LocalGlove_L12:\n        PUSH,
     __LocalGlove_i\n        PUSH, __const_1\n        PUSH, __LocalGlove_i\n       
@@ -1618,44 +1899,44 @@ MonoBehaviour:
     __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT, __LocalGlove_retjump\n       
     JUMP_INDIRECT, __LocalGlove_retjump\n    __typeid__has:\n        PUSH, ____typeid__has_p_2\n       
     JUMP_IF_FALSE, ____typeid__has_L1\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_25\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
-    PUSH, ____typeid__has_intnl_0\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_1\n       
+    PUSH, __const_38\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_0\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_1\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
     \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        JUMP_INDIRECT,
     ____typeid__has_retjump\n    ____typeid__has_L1:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_26\n        PUSH, ____typeid__has_intnl_3\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
-    PUSH, ____typeid__has_intnl_3\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_4\n       
+    PUSH, __const_39\n        PUSH, ____typeid__has_intnl_3\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_3\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_4\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_4\n        JUMP_IF_FALSE, ____typeid__has_L2\n       
     JUMP, ____typeid__has_L5\n    ____typeid__has_L2:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_26\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_39\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, ____typeid__has_intnl_5\n        PUSH, ____typeid__has_raw\n        COPY\n       
-    PUSH, ____typeid__has_intnl_5\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_6\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_6\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_6\n        JUMP_IF_FALSE, ____typeid__has_L4\n       
     JUMP, ____typeid__has_L5\n    ____typeid__has_L4:\n        PUSH, ____typeid__has_raw\n       
     PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_intnl_7\n        EXTERN,
     \"SystemArray.__IndexOf__SystemArray_SystemObject__SystemInt32\"\n        PUSH,
-    ____typeid__has_intnl_7\n        PUSH, __const_27\n        PUSH, ____typeid__has_ret\n       
+    ____typeid__has_intnl_7\n        PUSH, __const_40\n        PUSH, ____typeid__has_ret\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L5:\n        PUSH,
-    ____typeid__has_p_0\n        PUSH, __const_25\n        PUSH, ____typeid__has_intnl_9\n       
+    ____typeid__has_p_0\n        PUSH, __const_38\n        PUSH, ____typeid__has_intnl_9\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
-    PUSH, ____typeid__has_intnl_9\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_10\n       
+    PUSH, ____typeid__has_intnl_9\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_10\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_10\n        JUMP_IF_FALSE, ____typeid__has_L6\n       
     JUMP, ____typeid__has_L9\n    ____typeid__has_L6:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_25\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_38\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, ____typeid__has_intnl_11\n        PUSH, ____typeid__has_raw\n        COPY\n       
-    PUSH, ____typeid__has_intnl_11\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_12\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_12\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_12\n        JUMP_IF_FALSE, ____typeid__has_L8\n       
     JUMP, ____typeid__has_L9\n    ____typeid__has_L8:\n        PUSH, ____typeid__has_raw\n       
     PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
     \"SystemInt64.__op_Equality__SystemInt64_SystemInt64__SystemBoolean\"\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L9:\n        PUSH,
-    __const_11\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
+    __const_24\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
     ____typeid__has_retjump\n        JUMP_INDIRECT, ____typeid__has_retjump\n   
     __typeid__first:\n        PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_n\n       
     EXTERN, \"UnityEngineComponentArray.__get_Length__SystemInt32\"\n        PUSH,
@@ -1674,13 +1955,13 @@ MonoBehaviour:
     COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n    ____typeid__first_L3:\n       
     PUSH, ____typeid__first_i\n        PUSH, __const_1\n        PUSH, ____typeid__first_i\n       
     EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_20\n       
+    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_33\n       
     PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
     JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 308a5d9fa7945b44096f8ef9b2b9927c, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: 7c6bbca3436905b8ada423f7e54ecbebad01bbd86f9713f1ad5f2006b2f607cb
+  sourceFingerprint: 913ae420c24a65d146b2926f420dc061daf584bc4252f04bf17a624abcc348ad
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -1718,22 +1999,45 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    .export ball\n    handTagRadius: %SystemSingle,
     0.06\n    .export handTagRadius\n    _localGlove: %VRCUdonUdonBehaviour, null\n   
     _nextGloveSearch: %SystemSingle, 0\n    HoldFree: %SystemInt32, 0\n    HoldGlove:
-    %SystemInt32, 1\n    HoldHand: %SystemInt32, 2\n    __refl_typeid: %SystemInt64,
-    null\n    __refl_typename: %SystemString, \"MatchBallQueryAdapterBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    __HasConfirmedHold___t0: %SystemBoolean,
-    null\n    __HasConfirmedHold___t1: %VRCUdonUdonBehaviour, null\n    __HasConfirmedHold___t2:
-    %SystemBoolean, null\n    __HasConfirmedHold_ret: %SystemBoolean, null\n    .export
-    __HasConfirmedHold_ret\n    __HasConfirmedHold_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __ConfirmedHoldMode___t0: %SystemInt32, 0\n    __ConfirmedHoldMode___t1: %VRCUdonUdonBehaviour,
-    null\n    __ConfirmedHoldMode___t2: %SystemInt32, 0\n    __ConfirmedHoldMode_ret:
-    %SystemInt32, 0\n    .export __ConfirmedHoldMode_ret\n    __ConfirmedHoldMode_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHolderId___t0: %SystemInt32, 0\n   
-    __ConfirmedHolderId___t1: %VRCUdonUdonBehaviour, null\n    __ConfirmedHolderId___t2:
-    %SystemInt32, 0\n    __ConfirmedHolderId_ret: %SystemInt32, 0\n    .export __ConfirmedHolderId_ret\n   
+    %SystemInt32, 1\n    HoldHand: %SystemInt32, 2\n    HistorySequence: %SystemInt32,
+    0\n    HistoryPublisher: %SystemInt32, 1\n    HistoryIsPossession: %SystemInt32,
+    2\n    HistoryHold: %SystemInt32, 3\n    HistoryHolder: %SystemInt32, 4\n   
+    HistoryFields: %SystemInt32, 5\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"MatchBallQueryAdapterBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __HasConfirmedHold___t0: %SystemBoolean, null\n    __HasConfirmedHold___t1:
+    %VRCUdonUdonBehaviour, null\n    __HasConfirmedHold___t2: %SystemBoolean, null\n   
+    __HasConfirmedHold_ret: %SystemBoolean, null\n    .export __HasConfirmedHold_ret\n   
+    __HasConfirmedHold_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldMode___t0:
+    %SystemInt32, 0\n    __ConfirmedHoldMode___t1: %VRCUdonUdonBehaviour, null\n   
+    __ConfirmedHoldMode___t2: %SystemInt32, 0\n    __ConfirmedHoldMode_ret: %SystemInt32,
+    0\n    .export __ConfirmedHoldMode_ret\n    __ConfirmedHoldMode_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __ConfirmedHolderId___t0: %SystemInt32, 0\n    __ConfirmedHolderId___t1:
+    %VRCUdonUdonBehaviour, null\n    __ConfirmedHolderId___t2: %SystemInt32, 0\n   
+    __ConfirmedHolderId_ret: %SystemInt32, 0\n    .export __ConfirmedHolderId_ret\n   
     __ConfirmedHolderId_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldSequence___t0:
     %SystemInt32, 0\n    __ConfirmedHoldSequence___t1: %VRCUdonUdonBehaviour, null\n   
     __ConfirmedHoldSequence___t2: %SystemInt32, 0\n    __ConfirmedHoldSequence_ret:
     %SystemInt32, 0\n    .export __ConfirmedHoldSequence_ret\n    __ConfirmedHoldSequence_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldPublisher___t0: %SystemInt32, 0\n   
+    __ConfirmedHoldPublisher___t1: %VRCUdonUdonBehaviour, null\n    __ConfirmedHoldPublisher___t2:
+    %SystemInt32, 0\n    __ConfirmedHoldPublisher_ret: %SystemInt32, 0\n    .export
+    __ConfirmedHoldPublisher_ret\n    __ConfirmedHoldPublisher_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __HoldHistoryCount___t0: %SystemInt32, 0\n    __HoldHistoryCount___t1:
+    %VRCUdonUdonBehaviour, null\n    __HoldHistoryCount___t2: %SystemInt32, 0\n   
+    __HoldHistoryCount_ret: %SystemInt32, 0\n    .export __HoldHistoryCount_ret\n   
+    __HoldHistoryCount_retjump: %SystemUInt32, 0xFFFFFFFC\n    __HoldHistoryCapacity_ret:
+    %SystemInt32, 0\n    .export __HoldHistoryCapacity_ret\n    __HoldHistoryCapacity_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __HoldHistoryField__SystemInt32_SystemInt32_p_0:
+    %SystemInt32, 0\n    __HoldHistoryField__SystemInt32_SystemInt32_p_1: %SystemInt32,
+    0\n    __HoldHistoryField__SystemInt32_SystemInt32___t0: %SystemInt32, 0\n   
+    __HoldHistoryField__SystemInt32_SystemInt32___t1: %VRCUdonUdonBehaviour, null\n   
+    __HoldHistoryField__SystemInt32_SystemInt32___t2: %SystemInt32, 0\n    __HoldHistoryField__SystemInt32_SystemInt32_ret:
+    %SystemInt32, 0\n    .export __HoldHistoryField__SystemInt32_SystemInt32_ret\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __HoldHistoryTime__SystemInt32_p_0: %SystemInt32, 0\n    __HoldHistoryTime__SystemInt32___t0:
+    %SystemDouble, 0\n    __HoldHistoryTime__SystemInt32___t1: %VRCUdonUdonBehaviour,
+    null\n    __HoldHistoryTime__SystemInt32___t2: %SystemDouble, 0\n    __HoldHistoryTime__SystemInt32_ret:
+    %SystemDouble, 0\n    .export __HoldHistoryTime__SystemInt32_ret\n    __HoldHistoryTime__SystemInt32_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __LocalTagSensorReady___t0: %SystemBoolean, null\n   
     __LocalTagSensorReady___t1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorReady___t2:
     %SystemBoolean, null\n    __LocalTagSensorReady_local: %VRCSDKBaseVRCPlayerApi,
@@ -1794,33 +2098,54 @@ MonoBehaviour:
     null\n    __const_9: %SystemString, \"ConfirmedHoldSequence\"\n    __const_10:
     %SystemString, \"__ConfirmedHoldSequence_ret\"\n    __ConfirmedHoldSequence_intnl_2:
     %SystemObject, null\n    __ConfirmedHoldSequence_intnl_3: %SystemInt32, 0\n   
-    __LocalTagSensorReady_intnl_0: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __recStack_SystemBoolean: %SystemBooleanArray,
-    null\n    __recStack_VRCSDKBaseVRCPlayerApi: %VRCSDKBaseVRCPlayerApiArray, null\n   
-    __LocalTagSensorReady_intnl_2: %SystemObject, null\n    __LocalTagSensorReady_intnl_3:
+    __ConfirmedHoldPublisher_intnl_0: %SystemBoolean, null\n    __ConfirmedHoldPublisher_intnl_1:
+    %VRCUdonUdonBehaviour, null\n    __const_11: %SystemString, \"ConfirmedHoldPublisher\"\n   
+    __const_12: %SystemString, \"__ConfirmedHoldPublisher_ret\"\n    __ConfirmedHoldPublisher_intnl_2:
+    %SystemObject, null\n    __ConfirmedHoldPublisher_intnl_3: %SystemInt32, 0\n   
+    __HoldHistoryCount_intnl_0: %SystemBoolean, null\n    __HoldHistoryCount_intnl_1:
+    %VRCUdonUdonBehaviour, null\n    __const_13: %SystemString, \"GetPossessionHistoryCount\"\n   
+    __const_14: %SystemString, \"__GetPossessionHistoryCount_ret\"\n    __HoldHistoryCount_intnl_2:
+    %SystemObject, null\n    __HoldHistoryCount_intnl_3: %SystemInt32, 0\n    __const_15:
+    %SystemInt32, 8\n    __HoldHistoryField__SystemInt32_SystemInt32_intnl_0: %SystemBoolean,
+    null\n    __HoldHistoryField__SystemInt32_SystemInt32_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_16: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_p_0\"\n   
+    __const_17: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_p_1\"\n   
+    __const_18: %SystemString, \"GetPossessionHistoryField__SystemInt32_SystemInt32\"\n   
+    __const_19: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_ret\"\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_intnl_2: %SystemObject, null\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_intnl_3: %SystemInt32, 0\n    __HoldHistoryTime__SystemInt32_intnl_0:
+    %SystemBoolean, null\n    __HoldHistoryTime__SystemInt32_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_20: %SystemString, \"__GetPossessionHistoryTime__SystemInt32_p_0\"\n   
+    __const_21: %SystemString, \"GetPossessionHistoryTime__SystemInt32\"\n    __const_22:
+    %SystemString, \"__GetPossessionHistoryTime__SystemInt32_ret\"\n    __HoldHistoryTime__SystemInt32_intnl_2:
+    %SystemObject, null\n    __HoldHistoryTime__SystemInt32_intnl_3: %SystemDouble,
+    0\n    __const_23: %SystemDouble, 0\n    __LocalTagSensorReady_intnl_0: %SystemBoolean,
+    null\n    __LocalTagSensorReady_intnl_1: %VRCUdonUdonBehaviour, null\n    __recStack_SystemBoolean:
+    %SystemBooleanArray, null\n    __recStack_VRCSDKBaseVRCPlayerApi: %VRCSDKBaseVRCPlayerApiArray,
+    null\n    __LocalTagSensorReady_intnl_2: %SystemObject, null\n    __LocalTagSensorReady_intnl_3:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_4: %SystemBoolean, null\n   
-    __const_11: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_5: %VRCSDKBaseVRCPlayerApi,
+    __const_24: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_5: %VRCSDKBaseVRCPlayerApi,
     null\n    __LocalTagSensorReady_intnl_6: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_7:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_8: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorReady_intnl_9: %SystemObject, null\n    __LocalTagSensorReady_intnl_10:
     %SystemInt32, 0\n    __LocalTagSensorReady_intnl_11: %SystemInt32, 0\n    __LocalTagSensorReady_intnl_12:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_13: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorReady_intnl_14: %SystemObject, null\n    __LocalTagSensorReady_intnl_15:
-    %SystemInt32, 0\n    __const_12: %SystemInt32, 2\n    __LocalTagSensorReady_intnl_16:
-    %SystemBoolean, null\n    __const_13: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_17:
-    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x00003444\n    __LocalTagSensorReady_intnl_18:
+    %SystemInt32, 0\n    __const_25: %SystemInt32, 2\n    __LocalTagSensorReady_intnl_16:
+    %SystemBoolean, null\n    __const_26: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_17:
+    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x000044DC\n    __LocalTagSensorReady_intnl_18:
     %VRCUdonUdonBehaviour, null\n    __LocalTagSensorReady_intnl_19: %SystemBoolean,
-    null\n    __LocalTagSensorReady_intnl_20: %VRCUdonUdonBehaviour, null\n    __const_14:
-    %SystemString, \"TagSensorReady\"\n    __const_15: %SystemString, \"__TagSensorReady_ret\"\n   
+    null\n    __LocalTagSensorReady_intnl_20: %VRCUdonUdonBehaviour, null\n    __const_27:
+    %SystemString, \"TagSensorReady\"\n    __const_28: %SystemString, \"__TagSensorReady_ret\"\n   
     __LocalTagSensorReady_intnl_21: %SystemObject, null\n    __LocalTagSensorReady_intnl_22:
     %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_0: %SystemBoolean, null\n   
     __LocalTagSensorCenter_intnl_1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorCenter_intnl_2:
     %SystemObject, null\n    __LocalTagSensorCenter_intnl_3: %SystemInt32, 0\n   
     __LocalTagSensorCenter_intnl_4: %SystemBoolean, null\n    __retaddr_1: %SystemUInt32,
-    0x00004CB0\n    __LocalTagSensorCenter_intnl_5: %VRCUdonUdonBehaviour, null\n   
+    0x00005D48\n    __LocalTagSensorCenter_intnl_5: %VRCUdonUdonBehaviour, null\n   
     __LocalTagSensorCenter_intnl_6: %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_7:
-    %VRCUdonUdonBehaviour, null\n    __const_16: %SystemString, \"TagSensorCenter\"\n   
-    __const_17: %SystemString, \"__TagSensorCenter_ret\"\n    __LocalTagSensorCenter_intnl_8:
+    %VRCUdonUdonBehaviour, null\n    __const_29: %SystemString, \"TagSensorCenter\"\n   
+    __const_30: %SystemString, \"__TagSensorCenter_ret\"\n    __LocalTagSensorCenter_intnl_8:
     %SystemObject, null\n    __LocalTagSensorCenter_intnl_9: %UnityEngineVector3,
     null\n    __LocalTagSensorCenter_intnl_10: %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_11:
     %UnityEngineTransform, null\n    __LocalTagSensorCenter_intnl_12: %UnityEngineVector3,
@@ -1828,37 +2153,37 @@ MonoBehaviour:
     %SystemBoolean, null\n    __LocalTagSensorRadius_intnl_1: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorRadius_intnl_2: %SystemObject, null\n    __LocalTagSensorRadius_intnl_3:
     %SystemInt32, 0\n    __LocalTagSensorRadius_intnl_4: %SystemBoolean, null\n   
-    __retaddr_2: %SystemUInt32, 0x00005B44\n    __LocalTagSensorRadius_intnl_5: %VRCUdonUdonBehaviour,
+    __retaddr_2: %SystemUInt32, 0x00006BDC\n    __LocalTagSensorRadius_intnl_5: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorRadius_intnl_6: %SystemBoolean, null\n    __LocalTagSensorRadius_intnl_7:
-    %VRCUdonUdonBehaviour, null\n    __const_18: %SystemString, \"TagSensorRadius\"\n   
-    __const_19: %SystemString, \"__TagSensorRadius_ret\"\n    __LocalTagSensorRadius_intnl_8:
+    %VRCUdonUdonBehaviour, null\n    __const_31: %SystemString, \"TagSensorRadius\"\n   
+    __const_32: %SystemString, \"__TagSensorRadius_ret\"\n    __LocalTagSensorRadius_intnl_8:
     %SystemObject, null\n    __LocalTagSensorRadius_intnl_9: %SystemSingle, 0\n   
     __LocalGlove_intnl_0: %SystemBoolean, null\n    __LocalGlove_intnl_1: %SystemSingle,
-    0\n    __LocalGlove_intnl_2: %SystemBoolean, null\n    __const_20: %VRCUdonUdonBehaviour,
-    null\n    __const_21: %SystemSingle, 2\n    __LocalGlove_intnl_3: %SystemSingle,
+    0\n    __LocalGlove_intnl_2: %SystemBoolean, null\n    __const_33: %VRCUdonUdonBehaviour,
+    null\n    __const_34: %SystemSingle, 2\n    __LocalGlove_intnl_3: %SystemSingle,
     0\n    __LocalGlove_intnl_4: %VRCSDKBaseVRCPlayerApi, null\n    __LocalGlove_intnl_5:
     %SystemBoolean, null\n    __LocalGlove_intnl_6: %UnityEngineGameObjectArray,
-    null\n    __const_22: %SystemObject, null\n    __LocalGlove_intnl_7: %SystemBoolean,
+    null\n    __const_35: %SystemObject, null\n    __LocalGlove_intnl_7: %SystemBoolean,
     null\n    __LocalGlove_intnl_8: %SystemInt32, 0\n    __LocalGlove_intnl_9: %SystemBoolean,
     null\n    __LocalGlove_intnl_10: %UnityEngineGameObject, null\n    __LocalGlove_intnl_11:
     %SystemBoolean, null\n    __LocalGlove_intnl_12: %UnityEngineGameObject, null\n   
-    __LocalGlove_intnl_13: %UnityEngineTransform, null\n    __const_23: %SystemType,
-    null\n    __LocalGlove_intnl_14: %UnityEngineComponentArray, null\n    __const_24:
-    %SystemInt64, null\n    __retaddr_3: %SystemUInt32, 0x00006728\n    __LocalGlove_intnl_15:
+    __LocalGlove_intnl_13: %UnityEngineTransform, null\n    __const_36: %SystemType,
+    null\n    __LocalGlove_intnl_14: %UnityEngineComponentArray, null\n    __const_37:
+    %SystemInt64, null\n    __retaddr_3: %SystemUInt32, 0x000077C0\n    __LocalGlove_intnl_15:
     %VRCUdonUdonBehaviour, null\n    __LocalGlove_intnl_16: %SystemBoolean, null\n   
     __LocalGlove_intnl_17: %SystemBoolean, null\n    __LocalGlove_intnl_18: %SystemInt32,
-    0\n    __const_25: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
+    0\n    __const_38: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
     %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean, null\n    ____typeid__has_intnl_2:
-    %SystemBoolean, null\n    __const_26: %SystemString, \"__refl_typeids\"\n   
+    %SystemBoolean, null\n    __const_39: %SystemString, \"__refl_typeids\"\n   
     ____typeid__has_intnl_3: %SystemType, null\n    ____typeid__has_intnl_4: %SystemBoolean,
     null\n    ____typeid__has_intnl_5: %SystemObject, null\n    ____typeid__has_intnl_6:
-    %SystemBoolean, null\n    ____typeid__has_intnl_7: %SystemInt32, 0\n    __const_27:
+    %SystemBoolean, null\n    ____typeid__has_intnl_7: %SystemInt32, 0\n    __const_40:
     %SystemInt32, -1\n    ____typeid__has_intnl_8: %SystemBoolean, null\n    ____typeid__has_intnl_9:
     %SystemType, null\n    ____typeid__has_intnl_10: %SystemBoolean, null\n    ____typeid__has_intnl_11:
     %SystemObject, null\n    ____typeid__has_intnl_12: %SystemBoolean, null\n   
     ____typeid__has_intnl_13: %SystemBoolean, null\n    ____typeid__first_intnl_0:
     %SystemInt32, 0\n    ____typeid__first_intnl_1: %SystemBoolean, null\n    ____typeid__first_intnl_2:
-    %UnityEngineComponent, null\n    __retaddr_4: %SystemUInt32, 0x00006CAC\n   
+    %UnityEngineComponent, null\n    __retaddr_4: %SystemUInt32, 0x00007D44\n   
     ____typeid__first_intnl_3: %SystemBoolean, null\n    ____typeid__first_intnl_4:
     %SystemInt32, 0\n.data_end\n.code_start\n    .export HasConfirmedHold\n    HasConfirmedHold:\n       
     PUSH, ball\n        PUSH, __const_0\n        PUSH, __HasConfirmedHold_intnl_0\n       
@@ -2072,7 +2397,257 @@ MonoBehaviour:
     __ConfirmedHoldSequence_L1:\n        PUSH, __ConfirmedHoldSequence___t0\n       
     PUSH, __ConfirmedHoldSequence_ret\n        COPY\n        PUSH, __ConfirmedHoldSequence_ret\n       
     PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n       
-    JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n    .export LocalTagSensorReady\n   
+    JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n    .export ConfirmedHoldPublisher\n   
+    ConfirmedHoldPublisher:\n        PUSH, ball\n        PUSH, __const_0\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_0\n        JUMP_IF_FALSE, __ConfirmedHoldPublisher_L0\n       
+    PUSH, ball\n        PUSH, __ConfirmedHoldPublisher___t1\n        COPY\n       
+    PUSH, __ConfirmedHoldPublisher___t1\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_1\n        PUSH, __const_11\n        EXTERN,
+    \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ConfirmedHoldPublisher___t1\n        PUSH, __const_12\n        PUSH, __ConfirmedHoldPublisher_intnl_2\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_2\n        PUSH, __ConfirmedHoldPublisher_intnl_3\n       
+    COPY\n        PUSH, __ConfirmedHoldPublisher_intnl_3\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    COPY\n        PUSH, __ConfirmedHoldPublisher___t2\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    COPY\n        JUMP, __ConfirmedHoldPublisher_L1\n    __ConfirmedHoldPublisher_L0:\n       
+    PUSH, __const_6\n        PUSH, __ConfirmedHoldPublisher___t0\n        COPY\n   
+    __ConfirmedHoldPublisher_L1:\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    PUSH, __ConfirmedHoldPublisher_ret\n        COPY\n        PUSH, __ConfirmedHoldPublisher_ret\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __ConfirmedHoldPublisher_retjump\n       
+    JUMP_INDIRECT, __ConfirmedHoldPublisher_retjump\n    .export HoldHistoryCount\n   
+    HoldHistoryCount:\n        PUSH, ball\n        PUSH, __const_0\n        PUSH,
+    __HoldHistoryCount_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryCount_intnl_0\n        JUMP_IF_FALSE, __HoldHistoryCount_L0\n       
+    PUSH, ball\n        PUSH, __HoldHistoryCount___t1\n        COPY\n        PUSH,
+    __HoldHistoryCount___t1\n        PUSH, __HoldHistoryCount_intnl_1\n        COPY\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryCount_intnl_1\n        PUSH, __const_13\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryCount___t1\n        PUSH, __const_14\n        PUSH, __HoldHistoryCount_intnl_2\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryCount_intnl_2\n        PUSH, __HoldHistoryCount_intnl_3\n       
+    COPY\n        PUSH, __HoldHistoryCount_intnl_3\n        PUSH, __HoldHistoryCount___t2\n       
+    COPY\n        PUSH, __HoldHistoryCount___t2\n        PUSH, __HoldHistoryCount___t0\n       
+    COPY\n        JUMP, __HoldHistoryCount_L1\n    __HoldHistoryCount_L0:\n       
+    PUSH, __const_6\n        PUSH, __HoldHistoryCount___t0\n        COPY\n    __HoldHistoryCount_L1:\n       
+    PUSH, __HoldHistoryCount___t0\n        PUSH, __HoldHistoryCount_ret\n       
+    COPY\n        PUSH, __HoldHistoryCount_ret\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __HoldHistoryCount_retjump\n        JUMP_INDIRECT,
+    __HoldHistoryCount_retjump\n    .export HoldHistoryCapacity\n    HoldHistoryCapacity:\n       
+    PUSH, __const_15\n        PUSH, __HoldHistoryCapacity_ret\n        COPY\n       
+    PUSH, __HoldHistoryCapacity_ret\n        PUSH, __returnValue\n        COPY\n       
+    JUMP_INDIRECT, __HoldHistoryCapacity_retjump\n        JUMP_INDIRECT, __HoldHistoryCapacity_retjump\n   
+    .export HoldHistoryField__SystemInt32_SystemInt32\n    HoldHistoryField__SystemInt32_SystemInt32:\n       
+    PUSH, ball\n        PUSH, __const_0\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n        JUMP_IF_FALSE,
+    __HoldHistoryField__SystemInt32_SystemInt32_L0\n        PUSH, ball\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        COPY\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_16\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_17\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_18\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        PUSH, __const_19\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_3\n       
+    COPY\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_3\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n        COPY\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    COPY\n        JUMP, __HoldHistoryField__SystemInt32_SystemInt32_L1\n    __HoldHistoryField__SystemInt32_SystemInt32_L0:\n       
+    PUSH, __const_6\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    COPY\n    __HoldHistoryField__SystemInt32_SystemInt32_L1:\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_ret\n        COPY\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_ret\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __HoldHistoryField__SystemInt32_SystemInt32_retjump\n       
+    JUMP_INDIRECT, __HoldHistoryField__SystemInt32_SystemInt32_retjump\n    .export
+    HoldHistoryTime__SystemInt32\n    HoldHistoryTime__SystemInt32:\n        PUSH,
+    ball\n        PUSH, __const_0\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n        JUMP_IF_FALSE, __HoldHistoryTime__SystemInt32_L0\n       
+    PUSH, ball\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n        COPY\n       
+    PUSH, __HoldHistoryTime__SystemInt32___t1\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        PUSH, __const_20\n       
+    PUSH, __HoldHistoryTime__SystemInt32_p_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        PUSH, __const_21\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryTime__SystemInt32___t1\n        PUSH, __const_22\n        PUSH,
+    __HoldHistoryTime__SystemInt32_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_2\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_3\n       
+    COPY\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_3\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    COPY\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    COPY\n        JUMP, __HoldHistoryTime__SystemInt32_L1\n    __HoldHistoryTime__SystemInt32_L0:\n       
+    PUSH, __const_23\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    COPY\n    __HoldHistoryTime__SystemInt32_L1:\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    PUSH, __HoldHistoryTime__SystemInt32_ret\n        COPY\n        PUSH, __HoldHistoryTime__SystemInt32_ret\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __HoldHistoryTime__SystemInt32_retjump\n       
+    JUMP_INDIRECT, __HoldHistoryTime__SystemInt32_retjump\n    .export LocalTagSensorReady\n   
     LocalTagSensorReady:\n        PUSH, ball\n        PUSH, __const_0\n        PUSH,
     __LocalTagSensorReady_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_0\n        PUSH, __LocalTagSensorReady___t0\n       
@@ -2203,7 +2778,7 @@ MonoBehaviour:
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_4\n        PUSH, __LocalTagSensorReady___t0\n       
     COPY\n    __LocalTagSensorReady_L1:\n        PUSH, __LocalTagSensorReady___t0\n       
-    JUMP_IF_FALSE, __LocalTagSensorReady_L3\n        PUSH, __const_11\n        PUSH,
+    JUMP_IF_FALSE, __LocalTagSensorReady_L3\n        PUSH, __const_24\n        PUSH,
     __LocalTagSensorReady_ret\n        COPY\n        PUSH, __LocalTagSensorReady_ret\n       
     PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __LocalTagSensorReady_retjump\n   
     __LocalTagSensorReady_L3:\n        PUSH, __LocalTagSensorReady_intnl_5\n       
@@ -2392,7 +2967,7 @@ MonoBehaviour:
     PUSH, __LocalTagSensorReady_intnl_12\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_12\n        PUSH, __LocalTagSensorReady___t3\n       
     COPY\n    __LocalTagSensorReady_L5:\n        PUSH, __LocalTagSensorReady___t3\n       
-    JUMP_IF_FALSE, __LocalTagSensorReady_L7\n        PUSH, __const_11\n        PUSH,
+    JUMP_IF_FALSE, __LocalTagSensorReady_L7\n        PUSH, __const_24\n        PUSH,
     __LocalTagSensorReady_ret\n        COPY\n        PUSH, __LocalTagSensorReady_ret\n       
     PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __LocalTagSensorReady_retjump\n   
     __LocalTagSensorReady_L7:\n        PUSH, ball\n        PUSH, __LocalTagSensorReady___t6\n       
@@ -2602,16 +3177,16 @@ MonoBehaviour:
     PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady_intnl_15\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_15\n        PUSH, __LocalTagSensorReady___t7\n       
     COPY\n        PUSH, __LocalTagSensorReady___t7\n        PUSH, __LocalTagSensorReady_mode\n       
-    COPY\n        PUSH, __LocalTagSensorReady_mode\n        PUSH, __const_12\n       
+    COPY\n        PUSH, __LocalTagSensorReady_mode\n        PUSH, __const_25\n       
     PUSH, __LocalTagSensorReady_intnl_16\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_16\n        JUMP_IF_FALSE, __LocalTagSensorReady_L9\n       
-    PUSH, __const_13\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
+    PUSH, __const_26\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
     PUSH, __LocalTagSensorReady_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __LocalTagSensorReady_retjump\n    __LocalTagSensorReady_L9:\n       
     PUSH, __LocalTagSensorReady_mode\n        PUSH, __const_1\n        PUSH, __LocalTagSensorReady_intnl_17\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_17\n        JUMP_IF_FALSE, __LocalTagSensorReady_L11\n       
-    PUSH, __const_11\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
+    PUSH, __const_24\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
     PUSH, __LocalTagSensorReady_ret\n        PUSH, __returnValue\n        COPY\n       
     JUMP_INDIRECT, __LocalTagSensorReady_retjump\n    __LocalTagSensorReady_L11:\n       
     PUSH, __retaddr_0\n        PUSH, __LocalGlove_retjump\n        COPY\n       
@@ -2763,7 +3338,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorReady_intnl_20\n        PUSH, __const_14\n        EXTERN,
+    PUSH, __LocalTagSensorReady_intnl_20\n        PUSH, __const_27\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -2872,7 +3447,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorReady___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorReady___t9\n        PUSH, __const_15\n        PUSH, __LocalTagSensorReady_intnl_21\n       
+    __LocalTagSensorReady___t9\n        PUSH, __const_28\n        PUSH, __LocalTagSensorReady_intnl_21\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorReady_intnl_21\n        PUSH, __LocalTagSensorReady_intnl_22\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_22\n        PUSH, __LocalTagSensorReady___t10\n       
@@ -3030,7 +3605,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorCenter_intnl_7\n        PUSH, __const_16\n        EXTERN,
+    PUSH, __LocalTagSensorCenter_intnl_7\n        PUSH, __const_29\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -3078,7 +3653,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorCenter___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorCenter___t3\n        PUSH, __const_17\n        PUSH, __LocalTagSensorCenter_intnl_8\n       
+    __LocalTagSensorCenter___t3\n        PUSH, __const_30\n        PUSH, __LocalTagSensorCenter_intnl_8\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorCenter_intnl_8\n        PUSH, __LocalTagSensorCenter_intnl_9\n       
     COPY\n        PUSH, __LocalTagSensorCenter_intnl_9\n        PUSH, __LocalTagSensorCenter___t4\n       
@@ -3237,7 +3812,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorRadius_intnl_7\n        PUSH, __const_18\n        EXTERN,
+    PUSH, __LocalTagSensorRadius_intnl_7\n        PUSH, __const_31\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -3282,7 +3857,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorRadius___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorRadius___t3\n        PUSH, __const_19\n        PUSH, __LocalTagSensorRadius_intnl_8\n       
+    __LocalTagSensorRadius___t3\n        PUSH, __const_32\n        PUSH, __LocalTagSensorRadius_intnl_8\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorRadius_intnl_8\n        PUSH, __LocalTagSensorRadius_intnl_9\n       
     COPY\n        PUSH, __LocalTagSensorRadius_intnl_9\n        PUSH, __LocalTagSensorRadius___t4\n       
@@ -3301,25 +3876,25 @@ MonoBehaviour:
     PUSH, __LocalGlove___cse_0\n        COPY\n        PUSH, __LocalGlove___cse_0\n       
     PUSH, _nextGloveSearch\n        PUSH, __LocalGlove_intnl_2\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_2\n        JUMP_IF_FALSE, __LocalGlove_L3\n        PUSH,
-    __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
     __LocalGlove_retjump\n    __LocalGlove_L3:\n        PUSH, __LocalGlove___cse_0\n       
-    PUSH, __const_21\n        PUSH, __LocalGlove_intnl_3\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __const_34\n        PUSH, __LocalGlove_intnl_3\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __LocalGlove_intnl_3\n        PUSH, _nextGloveSearch\n        COPY\n       
     PUSH, __LocalGlove_intnl_4\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
     PUSH, __LocalGlove_intnl_4\n        PUSH, __LocalGlove_local\n        COPY\n       
     PUSH, __LocalGlove_local\n        PUSH, __LocalGlove_intnl_5\n        EXTERN,
     \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n        PUSH,
     __LocalGlove_intnl_5\n        JUMP_IF_FALSE, __LocalGlove_L4\n        JUMP, __LocalGlove_L5\n   
-    __LocalGlove_L4:\n        PUSH, __const_20\n        PUSH, __LocalGlove_ret\n       
+    __LocalGlove_L4:\n        PUSH, __const_33\n        PUSH, __LocalGlove_ret\n       
     COPY\n        JUMP_INDIRECT, __LocalGlove_retjump\n    __LocalGlove_L5:\n       
     PUSH, __LocalGlove_local\n        PUSH, __LocalGlove_intnl_6\n        EXTERN,
     \"VRCSDKBaseNetworking.__GetPlayerObjects__VRCSDKBaseVRCPlayerApi__UnityEngineGameObjectArray\"\n       
     PUSH, __LocalGlove_intnl_6\n        PUSH, __LocalGlove_objects\n        COPY\n       
-    PUSH, __LocalGlove_objects\n        PUSH, __const_22\n        PUSH, __LocalGlove_intnl_7\n       
+    PUSH, __LocalGlove_objects\n        PUSH, __const_35\n        PUSH, __LocalGlove_intnl_7\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_7\n        JUMP_IF_FALSE, __LocalGlove_L7\n        PUSH,
-    __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
-    __LocalGlove_retjump\n    __LocalGlove_L7:\n        PUSH, __const_20\n       
+    __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    __LocalGlove_retjump\n    __LocalGlove_L7:\n        PUSH, __const_33\n       
     PUSH, __LocalGlove_found\n        COPY\n        PUSH, __const_6\n        PUSH,
     __LocalGlove_i\n        COPY\n        ANNOTATION, \"@tsukimi loop trip=unknown
     no-computed-jump\"\n    __LocalGlove_L8:\n        PUSH, __LocalGlove_objects\n       
@@ -3338,12 +3913,12 @@ MonoBehaviour:
     PUSH, __LocalGlove___t0\n        PUSH, __LocalGlove_intnl_13\n        EXTERN,
     \"UnityEngineGameObject.__get_transform__UnityEngineTransform\"\n        PUSH,
     __LocalGlove_intnl_13\n        PUSH, __LocalGlove___t1\n        COPY\n       
-    PUSH, __LocalGlove___t1\n        PUSH, __const_23\n        PUSH, __const_13\n       
+    PUSH, __LocalGlove___t1\n        PUSH, __const_36\n        PUSH, __const_26\n       
     PUSH, __LocalGlove_intnl_14\n        EXTERN, \"UnityEngineComponent.__GetComponentsInChildren__SystemType_SystemBoolean__UnityEngineComponentArray\"\n       
     PUSH, __LocalGlove_intnl_14\n        PUSH, __LocalGlove___t2\n        COPY\n       
     PUSH, __LocalGlove___t2\n        PUSH, ____typeid__first_p_0\n        COPY\n       
-    PUSH, __const_24\n        PUSH, ____typeid__first_p_1\n        COPY\n       
-    PUSH, __const_11\n        PUSH, ____typeid__first_p_2\n        COPY\n       
+    PUSH, __const_37\n        PUSH, ____typeid__first_p_1\n        COPY\n       
+    PUSH, __const_24\n        PUSH, ____typeid__first_p_2\n        COPY\n       
     PUSH, __retaddr_3\n        PUSH, ____typeid__first_retjump\n        COPY\n       
     JUMP, __typeid__first\n        PUSH, ____typeid__first_ret\n        PUSH, __LocalGlove_intnl_15\n       
     COPY\n        PUSH, __LocalGlove_intnl_15\n        PUSH, __LocalGlove___t3\n       
@@ -3354,7 +3929,7 @@ MonoBehaviour:
     JUMP, __LocalGlove_L12\n    __LocalGlove_L14:\n        PUSH, __LocalGlove_found\n       
     PUSH, __const_0\n        PUSH, __LocalGlove_intnl_17\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_17\n        JUMP_IF_FALSE, __LocalGlove_L16\n       
-    PUSH, __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
     __LocalGlove_retjump\n    __LocalGlove_L16:\n        PUSH, __LocalGlove_candidate\n       
     PUSH, __LocalGlove_found\n        COPY\n    __LocalGlove_L12:\n        PUSH,
     __LocalGlove_i\n        PUSH, __const_1\n        PUSH, __LocalGlove_intnl_18\n       
@@ -3365,24 +3940,24 @@ MonoBehaviour:
     __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT, __LocalGlove_retjump\n       
     JUMP_INDIRECT, __LocalGlove_retjump\n    __typeid__has:\n        PUSH, ____typeid__has_p_2\n       
     JUMP_IF_FALSE, ____typeid__has_L1\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_25\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, __const_38\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
     PUSH, ____typeid__has_intnl_0\n        PUSH, ____typeid__has_ty\n        COPY\n       
-    PUSH, ____typeid__has_ty\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_1\n       
+    PUSH, ____typeid__has_ty\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_1\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_1\n        PUSH, ____typeid__has_intnl_2\n       
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_2\n        PUSH, ____typeid__has_ret\n        COPY\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L1:\n        PUSH,
-    ____typeid__has_p_0\n        PUSH, __const_26\n        PUSH, ____typeid__has_intnl_3\n       
+    ____typeid__has_p_0\n        PUSH, __const_39\n        PUSH, ____typeid__has_intnl_3\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
     PUSH, ____typeid__has_intnl_3\n        PUSH, ____typeid__has_ty\n        COPY\n       
-    PUSH, ____typeid__has_ty\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_4\n       
+    PUSH, ____typeid__has_ty\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_4\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_4\n        JUMP_IF_FALSE, ____typeid__has_L2\n       
     JUMP, ____typeid__has_L5\n    ____typeid__has_L2:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_26\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_39\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, ____typeid__has_intnl_5\n        PUSH, ____typeid__has_raw\n        COPY\n       
-    PUSH, ____typeid__has_raw\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_6\n       
+    PUSH, ____typeid__has_raw\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_6\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_6\n        JUMP_IF_FALSE, ____typeid__has_L4\n       
     JUMP, ____typeid__has_L5\n    ____typeid__has_L4:\n        PUSH, ____typeid__has_raw\n       
@@ -3390,20 +3965,20 @@ MonoBehaviour:
     PUSH, ____typeid__has_boxed\n        COPY\n        PUSH, ____typeid__has_ids\n       
     PUSH, ____typeid__has_boxed\n        PUSH, ____typeid__has_intnl_7\n        EXTERN,
     \"SystemArray.__IndexOf__SystemArray_SystemObject__SystemInt32\"\n        PUSH,
-    ____typeid__has_intnl_7\n        PUSH, __const_27\n        PUSH, ____typeid__has_intnl_8\n       
+    ____typeid__has_intnl_7\n        PUSH, __const_40\n        PUSH, ____typeid__has_intnl_8\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_8\n        PUSH, ____typeid__has_ret\n        COPY\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L5:\n        PUSH,
-    ____typeid__has_p_0\n        PUSH, __const_25\n        PUSH, ____typeid__has_intnl_9\n       
+    ____typeid__has_p_0\n        PUSH, __const_38\n        PUSH, ____typeid__has_intnl_9\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
     PUSH, ____typeid__has_intnl_9\n        PUSH, ____typeid__has_ty\n        COPY\n       
-    PUSH, ____typeid__has_ty\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_10\n       
+    PUSH, ____typeid__has_ty\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_10\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_10\n        JUMP_IF_FALSE, ____typeid__has_L6\n       
     JUMP, ____typeid__has_L9\n    ____typeid__has_L6:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_25\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_38\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, ____typeid__has_intnl_11\n        PUSH, ____typeid__has_raw\n        COPY\n       
-    PUSH, ____typeid__has_raw\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_12\n       
+    PUSH, ____typeid__has_raw\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_12\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_12\n        JUMP_IF_FALSE, ____typeid__has_L8\n       
     JUMP, ____typeid__has_L9\n    ____typeid__has_L8:\n        PUSH, ____typeid__has_raw\n       
@@ -3412,7 +3987,7 @@ MonoBehaviour:
     \"SystemInt64.__op_Equality__SystemInt64_SystemInt64__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_13\n        PUSH, ____typeid__has_ret\n        COPY\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L9:\n        PUSH,
-    __const_11\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
+    __const_24\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
     ____typeid__has_retjump\n        JUMP_INDIRECT, ____typeid__has_retjump\n   
     __typeid__first:\n        PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_intnl_0\n       
     EXTERN, \"UnityEngineComponentArray.__get_Length__SystemInt32\"\n        PUSH,
@@ -3435,7 +4010,7 @@ MonoBehaviour:
     ____typeid__first_L3:\n        PUSH, ____typeid__first_i\n        PUSH, __const_1\n       
     PUSH, ____typeid__first_intnl_4\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, ____typeid__first_intnl_4\n        PUSH, ____typeid__first_i\n        COPY\n       
-    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_20\n       
+    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_33\n       
     PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
     JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
   optAfterUasm: ".data_start\n    __sf__X9zPitchType__Names: %SystemStringArray,
@@ -3445,22 +4020,45 @@ MonoBehaviour:
     %VRCUdonUdonBehaviour, null\n    .export ball\n    handTagRadius: %SystemSingle,
     0.06\n    .export handTagRadius\n    _localGlove: %VRCUdonUdonBehaviour, null\n   
     _nextGloveSearch: %SystemSingle, 0\n    HoldFree: %SystemInt32, 0\n    HoldGlove:
-    %SystemInt32, 1\n    HoldHand: %SystemInt32, 2\n    __refl_typeid: %SystemInt64,
-    null\n    __refl_typename: %SystemString, \"MatchBallQueryAdapterBehaviour\"\n   
-    __refl_typeids: %SystemInt64Array, null\n    __HasConfirmedHold___t0: %SystemBoolean,
-    null\n    __HasConfirmedHold___t1: %VRCUdonUdonBehaviour, null\n    __HasConfirmedHold___t2:
-    %SystemBoolean, null\n    __HasConfirmedHold_ret: %SystemBoolean, null\n    .export
-    __HasConfirmedHold_ret\n    __HasConfirmedHold_retjump: %SystemUInt32, 0xFFFFFFFC\n   
-    __ConfirmedHoldMode___t0: %SystemInt32, 0\n    __ConfirmedHoldMode___t1: %VRCUdonUdonBehaviour,
-    null\n    __ConfirmedHoldMode___t2: %SystemInt32, 0\n    __ConfirmedHoldMode_ret:
-    %SystemInt32, 0\n    .export __ConfirmedHoldMode_ret\n    __ConfirmedHoldMode_retjump:
-    %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHolderId___t0: %SystemInt32, 0\n   
-    __ConfirmedHolderId___t1: %VRCUdonUdonBehaviour, null\n    __ConfirmedHolderId___t2:
-    %SystemInt32, 0\n    __ConfirmedHolderId_ret: %SystemInt32, 0\n    .export __ConfirmedHolderId_ret\n   
+    %SystemInt32, 1\n    HoldHand: %SystemInt32, 2\n    HistorySequence: %SystemInt32,
+    0\n    HistoryPublisher: %SystemInt32, 1\n    HistoryIsPossession: %SystemInt32,
+    2\n    HistoryHold: %SystemInt32, 3\n    HistoryHolder: %SystemInt32, 4\n   
+    HistoryFields: %SystemInt32, 5\n    __refl_typeid: %SystemInt64, null\n    __refl_typename:
+    %SystemString, \"MatchBallQueryAdapterBehaviour\"\n    __refl_typeids: %SystemInt64Array,
+    null\n    __HasConfirmedHold___t0: %SystemBoolean, null\n    __HasConfirmedHold___t1:
+    %VRCUdonUdonBehaviour, null\n    __HasConfirmedHold___t2: %SystemBoolean, null\n   
+    __HasConfirmedHold_ret: %SystemBoolean, null\n    .export __HasConfirmedHold_ret\n   
+    __HasConfirmedHold_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldMode___t0:
+    %SystemInt32, 0\n    __ConfirmedHoldMode___t1: %VRCUdonUdonBehaviour, null\n   
+    __ConfirmedHoldMode___t2: %SystemInt32, 0\n    __ConfirmedHoldMode_ret: %SystemInt32,
+    0\n    .export __ConfirmedHoldMode_ret\n    __ConfirmedHoldMode_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __ConfirmedHolderId___t0: %SystemInt32, 0\n    __ConfirmedHolderId___t1:
+    %VRCUdonUdonBehaviour, null\n    __ConfirmedHolderId___t2: %SystemInt32, 0\n   
+    __ConfirmedHolderId_ret: %SystemInt32, 0\n    .export __ConfirmedHolderId_ret\n   
     __ConfirmedHolderId_retjump: %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldSequence___t0:
     %SystemInt32, 0\n    __ConfirmedHoldSequence___t1: %VRCUdonUdonBehaviour, null\n   
     __ConfirmedHoldSequence___t2: %SystemInt32, 0\n    __ConfirmedHoldSequence_ret:
     %SystemInt32, 0\n    .export __ConfirmedHoldSequence_ret\n    __ConfirmedHoldSequence_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __ConfirmedHoldPublisher___t0: %SystemInt32, 0\n   
+    __ConfirmedHoldPublisher___t1: %VRCUdonUdonBehaviour, null\n    __ConfirmedHoldPublisher___t2:
+    %SystemInt32, 0\n    __ConfirmedHoldPublisher_ret: %SystemInt32, 0\n    .export
+    __ConfirmedHoldPublisher_ret\n    __ConfirmedHoldPublisher_retjump: %SystemUInt32,
+    0xFFFFFFFC\n    __HoldHistoryCount___t0: %SystemInt32, 0\n    __HoldHistoryCount___t1:
+    %VRCUdonUdonBehaviour, null\n    __HoldHistoryCount___t2: %SystemInt32, 0\n   
+    __HoldHistoryCount_ret: %SystemInt32, 0\n    .export __HoldHistoryCount_ret\n   
+    __HoldHistoryCount_retjump: %SystemUInt32, 0xFFFFFFFC\n    __HoldHistoryCapacity_ret:
+    %SystemInt32, 0\n    .export __HoldHistoryCapacity_ret\n    __HoldHistoryCapacity_retjump:
+    %SystemUInt32, 0xFFFFFFFC\n    __HoldHistoryField__SystemInt32_SystemInt32_p_0:
+    %SystemInt32, 0\n    __HoldHistoryField__SystemInt32_SystemInt32_p_1: %SystemInt32,
+    0\n    __HoldHistoryField__SystemInt32_SystemInt32___t0: %SystemInt32, 0\n   
+    __HoldHistoryField__SystemInt32_SystemInt32___t1: %VRCUdonUdonBehaviour, null\n   
+    __HoldHistoryField__SystemInt32_SystemInt32___t2: %SystemInt32, 0\n    __HoldHistoryField__SystemInt32_SystemInt32_ret:
+    %SystemInt32, 0\n    .export __HoldHistoryField__SystemInt32_SystemInt32_ret\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_retjump: %SystemUInt32, 0xFFFFFFFC\n   
+    __HoldHistoryTime__SystemInt32_p_0: %SystemInt32, 0\n    __HoldHistoryTime__SystemInt32___t0:
+    %SystemDouble, 0\n    __HoldHistoryTime__SystemInt32___t1: %VRCUdonUdonBehaviour,
+    null\n    __HoldHistoryTime__SystemInt32___t2: %SystemDouble, 0\n    __HoldHistoryTime__SystemInt32_ret:
+    %SystemDouble, 0\n    .export __HoldHistoryTime__SystemInt32_ret\n    __HoldHistoryTime__SystemInt32_retjump:
     %SystemUInt32, 0xFFFFFFFC\n    __LocalTagSensorReady___t0: %SystemBoolean, null\n   
     __LocalTagSensorReady___t1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorReady___t2:
     %SystemBoolean, null\n    __LocalTagSensorReady_local: %VRCSDKBaseVRCPlayerApi,
@@ -3521,63 +4119,84 @@ MonoBehaviour:
     null\n    __const_9: %SystemString, \"ConfirmedHoldSequence\"\n    __const_10:
     %SystemString, \"__ConfirmedHoldSequence_ret\"\n    __ConfirmedHoldSequence_intnl_2:
     %SystemObject, null\n    __ConfirmedHoldSequence_intnl_3: %SystemInt32, 0\n   
-    __LocalTagSensorReady_intnl_0: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_1:
-    %VRCUdonUdonBehaviour, null\n    __recStack_SystemBoolean: %SystemBooleanArray,
-    null\n    __recStack_VRCSDKBaseVRCPlayerApi: %VRCSDKBaseVRCPlayerApiArray, null\n   
-    __LocalTagSensorReady_intnl_2: %SystemObject, null\n    __LocalTagSensorReady_intnl_3:
+    __ConfirmedHoldPublisher_intnl_0: %SystemBoolean, null\n    __ConfirmedHoldPublisher_intnl_1:
+    %VRCUdonUdonBehaviour, null\n    __const_11: %SystemString, \"ConfirmedHoldPublisher\"\n   
+    __const_12: %SystemString, \"__ConfirmedHoldPublisher_ret\"\n    __ConfirmedHoldPublisher_intnl_2:
+    %SystemObject, null\n    __ConfirmedHoldPublisher_intnl_3: %SystemInt32, 0\n   
+    __HoldHistoryCount_intnl_0: %SystemBoolean, null\n    __HoldHistoryCount_intnl_1:
+    %VRCUdonUdonBehaviour, null\n    __const_13: %SystemString, \"GetPossessionHistoryCount\"\n   
+    __const_14: %SystemString, \"__GetPossessionHistoryCount_ret\"\n    __HoldHistoryCount_intnl_2:
+    %SystemObject, null\n    __HoldHistoryCount_intnl_3: %SystemInt32, 0\n    __const_15:
+    %SystemInt32, 8\n    __HoldHistoryField__SystemInt32_SystemInt32_intnl_0: %SystemBoolean,
+    null\n    __HoldHistoryField__SystemInt32_SystemInt32_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_16: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_p_0\"\n   
+    __const_17: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_p_1\"\n   
+    __const_18: %SystemString, \"GetPossessionHistoryField__SystemInt32_SystemInt32\"\n   
+    __const_19: %SystemString, \"__GetPossessionHistoryField__SystemInt32_SystemInt32_ret\"\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_intnl_2: %SystemObject, null\n   
+    __HoldHistoryField__SystemInt32_SystemInt32_intnl_3: %SystemInt32, 0\n    __HoldHistoryTime__SystemInt32_intnl_0:
+    %SystemBoolean, null\n    __HoldHistoryTime__SystemInt32_intnl_1: %VRCUdonUdonBehaviour,
+    null\n    __const_20: %SystemString, \"__GetPossessionHistoryTime__SystemInt32_p_0\"\n   
+    __const_21: %SystemString, \"GetPossessionHistoryTime__SystemInt32\"\n    __const_22:
+    %SystemString, \"__GetPossessionHistoryTime__SystemInt32_ret\"\n    __HoldHistoryTime__SystemInt32_intnl_2:
+    %SystemObject, null\n    __HoldHistoryTime__SystemInt32_intnl_3: %SystemDouble,
+    0\n    __const_23: %SystemDouble, 0\n    __LocalTagSensorReady_intnl_0: %SystemBoolean,
+    null\n    __LocalTagSensorReady_intnl_1: %VRCUdonUdonBehaviour, null\n    __recStack_SystemBoolean:
+    %SystemBooleanArray, null\n    __recStack_VRCSDKBaseVRCPlayerApi: %VRCSDKBaseVRCPlayerApiArray,
+    null\n    __LocalTagSensorReady_intnl_2: %SystemObject, null\n    __LocalTagSensorReady_intnl_3:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_4: %SystemBoolean, null\n   
-    __const_11: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_5: %VRCSDKBaseVRCPlayerApi,
+    __const_24: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_5: %VRCSDKBaseVRCPlayerApi,
     null\n    __LocalTagSensorReady_intnl_6: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_7:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_8: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorReady_intnl_9: %SystemObject, null\n    __LocalTagSensorReady_intnl_10:
     %SystemInt32, 0\n    __LocalTagSensorReady_intnl_11: %SystemInt32, 0\n    __LocalTagSensorReady_intnl_12:
     %SystemBoolean, null\n    __LocalTagSensorReady_intnl_13: %VRCUdonUdonBehaviour,
     null\n    __LocalTagSensorReady_intnl_14: %SystemObject, null\n    __LocalTagSensorReady_intnl_15:
-    %SystemInt32, 0\n    __const_12: %SystemInt32, 2\n    __LocalTagSensorReady_intnl_16:
-    %SystemBoolean, null\n    __const_13: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_17:
-    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x000033F4\n    __LocalTagSensorReady_intnl_18:
+    %SystemInt32, 0\n    __const_25: %SystemInt32, 2\n    __LocalTagSensorReady_intnl_16:
+    %SystemBoolean, null\n    __const_26: %SystemBoolean, null\n    __LocalTagSensorReady_intnl_17:
+    %SystemBoolean, null\n    __retaddr_0: %SystemUInt32, 0x0000443C\n    __LocalTagSensorReady_intnl_18:
     %VRCUdonUdonBehaviour, null\n    __LocalTagSensorReady_intnl_19: %SystemBoolean,
-    null\n    __LocalTagSensorReady_intnl_20: %VRCUdonUdonBehaviour, null\n    __const_14:
-    %SystemString, \"TagSensorReady\"\n    __const_15: %SystemString, \"__TagSensorReady_ret\"\n   
+    null\n    __LocalTagSensorReady_intnl_20: %VRCUdonUdonBehaviour, null\n    __const_27:
+    %SystemString, \"TagSensorReady\"\n    __const_28: %SystemString, \"__TagSensorReady_ret\"\n   
     __LocalTagSensorReady_intnl_21: %SystemObject, null\n    __LocalTagSensorReady_intnl_22:
     %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_0: %SystemBoolean, null\n   
     __LocalTagSensorCenter_intnl_1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorCenter_intnl_2:
     %SystemObject, null\n    __LocalTagSensorCenter_intnl_3: %SystemInt32, 0\n   
     __LocalTagSensorCenter_intnl_4: %SystemBoolean, null\n    __retaddr_1: %SystemUInt32,
-    0x00004C4C\n    __LocalTagSensorCenter_intnl_5: %VRCUdonUdonBehaviour, null\n   
+    0x00005C94\n    __LocalTagSensorCenter_intnl_5: %VRCUdonUdonBehaviour, null\n   
     __LocalTagSensorCenter_intnl_6: %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_7:
-    %VRCUdonUdonBehaviour, null\n    __const_16: %SystemString, \"TagSensorCenter\"\n   
-    __const_17: %SystemString, \"__TagSensorCenter_ret\"\n    __LocalTagSensorCenter_intnl_8:
+    %VRCUdonUdonBehaviour, null\n    __const_29: %SystemString, \"TagSensorCenter\"\n   
+    __const_30: %SystemString, \"__TagSensorCenter_ret\"\n    __LocalTagSensorCenter_intnl_8:
     %SystemObject, null\n    __LocalTagSensorCenter_intnl_9: %UnityEngineVector3,
     null\n    __LocalTagSensorCenter_intnl_10: %SystemBoolean, null\n    __LocalTagSensorCenter_intnl_11:
     %UnityEngineTransform, null\n    __LocalTagSensorRadius_intnl_0: %SystemBoolean,
     null\n    __LocalTagSensorRadius_intnl_1: %VRCUdonUdonBehaviour, null\n    __LocalTagSensorRadius_intnl_2:
     %SystemObject, null\n    __LocalTagSensorRadius_intnl_3: %SystemInt32, 0\n   
     __LocalTagSensorRadius_intnl_4: %SystemBoolean, null\n    __retaddr_2: %SystemUInt32,
-    0x00005AA4\n    __LocalTagSensorRadius_intnl_5: %VRCUdonUdonBehaviour, null\n   
+    0x00006AEC\n    __LocalTagSensorRadius_intnl_5: %VRCUdonUdonBehaviour, null\n   
     __LocalTagSensorRadius_intnl_6: %SystemBoolean, null\n    __LocalTagSensorRadius_intnl_7:
-    %VRCUdonUdonBehaviour, null\n    __const_18: %SystemString, \"TagSensorRadius\"\n   
-    __const_19: %SystemString, \"__TagSensorRadius_ret\"\n    __LocalTagSensorRadius_intnl_8:
+    %VRCUdonUdonBehaviour, null\n    __const_31: %SystemString, \"TagSensorRadius\"\n   
+    __const_32: %SystemString, \"__TagSensorRadius_ret\"\n    __LocalTagSensorRadius_intnl_8:
     %SystemObject, null\n    __LocalTagSensorRadius_intnl_9: %SystemSingle, 0\n   
     __LocalGlove_intnl_0: %SystemBoolean, null\n    __LocalGlove_intnl_2: %SystemBoolean,
-    null\n    __const_20: %VRCUdonUdonBehaviour, null\n    __const_21: %SystemSingle,
-    2\n    __LocalGlove_intnl_5: %SystemBoolean, null\n    __const_22: %SystemObject,
+    null\n    __const_33: %VRCUdonUdonBehaviour, null\n    __const_34: %SystemSingle,
+    2\n    __LocalGlove_intnl_5: %SystemBoolean, null\n    __const_35: %SystemObject,
     null\n    __LocalGlove_intnl_7: %SystemBoolean, null\n    __LocalGlove_intnl_8:
     %SystemInt32, 0\n    __LocalGlove_intnl_9: %SystemBoolean, null\n    __LocalGlove_intnl_10:
     %UnityEngineGameObject, null\n    __LocalGlove_intnl_11: %SystemBoolean, null\n   
-    __const_23: %SystemType, null\n    __const_24: %SystemInt64, null\n    __retaddr_3:
-    %SystemUInt32, 0x000065E0\n    __LocalGlove_intnl_15: %VRCUdonUdonBehaviour,
+    __const_36: %SystemType, null\n    __const_37: %SystemInt64, null\n    __retaddr_3:
+    %SystemUInt32, 0x00007628\n    __LocalGlove_intnl_15: %VRCUdonUdonBehaviour,
     null\n    __LocalGlove_intnl_16: %SystemBoolean, null\n    __LocalGlove_intnl_17:
-    %SystemBoolean, null\n    __const_25: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
-    %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean, null\n    __const_26:
+    %SystemBoolean, null\n    __const_38: %SystemString, \"__refl_typeid\"\n    ____typeid__has_intnl_0:
+    %SystemType, null\n    ____typeid__has_intnl_1: %SystemBoolean, null\n    __const_39:
     %SystemString, \"__refl_typeids\"\n    ____typeid__has_intnl_3: %SystemType,
     null\n    ____typeid__has_intnl_4: %SystemBoolean, null\n    ____typeid__has_intnl_5:
     %SystemObject, null\n    ____typeid__has_intnl_6: %SystemBoolean, null\n    ____typeid__has_intnl_7:
-    %SystemInt32, 0\n    __const_27: %SystemInt32, -1\n    ____typeid__has_intnl_9:
+    %SystemInt32, 0\n    __const_40: %SystemInt32, -1\n    ____typeid__has_intnl_9:
     %SystemType, null\n    ____typeid__has_intnl_10: %SystemBoolean, null\n    ____typeid__has_intnl_11:
     %SystemObject, null\n    ____typeid__has_intnl_12: %SystemBoolean, null\n   
     ____typeid__first_intnl_1: %SystemBoolean, null\n    __retaddr_4: %SystemUInt32,
-    0x00006A4C\n    ____typeid__first_intnl_3: %SystemBoolean, null\n.data_end\n.code_start\n   
+    0x00007A94\n    ____typeid__first_intnl_3: %SystemBoolean, null\n.data_end\n.code_start\n   
     .export HasConfirmedHold\n    HasConfirmedHold:\n        PUSH, ball\n       
     PUSH, __const_0\n        PUSH, __HasConfirmedHold_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __HasConfirmedHold_intnl_0\n        PUSH, __HasConfirmedHold___t0\n       
@@ -3776,7 +4395,244 @@ MonoBehaviour:
     __ConfirmedHoldSequence_L1:\n        PUSH, __ConfirmedHoldSequence___t0\n       
     PUSH, __ConfirmedHoldSequence_ret\n        COPY\n        PUSH, __ConfirmedHoldSequence___t0\n       
     PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n       
-    JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n    .export LocalTagSensorReady\n   
+    JUMP_INDIRECT, __ConfirmedHoldSequence_retjump\n    .export ConfirmedHoldPublisher\n   
+    ConfirmedHoldPublisher:\n        PUSH, ball\n        PUSH, __const_0\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_0\n        JUMP_IF_FALSE, __ConfirmedHoldPublisher_L0\n       
+    PUSH, ball\n        PUSH, __ConfirmedHoldPublisher___t1\n        COPY\n       
+    PUSH, ball\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n        COPY\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_1\n        PUSH, __const_11\n        EXTERN,
+    \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __ConfirmedHoldPublisher___t1\n        PUSH, __const_12\n        PUSH, __ConfirmedHoldPublisher_intnl_2\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __ConfirmedHoldPublisher_intnl_2\n        PUSH, __ConfirmedHoldPublisher___t2\n       
+    COPY\n        PUSH, __ConfirmedHoldPublisher_intnl_2\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    COPY\n        JUMP, __ConfirmedHoldPublisher_L1\n    __ConfirmedHoldPublisher_L0:\n       
+    PUSH, __const_6\n        PUSH, __ConfirmedHoldPublisher___t0\n        COPY\n   
+    __ConfirmedHoldPublisher_L1:\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    PUSH, __ConfirmedHoldPublisher_ret\n        COPY\n        PUSH, __ConfirmedHoldPublisher___t0\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __ConfirmedHoldPublisher_retjump\n       
+    JUMP_INDIRECT, __ConfirmedHoldPublisher_retjump\n    .export HoldHistoryCount\n   
+    HoldHistoryCount:\n        PUSH, ball\n        PUSH, __const_0\n        PUSH,
+    __HoldHistoryCount_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryCount_intnl_0\n        JUMP_IF_FALSE, __HoldHistoryCount_L0\n       
+    PUSH, ball\n        PUSH, __HoldHistoryCount___t1\n        COPY\n        PUSH,
+    ball\n        PUSH, __HoldHistoryCount_intnl_1\n        COPY\n        PUSH, __recStack\n       
+    PUSH, __recSp\n        PUSH, __HoldHistoryCount___t0\n        EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryCount_intnl_1\n        PUSH, __const_13\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryCount___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryCount___t1\n        PUSH, __const_14\n        PUSH, __HoldHistoryCount_intnl_2\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryCount_intnl_2\n        PUSH, __HoldHistoryCount___t2\n       
+    COPY\n        PUSH, __HoldHistoryCount_intnl_2\n        PUSH, __HoldHistoryCount___t0\n       
+    COPY\n        JUMP, __HoldHistoryCount_L1\n    __HoldHistoryCount_L0:\n       
+    PUSH, __const_6\n        PUSH, __HoldHistoryCount___t0\n        COPY\n    __HoldHistoryCount_L1:\n       
+    PUSH, __HoldHistoryCount___t0\n        PUSH, __HoldHistoryCount_ret\n       
+    COPY\n        PUSH, __HoldHistoryCount___t0\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __HoldHistoryCount_retjump\n        JUMP_INDIRECT,
+    __HoldHistoryCount_retjump\n    .export HoldHistoryCapacity\n    HoldHistoryCapacity:\n       
+    PUSH, __const_15\n        PUSH, __HoldHistoryCapacity_ret\n        COPY\n       
+    PUSH, __const_15\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    __HoldHistoryCapacity_retjump\n        JUMP_INDIRECT, __HoldHistoryCapacity_retjump\n   
+    .export HoldHistoryField__SystemInt32_SystemInt32\n    HoldHistoryField__SystemInt32_SystemInt32:\n       
+    PUSH, ball\n        PUSH, __const_0\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n        JUMP_IF_FALSE,
+    __HoldHistoryField__SystemInt32_SystemInt32_L0\n        PUSH, ball\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        COPY\n        PUSH,
+    ball\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    COPY\n        PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_16\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_17\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n        PUSH, __const_18\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryField__SystemInt32_SystemInt32___t1\n        PUSH, __const_19\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t2\n       
+    COPY\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32_intnl_2\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n        COPY\n       
+    JUMP, __HoldHistoryField__SystemInt32_SystemInt32_L1\n    __HoldHistoryField__SystemInt32_SystemInt32_L0:\n       
+    PUSH, __const_6\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    COPY\n    __HoldHistoryField__SystemInt32_SystemInt32_L1:\n        PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32_ret\n        COPY\n       
+    PUSH, __HoldHistoryField__SystemInt32_SystemInt32___t0\n        PUSH, __returnValue\n       
+    COPY\n        JUMP_INDIRECT, __HoldHistoryField__SystemInt32_SystemInt32_retjump\n       
+    JUMP_INDIRECT, __HoldHistoryField__SystemInt32_SystemInt32_retjump\n    .export
+    HoldHistoryTime__SystemInt32\n    HoldHistoryTime__SystemInt32:\n        PUSH,
+    ball\n        PUSH, __const_0\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n        JUMP_IF_FALSE, __HoldHistoryTime__SystemInt32_L0\n       
+    PUSH, ball\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n        COPY\n       
+    PUSH, ball\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        COPY\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, ball\n        EXTERN,
+    \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        PUSH, __const_20\n       
+    PUSH, __HoldHistoryTime__SystemInt32_p_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SetProgramVariable__SystemString_SystemObject__SystemVoid\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n        PUSH, __const_21\n       
+    EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
+    PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
+    \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t1\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
+    PUSH, __recStack\n        PUSH, __recSp\n        PUSH, __HoldHistoryTime__SystemInt32_p_0\n       
+    EXTERN, \"SystemObjectArray.__Get__SystemInt32__SystemObject\"\n        PUSH,
+    __HoldHistoryTime__SystemInt32___t1\n        PUSH, __const_22\n        PUSH,
+    __HoldHistoryTime__SystemInt32_intnl_2\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __HoldHistoryTime__SystemInt32_intnl_2\n        PUSH, __HoldHistoryTime__SystemInt32___t2\n       
+    COPY\n        PUSH, __HoldHistoryTime__SystemInt32_intnl_2\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    COPY\n        JUMP, __HoldHistoryTime__SystemInt32_L1\n    __HoldHistoryTime__SystemInt32_L0:\n       
+    PUSH, __const_23\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    COPY\n    __HoldHistoryTime__SystemInt32_L1:\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    PUSH, __HoldHistoryTime__SystemInt32_ret\n        COPY\n        PUSH, __HoldHistoryTime__SystemInt32___t0\n       
+    PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT, __HoldHistoryTime__SystemInt32_retjump\n       
+    JUMP_INDIRECT, __HoldHistoryTime__SystemInt32_retjump\n    .export LocalTagSensorReady\n   
     LocalTagSensorReady:\n        PUSH, ball\n        PUSH, __const_0\n        PUSH,
     __LocalTagSensorReady_intnl_0\n        EXTERN, \"UnityEngineObject.__op_Equality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_0\n        PUSH, __LocalTagSensorReady___t0\n       
@@ -3905,8 +4761,8 @@ MonoBehaviour:
     EXTERN, \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_4\n        PUSH, __LocalTagSensorReady___t0\n       
     COPY\n    __LocalTagSensorReady_L1:\n        PUSH, __LocalTagSensorReady___t0\n       
-    JUMP_IF_FALSE, __LocalTagSensorReady_L3\n        PUSH, __const_11\n        PUSH,
-    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_11\n        PUSH,
+    JUMP_IF_FALSE, __LocalTagSensorReady_L3\n        PUSH, __const_24\n        PUSH,
+    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_24\n        PUSH,
     __returnValue\n        COPY\n        JUMP_INDIRECT, __LocalTagSensorReady_retjump\n   
     __LocalTagSensorReady_L3:\n        PUSH, __LocalTagSensorReady_intnl_5\n       
     EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
@@ -4092,8 +4948,8 @@ MonoBehaviour:
     PUSH, __LocalTagSensorReady_intnl_12\n        EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_12\n        PUSH, __LocalTagSensorReady___t3\n       
     COPY\n    __LocalTagSensorReady_L5:\n        PUSH, __LocalTagSensorReady___t3\n       
-    JUMP_IF_FALSE, __LocalTagSensorReady_L7\n        PUSH, __const_11\n        PUSH,
-    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_11\n        PUSH,
+    JUMP_IF_FALSE, __LocalTagSensorReady_L7\n        PUSH, __const_24\n        PUSH,
+    __LocalTagSensorReady_ret\n        COPY\n        PUSH, __const_24\n        PUSH,
     __returnValue\n        COPY\n        JUMP_INDIRECT, __LocalTagSensorReady_retjump\n   
     __LocalTagSensorReady_L7:\n        PUSH, ball\n        PUSH, __LocalTagSensorReady___t6\n       
     COPY\n        PUSH, ball\n        PUSH, __LocalTagSensorReady_intnl_13\n       
@@ -4300,17 +5156,17 @@ MonoBehaviour:
     PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady_intnl_15\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady___t7\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __LocalTagSensorReady_mode\n       
-    COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __const_12\n       
+    COPY\n        PUSH, __LocalTagSensorReady_intnl_14\n        PUSH, __const_25\n       
     PUSH, __LocalTagSensorReady_intnl_16\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_16\n        JUMP_IF_FALSE, __LocalTagSensorReady_L9\n       
-    PUSH, __const_13\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
-    PUSH, __const_13\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_26\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
+    PUSH, __const_26\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __LocalTagSensorReady_retjump\n    __LocalTagSensorReady_L9:\n        PUSH, __LocalTagSensorReady_mode\n       
     PUSH, __const_1\n        PUSH, __LocalTagSensorReady_intnl_17\n        EXTERN,
     \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __LocalTagSensorReady_intnl_17\n        JUMP_IF_FALSE, __LocalTagSensorReady_L11\n       
-    PUSH, __const_11\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
-    PUSH, __const_11\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_24\n        PUSH, __LocalTagSensorReady_ret\n        COPY\n       
+    PUSH, __const_24\n        PUSH, __returnValue\n        COPY\n        JUMP_INDIRECT,
     __LocalTagSensorReady_retjump\n    __LocalTagSensorReady_L11:\n        PUSH,
     __retaddr_0\n        PUSH, __LocalGlove_retjump\n        COPY\n        JUMP,
     LocalGlove\n        PUSH, __LocalGlove_ret\n        PUSH, __LocalTagSensorReady_intnl_18\n       
@@ -4461,7 +5317,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorReady_intnl_20\n        PUSH, __const_14\n        EXTERN,
+    PUSH, __LocalTagSensorReady_intnl_20\n        PUSH, __const_27\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4570,7 +5426,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorReady___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorReady___t9\n        PUSH, __const_15\n        PUSH, __LocalTagSensorReady_intnl_21\n       
+    __LocalTagSensorReady___t9\n        PUSH, __const_28\n        PUSH, __LocalTagSensorReady_intnl_21\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorReady_intnl_21\n        PUSH, __LocalTagSensorReady___t10\n       
     COPY\n        PUSH, __LocalTagSensorReady_intnl_21\n        PUSH, __LocalTagSensorReady___t8\n       
@@ -4725,7 +5581,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorCenter_intnl_7\n        PUSH, __const_16\n        EXTERN,
+    PUSH, __LocalTagSensorCenter_intnl_7\n        PUSH, __const_29\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4773,7 +5629,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorCenter___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorCenter___t3\n        PUSH, __const_17\n        PUSH, __LocalTagSensorCenter_intnl_8\n       
+    __LocalTagSensorCenter___t3\n        PUSH, __const_30\n        PUSH, __LocalTagSensorCenter_intnl_8\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorCenter_intnl_8\n        PUSH, __LocalTagSensorCenter___t4\n       
     COPY\n        PUSH, __LocalTagSensorCenter_intnl_8\n        PUSH, __LocalTagSensorCenter_ret\n       
@@ -4927,7 +5783,7 @@ MonoBehaviour:
     EXTERN, \"SystemObjectArray.__Set__SystemInt32_SystemObject__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    PUSH, __LocalTagSensorRadius_intnl_7\n        PUSH, __const_18\n        EXTERN,
+    PUSH, __LocalTagSensorRadius_intnl_7\n        PUSH, __const_31\n        EXTERN,
     \"VRCUdonCommonInterfacesIUdonEventReceiver.__SendCustomEvent__SystemString__SystemVoid\"\n       
     PUSH, __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN,
     \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
@@ -4972,7 +5828,7 @@ MonoBehaviour:
     __recSp\n        PUSH, __const_1\n        PUSH, __recSp\n        EXTERN, \"SystemInt32.__op_Subtraction__SystemInt32_SystemInt32__SystemInt32\"\n       
     PUSH, __recStack_SystemBoolean\n        PUSH, __recSp\n        PUSH, __LocalTagSensorRadius___t0\n       
     EXTERN, \"SystemBooleanArray.__Get__SystemInt32__SystemBoolean\"\n        PUSH,
-    __LocalTagSensorRadius___t3\n        PUSH, __const_19\n        PUSH, __LocalTagSensorRadius_intnl_8\n       
+    __LocalTagSensorRadius___t3\n        PUSH, __const_32\n        PUSH, __LocalTagSensorRadius_intnl_8\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, __LocalTagSensorRadius_intnl_8\n        PUSH, __LocalTagSensorRadius___t4\n       
     COPY\n        PUSH, __LocalTagSensorRadius_intnl_8\n        PUSH, __LocalTagSensorRadius_ret\n       
@@ -4989,22 +5845,22 @@ MonoBehaviour:
     EXTERN, \"UnityEngineTime.__get_time__SystemSingle\"\n        PUSH, __LocalGlove___cse_0\n       
     PUSH, _nextGloveSearch\n        PUSH, __LocalGlove_intnl_2\n        EXTERN, \"SystemSingle.__op_LessThan__SystemSingle_SystemSingle__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_2\n        JUMP_IF_FALSE, __LocalGlove_L3\n        PUSH,
-    __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
     __LocalGlove_retjump\n    __LocalGlove_L3:\n        PUSH, __LocalGlove___cse_0\n       
-    PUSH, __const_21\n        PUSH, _nextGloveSearch\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
+    PUSH, __const_34\n        PUSH, _nextGloveSearch\n        EXTERN, \"SystemSingle.__op_Addition__SystemSingle_SystemSingle__SystemSingle\"\n       
     PUSH, __LocalGlove_local\n        EXTERN, \"VRCSDKBaseNetworking.__get_LocalPlayer__VRCSDKBaseVRCPlayerApi\"\n       
     PUSH, __LocalGlove_local\n        PUSH, __LocalGlove_intnl_5\n        EXTERN,
     \"VRCSDKBaseUtilities.__IsValid__SystemObject__SystemBoolean\"\n        PUSH,
     __LocalGlove_intnl_5\n        JUMP_IF_FALSE, __LocalGlove_L4\n        JUMP, __LocalGlove_L5\n   
-    __LocalGlove_L4:\n        PUSH, __const_20\n        PUSH, __LocalGlove_ret\n       
+    __LocalGlove_L4:\n        PUSH, __const_33\n        PUSH, __LocalGlove_ret\n       
     COPY\n        JUMP_INDIRECT, __LocalGlove_retjump\n    __LocalGlove_L5:\n       
     PUSH, __LocalGlove_local\n        PUSH, __LocalGlove_objects\n        EXTERN,
     \"VRCSDKBaseNetworking.__GetPlayerObjects__VRCSDKBaseVRCPlayerApi__UnityEngineGameObjectArray\"\n       
-    PUSH, __LocalGlove_objects\n        PUSH, __const_22\n        PUSH, __LocalGlove_intnl_7\n       
+    PUSH, __LocalGlove_objects\n        PUSH, __const_35\n        PUSH, __LocalGlove_intnl_7\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_7\n        JUMP_IF_FALSE, __LocalGlove_L7\n        PUSH,
-    __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
-    __LocalGlove_retjump\n    __LocalGlove_L7:\n        PUSH, __const_20\n       
+    __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    __LocalGlove_retjump\n    __LocalGlove_L7:\n        PUSH, __const_33\n       
     PUSH, __LocalGlove_found\n        COPY\n        PUSH, __const_6\n        PUSH,
     __LocalGlove_i\n        COPY\n    __LocalGlove_L8:\n        PUSH, __LocalGlove_objects\n       
     PUSH, __LocalGlove_intnl_8\n        EXTERN, \"SystemArray.__get_Length__SystemInt32\"\n       
@@ -5019,11 +5875,11 @@ MonoBehaviour:
     JUMP, __LocalGlove_L12\n    __LocalGlove_L11:\n        PUSH, __LocalGlove_objects\n       
     PUSH, __LocalGlove_i\n        PUSH, __LocalGlove___t0\n        EXTERN, \"UnityEngineGameObjectArray.__GetValue__SystemInt32__SystemObject\"\n       
     PUSH, __LocalGlove___t0\n        PUSH, __LocalGlove___t1\n        EXTERN, \"UnityEngineGameObject.__get_transform__UnityEngineTransform\"\n       
-    PUSH, __LocalGlove___t1\n        PUSH, __const_23\n        PUSH, __const_13\n       
+    PUSH, __LocalGlove___t1\n        PUSH, __const_36\n        PUSH, __const_26\n       
     PUSH, __LocalGlove___t2\n        EXTERN, \"UnityEngineComponent.__GetComponentsInChildren__SystemType_SystemBoolean__UnityEngineComponentArray\"\n       
     PUSH, __LocalGlove___t2\n        PUSH, ____typeid__first_p_0\n        COPY\n       
-    PUSH, __const_24\n        PUSH, ____typeid__first_p_1\n        COPY\n       
-    PUSH, __const_11\n        PUSH, ____typeid__first_p_2\n        COPY\n       
+    PUSH, __const_37\n        PUSH, ____typeid__first_p_1\n        COPY\n       
+    PUSH, __const_24\n        PUSH, ____typeid__first_p_2\n        COPY\n       
     PUSH, __retaddr_3\n        PUSH, ____typeid__first_retjump\n        COPY\n       
     JUMP, __typeid__first\n        PUSH, ____typeid__first_ret\n        PUSH, __LocalGlove_candidate\n       
     COPY\n        PUSH, ____typeid__first_ret\n        PUSH, __const_0\n        PUSH,
@@ -5032,7 +5888,7 @@ MonoBehaviour:
     JUMP, __LocalGlove_L12\n    __LocalGlove_L14:\n        PUSH, __LocalGlove_found\n       
     PUSH, __const_0\n        PUSH, __LocalGlove_intnl_17\n        EXTERN, \"UnityEngineObject.__op_Inequality__UnityEngineObject_UnityEngineObject__SystemBoolean\"\n       
     PUSH, __LocalGlove_intnl_17\n        JUMP_IF_FALSE, __LocalGlove_L16\n       
-    PUSH, __const_20\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
+    PUSH, __const_33\n        PUSH, __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT,
     __LocalGlove_retjump\n    __LocalGlove_L16:\n        PUSH, __LocalGlove_candidate\n       
     PUSH, __LocalGlove_found\n        COPY\n    __LocalGlove_L12:\n        PUSH,
     __LocalGlove_i\n        PUSH, __const_1\n        PUSH, __LocalGlove_i\n       
@@ -5042,44 +5898,44 @@ MonoBehaviour:
     __LocalGlove_ret\n        COPY\n        JUMP_INDIRECT, __LocalGlove_retjump\n       
     JUMP_INDIRECT, __LocalGlove_retjump\n    __typeid__has:\n        PUSH, ____typeid__has_p_2\n       
     JUMP_IF_FALSE, ____typeid__has_L1\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_25\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
-    PUSH, ____typeid__has_intnl_0\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_1\n       
+    PUSH, __const_38\n        PUSH, ____typeid__has_intnl_0\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_0\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_1\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
     \"SystemBoolean.__op_UnaryNegation__SystemBoolean__SystemBoolean\"\n        JUMP_INDIRECT,
     ____typeid__has_retjump\n    ____typeid__has_L1:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_26\n        PUSH, ____typeid__has_intnl_3\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
-    PUSH, ____typeid__has_intnl_3\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_4\n       
+    PUSH, __const_39\n        PUSH, ____typeid__has_intnl_3\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
+    PUSH, ____typeid__has_intnl_3\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_4\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_4\n        JUMP_IF_FALSE, ____typeid__has_L2\n       
     JUMP, ____typeid__has_L5\n    ____typeid__has_L2:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_26\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_39\n        PUSH, ____typeid__has_intnl_5\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, ____typeid__has_intnl_5\n        PUSH, ____typeid__has_raw\n        COPY\n       
-    PUSH, ____typeid__has_intnl_5\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_6\n       
+    PUSH, ____typeid__has_intnl_5\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_6\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_6\n        JUMP_IF_FALSE, ____typeid__has_L4\n       
     JUMP, ____typeid__has_L5\n    ____typeid__has_L4:\n        PUSH, ____typeid__has_raw\n       
     PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_intnl_7\n        EXTERN,
     \"SystemArray.__IndexOf__SystemArray_SystemObject__SystemInt32\"\n        PUSH,
-    ____typeid__has_intnl_7\n        PUSH, __const_27\n        PUSH, ____typeid__has_ret\n       
+    ____typeid__has_intnl_7\n        PUSH, __const_40\n        PUSH, ____typeid__has_ret\n       
     EXTERN, \"SystemInt32.__op_Inequality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L5:\n        PUSH,
-    ____typeid__has_p_0\n        PUSH, __const_25\n        PUSH, ____typeid__has_intnl_9\n       
+    ____typeid__has_p_0\n        PUSH, __const_38\n        PUSH, ____typeid__has_intnl_9\n       
     EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariableType__SystemString__SystemType\"\n       
-    PUSH, ____typeid__has_intnl_9\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_10\n       
+    PUSH, ____typeid__has_intnl_9\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_10\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_10\n        JUMP_IF_FALSE, ____typeid__has_L6\n       
     JUMP, ____typeid__has_L9\n    ____typeid__has_L6:\n        PUSH, ____typeid__has_p_0\n       
-    PUSH, __const_25\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
+    PUSH, __const_38\n        PUSH, ____typeid__has_intnl_11\n        EXTERN, \"VRCUdonCommonInterfacesIUdonEventReceiver.__GetProgramVariable__SystemString__SystemObject\"\n       
     PUSH, ____typeid__has_intnl_11\n        PUSH, ____typeid__has_raw\n        COPY\n       
-    PUSH, ____typeid__has_intnl_11\n        PUSH, __const_22\n        PUSH, ____typeid__has_intnl_12\n       
+    PUSH, ____typeid__has_intnl_11\n        PUSH, __const_35\n        PUSH, ____typeid__has_intnl_12\n       
     EXTERN, \"SystemObject.__op_Equality__SystemObject_SystemObject__SystemBoolean\"\n       
     PUSH, ____typeid__has_intnl_12\n        JUMP_IF_FALSE, ____typeid__has_L8\n       
     JUMP, ____typeid__has_L9\n    ____typeid__has_L8:\n        PUSH, ____typeid__has_raw\n       
     PUSH, ____typeid__has_p_1\n        PUSH, ____typeid__has_ret\n        EXTERN,
     \"SystemInt64.__op_Equality__SystemInt64_SystemInt64__SystemBoolean\"\n       
     JUMP_INDIRECT, ____typeid__has_retjump\n    ____typeid__has_L9:\n        PUSH,
-    __const_11\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
+    __const_24\n        PUSH, ____typeid__has_ret\n        COPY\n        JUMP_INDIRECT,
     ____typeid__has_retjump\n        JUMP_INDIRECT, ____typeid__has_retjump\n   
     __typeid__first:\n        PUSH, ____typeid__first_p_0\n        PUSH, ____typeid__first_n\n       
     EXTERN, \"UnityEngineComponentArray.__get_Length__SystemInt32\"\n        PUSH,
@@ -5098,7 +5954,7 @@ MonoBehaviour:
     COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n    ____typeid__first_L3:\n       
     PUSH, ____typeid__first_i\n        PUSH, __const_1\n        PUSH, ____typeid__first_i\n       
     EXTERN, \"SystemInt32.__op_Addition__SystemInt32_SystemInt32__SystemInt32\"\n       
-    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_20\n       
+    JUMP, ____typeid__first_L0\n    ____typeid__first_L1:\n        PUSH, __const_33\n       
     PUSH, ____typeid__first_ret\n        COPY\n        JUMP_INDIRECT, ____typeid__first_retjump\n       
     JUMP_INDIRECT, ____typeid__first_retjump\n.code_end\n"
   optBeforeInject:
@@ -5119,9 +5975,9 @@ MonoBehaviour:
   - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
   - "=__recStack_SystemBoolean\tArrayAlloc\t=SystemBooleanArray\t1024\t\t\t\t\t"
   - "=__recStack_VRCSDKBaseVRCPlayerApi\tArrayAlloc\t=VRCSDKBaseVRCPlayerApiArray\t1024\t\t\t\t\t"
-  - "=__const_13\tBoolTrue\t\t0\t\t\t\t\t"
-  - "=__const_23\tTypeConst\t=VRCUdonUdonBehaviour\t0\t\t\t\t\t"
-  - "=__const_24\tPrimConst\t=SystemInt64\t0\tInt64:=1823343176960512592\t\t\t\t"
+  - "=__const_26\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__const_36\tTypeConst\t=VRCUdonUdonBehaviour\t0\t\t\t\t\t"
+  - "=__const_37\tPrimConst\t=SystemInt64\t0\tInt64:=1823343176960512592\t\t\t\t"
   optAfterInject:
   - "=__sf__X9zPitchType__Names\tArrayConst\t=SystemStringArray\t10\t\t\t\t\t=String:=4-Seam\x01String:=2-Seam\x01String:=Sinker\x01String:=Cutter\x01String:=Slider\x01String:=Sweeper\x01String:=Curve\x01String:=Split\x01String:=Change\x01String:=Knuckle"
   - "=__sf__X9zPitchType__ParameterCounts\tArrayConst\t=SystemInt32Array\t10\t\t\t\t\t=Int32:=0\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=3\x01Int32:=1\x01Int32:=2\x01Int32:=1\x01Int32:=2\x01Int32:=3"
@@ -5140,14 +5996,14 @@ MonoBehaviour:
   - "=__recStack\tArrayAlloc\t=SystemObjectArray\t1024\t\t\t\t\t"
   - "=__recStack_SystemBoolean\tArrayAlloc\t=SystemBooleanArray\t1024\t\t\t\t\t"
   - "=__recStack_VRCSDKBaseVRCPlayerApi\tArrayAlloc\t=VRCSDKBaseVRCPlayerApiArray\t1024\t\t\t\t\t"
-  - "=__const_13\tBoolTrue\t\t0\t\t\t\t\t"
-  - "=__const_23\tTypeConst\t=VRCUdonUdonBehaviour\t0\t\t\t\t\t"
-  - "=__const_24\tPrimConst\t=SystemInt64\t0\tInt64:=1823343176960512592\t\t\t\t"
+  - "=__const_26\tBoolTrue\t\t0\t\t\t\t\t"
+  - "=__const_36\tTypeConst\t=VRCUdonUdonBehaviour\t0\t\t\t\t\t"
+  - "=__const_37\tPrimConst\t=SystemInt64\t0\tInt64:=1823343176960512592\t\t\t\t"
   networkCallableSlots: []
-  optExternBefore: 756
-  optExternAfter: 756
-  optInsnBefore: 3574
-  optInsnAfter: 3477
-  optBytesBefore: 27980
-  optBytesAfter: 27332
+  optExternBefore: 863
+  optExternAfter: 863
+  optInsnBefore: 4122
+  optInsnAfter: 4013
+  optBytesBefore: 32228
+  optBytesAfter: 31500
   optStage: ran

@@ -4,8 +4,9 @@ using VRC.SDKBase;
 
 // The touch volume of one base (the base's TouchBox child, docs/development/player-event-collector.md):
 // a trigger BoxCollider (no physical push) whose size, position and rotation are set in the
-// Inspector. It reports only the local player's capsule entering and leaving to the detector;
-// remote players' capsule events are ignored here (each player detects their own contact).
+// Inspector. It reports only the local player's capsule entering, staying (to fill in a missed
+// enter) and leaving to the detector; remote players' capsule events are ignored here (each player
+// detects their own contact).
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public partial class BaseZoneBehaviour : TsukimiBehaviour
 {
@@ -19,6 +20,15 @@ public partial class BaseZoneBehaviour : TsukimiBehaviour
     public override void OnPlayerTriggerEnter(VRCPlayerApi player)
     {
         if (Utilities.IsValid(player) && player.isLocal && detector != null) detector.SetCapsule(baseIndex, true);
+    }
+
+    // Fills in a missed enter (teleporting in, a trigger re-enabled, an enter lost during a load):
+    // the flag only says the capsule is inside, so repeated stays send nothing; the detector
+    // still sends one enter on the OR of the regions.
+    public override void OnPlayerTriggerStay(VRCPlayerApi player)
+    {
+        if (detector == null || !Utilities.IsValid(player) || !player.isLocal) return;
+        if (!detector.GetCapsule(baseIndex)) detector.SetCapsule(baseIndex, true);
     }
 
     public override void OnPlayerTriggerExit(VRCPlayerApi player)
