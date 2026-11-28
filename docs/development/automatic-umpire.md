@@ -267,12 +267,13 @@ works (text only).
 | `… You're Out 01.wav` | Out | 1.38 s |
 | `… Safe 03.wav` | Safe | 1.34 s |
 | `… Time 02.wav` | Time | 0.78 s |
+| `UmpirePlayCall.ogg` | Play | 0.29 s (Ogg, 44.1 kHz stereo, 3D) |
 
-All are WAV, 48 kHz stereo, imported 3D with normalize (one variation per call). Assigned in
+The WAV files are, 48 kHz stereo, imported 3D with normalize (one variation per call). Assigned in
 `Match.unity` on the `MatchManager/UmpireCall` instance (scene overrides); the package prefab has
 none, so in a consumer project these references are simply empty.
 
-No Play, Fair, Strike three, Walk or Hit by pitch recording exists; those calls are text only (or
+No Fair, Strike three, Walk or Hit by pitch recording exists; those calls are text only (or
 fall back as listed). Import: 3D, normalize, default load type. The files carry no license
 information; they are referenced only from the development sample scene and are **not** packaged.
 
