@@ -3,6 +3,31 @@ using Tsukimi;
 public partial class CountDisplayBehaviour
 {
     [TsukimiTest]
+    public void EveryCountFitsItsRow()
+    {
+        for (int balls = 0; balls <= 3; balls++)
+            for (int strikes = 0; strikes <= 2; strikes++)
+                for (int outs = 0; outs <= 2; outs++)
+                {
+                    Show(balls, strikes, outs);
+                    Assert.AreEqual(balls, GetShownBalls());
+                    Assert.AreEqual(strikes, GetShownStrikes());
+                    Assert.AreEqual(outs, GetShownOuts());
+                }
+    }
+
+    [TsukimiTest]
+    public void MissingMatchClearsEveryRow()
+    {
+        match = null;
+        Show(3, 2, 2);
+        _OnMatchChanged();
+        Assert.AreEqual(0, GetShownBalls());
+        Assert.AreEqual(0, GetShownStrikes());
+        Assert.AreEqual(0, GetShownOuts());
+    }
+
+    [TsukimiTest]
     public void LampsFollowTheCountWithinTheirRows()
     {
         Show(3, 2, 1);

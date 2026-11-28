@@ -11,10 +11,12 @@ namespace VVBC.Editor
 {
     // Public variables are edited in place by TsukimiSharp's own drawer, which
     // honours the T# labels, ranges, tooltips and hidden fields. This Inspector
-    // adds only VVBC's Bat Geometry editor and HomePlate reconnection.
+    // adds only VVBC's Bat Geometry editor, HomePlate reconnection and the Inning
+    // Scoreboard design tools.
     [CustomUdonBehaviourInspector(typeof(VVBCTSharpProgramAsset))]
     public sealed class VVBCTSharpBehaviourInspector : UnityEditor.Editor
     {
+        private readonly BackScreenDisplayPreview backScreenPreview = new BackScreenDisplayPreview();
         private bool showUtilities;
         private bool showAdvanced;
         private bool showAllBatFields;
@@ -46,6 +48,10 @@ namespace VVBC.Editor
                     else asset.DrawInteractionInspector(behaviour);
                 }
                 else asset.DrawFriendlyInspector(behaviour, ref dirty);
+
+                if (asset.name == InningScoreboardInspector.ProgramName) InningScoreboardInspector.Draw(behaviour, dirty);
+
+                if (BackScreenDisplayPreview.Supports(asset.name)) backScreenPreview.Draw(behaviour, asset.name, dirty);
 
                 // Connections depend only on the Ball reference.
                 if (dirty && isZone && HomePlateConnections.ReadReference(behaviour, "ball") != ballBefore)

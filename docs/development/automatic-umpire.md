@@ -283,17 +283,94 @@ All read the controller's query API (effective state while live, committed while
 `_OnMatchChanged`, redrawing only when what they show changed; late joiners rebuild from the synced
 state; corrections redraw. No Render Texture or camera is needed (world-space Canvas).
 
-- `InningScoreboard.prefab`: Away / Home rows; inning columns (9, up to 12 when needed, past 12 the
-  last 12 with their numbers); fixed total, team and R / H / E widths, inning columns sharing the
-  rest; offense team name in yellow plus a thin offense label (row background unchanged); current
-  inning header colour plus a label; R in the accent colour; all centred; both team names in the
-  size the longer fits. MatchState keeps 30 innings regardless. Nestable into a future
-  `BackScreenCanvas.prefab`.
+- `InningScoreboard.prefab`: the back-screen inning score (below).
 - `CountDisplay.prefab`: B 3, S 2, O 2 lamps; an open third strike or the third out before the
   dead ball lights the whole row.
 - `BaseRunnerDisplay.prefab`: 1B / 2B / 3B diamonds lit by awarded runners only.
 - H / E are never inferred: the umpire enters them (`RulingHit` / `RulingError` on the panel, or a
   correction); the displays show the MatchState.
+
+### Inning scoreboard
+
+`InningScoreboard.prefab` (`Match/InningScoreboardBehaviour.cs`) is a display only: no match data
+of its own, no sync, no rules. Its root is a RectTransform **without a Canvas**; it is placed and
+scaled inside a parent world-space Canvas (a future `BackScreenCanvas.prefab`; the sample
+`Match.unity` has a minimal `BackScreenCanvas` object for it). Set `match` on the scene instance.
+
+**Source and events.** On `_OnMatchChanged` (registered with `AddChangeListener`, and once at
+`Start`) it reads `IsMatchReady`, `CopyEffectiveState` (the committed MatchState, with the live
+play's Delta while live: runs, hits and errors entered during a live play show at once) and
+`GetInningsToShow`. Never per frame, never from a PlayState field. While the controller is not
+ready (no state yet, an Owner recovering) and before the match starts, no score is shown: blank
+cells and totals, header 1..9, no offense or current-inning highlight. A late joiner, a recovered
+Owner and a manual correction are drawn from the state at that event like any other.
+
+**Cells.** Away is the upper row, Home the lower (RosterRules); top = Away bats. A half-inning is
+shown when `MatchRules.InningReached` (the current half included: its runs so far, 0 included);
+one not reached is blank, so a played scoreless inning (0) and one not reached (blank) differ.
+`X` is the Home half that was not needed: the game ended (`PhaseEnded`) in the **top** half with
+`ResultHomeWin` and Home ahead, which is how `GameFlowRules.EndHalf` ends a game whose Home team
+leads after the top of the last inning. A Home win after batting (walk-off) shows its runs; an
+umpire's end in the top with Away ahead or tied leaves the bottom blank. R is the sum of the
+inning runs (`MatchRules.TeamRuns`), H / E the MatchState values. Scores are 0..99 by design.
+
+**Columns.** 12 inning columns are prepared in the prefab; `ColumnsFor(GetInningsToShow)` (9..12)
+are active and share the inning area equally (`1062 / n`: 118, 106.2, 96.55, 88.5). Only the
+column containers, the lines between them and the current-inning marks move when the count
+changes. Past 12 innings the board keeps 12 columns and shows the last 12 (header numbers follow,
+R still counts every inning); `GetOverflowInning` names the inning and one warning
+(`[VVBC Scoreboard] inning N needs more than 12 columns …`) is logged when it starts. MatchState
+keeps 30 innings regardless; nothing in the engine changes.
+
+**Layout** (design units, top-left origin; all Inspector values): board 1800 × 320; margins 24 / 16;
+team 24 + 360; innings 384 + 1062; separator 1446 + 18; R / H / E 1464 + 3 × 104; header 16 + 64,
+Away 80 + 112, Home 192 + 112. Lines: header / rows, Away / Home, team / innings and innings /
+R H E at 3, between innings (and R, H, E) at 1, all one `lineColor` on untextured `Image`s.
+Offense bar 6 × 88 at the left of the team column; current-inning underline 4.
+
+**Typography.** Barlow Semi Condensed Bold, one static TMP SDF Font Asset (ASCII 32..126, 90 pt
+sampling, padding 9, 1024² Alpha8 atlas, not readable) and its one shared material for every text;
+colours are vertex colours, never extra materials. Kerning off, no auto-size, no wrapping, no
+ellipsis. Scores, R / H / E and `X` are 66 everywhere: the widest two-digit score of this font is
+"44" (1.0878 em, proportional digits), 71.8 units at 66, inside the 72.5 units of a 12-column cell
+less 2 × 8 padding; 67 would not fit. Inning headers 47, R / H / E headers 46. Team names: both
+use one size, the largest (≤ 64, step 1, ≥ 24) at which the wider name fits 360 − 2 × 24 units,
+measured with `glyphAdvances` (the font's advances per unit size, measured in the Editor; Udon
+cannot measure TMP text). Numbers and headers are vertically centred on their glyphs
+(`Midline`), names on the line (`Center`).
+
+**Colours** (Inspector): background `#0A131B`, text `#F4F8FA`, headers `#AFC1CD`, R values
+`#FFD36E`, offense name and bar `#FFD36E`, current inning text `#6DD9F5`, background `#254E60`,
+underline `#54C8E7`, lines `#364F5E`. The offense changes only the name colour and the bar, never a
+row background; the current inning only its header (text, background, underline), never a cell.
+
+**Cost.** Each cell keeps the value it shows (`int`, blank and `X` included); a text, colour,
+active state or RectTransform is written only when it changes. One cross-Behaviour copy per event.
+No Update, no LayoutGroup, no GraphicRaycaster, every `raycastTarget` off, no runtime objects.
+`ApplyLayout` (every rectangle, size and colour from the Inspector values) runs once at `Start`.
+
+**Editor** (`Editor/InningScoreboardInspector.cs`, in the VVBC T# Inspector below the variables):
+*Apply Layout* applies the Font Asset and `ApplyLayout`, and runs by itself when a variable is
+edited; *Measure Font* stores `glyphAdvances` from the Font Asset; a report shows the two-digit
+fit, the largest fitting score size, the shared name size and characters missing from the font.
+*Preview* draws a sample state (phase, regulation, inning, half, result, runs per inning, H / E;
+presets Regulation, 12 Innings, X Ending) with the runtime's own `Draw`, run as C# on a hidden
+temporary instance; its settings live in the Editor session only and never touch a match.
+*Clear Preview* reverts the preview's overrides on a prefab instance and draws the not-ready board.
+
+**Tests** (`InningScoreboardBehaviour.Tests.cs`, 14): areas add up to 1800 × 320; only the inning
+columns change width (9..12) and R / H / E stay; two digits fit the narrowest column and 66 is the
+largest that does; both names share the size the wider drawn name fits (width, not length);
+texts for scores, blank and X; not ready and not started show nothing; top / bottom of the first
+(offense, current column, 0 vs blank); a live play's forced run, hit and error through
+`PlayRules.Compose`; unchanged cells are not written again; extra innings 10..12 through
+`GameFlowRules.EndHalf`; past 12 (12 columns, last 12, diagnostic); X only when Home did not need
+to bat (walk-off, Away win, umpire's end); late join, recovery (not ready then ready) and a
+correction back to nine innings. Breaking the X rule, the not-reached rule or the unchanged-cell
+check turned them red. ClientSim (`Match.unity`, one client): not started (blank), Start match (top
+1, Away highlighted, zeros), a correction to the bottom half (Home highlighted, runs and H), a
+correction to the 11th (11 columns of 96.55, highlight moved), End match (no highlight); the
+background colour never changed. Not covered: several clients, a real Owner change.
 
 ## Inspector and prefabs
 
@@ -348,9 +425,9 @@ Tsukimi tests (default path):
 - `MatchEventReceiverBehaviour.Tests.cs` (+1: pitch results from the batter only),
   `MatchControllerBehaviour.Rules.Tests.cs` (+1: physical pitch marks, validation, the three-out dead
   ball), `SwingRules.Tests.cs` (3), `UmpireCallBehaviour.Tests.cs` (2),
-  `InningScoreboardBehaviour.Tests.cs` (2), `CountDisplayBehaviour.Tests.cs` (1),
+  `InningScoreboardBehaviour.Tests.cs` (14, see [Inning scoreboard](#inning-scoreboard)), `CountDisplayBehaviour.Tests.cs` (1),
   `BaseRunnerDisplayBehaviour.Tests.cs` (1), `BallBehaviour.PossessionHistory.Tests.cs` (+1).
-- Regression: the Match folder (305 with the new tests) and the Ball folder (1565) pass.
+- Regression: the Match folder (317 with the new tests) and the Ball folder (1565) pass.
 
 Found and fixed while integrating: Behaviours sharing the MatchManager object registered
 `GetComponent(typeof(UdonBehaviour))` — the first UdonBehaviour of the object, the controller — as

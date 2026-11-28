@@ -3,6 +3,25 @@ using Tsukimi;
 public partial class BaseRunnerDisplayBehaviour
 {
     [TsukimiTest]
+    public void AllOccupancyPatternsCanBeDrawn()
+    {
+        for (int mask = 0; mask < 8; mask++)
+        {
+            Show(mask);
+            Assert.AreEqual(mask, GetShownMask());
+        }
+    }
+
+    [TsukimiTest]
+    public void MissingMatchClearsEveryBase()
+    {
+        match = null;
+        Show(7);
+        _OnMatchChanged();
+        Assert.AreEqual(0, GetShownMask());
+    }
+
+    [TsukimiTest]
     public void OnlyAwardedRunnersLightTheirBases()
     {
         Show(5);

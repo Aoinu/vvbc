@@ -1,31 +1,32 @@
+using TMPro;
 using Tsukimi;
 using UnityEngine;
 using UnityEngine.UI;
 using VRC.Udon;
 
-// Ball / strike / out lamps (CountDisplay.prefab; docs/development/automatic-umpire.md#count-and-bases).
-// The MatchController's count only (effective while live, committed while dead), redrawn on
-// _OnMatchChanged. A third strike still open, or the third out before the dead ball, lights every
-// lamp of its row: the display never shows more lamps than it has, and never a count the state
-// does not hold.
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public partial class CountDisplayBehaviour : TsukimiBehaviour
 {
     public MatchControllerBehaviour match;
-    [Tooltip("Ball lamps (three).")]
+
+    [Header("Appearance")]
+    public Color backgroundColor = new Color(16f / 255f, 30f / 255f, 41f / 255f);
+    public Color textColor = new Color(244f / 255f, 248f / 255f, 250f / 255f);
+    public Color ballOn = new Color(85f / 255f, 216f / 255f, 122f / 255f);
+    public Color strikeOn = new Color(245f / 255f, 204f / 255f, 85f / 255f);
+    public Color outOn = new Color(240f / 255f, 109f / 255f, 101f / 255f);
+    public Color lampOff = new Color(39f / 255f, 59f / 255f, 70f / 255f);
+    [Min(1f)] public float labelFontSize = 62f;
+
+    [Header("Elements")]
+    public Image background;
+    public TextMeshProUGUI[] labels = new TextMeshProUGUI[3];
     public Image[] ballLamps = new Image[3];
-    [Tooltip("Strike lamps (two).")]
     public Image[] strikeLamps = new Image[2];
-    [Tooltip("Out lamps (two).")]
     public Image[] outLamps = new Image[2];
-    public Color ballOn = new Color(0.2f, 0.9f, 0.3f, 1f);
-    public Color strikeOn = new Color(1f, 0.8f, 0.1f, 1f);
-    public Color outOn = new Color(1f, 0.2f, 0.2f, 1f);
-    public Color lampOff = new Color(0.15f, 0.15f, 0.15f, 1f);
 
     private int _balls = -1, _strikes = -1, _outs = -1;
     private int _refreshes;
-    private bool _listening;
 
     public int GetRefreshCount() { return _refreshes; }
     public int GetShownBalls() { return _balls; }
@@ -34,37 +35,50 @@ public partial class CountDisplayBehaviour : TsukimiBehaviour
 
     void Start()
     {
-        if (match != null && !_listening)
-        {
-            _listening = true;
-            match.AddChangeListener((UdonBehaviour)GetComponent(typeof(UdonBehaviour)));
-        }
+        ApplyStyle();
+        if (match != null) match.AddChangeListener((UdonBehaviour)(Component)this);
         _OnMatchChanged();
     }
 
     public void _OnMatchChanged()
     {
-        if (match == null) return;
-        bool known = match.IsMatchReady() && match.GetPhase() == MatchRules.PhaseInProgress;
-        Show(known ? match.GetBalls() : 0, known ? match.GetStrikes() : 0, known ? match.GetOuts() : 0);
+        bool active = match != null && match.IsMatchReady() && match.GetPhase() == MatchRules.PhaseInProgress;
+        Show(active ? match.GetBalls() : 0, active ? match.GetStrikes() : 0, active ? match.GetOuts() : 0);
     }
 
-    // Lit lamps per row, clamped to the lamps there are. Only a change redraws.
+    public void ApplyStyle()
+    {
+        if (background != null) background.color = backgroundColor;
+        foreach (TextMeshProUGUI label in labels)
+        {
+            if (label == null) continue;
+            label.color = textColor;
+            label.fontSize = labelFontSize;
+        }
+    }
+
     public void Show(int balls, int strikes, int outs)
     {
-        balls = Mathf.Clamp(balls, 0, ballLamps.Length);
-        strikes = Mathf.Clamp(strikes, 0, strikeLamps.Length);
-        outs = Mathf.Clamp(outs, 0, outLamps.Length);
+        balls = Mathf.Clamp(balls, 0, 3);
+        strikes = Mathf.Clamp(strikes, 0, 2);
+        outs = Mathf.Clamp(outs, 0, 2);
         if (balls == _balls && strikes == _strikes && outs == _outs) return;
-        _balls = balls; _strikes = strikes; _outs = outs;
+        if (balls != _balls) Light(ballLamps, balls, ballOn);
+        if (strikes != _strikes) Light(strikeLamps, strikes, strikeOn);
+        if (outs != _outs) Light(outLamps, outs, outOn);
+        _balls = balls;
+        _strikes = strikes;
+        _outs = outs;
         _refreshes++;
-        Light(ballLamps, balls, ballOn);
-        Light(strikeLamps, strikes, strikeOn);
-        Light(outLamps, outs, outOn);
     }
 
     private void Light(Image[] lamps, int lit, Color on)
     {
-        for (int i = 0; i < lamps.Length; i++) if (lamps[i] != null) lamps[i].color = i < lit ? on : lampOff;
+        for (int i = 0; i < lamps.Length; i++)
+        {
+            Image lamp = lamps[i];
+            Color color = i < lit ? on : lampOff;
+            if (lamp != null && lamp.color != color) lamp.color = color;
+        }
     }
 }

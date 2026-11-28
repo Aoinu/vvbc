@@ -3,9 +3,12 @@
 	"references": [
 		"VVBC.Runtime",
 		"TsukimiCode.UdonTools.Editor",
+		"TsukimiCode.UdonTools.Runtime",
 		"VRC.Udon",
 		"VRC.Udon.Editor",
-		"VRC.SDKBase.Editor.BuildPipeline"
+		"VRC.SDKBase.Editor.BuildPipeline",
+		"Unity.TextMeshPro",
+		"UnityEngine.UI"
 	],
 	"includePlatforms": [
 		"Editor"

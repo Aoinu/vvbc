@@ -67,6 +67,39 @@ public partial class MatchControllerBehaviour
         }
     }
 
+
+    // The back-screen displays subscribe to the controller and draw each live change before commit.
+    private CountDisplayBehaviour countDisplay;
+    private BaseRunnerDisplayBehaviour baseRunnerDisplay;
+
+    [TsukimiTest]
+    public void BackScreenFollowsLiveRulingsAndClearsAtTheHalf()
+    {
+        Mimic.Join();
+        ResetControllerForTest();
+        AddChangeListener((VRC.Udon.UdonBehaviour)(Component)countDisplay);
+        AddChangeListener((VRC.Udon.UdonBehaviour)(Component)baseRunnerDisplay);
+        _match[MatchRules.Runners] = 15;
+
+        StartLiveForTest();
+        Assert.AreEqual(1, baseRunnerDisplay.GetShownMask(), "live start draws the awarded runner");
+        RulingForTest(PlayRules.JudgeBall);
+        RulingForTest(PlayRules.JudgeCalledStrike);
+        Assert.AreEqual(1, countDisplay.GetShownBalls());
+        Assert.AreEqual(1, countDisplay.GetShownStrikes());
+        Assert.AreEqual(0, _match[MatchRules.Balls], "the lamp follows the live delta before commit");
+
+        RulingForTest(PlayRules.RulingAwardBase, GetRunnerIdOnBase(1), 2);
+        Assert.AreEqual(2, baseRunnerDisplay.GetShownMask(), "the live award moves the illuminated base");
+        RulingForTest(PlayRules.JudgeCatch);
+        RulingForTest(PlayRules.JudgeCatch);
+        RulingForTest(PlayRules.JudgeCatch);
+        Assert.AreEqual(2, countDisplay.GetShownOuts());
+        Assert.AreEqual(TimeRules.Accepted, DecideForceTime(true, GetPlayId(), 150.0));
+        Assert.AreEqual(0, baseRunnerDisplay.GetShownMask(), "the half-inning change clears the bases");
+        Assert.AreEqual(0, countDisplay.GetShownOuts());
+    }
+
     // ---- Live start ----
 
     [TsukimiTest]
