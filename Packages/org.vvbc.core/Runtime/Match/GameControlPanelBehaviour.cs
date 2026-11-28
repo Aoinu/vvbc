@@ -75,6 +75,8 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
     public Button forceTimeButton;
     public Button transferTargetButton;
     public Button transferButton;
+    [Tooltip("Takes the umpire authority for the local player (anyone, at any time). Empty = the Controls/Match/ClaimUmpire button of this panel, if there is one.")]
+    public Button claimButton;
     [Tooltip("Correction buttons (load, field, -/+, apply): enabled for the umpire while dead.")]
     public Button[] editButtons = new Button[0];
     [Tooltip("Shown only for the umpire when the controller allows development rulings.")]
@@ -108,6 +110,13 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
     {
         if (_registered) return;
         _registered = true;
+        // Scene instances that override this panel's variables keep their own table, without
+        // a field added to the prefab later: find the prefab's button by its place.
+        if (claimButton == null)
+        {
+            Transform claim = transform.Find("Controls/Match/ClaimUmpire");
+            if (claim != null) claimButton = claim.GetComponent<Button>();
+        }
         UdonBehaviour self = (UdonBehaviour)GetComponent(typeof(UdonBehaviour));
         if (controller != null) controller.AddChangeListener(self);
         if (authority != null) authority.AddChangeListener(self);
@@ -160,6 +169,12 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
     {
         _transferTarget = NextPlayer(_transferTarget, true);
         Refresh();
+    }
+
+    // Anyone present takes the umpire authority for themselves, live play or not.
+    public void _ClaimUmpire()
+    {
+        if (authority != null) authority.SubmitClaim();
     }
 
     public void _Transfer()
@@ -413,6 +428,7 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
             SetText(playersText, "");
             SetButtons(false, false, false);
             SetInteractable(initializeButton, failed && controller.IsLocalUmpire());
+            RefreshClaim();
             return;
         }
         string status = (live ? "LIVE" : "DEAD") + "   " + PhaseName(_view[MatchRules.Phase], _view[MatchRules.Result])
@@ -446,6 +462,7 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
         SetText(rulingText, "Runner on " + (_rulingBase == 0 ? "home" : _rulingBase + "B") + ": " + Name(PlayerOnRulingBase())
             + "   target " + (_rulingTarget == 4 ? "home" : _rulingTarget + "B"));
         SetButtons(true, live, umpire);
+        RefreshClaim();
         RefreshContacts();
         RefreshReviews();
     }
@@ -492,6 +509,15 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
         for (int i = 0; i < editButtons.Length; i++) SetInteractable(editButtons[i], umpire && dead);
         if (developmentRulings != null) developmentRulings.SetActive(umpire && controller.allowDevelopmentRulings);
     }
+
+    // The authority decides on its own state, so a claim works while the match is not ready
+    // (an umpire may be needed to recover it).
+    private void RefreshClaim()
+    {
+        SetInteractable(claimButton, CanClaim(authority != null && authority.IsReady(), authority != null && authority.IsLocalUmpire()));
+    }
+
+    public static bool CanClaim(bool authorityReady, bool localIsUmpire) { return authorityReady && !localIsUmpire; }
 
     private static void SetInteractable(Button button, bool on)
     {

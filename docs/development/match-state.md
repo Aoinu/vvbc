@@ -350,9 +350,13 @@ after the unlock. The Owner of the controller keeps the lock in line on every `_
 
 `ProductionMatchOperatorAuthorityBehaviour` (production `MatchOperatorAuthorityBehaviour`, also
 the roster's `operatorAuthority`): the first umpire is the Instance Master; the umpire hands it to
-a present player (`SubmitTransfer`, checked against the caller and the revision they saw); a Master
-change does not move it while the umpire is here; when the umpire leaves, the current Master gets
-it. Owning the MatchManager or the roster grants nothing. A new Owner recovers it like the roster
+a present player (`SubmitTransfer`, checked against the caller and the revision they saw); **any
+present player can claim it for themselves at any time, live play included** (`SubmitClaim` →
+`RequestClaim` on the Owner: the caller from `NetworkCalling.CallingPlayer`, the revision they saw,
+so of two claims sent at once the first wins and the other is refused as stale; the game panel's
+**Claim umpire** button, enabled for everyone but the umpire once the authority is decided); a
+Master change does not move it while the umpire is here; when the umpire leaves, the current Master
+gets it. Owning the MatchManager or the roster grants nothing. A new Owner recovers it like the roster
 (newest revision, kept only if that umpire is present). `RosterTestOperatorAuthorityBehaviour`
 stays development-only.
 
@@ -480,6 +484,8 @@ possession on remote clients.
 ### Real-device checklist
 
 1. Two clients: the Instance Master is the umpire; hand it over; the old umpire's buttons go dead.
+   Then the old umpire presses Claim umpire and gets it back (also during a live play); two players
+   claiming at once: one of them is the umpire on every client.
 2. Umpire leaves: the current Master becomes umpire; a Master change with the umpire present changes nothing.
 3. Live start with the roster on another client: roster buttons lock on both panels; Time unlocks them.
 4. During live play: registration, release, transfer, order moves, forced release all refused; a

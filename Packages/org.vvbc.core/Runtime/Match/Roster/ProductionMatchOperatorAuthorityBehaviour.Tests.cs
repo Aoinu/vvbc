@@ -57,6 +57,37 @@ public partial class ProductionMatchOperatorAuthorityBehaviour
     }
 
     [TsukimiTest]
+    public void AnyPresentPlayerClaimsTheAuthority()
+    {
+        VRCPlayerApi master = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        VRCPlayerApi third = Mimic.Join();
+        ResetForTest(master.playerId);
+        int revision = GetRevision();
+        Assert.AreEqual(Applied, ApplyClaim(other.playerId, revision), "a player who is not the umpire takes it");
+        Assert.IsTrue(IsMatchOperator(other.playerId));
+        Assert.IsFalse(IsMatchOperator(master.playerId), "the previous umpire loses it");
+        Assert.AreEqual(revision + 1, GetRevision());
+        Assert.AreEqual(RejectedStale, ApplyClaim(third.playerId, revision), "a claim sent before the first one landed");
+        Assert.IsTrue(IsMatchOperator(other.playerId), "the first claim stands");
+        Assert.AreEqual(RejectedInvalid, ApplyClaim(other.playerId, GetRevision()), "the umpire claiming again changes nothing");
+        Assert.AreEqual(RejectedInvalid, ApplyClaim(0, GetRevision()));
+        Assert.AreEqual(Applied, ApplyClaim(master.playerId, GetRevision()), "the old umpire can claim it back");
+        Assert.IsTrue(IsMatchOperator(master.playerId));
+    }
+
+    [TsukimiTest]
+    public void AClaimNeedsADecidedState()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        VRCPlayerApi other = Mimic.Join();
+        ResetForTest(owner.playerId);
+        _recovering = true;
+        Assert.AreEqual(RejectedNotReady, ApplyClaim(other.playerId, GetRevision()), "not while the Owner recovers the state");
+        Assert.IsTrue(IsMatchOperator(owner.playerId));
+    }
+
+    [TsukimiTest]
     public void MasterChangeKeepsAPresentUmpire()
     {
         VRCPlayerApi master = Mimic.Join();

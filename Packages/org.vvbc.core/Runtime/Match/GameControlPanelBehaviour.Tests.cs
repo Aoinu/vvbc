@@ -11,6 +11,14 @@ public partial class GameControlPanelBehaviour
     }
 
     [TsukimiTest]
+    public void ClaimIsOfferedToEveryoneButTheUmpire()
+    {
+        Assert.IsTrue(CanClaim(true, false), "anyone who is not the umpire, live or dead");
+        Assert.IsFalse(CanClaim(true, true), "the umpire has it already");
+        Assert.IsFalse(CanClaim(false, false), "not before the authority is decided");
+    }
+
+    [TsukimiTest]
     public void CorrectionFieldsStayInTheirRanges()
     {
         int[] m = MatchRules.NewState();

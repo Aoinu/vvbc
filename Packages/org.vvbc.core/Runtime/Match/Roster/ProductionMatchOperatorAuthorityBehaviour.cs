@@ -11,7 +11,8 @@ using VRC.Udon.Common.Interfaces;
 // actions. It derives from MatchOperatorAuthorityBehaviour so the roster and the match ask the
 // same question; it lives in Roster/ because the roster must see its base type.
 //
-// The umpire starts as the Instance Master. The umpire hands it to someone else; it does not
+// The umpire starts as the Instance Master. The umpire hands it to someone else, and any present
+// player can claim it for themselves at any time (the game panel's Claim umpire); it does not
 // follow later Master changes while the umpire is present. When the umpire leaves it goes to
 // the current Instance Master. Ownership of this object never grants it: the Owner only
 // decides the requests (requester from NetworkCalling.CallingPlayer, the revision it saw)
@@ -120,6 +121,37 @@ public partial class ProductionMatchOperatorAuthorityBehaviour : MatchOperatorAu
         if (expectedRevision != _revision) return Result(RejectedStale);
         if (targetId <= 0 || targetId == _umpireId || !targetPresent) return Result(RejectedInvalid);
         _umpireId = targetId;
+        Commit();
+        return Result(Applied);
+    }
+
+    // ---- Claim (any present player takes the authority, at any time) ----
+
+    // Returns false when nothing was sent (not ready, or already the umpire).
+    public bool SubmitClaim()
+    {
+        if (!IsReady() || LocalId() <= 0 || IsLocalUmpire()) return false;
+        SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(RequestClaim), _revision);
+        return true;
+    }
+
+    [NetworkCallable(maxEventsPerSecond: 5)]
+    public void RequestClaim(int expectedRevision)
+    {
+        VRCPlayerApi caller = NetworkCalling.CallingPlayer;
+        if (!Utilities.IsValid(caller)) return;
+        ApplyClaim(caller.playerId, expectedRevision);
+    }
+
+    // The caller (from NetworkCalling, so present and not forged) becomes the umpire, live play
+    // or not. The revision they saw keeps two claims at once from both landing: the first one
+    // wins, the other is stale and can be sent again.
+    private int ApplyClaim(int requester, int expectedRevision)
+    {
+        if (!CanCommit()) return Result(RejectedNotReady);
+        if (requester <= 0 || requester == _umpireId) return Result(RejectedInvalid);
+        if (expectedRevision != _revision) return Result(RejectedStale);
+        _umpireId = requester;
         Commit();
         return Result(Applied);
     }
