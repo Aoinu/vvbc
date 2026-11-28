@@ -45,6 +45,8 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
     public ProductionMatchOperatorAuthorityBehaviour authority;
     [Tooltip("Contact event receiver (MatchManager). Empty = no contact log.")]
     public MatchEventReceiverBehaviour contacts;
+    [Tooltip("Automatic umpire (MatchManager). Empty = no review list.")]
+    public UmpireEngineBehaviour umpireEngine;
 
     [Header("Display")]
     public TextMeshProUGUI statusText;
@@ -58,6 +60,11 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
     [Tooltip("Recent contact events (base touch / tag), newest first. Facts only, not rulings.")]
     public TextMeshProUGUI contactText;
     [Range(1, 16)] public int contactLines = 4;
+    [Tooltip("What the automatic umpire handed to the umpire in the live play (review items), newest first.")]
+    public TextMeshProUGUI reviewText;
+    [Range(1, 8)] public int reviewLines = 3;
+    [Tooltip("Clears the review list once the umpire has dealt with it (umpire only).")]
+    public Button clearReviewsButton;
 
     [Header("Match")]
     public Button initializeButton;
@@ -105,11 +112,35 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
         if (controller != null) controller.AddChangeListener(self);
         if (authority != null) authority.AddChangeListener(self);
         if (contacts != null) contacts.AddChangeListener(self);
+        if (umpireEngine != null) umpireEngine.AddChangeListener(self);
     }
 
     public void _OnMatchChanged() { Refresh(); }
     public void _OnAuthorityChanged() { Refresh(); }
     public void _OnContactsChanged() { RefreshContacts(); }
+    public void _OnUmpireChanged() { RefreshReviews(); }
+
+    // The umpire has dealt with the review items: they no longer flag the commit. Nothing is ruled.
+    public void _ClearReviews()
+    {
+        if (umpireEngine != null && controller != null && controller.IsLocalUmpire()) umpireEngine.SubmitClearReviews();
+    }
+
+    private void RefreshReviews()
+    {
+        if (clearReviewsButton != null)
+            clearReviewsButton.interactable = umpireEngine != null && controller != null && controller.IsLocalUmpire() && umpireEngine.GetReviewCount() > 0;
+        if (reviewText == null || umpireEngine == null) return;
+        int count = Mathf.Min(umpireEngine.GetReviewCount(), reviewLines);
+        string text = "Umpire review (" + umpireEngine.GetReviewCount() + ")";
+        for (int i = 0; i < count; i++)
+        {
+            int player = umpireEngine.GetReviewField(i, 1);
+            text += "\n" + UmpireReviewNames.Name(umpireEngine.GetReviewField(i, 0)) + (player > 0 ? " " + Name(player) : "")
+                + " (" + umpireEngine.GetReviewField(i, 2) + ")";
+        }
+        SetText(reviewText, text);
+    }
 
     // ---- Buttons ----
 
@@ -416,6 +447,7 @@ public partial class GameControlPanelBehaviour : TsukimiBehaviour
             + "   target " + (_rulingTarget == 4 ? "home" : _rulingTarget + "B"));
         SetButtons(true, live, umpire);
         RefreshContacts();
+        RefreshReviews();
     }
 
     // The receiver's recent checked contact events: play, type, who, base or target, result.

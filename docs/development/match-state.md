@@ -90,7 +90,9 @@ again at every live start instead of being stored.
   fields with a Set flag (`DCountSet` + balls/strikes, `DPaSet` + PA id/batter, `DCursorSet` +
   cursor), so a set 0 differs from "unchanged"; plate appearances ended and the last result;
   half-inning end; game end (walk-off); attention.
-- **Runtime**: pitch sequence (Pitch ID = play id + sequence, separate from the PA id), runner id
+- **Runtime**: the physical pitch the umpire engine handled last and its handled stages
+  (`PhysPitcher`, `PhysPitchNumber`, `PhysStage`; [automatic umpire](automatic-umpire.md#identities)),
+  pitch sequence (Pitch ID = play id + sequence, separate from the PA id), runner id
   sequence, batted-ball flag (forces apply), third-out kind and time, open third strike, runs since
   the last pitch with their times, the time of the last pitch ruling and of each runner's last
   ruling, pending rulings (a base still held by a runner ahead), the event table (PlayEvents
@@ -403,6 +405,13 @@ owned. Recovering or unsynced states refuse new live starts and rulings; physics
   ruling, correction, received state and answer).
 
 ## Connecting the later phases
+
+Implemented by the [automatic umpire](automatic-umpire.md): `UmpireEngineBehaviour` (on the
+MatchManager object) rules through `ApplyRuling` / `ReportDeadBall` (a new cause
+`DeadThreeOuts` ends the live period after a settled third out), marks handled physical pitches
+with `MarkPhysicalPitch`, reads the play with `CopyPlayState` / `CopyBaseMatchState` /
+`GetLastPlateAppearanceResult`, and attaches itself with `AttachUmpireEngine`: a commit while the
+engine has open adjudications or review items is flagged `AttentionUnresolvedRuling`.
 
 - **UmpireEngine** runs on the controller's Owner and calls `ApplyRuling(playId, EngineSourceId(),
   seq, serverTime, ...)` / `ReportDeadBall`, numbering its rulings from 1 per play; it never touches

@@ -352,7 +352,15 @@ VRChat clients.
   TouchBox / Highlight and the contact log line on the game panel.
 - No new User Layer, no change to CatchTrigger, the ball's collider, its layer or its pickup.
 
-## Toward the UmpireEngine
+## The UmpireEngine (implemented)
+
+See [automatic umpire](automatic-umpire.md). Added to this layer: `TypePitchResult` (the batter's
+pitch observation, accepted only from the batter up about the defense's P: `RejectedNotBatter`),
+the record field `RecArg` (records are 11 ints) and the inbox field `InboxArg` (pitch number; a
+tag's runner display delay in ms, measured by the fielder's client for the engine's optional tag
+time correction), and `GetPlayerTouchMask(player)`. The engine is the inbox consumer.
+
+## Toward the UmpireEngine (Phase 2A notes)
 
 The engine (Owner, later phase) attaches with `SetConsumer`, reads the inbox of the live play
 (base touch enter / exit with time, verified tag contact with target and time), corrects timing,
