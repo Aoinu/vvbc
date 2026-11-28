@@ -358,7 +358,16 @@ See [automatic umpire](automatic-umpire.md). Added to this layer: `TypePitchResu
 pitch observation, accepted only from the batter up about the defense's P: `RejectedNotBatter`),
 the record field `RecArg` (records are 11 ints) and the inbox field `InboxArg` (pitch number; a
 tag's runner display delay in ms, measured by the fielder's client for the engine's optional tag
-time correction), and `GetPlayerTouchMask(player)`. The engine is the inbox consumer.
+time correction), and `GetPlayerTouchMask(player)` (-1 when the player has no collector: not known,
+never "no contact"). The engine is the inbox consumer. The pitch result's flags include
+`PitchFlagSwingUnknown` (the bat could not be measured well enough to tell a swing).
+
+The engine builds each player's base contact at a past time from that player's events of the play
+and the contact bits it read at its first pass of the play (its snapshot), and uses the current bits
+only to continue the timeline after its last known point when they agree with it. The receiver's
+`GetWatermark(play, source)` tells a new Owner's engine whether its log still has every settled
+sequence of a player (the previous Owner may have acknowledged some). See
+[automatic umpire, runners](automatic-umpire.md#runners).
 
 ## Toward the UmpireEngine (Phase 2A notes)
 

@@ -23,7 +23,8 @@ public static class ContactRules
     public const int PitchFlagSwing = 4;        // a swing was recognized for this pitch
     public const int PitchFlagContact = 8;      // this client's bat contact was taken for the pitch (local, not yet confirmed)
     public const int PitchFlagNoCrossing = 16;  // no crossing could be found (the zone result is unknown)
-    public const int PitchFlagAll = 31;
+    public const int PitchFlagSwingUnknown = 32; // the bat could not be measured well enough to tell a swing (never with Swing)
+    public const int PitchFlagAll = 63;
 
     // ---- Contact parts (bit mask; several can touch at once, the event is still one) ----
     public const int PartCapsule = 1;

@@ -23,6 +23,19 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
     // The contact ended this pitch's tracking on this client (NotifyContact).
     [HideInInspector] public bool contactEnded;
     private bool _resultNotified;
+    // After a ground contact before the zone (bounced), the result above is final for the
+    // displays, but the listener still needs when the ball passes the plate (the batter may
+    // swing at it there): the flight is watched on until it crosses the plate's middle
+    // (plateReached, plateTime, platePoint) or a bat contact ends it, and the listener is told
+    // "_OnPitchPlateReached" once. Nothing of the zone result or the phantom changes.
+    [HideInInspector] public bool plateReached;
+    [HideInInspector] public float plateTime;
+    [HideInInspector] public Vector3 platePoint;
+    private bool _plateWatch;
+    private bool _plateNotified;
+    private bool _watchHasPrevious;
+    private float _watchTime;
+    private Vector3 _watchPosition, _watchVelocity;
 
     private Vector3 _origin, _forward, _right;
     private float _depth, _width, _bottom, _top, _radius;
@@ -59,6 +72,42 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
         _swingPending = false;
         contactEnded = false;
         _resultNotified = false;
+        plateReached = false;
+        _plateWatch = false;
+        _plateNotified = false;
+        _watchHasPrevious = false;
+    }
+
+    // Watching a bounced pitch for the plate (until it crosses, a contact, or the pitch ends).
+    public bool PlateWatching() { return _plateWatch; }
+
+    private void NotifyPlateListener()
+    {
+        _plateWatch = false;
+        if (_plateNotified || resultListener == null) return;
+        _plateNotified = true;
+        resultListener.SendCustomEvent("_OnPitchPlateReached");
+    }
+
+    private void WatchPlate(float time, Vector3 position, Vector3 velocity)
+    {
+        if (_watchHasPrevious && time > _watchTime)
+        {
+            float dt = time - _watchTime;
+            float u = CrossingFraction(_watchPosition, _watchVelocity, position, velocity, dt, _origin + _forward * (_depth * 0.5f), _forward);
+            if (u >= 0f)
+            {
+                platePoint = Hermite(_watchPosition, _watchVelocity, position, velocity, dt, u);
+                plateTime = _watchTime + dt * u;
+                plateReached = true;
+                NotifyPlateListener();
+                return;
+            }
+        }
+        _watchHasPrevious = true;
+        _watchTime = time;
+        _watchPosition = position;
+        _watchVelocity = velocity;
     }
 
     private void NotifyResultListener()
@@ -86,10 +135,12 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
     public void CancelPitch()
     {
         tracking = false;
+        _plateWatch = false;
     }
 
     public void AcceptSample(float time, Vector3 position, Vector3 velocity)
     {
+        if (_plateWatch) WatchPlate(time, position, velocity);
         if (!tracking || time <= _previousTime) return;
         float dt = time - _previousTime;
         if (!hasFrontCrossing)
@@ -154,12 +205,22 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
             frontCrossing = _origin + _forward * _depth + _right * x + Vector3.up * _radius;
             ShowResult();
         }
+        // The flight after the bounce starts with the next sample (the contact changes it).
+        _plateWatch = resultListener != null;
+        _watchHasPrevious = false;
         NotifyResultListener();
     }
 
     // Future contact callers provide the last state before the ball was hit.
     public void NotifyContact(float time, Vector3 position, Vector3 velocity, Vector3 spin)
     {
+        if (_plateWatch)
+        {
+            // A bounced pitch hit before it reached the plate.
+            contactEnded = true;
+            NotifyPlateListener();
+            return;
+        }
         if (!tracking || hasResult) return;
         AcceptSample(time, position, velocity);
         if (hasResult) return;

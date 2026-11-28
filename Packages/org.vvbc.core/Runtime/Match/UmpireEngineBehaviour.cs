@@ -61,6 +61,8 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
     public float thirdStrikeWaitSeconds = 3f;
     [Tooltip("Catch and ground contact closer than this cannot be ordered: the umpire decides. Default 0.08.")]
     public float catchGroundToleranceSeconds = 0.08f;
+    [Tooltip("A flight this client started flying later than this after its release or hit is not known from its start (keep it at the Ball's maximumCatchupSeconds). Default 3.")]
+    public float flightCatchUpSeconds = 3f;
     [Tooltip("A batted ball still undecided after this goes to the umpire. Default 15.")]
     public float battedBallTimeoutSeconds = 15f;
     [Tooltip("Interval of the batted-ball tracker while fair / foul is open. Default 0.05.")]
@@ -112,6 +114,9 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
     public const int ReviewRulingRefused = 19;
     public const int ReviewPitchOverlap = 20;
     public const int ReviewHitMismatch = 21;
+    public const int ReviewGroundUnknown = 22;     // whether the ball touched the ground before a catch is not known
+    public const int ReviewTouchUnknown = 23;      // a runner's or fielder's base contact at that time is not known
+    public const int ReviewSwingUnknown = 24;      // the batter's swing could not be measured
 
     public const int MaxReviews = 8;
     public const int ReviewStride = 3;   // code, player, arg
@@ -187,7 +192,19 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
     private int _seqPlayId;
     private int _seqNext;
 
+    // Decided flags of the event log as they were before the pass decided: restored when the
+    // pass's outputs were not all sent, so the next pass decides those events again.
+    private readonly bool[] _evDecidedBefore = new bool[MaxEvents];
+
     // ---- Scheduling ----
+    // A pass is running (Run). Udon runs SendCustomEvent synchronously, so the controller's and
+    // the receiver's change notifications (ApplyRuling -> Publish -> _OnMatchChanged, the ACK ->
+    // _OnContactsChanged) arrive while Dispatch is still sending: they only ask for another pass,
+    // which runs after the current one has sent everything (at most MaxPassesPerRun in a row,
+    // the rest on the next scheduled pass), so the pass's outputs are never overwritten.
+    private bool _processing;
+    private bool _rerunRequested;
+    private const int MaxPassesPerRun = 3;
     private bool _passScheduled;
     private bool _trackScheduled;
     private bool _open;
@@ -211,6 +228,15 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
     private int _sendCount;
     private int _sendFailures;
     private int _lastBytes;
+    private int _rerunCount;
+    private int _incompleteDispatchCount;
+
+    // Tests stand in for the controller and the receiver (UmpireEngineBehaviour.Tests.cs): with
+    // this set (to the engine itself), LoadContext and every send go to _LoadForTest / _SendForTest on this engine. A
+    // world never sets it.
+    private UdonBehaviour _testSink;
+    private int _testIndex;
+    private int _testResult;
 
     void Start()
     {
@@ -255,6 +281,10 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
     public int GetSendCount() { return _sendCount; }
     public int GetSendFailureCount() { return _sendFailures; }
     public int GetLastSerializationBytes() { return _lastBytes; }
+    // Notifications that arrived during a pass and ran as a pass after it.
+    public int GetRerunCount() { return _rerunCount; }
+    // Passes whose outputs were not all sent (a ruling the controller did not settle).
+    public int GetIncompleteDispatchCount() { return _incompleteDispatchCount; }
 
     public static string ReviewName(int code) { return UmpireReviewNames.Name(code); }
 
@@ -287,11 +317,21 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
 
     public void _OnMatchChanged() { Run(); }
     public void _OnContactsChanged() { Run(); }
-    public void OnBallPitchReleased() { Run(); }
     public void OnBallPresentationChanged() { Run(); }
+
+    // The flight events are recorded on every client (ObserveStart / ObserveGround), so a new
+    // Owner still knows what its own client saw of the flight in the air.
+    public void OnBallPitchReleased()
+    {
+        if (ballQuery != null)
+            ObserveStart(ObsPitch, ballQuery.BallLineagePitcher(), ballQuery.BallLineageNumber(), Networking.GetServerTimeInSeconds());
+        Run();
+    }
 
     public void OnBallBattedFlightStarted()
     {
+        if (ballQuery != null)
+            ObserveStart(ObsBatted, ballQuery.BallLineagePitcher(), ballQuery.BallLineageNumber(), Networking.GetServerTimeInSeconds());
         if (!Networking.IsOwner(gameObject)) return;
         TrackNow();
         Run();
@@ -299,9 +339,17 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
 
     public void OnBallGroundContact()
     {
-        if (!Networking.IsOwner(gameObject) || ballQuery == null) return;
-        GroundContact(ballQuery.BallBattedFlight(), ballQuery.BallLineagePitcher(), ballQuery.BallLineageNumber(),
-            ballQuery.BallPosition(), Networking.GetServerTimeInSeconds());
+        if (ballQuery == null) return;
+        double now = Networking.GetServerTimeInSeconds();
+        bool batted = ballQuery.BallBattedFlight();
+        int pitcher = ballQuery.BallLineagePitcher();
+        int number = ballQuery.BallLineageNumber();
+        if (!Networking.IsOwner(gameObject))
+        {
+            ObserveGround(batted ? ObsBatted : ObsPitch, pitcher, number, now);
+            return;
+        }
+        GroundContact(batted, pitcher, number, ballQuery.BallPosition(), now);
         Run();
     }
 
@@ -346,15 +394,48 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
     {
         // A new Owner starts from the synced PlayState (handled pitches are marked there), the
         // receiver's inbox and its own ball history; nothing of the previous Owner's local state.
+        // Events the previous Owner already handed back are gone: the live play's event log is
+        // incomplete from here (contact timelines are then only known where the inbox shows
+        // every event of the player, ContactTimelineComplete).
         ResetLocal();
+        _logResetPlayId = match != null && match.IsLive() ? match.GetPlayId() : 0;
         Run();
     }
 
     // ---- One pass (Owner) ----
 
+    // Runs a pass, or, while one is running (a notification sent from inside its Dispatch),
+    // asks for another one after it. Nothing between setting and clearing _processing returns
+    // early; an Udon error stops the whole Behaviour, so the flag cannot outlive a failed pass.
     private void Run()
     {
-        if (!engineEnabled || !Networking.IsOwner(gameObject) || match == null) return;
+        if (!engineEnabled || !Networking.IsOwner(gameObject)) return;
+        if (_processing)
+        {
+            if (!_rerunRequested) _rerunCount++;
+            _rerunRequested = true;
+            return;
+        }
+        _processing = true;
+        int passes = 0;
+        do
+        {
+            _rerunRequested = false;
+            Pass();
+            passes++;
+        }
+        while (_rerunRequested && passes < MaxPassesPerRun);
+        _processing = false;
+        if (_rerunRequested)
+        {
+            // Still asked for after the passes in a row: the next scheduled pass takes it.
+            _rerunRequested = false;
+            SchedulePass();
+        }
+    }
+
+    private void Pass()
+    {
         if (!LoadContext())
         {
             _open = false;
@@ -362,25 +443,37 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
         }
         _passCount++;
         Decide();
-        Dispatch();
-        if (_open || _wantPass) SchedulePass();
+        bool complete = Dispatch();
+        // A ruling the controller did not settle (not ready, the roster lock lost) is decided
+        // again by a later pass.
+        if (_open || _wantPass || !complete) SchedulePass();
     }
 
     // The controller's live play, the inbox, the ball history and the field. False when there is
     // nothing to adjudicate (not ready, not live).
     private bool LoadContext()
     {
-        if (!match.IsMatchReady() || !match.IsLive()) return false;
+        if (_testSink != null)
+        {
+            _testIndex = -1;
+            _testResult = 0;
+            _testSink.SendCustomEvent("_LoadForTest");
+            return _testResult == 1;
+        }
+        if (match == null || !match.IsMatchReady() || !match.IsLive()) return false;
         _playId = match.GetPlayId();
         if (!match.CopyPlayState(_p, _t) || !match.CopyBaseMatchState(_m)) return false;
         _source = match.EngineSourceId();
         _now = Networking.GetServerTimeInSeconds();
         BeginPlay(_playId);
+        // The current contact bits first: a base event leaving the log keeps its player's
+        // baseline from them (KeepBaseline).
+        LoadMasks();
         LoadInbox();
         LoadHistory();
         _frameValid = field != null && field.BuildFrame(_frame);
         _groundY = field != null ? field.GroundHeight() : 0f;
-        LoadMasks();
+        LoadCompleteness();
         return true;
     }
 
@@ -414,15 +507,17 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
         _histCount = count;
     }
 
-    // Runners and the defense's fielders (their current contact bits start their timelines).
+    // The current contact bits of the runners and of both teams' players of the play's roster
+    // snapshot (a batter becomes a runner); at the play's first pass they are its snapshot.
     private void LoadMasks()
     {
         _maskCount = 0;
         if (receiver == null) return;
         for (int s = 0; s < RunnerRules.SlotCount; s++)
             if (RunnerRules.IsActive(_p, s)) AddMask(_p[RunnerRules.At(s, RunnerRules.Player)]);
-        int defense = MatchRules.DefenseTeam(_m);
-        for (int r = RosterRules.RoleP; r <= RosterRules.RoleRF; r++) AddMask(_p[PlayRules.SnapRoles + defense * RosterRules.RoleCount + r]);
+        for (int i = 0; i < 2 * RosterRules.RoleCount; i++) AddMask(_p[PlayRules.SnapRoles + i]);
+        for (int i = 0; i < 18; i++) AddMask(_p[PlayRules.SnapBatters + i]);
+        if (_snapWanted) TakeSnapshot(_now);
     }
 
     private void AddMask(int player)
@@ -430,36 +525,52 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
         if (player <= 0 || _maskCount >= MaxMasks) return;
         for (int i = 0; i < _maskCount; i++) if (_maskPlayer[i] == player) return;
         _maskPlayer[_maskCount] = player;
-        _maskValue[_maskCount] = receiver.GetPlayerTouchMask(player);
+        _maskValue[_maskCount] = receiver.GetPlayerTouchMask(player);   // -1: no collector, not known
+        _maskComplete[_maskCount] = !_logIncomplete;
         _maskCount++;
     }
 
-    // Sends the pass's outputs in order. A ruling the controller does not settle (not ready, the
-    // roster lock lost) stops the rest: the next pass decides again from the new state.
-    private void Dispatch()
+    // After the log lost events, a player's timeline is complete only when every sequence the
+    // receiver settled for them is still in the log.
+    private void LoadCompleteness()
+    {
+        for (int i = 0; i < _maskCount; i++)
+            _maskComplete[i] = !_logIncomplete || (receiver != null && SequencesInLog(_maskPlayer[i], receiver.GetWatermark(_evPlayId, _maskPlayer[i])));
+    }
+
+    // Sends the pass's outputs in order; the controller's notifications during it only ask for
+    // the next pass (Run), so the buffers stay as Decide left them. A ruling the controller does
+    // not settle (not ready, the roster lock lost) stops the rest: what the pass decided about the
+    // events is undone (_evDecidedBefore), so the next pass decides the unsent outputs again from
+    // the controller's state. False when outputs were left unsent for that reason; the end of the
+    // live period (a ruling that ends it, a dead ball) also stops the rest, which is complete.
+    private bool Dispatch()
     {
         bool reviewChanged = false;
-        for (int i = 0; i < _outCount; i++)
+        bool complete = true;
+        int count = _outCount;
+        for (int i = 0; i < count; i++)
         {
             int kind = _outKind[i];
             if (kind == OutRuling)
             {
-                int result = match.ApplyRuling(_playId, _source, _outSeq[i], _outTime[i], _outCode[i], _outRunner[i], _outArg[i], false);
+                int result = SendRuling(i);
                 _lastRulingCode = _outCode[i];
                 _lastRulingResult = result;
                 if (!SettledOrDuplicate(result))
                 {
                     _rulingRefused++;
+                    complete = false;
                     break;
                 }
                 _seq = _outSeq[i];
                 _rulingCount++;
                 if (result == PlayRules.ResultEndsLive) break;
             }
-            else if (kind == OutMark) match.MarkPhysicalPitch(_playId, _outRunner[i], _outArg[i], _outCode[i]);
+            else if (kind == OutMark) SendMark(i);
             else if (kind == OutDeadBall)
             {
-                if (match.ReportDeadBall(_playId, _outCode[i], _outTime[i])) break;
+                if (SendDeadBall(i)) break;
             }
             else if (kind == OutReview)
             {
@@ -469,14 +580,48 @@ public partial class UmpireEngineBehaviour : TsukimiBehaviour
             else if (kind == OutAck) AckEvent(_outExtra[i]);
         }
         _outCount = 0;
+        if (!complete)
+        {
+            _incompleteDispatchCount++;
+            for (int i = 0; i < _evCount; i++) _evDecided[i] = _evDecidedBefore[i];
+        }
         if (reviewChanged) PublishReviews();
+        return complete;
+    }
+
+    private int SendRuling(int i)
+    {
+        if (_testSink != null) return SendToTest(i);
+        return match.ApplyRuling(_playId, _source, _outSeq[i], _outTime[i], _outCode[i], _outRunner[i], _outArg[i], false);
+    }
+
+    private void SendMark(int i)
+    {
+        if (_testSink != null) { SendToTest(i); return; }
+        match.MarkPhysicalPitch(_playId, _outRunner[i], _outArg[i], _outCode[i]);
+    }
+
+    private bool SendDeadBall(int i)
+    {
+        if (_testSink != null) return SendToTest(i) == 1;
+        return match.ReportDeadBall(_playId, _outCode[i], _outTime[i]);
+    }
+
+    private int SendToTest(int i)
+    {
+        _testIndex = i;
+        _testResult = 0;
+        _testSink.SendCustomEvent("_SendForTest");
+        return _testResult;
     }
 
     private void AckEvent(int index)
     {
-        if (index < 0 || index >= _evCount || _evAcked[index] || receiver == null) return;
+        if (index < 0 || index >= _evCount || _evAcked[index]) return;
+        if (_testSink == null && receiver == null) return;
         _evAcked[index] = true;
         _ackCount++;
+        if (_testSink != null) { _testIndex = -2 - index; _testSink.SendCustomEvent("_SendForTest"); return; }
         receiver.AcknowledgeContact(_evPlayId, _evSource[index], _evSeq[index]);
     }
 

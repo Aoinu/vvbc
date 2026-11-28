@@ -27,6 +27,9 @@ public static class UmpireReviewNames
             case UmpireEngineBehaviour.ReviewRulingRefused: return "Ruling refused";
             case UmpireEngineBehaviour.ReviewPitchOverlap: return "Pitch not resolved";
             case UmpireEngineBehaviour.ReviewHitMismatch: return "Hit by another batter";
+            case UmpireEngineBehaviour.ReviewGroundUnknown: return "Ground contact unknown";
+            case UmpireEngineBehaviour.ReviewTouchUnknown: return "Base contact unknown";
+            case UmpireEngineBehaviour.ReviewSwingUnknown: return "Swing unknown";
         }
         return "-";
     }

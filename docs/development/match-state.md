@@ -44,12 +44,12 @@ Synced on `MatchControllerBehaviour`:
 | Field | Content |
 |---|---|
 | `_match int[84]` | MatchState (`MatchRules` layout) |
-| `_play int[250]`, `_playTimes double[27]` | PlayState (`PlayRules` layout, event table and current log included) and its server times |
+| `_play int[262]`, `_playTimes double[27]` | PlayState (`PlayRules` layout, event table and current log included) and its server times |
 | `_issuedPlayId` | Highest play id handed out (play ids are never reused) |
 | `_corrections int[16]`, `_correctionTimes double[4]`, `_correctionNext` | The last four manual corrections |
-| `_history int[360]`, `_historyTimes double[48]`, `_historyNext`, `_historyCount` | Display history of the last four committed plays |
+| `_history int[408]`, `_historyTimes double[48]`, `_historyNext`, `_historyCount` | Display history of the last four committed plays |
 
-Size is fixed (about 3.5 KB); a send happens on each accepted change (a ruling, a commit, a
+Size is fixed (about 3.7 KB); a send happens on each accepted change (a ruling, a commit, a
 correction), never per frame. Nothing grows with the length of a live period: pitches fold into the
 count, duplicates are suppressed by a per-source watermark (see Events), the log keeps 12 entries
 per play and the history four plays.
@@ -187,9 +187,11 @@ its header (play id, end reason, attention, log total and index, pitches) and lo
 field)`, `GetHistoryEntryCount(index)`, `GetHistoryEntry(index, entry, field)` and
 `GetHistoryEntryTime(index, entry)` read it: index 0 is the live play while live, then committed
 plays newest first; entry 0 is the newest; entry fields are `PlayEvents.LogCode / LogSource / LogSeq
-/ LogRunner / LogArg / LogResult / LogPitch` and the server time. The result is the reason (applied,
+/ LogRunner / LogArg / LogResult / LogPitch / LogOutcome` and the server time. The result is the reason (applied,
 pending, superseded, not accepted, contradiction); the attention of each play says what needs the
-umpire. The history travels with the state to late joiners and is part of the recovery snapshot.
+umpire. The outcome is what the ruling did when it was applied (`PlayEvents.Outcome`: a third strike
+open after it, the plate appearance result it ended), fixed in the entry so that a reader of a later
+state (the umpire calls, rulings received together) never reapplies the state of another time to it. The history travels with the state to late joiners and is part of the recovery snapshot.
 
 ### PlayState validation
 

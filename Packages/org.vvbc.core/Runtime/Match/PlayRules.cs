@@ -73,7 +73,7 @@ public static class PlayRules
     public const int Pending = 110;            // MaxPending * PendingStride: rulings waiting for a base
     public const int Sources = 130;            // PlayEvents.MaxSources * SourceStride: dedup per source
     public const int Log = 166;                // PlayEvents.MaxLog * LogStride: display log
-    public const int Length = 250;
+    public const int Length = 262;
 
     public const int MaxPending = 4;
     public const int PendingStride = 5;        // code, runnerId, base, source, seq
@@ -364,11 +364,12 @@ public static class PlayRules
             if (p[DAttention] != attention) p[Revision]++;
             return RejectedFull;
         }
+        int paEnded = p[DPaEnded];
         int result = Dispatch(p, t, m, code, runnerId, arg, source, seq, serverTime, umpire);
         if (Settles(result))
         {
             PlayEvents.Settle(p, source, seq);
-            PlayEvents.Log(p, t, code, source, seq, runnerId, arg, result, serverTime);
+            PlayEvents.Log(p, t, code, source, seq, runnerId, arg, result, serverTime, PlayEvents.Outcome(p, paEnded));
             if (result == ResultApplied) RetryPending(p, t, m);
             p[Revision]++;
         }
@@ -386,7 +387,7 @@ public static class PlayRules
         if (seen == PlayEvents.Seen) return ResultDuplicate;
         if (seen != PlayEvents.Unseen) return RejectedFull;
         PlayEvents.Settle(p, source, seq);
-        PlayEvents.Log(p, t, EventMissing, source, seq, 0, 0, ResultApplied, ValidTime(serverTime) ? serverTime : t[TimeStart]);
+        PlayEvents.Log(p, t, EventMissing, source, seq, 0, 0, ResultApplied, ValidTime(serverTime) ? serverTime : t[TimeStart], 0);
         p[Revision]++;
         return ResultApplied;
     }
@@ -859,8 +860,9 @@ public static class PlayRules
             double time = t[TimePending + best];
             RemovePending(p, t, best);
             int runner = RunnerRules.FindById(p, runnerId);
+            int paEnded = p[DPaEnded];
             int result = runner < 0 ? Contradiction(p) : RunnerEvent(p, t, m, runner, code, target, source, seq, time);
-            PlayEvents.Log(p, t, code, source, seq, runnerId, target, result == ResultApplied ? ResultAppliedFromPending : result, time);
+            PlayEvents.Log(p, t, code, source, seq, runnerId, target, result == ResultApplied ? ResultAppliedFromPending : result, time, PlayEvents.Outcome(p, paEnded));
         }
     }
 

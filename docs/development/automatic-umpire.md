@@ -14,7 +14,7 @@ see both `Ball/` / `Bat/` and `Match/`).
 |---|---|---|
 | `Runtime/UmpirePitchReporterBehaviour.cs` | Physical events | On the batter's client: the pitch's zone result, bounce, contact and the swing, sent as one `PitchResult` event |
 | `Match/SwingRules.cs` | Physical events | Swing recognition on measured bat numbers (pure) |
-| `Ball/PitchCrossingBehaviour.cs` | Physical events | (changed) tells a listener once per pitch when its outcome is known |
+| `Ball/PitchCrossingBehaviour.cs` | Physical events | (changed) tells a listener once per pitch when its outcome is known; after a bounce, once more when the ball passes the plate |
 | `Ball/BallBehaviour.PossessionHistory.cs` | Physical events | (changed) the local history keeps kind, PitchLineage, batter and position of each accepted state, 16 entries |
 | `Runtime/MatchBallQueryAdapterBehaviour.cs`, `Match/MatchBallQueryBehaviour.cs` | Physical events | (changed) history fields, the ball's local flight, ball presentation events for the engine |
 | `Match/ContactRules.cs`, `PlayerEventCollectorBehaviour.cs`, `MatchEventReceiverBehaviour.cs`, `TagContactDetectorBehaviour.cs` | Event collection | (changed) `TypePitchResult`, the record's `RecArg`, the inbox's `InboxArg`, a tag's display delay |
@@ -49,7 +49,7 @@ the batter's result or a new Owner's engine therefore never calls the same pitch
 | PitchReleased | the ball's HandPitch (pitcher's client publishes) | ball history entry `KindHandPitch` with lineage and release time |
 | StrikeZoneCrossed / bounced / SwingStarted / SwingMissed | batter's client | `TypePitchResult` (flags, crossing time and point, pitcher, pitch number) |
 | BatContactConfirmed | the ball's accepted Hit (batter's client publishes) | ball history entry `KindHit` with the batter and lineage |
-| BallGroundContact | this client's flight of the ball (Owner) | `OnBallGroundContact` → engine (pitch or batted ball of that lineage) |
+| BallGroundContact | this client's flight of the ball (every client records it; the Owner decides) | `OnBallGroundContact` → engine (pitch or batted ball of that lineage) |
 | BallFirstTouchedByFielder / BallCaught | the ball's accepted possession | ball history entry `KindPossession` (holder, hold, lineage, position) |
 | BaseTouchEnter / Exit, TagContactEnter | the player's own client | collector events (Phase 2A), tag with `RecArg` = display delay |
 
@@ -63,7 +63,17 @@ only; batting-pitcher pitches have none and never reach the game — the officia
 pitches only). `PitchCrossingBehaviour` tells it once per pitch when the outcome is known on this
 client: the crossing of the zone snapshot the pitch was released with (dimensions, the batter's
 height adjustment, the ball radius and the plate reference unchanged), a ground contact first, or
-the bat contact. After `swingWindowAfterSeconds` it measures the swing and records one event:
+the bat contact. After `swingWindowAfterSeconds` it measures the swing and records one event.
+
+**A pitch in the dirt.** A ground contact before the zone makes the pitch bounced (the displayed
+result, the phantom and the batting pitcher's zone display are unchanged), but it does not end the
+pitch for the batter: with a listener attached, `PitchCrossingBehaviour` keeps watching the flight
+after the bounce and tells the listener once more (`_OnPitchPlateReached`) when the ball crosses the
+plate's middle (`plateReached`, `plateTime`, `platePoint`) or a bat contact ends it first
+(`contactEnded`). The reporter measures the swing around that time; when the ball never reaches the
+plate within `bouncePlateTimeoutSeconds` (1) it measures from before the bounce until then. Either
+way one event per pitch, flagged bounced: no swing → ball, swing → swinging strike, contact → the
+ball's hit decides (a batted ball), swing not measurable → the umpire.
 
 | Flag | Meaning |
 |---|---|
@@ -72,6 +82,7 @@ the bat contact. After `swingWindowAfterSeconds` it measures the swing and recor
 | `PitchFlagSwing` | a swing was recognized |
 | `PitchFlagContact` | this client's bat contact took the pitch (local; confirmed only by the ball's Hit) |
 | `PitchFlagNoCrossing` | no crossing could be found |
+| `PitchFlagSwingUnknown` | the bat could not be measured well enough to tell a swing (never with `PitchFlagSwing`) |
 
 ### Swing
 
@@ -84,6 +95,15 @@ speed ≥ `swingMinAngularSpeed` (360 °/s), the bat's horizontal direction turn
 told afterwards (the phantom's swing display); it never makes a swing. A bat swung without a pitch
 is never reported. Every threshold is an Inspector field of the reporter.
 
+`SwingRules.Classify` answers swing, no swing or **unknown**, and a missing measurement never loosens
+the rule: speeds below a threshold over a speed history covering the window (`measuredOldestTime` /
+`measuredLatestTime`) → no swing; speeds met and both poses known → swing when the sweep and the
+forward motion hold, no swing when they do not over poses at the window's own ends
+(`contactOldestTime` / `contactLatestTime`), otherwise unknown; no Bat Motion, no samples, a speed
+history that misses part of the window, or fast motion with no poses → unknown (a fast bat is never a
+swing by speed alone). Unknown is sent as `PitchFlagSwingUnknown`; the engine never turns it into a
+ball or a called strike (review "Swing unknown").
+
 ## Event collection
 
 Unchanged path (Phase 2A): the collector ring (now 11 ints per record), the receiver's checks and
@@ -92,8 +112,9 @@ identity table, ACK / resend, duplicates, Owner change re-scan. Added:
 - `TypePitchResult`: accepted only from the batter of the plate appearance in progress about the
   defense's P of the snapshot (`RejectedNotBatter`), with a pitch number and valid flags.
 - `RecArg` / `InboxArg`: the pitch number of a pitch result; the runner's display delay (ms) of a tag.
-- `GetPlayerTouchMask(player)`: a player's current contact bits (the timeline's start when the
-  contacts before the play are not in its stream).
+- `GetPlayerTouchMask(player)`: a player's current contact bits, -1 without a collector (not known).
+  The engine reads them every pass for the runners and both teams' players of the roster snapshot;
+  those of its first pass of the play are the play's contact snapshot.
 
 The engine is the inbox consumer (`SetConsumer`). It keeps a local log of the play's accepted events
 and hands an event back (`AcknowledgeContact`) only when nothing open needs it: a decided pitch
@@ -106,16 +127,34 @@ inbox still holds new events back unsettled (`PendingInboxFull`), nothing is dro
 
 On the MatchManager object (so it always has the controller's Owner; a child object would have its
 own Owner). Only the Owner adjudicates; others display. A pass runs on `_OnMatchChanged`,
-`_OnContactsChanged` and the ball's events, plus a timer only while something is open:
+`_OnContactsChanged` and the ball's events, plus a timer only while something is open.
+
+**One pass at a time.** Udon runs `SendCustomEvent` synchronously, so the pass's own sends notify the
+engine while it is still sending: `ApplyRuling` / `MarkPhysicalPitch` / `ReportDeadBall` → `Publish`
+→ `_OnMatchChanged`, and `AcknowledgeContact` → the receiver's `_OnContactsChanged`. A pass running
+there re-decided from a half-sent state and cleared the outer pass's outputs (`_outCount`): after the
+engine's own ball or strike it saw the call applied but the pitch not yet marked and raised "pitch
+ruled by hand", and a foul could send its dead ball twice. `Run` now sets `_processing`; a
+notification during a pass only sets `_rerunRequested` (never dropped, coalesced), and after the
+pass has sent everything the next pass runs at once, at most `MaxPassesPerRun` (3) in a row, the
+rest on the scheduled pass (`_passScheduled`), so no loop can run away. Nothing between setting and
+clearing `_processing` returns early, and an Udon error stops the whole Behaviour, so the flag cannot
+outlive a failed pass. `GetRerunCount` counts the notifications that ran as a pass afterwards.
+
+Each pass:
 
 1. copy the live PlayState, its times and base MatchState (`CopyPlayState`, `CopyBaseMatchState`),
    the inbox, the ball history and the field frame;
 2. decide; each ruling is applied to the copy with `PlayRules.Apply` and the engine's event id
    (`EngineSourceId()`, sequence per play from 1, above the PlayState's watermark of that source), so
    later decisions of the pass see its effect (a force removed by an out);
-3. send exactly those rulings in order (`ApplyRuling`), then marks (`MarkPhysicalPitch`), dead balls
-   (`ReportDeadBall`), review items, ACKs. A ruling the controller does not settle (not ready, roster
-   lock lost) stops the rest; the next pass decides again.
+3. send the outputs in the order they were decided (`ApplyRuling`, `MarkPhysicalPitch`,
+   `ReportDeadBall`, review items, ACKs). A ruling the controller does not settle (not ready, roster
+   lock lost) stops the rest: what the pass marked as decided in its event log is restored
+   (`_evDecidedBefore`), the unsent outputs are decided again by a scheduled pass from the
+   controller's state, and their sequences continue from the PlayState's watermark of the engine
+   source, so the controller never sees a hole or a duplicate (`GetIncompleteDispatchCount`). A ruling
+   that ends the live period, or a dead ball, ends the pass as complete.
 
 Arrival order never orders anything: every decision uses server times, waits
 `decisionDelaySeconds` (0.5 s) past the event's time for earlier events still on the way, and never
@@ -143,8 +182,10 @@ pass reliably, so it stays the umpire's (`JudgeHitByPitch` by hand).
 ### Third strike
 
 After the call made strike three (`PendingStrikeout`): caught (the catcher's possession of the
-pitch before this client's ground contact of it − `catchGroundToleranceSeconds` 0.08) →
-`JudgeStrikeoutCaught`; bounced before the plate, or the ground first → `JudgeThirdStrikeUncaught`
+pitch, and this client saw the pitch's flight from its release without a ground contact before it,
+see [Ground contact of a flight](#ground-contact-of-a-flight)) → `JudgeStrikeoutCaught`; the ground
+contact unknown → review "Ground contact unknown"; bounced before the plate, or the ground first →
+`JudgeThirdStrikeUncaught`
 (`PlayRules`: out with 1B occupied and fewer than two out, else the batter-runner, forces apply —
 the uncaught-third-strike force play then runs like any force); catch and ground within the
 tolerance, or nothing within `thirdStrikeWaitSeconds` (3) → review. A foul tip caught for strike
@@ -159,7 +200,8 @@ contacts from the ball, samples every `trackIntervalSeconds` 0.05 only until dec
 
 | Situation | Decision |
 |---|---|
-| caught before the first ground contact | `JudgeCatch` (fly out, fair or foul; a catch beats the foul dead ball) |
+| caught, and seen not touching the ground before (above) | `JudgeCatch` (fly out, fair or foul; a catch beats the foul dead ball) |
+| caught, the ground contact before it not known | review (never an out) |
 | … by the catcher within `foulTipMaxSeconds` (0.3) and `foulTipMaxDistance` (3 m) of home | `JudgeFoulTip` |
 | catch and ground within tolerance | review |
 | first landing past first / third base | by the landing point |
@@ -169,6 +211,28 @@ contacts from the ball, samples every `trackIntervalSeconds` 0.05 only until dec
 | first touched by a fielder after a bounce | by the touch (catch) position |
 | foul pole, beyond `outOfPlayDistance` | review (home run / ground rule: umpire) |
 | no geometry, or undecided after `battedBallTimeoutSeconds` (15) | review |
+
+### Ground contact of a flight
+
+Every client records, per flight kind (the pitch, its batted ball) and PitchLineage, when its own
+ball started flying that flight (`OnBallPitchReleased`, `OnBallBattedFlightStarted`) and its first
+ground contact there (`OnBallGroundContact`); a new Owner keeps what its client saw. Not having seen
+a contact proves no contact only when this client flew the flight from its start: the ball's network
+catch-up (`maximumCatchupSeconds`, 3) stops at the first ground contact, so a flight received late is
+either in step with the real one or shows its contact right after it started. `GroundRelation` for a
+catch at time c:
+
+| Seen | Answer |
+|---|---|
+| started here within `flightCatchUpSeconds` (3) of the release / hit, no contact | not before c: a catch |
+| a contact at g, c < g − tolerance | not before c: a catch (also a contact after the catch: this client's copy flew on until the possession arrived) |
+| a contact at g, c > g + tolerance | before c: no catch |
+| within the tolerance | review "Catch / ground order" |
+| the flight never seen starting here, started later than the catch-up window, or a contact right (≤ 0.1 s) after a late start with c before it | review "Ground contact unknown" |
+| another lineage's record | not this flight's (unknown unless this flight was seen) |
+
+The tracker's own bookkeeping of a batted ball (fair / foul) is kept when the engine first notices a
+new pitch after that pitch's ground contact already arrived; only the previous pitch's is dropped.
 
 Fair territory includes the lines: a ball within its radius of a line is fair. Being once over
 fair ground decides nothing by itself. Fair → `JudgeFairBall` at the hit time (the batter-runner,
@@ -182,15 +246,42 @@ Touching a base never awards it; per runner the engine takes the earliest of: an
 the force play, the touch of the next base — strictly in server time across runners, applying each
 before deciding the next.
 
+**Contact timelines.** A player's contact with a base at a past time (`TouchAt`: touching, not
+touching or **unknown**) comes from the player's own Enter / Exit events of the play and the play's
+contact snapshot (the bits the engine read at its first pass of the play), never from the current
+bits alone. Before the first event the state is what it implies (an exit: touching); a player with no
+event at a base kept the snapshot's contact; after the last known point the current bits must agree
+with it. Unknown: the events disagree with the snapshot, or the current bits with the last point (an
+event still on the way, an inbox holding it back), no collector (-1), no snapshot, a time before the
+play's stream (start − `PlayRules.TimeSkew`), or a log that lost events — a new Owner mid-play (then a
+player's timeline counts only when the log has every sequence the receiver settled for them,
+`GetWatermark`) or the log overflowing without a baseline. A base event that leaves the full log
+(oldest handed-back first) leaves its player's state at its time as a **baseline**, from which the
+later events continue; before a baseline the contact is unknown. The log stays 48 events.
+
 **Force.** `ForcedAt(slot, time)` is `RunnerRules.IsForced` with outs made after `time` not yet
-counted (a following runner's out removes the force only from then on). The force is made at the
-earliest time a fielder of the defense holds the ball (an accepted possession, until the next state
-that is not the same possession, from the ball history) while touching the force base (the
-fielder's own BaseTouch timeline, or their current contact bits before the play): standing on the
-base and then catching, or holding and then stepping on, both count; leaving the base or losing the
-ball ends it. Before the runner's touch of that base → `JudgeForceOut`; the runner first, or the
-same time → `JudgeForceSafe` (which awards the base; no second advance). Within
-`contestedMarginSeconds` (0.05) → review. Home: the runner's touch of home, the catcher on home.
+counted (a following runner's out removes the force only from then on). Whether a runner is forced is
+asked at the time of each candidate, never now: forceable when the batted ball started, the force
+made at its time only if no out behind removed it before (`ForcedAt(slot, forceTime)`), the arrival
+a force safe only if still forced then. A force made at T2 therefore stays a force when the out
+behind comes at T3. The force is made at the earliest time a fielder of the defense holds the ball
+(an accepted possession, until the next state that is not the same possession, from the ball
+history) while touching the force base (the fielder's timeline): standing on the base and then
+catching, or holding and then stepping on, both count; leaving the base or losing the ball ends it.
+When the fielder's contact or the start of the hold (the oldest entry of a full history) is not
+known, the force lies somewhere in [lo, hi] (hi unbounded without a known touch). Ruling:
+
+| Facts | Ruling |
+|---|---|
+| runner's touch first (≤ lo), or the same time | `JudgeForceSafe` (awards the base; no second advance) |
+| force known at f, runner's touch ≥ f + `contestedMarginSeconds` (0.05), runner known off the base at f | `JudgeForceOut` at f |
+| within the margin | review "Force play contested" |
+| force time not bounded, runner's touch inside [lo, hi], or the runner's contact at f unknown | review "Base contact unknown" |
+
+Home: the runner's touch of home, the catcher on home. A force whose events arrive after a later
+ruling already removed it (the out behind ruled first) is refused by `PlayRules` as a contradiction:
+the state is never rewound, the runner gets no advance from it, and the umpire takes the runner over
+(review "Ruling refused"; any refused runner ruling now defers that runner, so it is not sent again).
 
 **Tag.** A tag accepted by the receiver (hold verified) at its server time, corrected (optional,
 `applyTagTimeCorrection`) by the runner's display delay the fielder's client measured
@@ -201,7 +292,8 @@ time used for the decision moves; positions are never moved. The raw and correct
 | Runner | Ruling |
 |---|---|
 | touching the awarded base, or the next base reached first | none (protected; the advance is ruled from the touch) |
-| touching no base | `JudgeTagOut` |
+| touching no base (every base known) | `JudgeTagOut` |
+| a base contact at that time unknown (not protected otherwise) | review "Base contact unknown" (never read as off the base) |
 | a base contact change within `contestedMarginSeconds` | review |
 | forced and on the start base (lost its right to it) | `JudgeTagOut` |
 | on another base it does not hold | review |
@@ -233,7 +325,11 @@ again) and stands aside for a pitch ruled by hand, so automatic and manual rulin
 Codes: no pitch result, contact not confirmed, no plate crossing, pitch not accepted, third strike
 unknown, catch / ground order, fair / foul unknown, out of play, hold unverifiable, force contested,
 tag contested, missed base, passing, runner after caught fly, overrun, runner on another's base,
-ruling refused, pitch ruled by hand, pitch not resolved, hit by another batter.
+ruling refused, pitch ruled by hand, pitch not resolved, hit by another batter, ground contact
+unknown, base contact unknown, swing unknown.
+
+What the engine could not observe always becomes one of these, never an out, a safe, a ball or a
+strike: an unknown ground contact, base contact or swing is the umpire's.
 
 ### Owner change
 
@@ -241,12 +337,23 @@ The new Owner's engine starts from the synced PlayState (applied rulings, handle
 pending rulings), the receiver's synced inbox, its own ball history (states it received) and the
 synced review list. It never repeats a pitch call; runner rulings are idempotent because the state
 is checked first. Holds older than its history are unverifiable (a force then waits or times out
-to the umpire); local tracking of a batted ball in flight restarts from the next samples.
+to the umpire); local tracking of a batted ball in flight restarts from the next samples. What its
+own client saw of the flights (start, first ground contact) is kept, so a catch after the change is
+still ruled. Its event log of the live play is marked incomplete (`_logResetPlayId`): a player's
+contact timeline is used only when the inbox still shows every sequence the receiver settled for
+them, otherwise contacts are unknown and the umpire decides. Its first pass takes a new contact
+snapshot at that time; its rulings continue from the PlayState's watermark of the engine source.
 
 ## Umpire calls (`UmpireCallBehaviour`)
 
 Every client turns the applied rulings of the synced PlayState log into calls (nothing else is
-synced): Play (new live play), Ball / Ball four, Strike / Strike three, Foul, Fair, Out (catch,
+synced). Each call comes from that ruling's own log entry: its code, result and **outcome**
+(`PlayEvents.LogOutcome`, fixed by `PlayRules.Apply` when the ruling was applied: a third strike open
+after it, the plate appearance result it ended). Before, every entry was read with the current
+strikeout flag, plate appearance result and balls, so rulings received together (a late joiner's
+first deltas, a burst after a hitch) took the state of the last one: four balls arriving at once were
+called "ball four" four times, and a third strike followed by its caught strikeout was "strike". The
+entries are read oldest first, so they are called in the order they happened: Play (new live play), Ball / Ball four, Strike / Strike three, Foul, Fair, Out (catch,
 force, tag, strikeout, umpire's out), Safe (force / tag safe), Hit by pitch, Walk, Time (a commit by
 Time). Once per event id (last 48); a ruling older than `maxCallAgeSeconds` (3) when it arrives, and
 everything before a client's first look (late joiners), is not called. Calls play in order,
@@ -391,19 +498,30 @@ background colour never changed. Not covered: several clients, a real Owner chan
 | Batter's pitch result | one collector event per manual pitch (resent until settled) | the collector ring: records grew 10 → 11 ints (+64 B) |
 | Receiver inbox | per batch / ACK, as before | +24 ints (InboxArg) |
 | Engine review list | only when a review is raised or cleared | 24 + 8 ints, 8 doubles (~160 B) |
-| PlayState | per ruling, as before | 3 ints formerly reserved (PhysPitcher/Number/Stage) |
+| PlayState | per ruling, as before | 3 ints formerly reserved (PhysPitcher/Number/Stage); +12 ints for the log outcome (`LogStride` 8, 262 ints) |
+| Play history | per commit, as before | +48 ints (408) |
 | Calls, displays | nothing | — |
 
 Nothing is sent per frame. The engine's work is counted (`GetPassCount`, `GetRulingCount`,
 `GetRulingRefusedCount`, `GetReviewRaisedCount`, `GetAckCount`, `GetEarlyAckCount`,
-`GetLogOverflowCount`, send / failure / bytes). Real sizes must be read on VRChat clients.
+`GetLogOverflowCount`, `GetRerunCount`, `GetIncompleteDispatchCount`, send / failure / bytes). Real
+sizes must be read on VRChat clients.
+
+CPU: a pass whose sends notify (any ruling, mark or ACK) is followed by one more pass, coalesced (at
+most three in a row); a pass that sends nothing is not repeated. The flight records are a few field
+writes per release, batted flight and bounce on every client. The touch timeline scans the 48-event
+log per query as before; masks are read for up to 24 players per pass (both teams' roster snapshot
+and the runners, was the runners and the defense). A bounced pitch keeps one plane test per physics
+step on the batter's client until it passes the plate, is hit or the pitch ends (at most
+`bouncePlateTimeoutSeconds`). No new synced data apart from the log outcome.
 
 ## Not implemented (umpire's)
 
 Hit by pitch detection, home runs and ground rules (an interface exists: poles, out-of-play
 distance), appeal plays and retouch after a caught fly, infield fly, interference / obstruction,
 balks, batting out of order, runner passing (detected, not ruled), first-base overrun intent,
-batting-pitcher pitches in a game (no lineage; not counted).
+batting-pitcher pitches in a game (no lineage; not counted), rewinding a ruling that a late older
+event contradicts (the umpire corrects it).
 
 ## Validation
 
@@ -447,6 +565,28 @@ Not covered by `test`: the reporter (root program; `GetPlayerObjects`, Bat Motio
 `Networking.SimulationTime`, the ball's real collisions and flights, AudioSource / UI rendering,
 network events, Owner changes between clients.
 
+### Review fixes (2026-11-28)
+
+Six review findings were checked against the code and all held; each now has a regression test
+(the engine rules were each reverted and their tests turned red; the others are marked):
+
+| Finding | Test file | Reverting the fix turns red |
+|---|---|---|
+| P0 re-entry of a pass from its own sends | `UmpireEngineBehaviour.Dispatch.Tests.cs` (6, through `Run` / `Dispatch` with a stand-in controller and receiver that notify synchronously) | the engine's own call reviewed as "pitch ruled by hand", reviews in a double play, a foul's dead ball sent twice |
+| P1 an unseen ground contact read as none | `UmpireEngineBehaviour.Facts.Tests.cs` | a fly out and a caught strikeout without the flight seen |
+| P1 bounced pitches ended the swing check | `PitchCrossingBehaviour.Tests.cs` (+3), engine bounce calls | not reverted (the watch and its notice are asserted directly) |
+| P1 past contacts from the current bits | `UmpireEngineBehaviour.Facts.Tests.cs` | a tag out on a runner whose Enter was still on the way; a force out on a fielder whose contact was unknown |
+| P1 forces read at the time of the pass | `UmpireEngineBehaviour.Facts.Tests.cs` | a runner advanced past a force made before the out behind |
+| P2 calls from the current state | `UmpireCallBehaviour.Tests.cs` (+3: four balls, three strikes and the out, a foul, received together) | not reverted (the old signature is gone; the cases state what the old reading called) |
+| P2 a swing by speed alone | `SwingRules.Tests.cs` (4), engine swing-unknown case | not reverted |
+
+Also fixed while there: a refused runner ruling could be sent again up to 12 times in one pass (the
+runner is now deferred); the tracker dropped a new pitch's batted-ball data when the engine noticed
+the pitch after its ground contact. Test runs (default path, 2026-11-28): Match folder 370 (all,
+Roster, collector, receiver, displays and calls included), the PitchCrossing program's run of the
+Ball folder 937, Bat 76; Unity C# compile clean (warnings unchanged). Not run in ClientSim or on
+devices: everything in the checklist below, the new items included.
+
 ### Real-device / ClientSim checklist (not yet run)
 
 1. Pitcher (defense P), catcher, batter, fielders, umpire on separate clients; start live.
@@ -463,3 +603,19 @@ network events, Owner changes between clients.
 10. Review items appear on the panel; Clear reviews; a correction; the scoreboard follows.
 11. Late joiner: scoreboard, count, bases right; no past calls played.
 12. Sizes and counts: collector, receiver, engine sends; nothing per frame.
+13. Rulings neither doubled nor stalled: a walk, a double play and a foul each give their rulings and
+    calls once; `GetRerunCount` grows, `GetIncompleteDispatchCount` stays 0 unless the roster lock is
+    lost mid-play (then the rulings follow when it is back).
+14. A pitch in the dirt: no swing → ball; a full swing after the bounce at the plate → swinging strike;
+    a check swing → ball; a bounced pitch hit → batted ball; a pitch dying before the plate → ball.
+15. A batted ball caught on one bounce (no out) and a low liner caught clean (out), on an Owner that
+    is a fielder and on one far from the play; a short hop to the pitcher (review expected only when
+    the Owner's flight started late).
+16. Delayed contacts: a runner standing on first then stealing; a fielder stepping on the bag just
+    before the catch; with network lag added, an Enter arriving late must give a review, never an out.
+17. Force removed: runner on first, the batter-runner out at first before the throw to second
+    (tag needed) and after the force at second (double play).
+18. Several calls at once: a late joiner and a client recovering from a hitch hear nothing old; a
+    client that receives four balls together hears BALL ×3 and BALL FOUR in order.
+19. Owner change mid-play: no ruling twice, a fly in the air still caught, contacts of the previous
+    Owner's handled events reviewed rather than guessed.

@@ -10,11 +10,15 @@ using VRC.Udon;
 // batting-pitcher pitches have none and are never reported).
 //
 // When the lane's PitchCrossing has this pitch's outcome on this client (the crossing at the
-// zone snapshot the pitch was released with, a ground contact first, or the bat contact), the
-// swing is measured from the bat's own motion history around the crossing after a short window,
-// and the event is recorded: zone strike, bounced, swing, local contact, no crossing. It is a
-// fact, never a call; the engine decides on the MatchManager Owner. It lives in Runtime/ because
-// it reads the Ball, the Bat and the match (T# sees the own folder and below).
+// zone snapshot the pitch was released with, or the bat contact), the swing is measured from the
+// bat's own motion history around the crossing after a short window, and the event is recorded:
+// zone strike, bounced, swing (or swing unknown), local contact, no crossing. A pitch that touched
+// the ground before the zone is a bounce, but the batter can still swing at it: the report then
+// waits for the ball to pass the plate (PitchCrossing watches the flight on) and measures the
+// swing there, or, when it never gets there within bouncePlateTimeoutSeconds, over the whole
+// time since the bounce. One event per pitch. It is a fact, never a call; the engine decides on
+// the MatchManager Owner. It lives in Runtime/ because it reads the Ball, the Bat and the match
+// (T# sees the own folder and below).
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
 {
@@ -40,6 +44,8 @@ public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
     public bool swingRequireForward = true;
     [Tooltip("Lowest forward motion of the sweet spot toward the pitcher, in metres. Default 0.1.")]
     public float swingMinForward = 0.1f;
+    [Tooltip("A pitch that bounced before the zone is reported this long after the bounce at the latest, when it never passes the plate. Default 1.")]
+    public float bouncePlateTimeoutSeconds = 1f;
 
     private BatMotionBehaviour _motion;
     private PlayerEventCollectorBehaviour _collector;
@@ -53,16 +59,23 @@ public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
     private double _waitServerTime;
     private float _waitLocalTime;
     private Vector3 _waitPosition;
+    // A bounced pitch waiting for the plate (or the timeout) before its swing window is known.
+    private bool _waitPlate;
+    private float _plateDeadline;
 
     // ---- Diagnostics ----
     private int _reports;
     private int _swings;
     private int _unrecorded;
+    private int _swingUnknown;
     private SwingMeasure _lastMeasure;
+    private int _lastSwing;
 
     public int GetReportCount() { return _reports; }
     public int GetSwingCount() { return _swings; }
     public int GetUnrecordedCount() { return _unrecorded; }
+    public int GetSwingUnknownCount() { return _swingUnknown; }
+    public int GetLastSwing() { return _lastSwing; }
     public float GetLastPeakSpeed() { return _lastMeasure.peakSpeed; }
     public float GetLastPeakAngularSpeed() { return _lastMeasure.peakAngularSpeed; }
 
@@ -94,7 +107,45 @@ public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
         _waitServerTime = Networking.GetServerTimeInSeconds() - age;
         _waitLocalTime = Time.time - age;
         _waitPosition = crossing.hasResult ? crossing.resultCrossing : ball.transform.position;
+        _waitPlate = crossing.bounced && crossing.PlateWatching();
+        if (_waitPlate)
+        {
+            // The bounce is not the end of the pitch for the batter: wait for the plate.
+            _plateDeadline = Time.time + Mathf.Max(0.1f, bouncePlateTimeoutSeconds);
+            SendCustomEventDelayedSeconds(nameof(_PlateTimeout), Mathf.Max(0.1f, bouncePlateTimeoutSeconds));
+            return;
+        }
         SendCustomEventDelayedSeconds(nameof(_Report), Mathf.Max(0.02f, swingWindowAfterSeconds));
+    }
+
+    // PitchCrossing: the bounced pitch passed the plate, or a bat contact ended it first.
+    public void _OnPitchPlateReached()
+    {
+        if (!_waiting || !_waitPlate || crossing == null) return;
+        _waitPlate = false;
+        if (crossing.contactEnded) _waitFlags |= ContactRules.PitchFlagContact;
+        float age = crossing.plateReached ? Mathf.Max(0f, Time.fixedTime - crossing.plateTime) : 0f;
+        _waitServerTime = Networking.GetServerTimeInSeconds() - age;
+        _waitLocalTime = Time.time - age;
+        if (crossing.plateReached) _waitPosition = crossing.platePoint;
+        SendCustomEventDelayedSeconds(nameof(_Report), Mathf.Max(0.02f, swingWindowAfterSeconds));
+    }
+
+    // The bounced pitch never reached the plate: the swing is measured from before the bounce
+    // until now, and the pitch is reported as it is (bounced).
+    public void _PlateTimeout()
+    {
+        if (!_waiting || !_waitPlate || Time.time < _plateDeadline - 0.01f) return;
+        _waitPlate = false;
+        ReportWindow(_waitLocalTime - swingWindowBeforeSeconds, Time.time);
+    }
+
+    // The swing's flag: a swing, or the swing could not be told (never a no swing by default).
+    public static int SwingFlags(int flags, int swing)
+    {
+        if (swing == SwingRules.SwingYes) return flags | ContactRules.PitchFlagSwing;
+        if (swing == SwingRules.SwingUnknown) return flags | ContactRules.PitchFlagSwingUnknown;
+        return flags;
     }
 
     public static int OutcomeFlags(bool hasResult, bool isStrike, bool bounced, bool contact)
@@ -109,17 +160,23 @@ public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
 
     public void _Report()
     {
-        if (!_waiting) return;
+        if (!_waiting || _waitPlate) return;
+        ReportWindow(_waitLocalTime - swingWindowBeforeSeconds, _waitLocalTime + swingWindowAfterSeconds);
+    }
+
+    // Measures the swing over [start, end] (Time.time) and records the pitch's one event.
+    private void ReportWindow(float start, float end)
+    {
         _waiting = false;
-        int flags = _waitFlags;
-        _lastMeasure = Measure(_waitLocalTime - swingWindowBeforeSeconds, _waitLocalTime + swingWindowAfterSeconds);
-        bool swing = SwingRules.IsSwing(_lastMeasure, swingMinSpeed, swingMinAngularSpeed, swingMinSweepDegrees, swingMinForward, swingRequireForward);
-        if (swing)
+        _lastMeasure = Measure(start, end);
+        _lastSwing = SwingRules.Classify(_lastMeasure, swingMinSpeed, swingMinAngularSpeed, swingMinSweepDegrees, swingMinForward, swingRequireForward);
+        int flags = SwingFlags(_waitFlags, _lastSwing);
+        if (_lastSwing == SwingRules.SwingYes)
         {
-            flags |= ContactRules.PitchFlagSwing;
             _swings++;
             if (crossing != null) crossing.NotifySwing();
         }
+        else if (_lastSwing == SwingRules.SwingUnknown) _swingUnknown++;
         PlayerEventCollectorBehaviour collector = Collector();
         int slot = collector != null
             ? collector.RecordWithArg(ContactRules.TypePitchResult, _waitPitcher, ContactRules.NoBase, flags, _waitPosition, 0, 0, 0, _waitNumber, _waitServerTime)
@@ -141,6 +198,7 @@ public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
         BatMotionBehaviour motion = Motion();
         if (motion == null) return m;
         m.measured = motion.TryGetMeasuredPeaks(start, end);
+        m.speedCovers = m.measured && SwingRules.Covers(motion.measuredOldestTime, motion.measuredLatestTime, start, end);
         m.peakSpeed = motion.measuredPeakReferenceSpeed;
         m.peakAngularSpeed = motion.measuredPeakAngularSpeed;
         float first = Mathf.Max(start, motion.contactOldestTime);
@@ -154,6 +212,7 @@ public partial class UmpirePitchReporterBehaviour : TsukimiBehaviour
                 m.axisEnd = motion.contactSampleRotation * Vector3.up;
                 m.sweetEnd = motion.contactSamplePosition + m.axisEnd * motion.SweetSpotLocalY();
                 m.poseKnown = true;
+                m.poseCovers = SwingRules.Covers(motion.contactOldestTime, motion.contactLatestTime, start, end);
             }
         }
         m.towardPitcher = strikeZone != null ? StrikeZoneGeometry.Forward(strikeZone.PlateTransform().forward) : Vector3.forward;

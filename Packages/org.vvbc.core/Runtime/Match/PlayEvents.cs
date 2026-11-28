@@ -36,7 +36,7 @@ public static class PlayEvents
     public const int NoRoom = 2;                // beyond the window of this source
     public const int NoSlot = 3;                // a new source and the table is full
 
-    public const int LogStride = 7;             // code, source, seq, runnerId, arg, result, pitch
+    public const int LogStride = 8;             // code, source, seq, runnerId, arg, result, pitch, outcome
     public const int LogCode = 0;
     public const int LogSource = 1;
     public const int LogSeq = 2;
@@ -44,6 +44,12 @@ public static class PlayEvents
     public const int LogArg = 4;
     public const int LogResult = 5;
     public const int LogPitch = 6;
+    // What the ruling did, fixed when it was applied (umpire calls read it, never the state of
+    // a later time): Outcome* bits, the plate appearance result it ended above OutcomePaShift.
+    public const int LogOutcome = 7;
+    public const int OutcomeStrikeoutPending = 1;   // a third strike is open after it
+    public const int OutcomePaEnded = 2;            // it ended the plate appearance
+    public const int OutcomePaShift = 4;
     public const int MaxLog = 12;
 
     public static bool ValidSource(int source) { return source > 0 && source < SourceMax; }
@@ -108,7 +114,17 @@ public static class PlayEvents
         return slot < 0 ? 0 : p[PlayRules.Sources + slot * SourceStride + 1];
     }
 
-    public static void Log(int[] p, double[] t, int code, int source, int seq, int runnerId, int arg, int result, double time)
+    // The outcome of a ruling just applied (paEndedBefore: DPaEnded before it).
+    public static int Outcome(int[] p, int paEndedBefore)
+    {
+        int outcome = p[PlayRules.PendingStrikeout] == 1 ? OutcomeStrikeoutPending : 0;
+        if (p[PlayRules.DPaEnded] != paEndedBefore) outcome |= OutcomePaEnded | (p[PlayRules.DLastPaResult] << OutcomePaShift);
+        return outcome;
+    }
+
+    public static int OutcomePaResult(int outcome) { return (outcome & OutcomePaEnded) != 0 ? outcome >> OutcomePaShift : PlayRules.PaNone; }
+
+    public static void Log(int[] p, double[] t, int code, int source, int seq, int runnerId, int arg, int result, double time, int outcome)
     {
         int index = p[PlayRules.LogNext];
         int at = PlayRules.Log + index * LogStride;
@@ -119,6 +135,7 @@ public static class PlayEvents
         p[at + LogArg] = arg;
         p[at + LogResult] = result;
         p[at + LogPitch] = p[PlayRules.PitchSeq];
+        p[at + LogOutcome] = outcome;
         t[PlayRules.TimeLog + index] = time;
         p[PlayRules.LogNext] = (index + 1) % MaxLog;
         p[PlayRules.LogTotal]++;

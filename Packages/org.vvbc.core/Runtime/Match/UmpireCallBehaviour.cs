@@ -146,17 +146,21 @@ public partial class UmpireCallBehaviour : TsukimiBehaviour
         return 1;
     }
 
-    // The call of one applied ruling. strikeoutPending: the third strike is open now; lastPa:
-    // the plate appearance result now (a ball that ended it is ball four).
-    public static int CallFor(int code, int result, bool strikeoutPending, int lastPa, int ballsNow)
+    // The call of one applied ruling, from its logged outcome (PlayEvents.LogOutcome: what that
+    // ruling did when it was applied), never from the state of a later time: rulings that
+    // arrive together are each called as they happened (a ball that ended the plate appearance
+    // with a walk is ball four, a strike that left a third strike open is strike three).
+    public static int CallFor(int code, int result, int outcome)
     {
         if (result != PlayRules.ResultApplied && result != PlayRules.ResultEndsLive && result != PlayRules.ResultAppliedFromPending) return CallNone;
         switch (code)
         {
-            case PlayRules.JudgeBall: return lastPa == PlayRules.PaWalk && ballsNow == 0 ? CallWalk : CallBall;
+            case PlayRules.JudgeBall: return PlayEvents.OutcomePaResult(outcome) == PlayRules.PaWalk ? CallWalk : CallBall;
             case PlayRules.JudgeCalledStrike:
             case PlayRules.JudgeSwingingStrike:
-            case PlayRules.JudgeFoulTip: return strikeoutPending ? CallStrikeThree : CallStrike;
+            case PlayRules.JudgeFoulTip:
+                return (outcome & PlayEvents.OutcomeStrikeoutPending) != 0 || PlayEvents.OutcomePaResult(outcome) == PlayRules.PaStrikeout
+                    ? CallStrikeThree : CallStrike;
             case PlayRules.JudgeFoul: return CallFoul;
             case PlayRules.JudgeFairBall: return CallFair;
             case PlayRules.JudgeWalk: return CallWalk;
@@ -220,7 +224,7 @@ public partial class UmpireCallBehaviour : TsukimiBehaviour
     {
         int playId = match.GetHistoryPlayField(index, MatchControllerBehaviour.HistoryPlayId);
         int entries = match.GetHistoryEntryCount(index);
-        bool newest = index == 0 && match.IsLive();
+        // Oldest first, so rulings received together are called in the order they happened.
         for (int e = entries - 1; e >= 0; e--)
         {
             int source = match.GetHistoryEntry(index, e, PlayEvents.LogSource);
@@ -230,9 +234,7 @@ public partial class UmpireCallBehaviour : TsukimiBehaviour
             if (serverNow - match.GetHistoryEntryTime(index, e) > maxCallAgeSeconds) { _skippedOld++; continue; }
             int code = match.GetHistoryEntry(index, e, PlayEvents.LogCode);
             int result = match.GetHistoryEntry(index, e, PlayEvents.LogResult);
-            bool pending = newest && match.IsStrikeoutPending();
-            int lastPa = newest ? match.GetLastPlateAppearanceResult() : PlayRules.PaNone;
-            int call = CallFor(code, result, pending, lastPa, newest ? match.GetBalls() : 1);
+            int call = CallFor(code, result, match.GetHistoryEntry(index, e, PlayEvents.LogOutcome));
             if (call != CallNone) Enqueue(call);
         }
     }

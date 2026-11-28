@@ -1,8 +1,78 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.Udon;
 
 public partial class PitchCrossingBehaviour
 {
+    // The listener is this Behaviour in these tests: it counts what it is told.
+    private int _resultNoticesForTest;
+    private int _plateNoticesForTest;
+    public void _OnPitchCrossingResult() { _resultNoticesForTest++; }
+    public void _OnPitchPlateReached() { _plateNoticesForTest++; }
+
+    private void BouncedPitchForTest()
+    {
+        _origin = Vector3.zero; _forward = Vector3.forward; _right = Vector3.right;
+        _depth = 0.4318f; _width = 0.4318f; _bottom = 0.7f; _top = 1.3f; _radius = 0.04f;
+        _previousTime = 1f; _previousPosition = new Vector3(0.1f, 0.1f, 1.5f);
+        _previousVelocity = new Vector3(0f, -2f, -30f); tracking = true;
+        hasFrontCrossing = true; frontCrossing = new Vector3(0.1f, 0.3f, 0.4318f);
+        resultListener = (UdonBehaviour)(Component)this;
+        _resultNoticesForTest = 0; _plateNoticesForTest = 0;
+        // In the dirt 1.2 m before the plate.
+        NotifyGroundContact(1.01f, new Vector3(0.1f, 0.04f, 1.2f), new Vector3(0f, -2f, -30f), Vector3.zero);
+    }
+
+    [TsukimiTest]
+    public void ABouncedPitchIsWatchedUntilItPassesThePlate()
+    {
+        BouncedPitchForTest();
+        Assert.IsTrue(bounced && hasResult && !isStrike, "the displayed result is the bounce, as before");
+        Assert.AreEqual(1, _resultNoticesForTest);
+        Assert.IsTrue(PlateWatching(), "the batter may still swing at it");
+        float resultBefore = resultTime;
+        // After the bounce, toward the catcher.
+        AcceptSample(1.02f, new Vector3(0.1f, 0.3f, 0.9f), new Vector3(0f, 3f, -28f));
+        Assert.AreEqual(0, _plateNoticesForTest, "the first sample after the bounce starts the watch");
+        AcceptSample(1.04f, new Vector3(0.1f, 0.35f, 0.34f), new Vector3(0f, 2f, -28f));
+        Assert.AreEqual(0, _plateNoticesForTest, "not at the plate's middle yet");
+        AcceptSample(1.06f, new Vector3(0.1f, 0.38f, -0.22f), new Vector3(0f, 1f, -28f));
+        Assert.IsTrue(plateReached);
+        Assert.AreEqual(1, _plateNoticesForTest);
+        Assert.IsTrue(plateTime > 1.04f && plateTime < 1.06f);
+        Assert.IsTrue(Mathf.Abs(platePoint.z - 0.2159f) < 0.001f);
+        Assert.AreEqual(resultBefore, resultTime, "the zone result is untouched");
+        Assert.IsFalse(PlateWatching());
+        AcceptSample(1.08f, new Vector3(0.1f, 0.4f, -0.8f), new Vector3(0f, 1f, -28f));
+        Assert.AreEqual(1, _plateNoticesForTest, "told once");
+    }
+
+    [TsukimiTest]
+    public void ABouncedPitchHitBeforeThePlateEndsTheWatch()
+    {
+        BouncedPitchForTest();
+        NotifyContact(1.03f, new Vector3(0.1f, 0.3f, 0.6f), new Vector3(0f, 2f, -28f), Vector3.zero);
+        Assert.IsTrue(contactEnded);
+        Assert.IsFalse(plateReached);
+        Assert.AreEqual(1, _plateNoticesForTest, "the listener is told of the contact");
+        Assert.AreEqual(1, _resultNoticesForTest, "and the pitch's result only once");
+        CancelPitch();
+        Assert.AreEqual(1, _plateNoticesForTest);
+    }
+
+    [TsukimiTest]
+    public void WithoutAListenerABounceEndsTheTracking()
+    {
+        _origin = Vector3.zero; _forward = Vector3.forward; _right = Vector3.right;
+        _depth = 0.4318f; _width = 0.4318f; _bottom = 0.7f; _top = 1.3f; _radius = 0.04f;
+        _previousTime = 1f; _previousPosition = new Vector3(0.1f, 0.1f, 1.5f);
+        _previousVelocity = new Vector3(0f, -2f, -30f); tracking = true;
+        hasFrontCrossing = true; frontCrossing = new Vector3(0.1f, 0.3f, 0.4318f);
+        resultListener = null;
+        NotifyGroundContact(1.01f, new Vector3(0.1f, 0.04f, 1.2f), new Vector3(0f, -2f, -30f), Vector3.zero);
+        Assert.IsFalse(PlateWatching(), "the batting pitcher's displays need nothing more");
+    }
+
     [TsukimiTest]
     public void ContactAfterStrikeResultDoesNotChangeItsGeometry()
     {

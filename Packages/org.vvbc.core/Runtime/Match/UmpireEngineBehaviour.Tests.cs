@@ -33,7 +33,13 @@ public partial class UmpireEngineBehaviour
         ResetLocal();
         BeginPlay(1);
         _histCount = 0;
+        // Every player's collector is there with no contact (Enter / Exit below keep the bits).
         _maskCount = 0;
+        for (int r = 0; r < 9; r++) { MaskForTest(11 + r, 0); MaskForTest(21 + r, 0); }
+        _logIncomplete = false; _logResetPlayId = 0; _baseCount = 0;
+        TakeSnapshot(100.0);
+        _obsPitcher[ObsPitch] = 0; _obsPitcher[ObsBatted] = 0;
+        _testSink = null; _processing = false; _rerunRequested = false;
         _reviewPlayId = 0; _reviewCount = 0;
         for (int i = 0; i < MaxDeferred; i++) _deferred[i] = 0;
         float d = 27.43f * 0.70710678f;
@@ -55,6 +61,11 @@ public partial class UmpireEngineBehaviour
         _m[MatchRules.Cursor] = 3;
         PlayRules.TakeRoster(_p, roles, batters);
         PlayRules.Begin(_p, _t, _m, 1, 100.0, 1, 1, 9);
+        // The runners stand on their bases when the play starts.
+        if (on1 > 0) MaskForTest(on1, 1 << 1);
+        if (on2 > 0) MaskForTest(on2, 1 << 2);
+        if (on3 > 0) MaskForTest(on3, 1 << 3);
+        TakeSnapshot(100.0);
     }
 
     // A ball state, newest first (entry 0).
@@ -83,8 +94,18 @@ public partial class UmpireEngineBehaviour
         _histPositions[0] = position;
     }
 
-    private void PitchForTest(int number, double release) { HistForTest(MatchBallQueryBehaviour.KindHandPitch, number, 0, 0, release, Vector3.zero); }
-    private void HitForTest(int number, int batter, double time) { HistForTest(MatchBallQueryBehaviour.KindHit, number, 0, batter, time, Vector3.zero); }
+    // The ball's states as this client also flies them (the release and the batted flight start
+    // here, so this client knows each flight from its start).
+    private void PitchForTest(int number, double release)
+    {
+        HistForTest(MatchBallQueryBehaviour.KindHandPitch, number, 0, 0, release, Vector3.zero);
+        ObserveStart(ObsPitch, TP, number, release);
+    }
+    private void HitForTest(int number, int batter, double time)
+    {
+        HistForTest(MatchBallQueryBehaviour.KindHit, number, 0, batter, time, Vector3.zero);
+        ObserveStart(ObsBatted, TP, number, time + 0.05);
+    }
     private void CatchForTest(int number, int holder, double time, Vector3 at) { HistForTest(MatchBallQueryBehaviour.KindPossession, number, holder, 0, time, at); }
     private void ThrowForTest(int number, int thrower, double time) { HistForTest(MatchBallQueryBehaviour.KindThrow, number, 0, 0, time, Vector3.zero); }
 
@@ -95,8 +116,37 @@ public partial class UmpireEngineBehaviour
     }
 
     private void ResultForTest(int batter, int number, int flags, double time) { EventForTest(batter, ContactRules.TypePitchResult, TP, ContactRules.NoBase, flags, number, time); }
-    private void EnterForTest(int player, int baseIndex, double time) { EventForTest(player, ContactRules.TypeBaseTouchEnter, 0, baseIndex, ContactRules.PartCapsule, 0, time); }
-    private void ExitForTest(int player, int baseIndex, double time) { EventForTest(player, ContactRules.TypeBaseTouchExit, 0, baseIndex, ContactRules.PartCapsule, 0, time); }
+    // A base event, and the player's collector bits as they are after it (the newest event wins).
+    private void EnterForTest(int player, int baseIndex, double time)
+    {
+        EventForTest(player, ContactRules.TypeBaseTouchEnter, 0, baseIndex, ContactRules.PartCapsule, 0, time);
+        SyncMaskForTest(player, baseIndex);
+    }
+    private void ExitForTest(int player, int baseIndex, double time)
+    {
+        EventForTest(player, ContactRules.TypeBaseTouchExit, 0, baseIndex, ContactRules.PartCapsule, 0, time);
+        SyncMaskForTest(player, baseIndex);
+    }
+
+    private void MaskForTest(int player, int mask)
+    {
+        int at = MaskIndex(player);
+        if (at < 0) { at = _maskCount++; _maskPlayer[at] = player; }
+        _maskValue[at] = mask;
+        _maskComplete[at] = true;
+    }
+
+    private void SyncMaskForTest(int player, int baseIndex)
+    {
+        int at = MaskIndex(player);
+        if (at < 0) return;
+        int newest = -1;
+        for (int i = 0; i < _evCount; i++)
+            if (_evSource[i] == player && _evBase[i] == baseIndex && ContactRules.IsBaseType(_evType[i]) && (newest < 0 || _evTime[i] >= _evTime[newest])) newest = i;
+        int bit = 1 << baseIndex;
+        int mask = _maskValue[at] < 0 ? 0 : _maskValue[at];
+        _maskValue[at] = newest >= 0 && _evType[newest] == ContactRules.TypeBaseTouchEnter ? mask | bit : mask & ~bit;
+    }
     private void TagForTest(int fielder, int runner, double time, int delayMs) { EventForTest(fielder, ContactRules.TypeTagContactEnter, runner, ContactRules.NoBase, ContactRules.PartCapsule, delayMs, time); }
 
     // One pass at server time now, then what Dispatch would settle locally.
@@ -776,5 +826,7 @@ public partial class UmpireEngineBehaviour
         Assert.AreEqual(PlayRules.JudgeBall, CallCode(ContactRules.PitchFlagZoneStrike | ContactRules.PitchFlagBounced));
         Assert.AreEqual(PlayRules.JudgeSwingingStrike, CallCode(ContactRules.PitchFlagSwing | ContactRules.PitchFlagBounced));
         Assert.AreEqual(PlayRules.JudgeSwingingStrike, CallCode(ContactRules.PitchFlagSwing | ContactRules.PitchFlagZoneStrike));
+        Assert.AreEqual(0, CallCode(ContactRules.PitchFlagSwingUnknown | ContactRules.PitchFlagZoneStrike), "a swing not known is no call");
+        Assert.AreEqual(0, CallCode(ContactRules.PitchFlagSwingUnknown | ContactRules.PitchFlagBounced));
     }
 }

@@ -1199,9 +1199,15 @@ MonoBehaviour:
     __X17zUmpireReviewNames__m__Name_intnl_19: %SystemBoolean, null\n    __const_257:
     %SystemString, \"Pitch not resolved\"\n    __X17zUmpireReviewNames__m__Name_intnl_20:
     %SystemBoolean, null\n    __const_258: %SystemString, \"Hit by another batter\"\n   
-    __X11zRosterRules__m__ValidTeam_intnl_0: %SystemBoolean, null\n    __X11zRosterRules__m__ValidTeam_intnl_1:
-    %SystemBoolean, null\n.data_end\n.code_start\n    .export _start\n    _start:\n       
-    PUSH, _registered\n        JUMP_IF_FALSE, __Start_L0\n        JUMP, __Start_L9\n   
+    __const_259: %SystemInt32, 22\n    __X17zUmpireReviewNames__m__Name_intnl_21:
+    %SystemBoolean, null\n    __const_260: %SystemString, \"Ground contact unknown\"\n   
+    __const_261: %SystemInt32, 23\n    __X17zUmpireReviewNames__m__Name_intnl_22:
+    %SystemBoolean, null\n    __const_262: %SystemString, \"Base contact unknown\"\n   
+    __X17zUmpireReviewNames__m__Name_intnl_23: %SystemBoolean, null\n    __const_263:
+    %SystemString, \"Swing unknown\"\n    __X11zRosterRules__m__ValidTeam_intnl_0:
+    %SystemBoolean, null\n    __X11zRosterRules__m__ValidTeam_intnl_1: %SystemBoolean,
+    null\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH,
+    _registered\n        JUMP_IF_FALSE, __Start_L0\n        JUMP, __Start_L9\n   
     __Start_L0:\n        PUSH, __const_0\n        PUSH, _registered\n        COPY\n       
     PUSH, __const_1\n        PUSH, __const_2\n        PUSH, __Start_intnl_0\n       
     EXTERN, \"UnityEngineBehaviour.__GetComponent__SystemType__UnityEngineComponent\"\n       
@@ -55815,127 +55821,145 @@ MonoBehaviour:
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_0\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L2\n   
     __X17zUmpireReviewNames__m__Name_L1:\n        PUSH, __const_238\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L2:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L2:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_25\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_1\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_1\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L4\n   
     __X17zUmpireReviewNames__m__Name_L3:\n        PUSH, __const_239\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L4:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L4:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_84\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_2\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_2\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L6\n   
     __X17zUmpireReviewNames__m__Name_L5:\n        PUSH, __const_240\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L6:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L6:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_58\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_3\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_3\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L8\n   
     __X17zUmpireReviewNames__m__Name_L7:\n        PUSH, __const_241\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L8:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L8:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_86\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_4\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_4\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L10\n   
     __X17zUmpireReviewNames__m__Name_L9:\n        PUSH, __const_242\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L10:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L10:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_51\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_5\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_5\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L12\n   
     __X17zUmpireReviewNames__m__Name_L11:\n        PUSH, __const_243\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L12:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L12:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_59\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_6\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_6\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L14\n   
     __X17zUmpireReviewNames__m__Name_L13:\n        PUSH, __const_244\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L14:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L14:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_60\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_7\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_7\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L16\n   
     __X17zUmpireReviewNames__m__Name_L15:\n        PUSH, __const_245\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L16:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L16:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_61\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_8\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_8\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L18\n   
     __X17zUmpireReviewNames__m__Name_L17:\n        PUSH, __const_246\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L18:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L18:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_62\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_9\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_9\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L20\n   
     __X17zUmpireReviewNames__m__Name_L19:\n        PUSH, __const_247\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L20:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L20:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_63\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_10\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L22\n   
     __X17zUmpireReviewNames__m__Name_L21:\n        PUSH, __const_248\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L22:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L22:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_87\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_11\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L24\n   
     __X17zUmpireReviewNames__m__Name_L23:\n        PUSH, __const_249\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L24:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L24:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_64\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_12\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_12\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L26\n   
     __X17zUmpireReviewNames__m__Name_L25:\n        PUSH, __const_250\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L26:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L26:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_65\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_13\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_13\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L28\n   
     __X17zUmpireReviewNames__m__Name_L27:\n        PUSH, __const_251\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L28:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L28:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_66\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_14\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_14\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L30\n   
     __X17zUmpireReviewNames__m__Name_L29:\n        PUSH, __const_252\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L30:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L30:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_85\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_15\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_15\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L32\n   
     __X17zUmpireReviewNames__m__Name_L31:\n        PUSH, __const_253\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L32:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L32:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_67\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_16\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_16\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L34\n   
     __X17zUmpireReviewNames__m__Name_L33:\n        PUSH, __const_254\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L34:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L34:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_68\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_17\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_17\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L36\n   
     __X17zUmpireReviewNames__m__Name_L35:\n        PUSH, __const_255\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L36:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L36:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_88\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_18\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_18\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L38\n   
     __X17zUmpireReviewNames__m__Name_L37:\n        PUSH, __const_256\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L38:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L38:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_89\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_19\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_19\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L40\n   
     __X17zUmpireReviewNames__m__Name_L39:\n        PUSH, __const_257\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L40:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L40:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_49\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_20\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_20\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L42\n   
     __X17zUmpireReviewNames__m__Name_L41:\n        PUSH, __const_258\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L42:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L42:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_259\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_21\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_21\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L44\n   
+    __X17zUmpireReviewNames__m__Name_L43:\n        PUSH, __const_260\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L44:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_261\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_22\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_22\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L46\n   
+    __X17zUmpireReviewNames__m__Name_L45:\n        PUSH, __const_262\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L46:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_220\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_23\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_23\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L48\n   
+    __X17zUmpireReviewNames__m__Name_L47:\n        PUSH, __const_263\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L48:\n       
     PUSH, __const_20\n        PUSH, __X17zUmpireReviewNames__m__Name_ret\n       
     COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
     JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n    X11zRosterRules__m__ValidTeam:\n       
@@ -55953,7 +55977,7 @@ MonoBehaviour:
   assemblyError: 
   sourceCsScript: {fileID: 11500000, guid: 16cfc5990420d7e48b552084aa27d792, type: 3}
   unresolvedCompileErrors: []
-  sourceFingerprint: d8ab33a6ce5e6039ba768e4f3b55ea4d250812f5a839aadbf38645c5ff5a6004
+  sourceFingerprint: 2ca5b4199dcee5b5b55643f9a443e25b625df14fb62ee2f3fe6f04f746da4788
   compilerVersion: 0.10.2|b1e1531677144453ac5f1d5b96684569+fecff3cbd1d146cdbe9accd6088465ff.9539da8e063b4399bc817cda17558b95.043ae0ba494d4ac3a7ad11b49b5ed3be.4069ad7663d1464cbebc5f25574edd73.a7d3ec32b5e9468f8acd34d2a0b250e5
   generatedGpuAssets: []
   gpuLoadSourceFields: []
@@ -57294,9 +57318,15 @@ MonoBehaviour:
     __X17zUmpireReviewNames__m__Name_intnl_19: %SystemBoolean, null\n    __const_257:
     %SystemString, \"Pitch not resolved\"\n    __X17zUmpireReviewNames__m__Name_intnl_20:
     %SystemBoolean, null\n    __const_258: %SystemString, \"Hit by another batter\"\n   
-    __X11zRosterRules__m__ValidTeam_intnl_0: %SystemBoolean, null\n    __X11zRosterRules__m__ValidTeam_intnl_1:
-    %SystemBoolean, null\n.data_end\n.code_start\n    .export _start\n    _start:\n       
-    PUSH, _registered\n        JUMP_IF_FALSE, __Start_L0\n        JUMP, __Start_L9\n   
+    __const_259: %SystemInt32, 22\n    __X17zUmpireReviewNames__m__Name_intnl_21:
+    %SystemBoolean, null\n    __const_260: %SystemString, \"Ground contact unknown\"\n   
+    __const_261: %SystemInt32, 23\n    __X17zUmpireReviewNames__m__Name_intnl_22:
+    %SystemBoolean, null\n    __const_262: %SystemString, \"Base contact unknown\"\n   
+    __X17zUmpireReviewNames__m__Name_intnl_23: %SystemBoolean, null\n    __const_263:
+    %SystemString, \"Swing unknown\"\n    __X11zRosterRules__m__ValidTeam_intnl_0:
+    %SystemBoolean, null\n    __X11zRosterRules__m__ValidTeam_intnl_1: %SystemBoolean,
+    null\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH,
+    _registered\n        JUMP_IF_FALSE, __Start_L0\n        JUMP, __Start_L9\n   
     __Start_L0:\n        PUSH, __const_0\n        PUSH, _registered\n        COPY\n       
     PUSH, __const_1\n        PUSH, __const_2\n        PUSH, __Start_intnl_0\n       
     EXTERN, \"UnityEngineBehaviour.__GetComponent__SystemType__UnityEngineComponent\"\n       
@@ -111910,127 +111940,145 @@ MonoBehaviour:
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_0\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L2\n   
     __X17zUmpireReviewNames__m__Name_L1:\n        PUSH, __const_238\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L2:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L2:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_25\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_1\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_1\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L4\n   
     __X17zUmpireReviewNames__m__Name_L3:\n        PUSH, __const_239\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L4:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L4:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_84\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_2\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_2\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L6\n   
     __X17zUmpireReviewNames__m__Name_L5:\n        PUSH, __const_240\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L6:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L6:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_58\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_3\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_3\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L8\n   
     __X17zUmpireReviewNames__m__Name_L7:\n        PUSH, __const_241\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L8:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L8:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_86\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_4\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_4\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L10\n   
     __X17zUmpireReviewNames__m__Name_L9:\n        PUSH, __const_242\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L10:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L10:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_51\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_5\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_5\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L12\n   
     __X17zUmpireReviewNames__m__Name_L11:\n        PUSH, __const_243\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L12:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L12:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_59\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_6\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_6\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L14\n   
     __X17zUmpireReviewNames__m__Name_L13:\n        PUSH, __const_244\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L14:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L14:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_60\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_7\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_7\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L16\n   
     __X17zUmpireReviewNames__m__Name_L15:\n        PUSH, __const_245\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L16:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L16:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_61\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_8\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_8\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L18\n   
     __X17zUmpireReviewNames__m__Name_L17:\n        PUSH, __const_246\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L18:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L18:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_62\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_9\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_9\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L20\n   
     __X17zUmpireReviewNames__m__Name_L19:\n        PUSH, __const_247\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L20:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L20:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_63\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_10\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L22\n   
     __X17zUmpireReviewNames__m__Name_L21:\n        PUSH, __const_248\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L22:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L22:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_87\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_11\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L24\n   
     __X17zUmpireReviewNames__m__Name_L23:\n        PUSH, __const_249\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L24:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L24:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_64\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_12\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_12\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L26\n   
     __X17zUmpireReviewNames__m__Name_L25:\n        PUSH, __const_250\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L26:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L26:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_65\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_13\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_13\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L28\n   
     __X17zUmpireReviewNames__m__Name_L27:\n        PUSH, __const_251\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L28:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L28:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_66\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_14\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_14\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L30\n   
     __X17zUmpireReviewNames__m__Name_L29:\n        PUSH, __const_252\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L30:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L30:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_85\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_15\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_15\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L32\n   
     __X17zUmpireReviewNames__m__Name_L31:\n        PUSH, __const_253\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L32:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L32:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_67\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_16\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_16\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L34\n   
     __X17zUmpireReviewNames__m__Name_L33:\n        PUSH, __const_254\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L34:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L34:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_68\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_17\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_17\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L36\n   
     __X17zUmpireReviewNames__m__Name_L35:\n        PUSH, __const_255\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L36:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L36:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_88\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_18\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_18\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L38\n   
     __X17zUmpireReviewNames__m__Name_L37:\n        PUSH, __const_256\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L38:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L38:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_89\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_19\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_19\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L40\n   
     __X17zUmpireReviewNames__m__Name_L39:\n        PUSH, __const_257\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L40:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L40:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_49\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_20\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_20\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L42\n   
     __X17zUmpireReviewNames__m__Name_L41:\n        PUSH, __const_258\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L42:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L42:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_259\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_21\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_21\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L44\n   
+    __X17zUmpireReviewNames__m__Name_L43:\n        PUSH, __const_260\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L44:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_261\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_22\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_22\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L46\n   
+    __X17zUmpireReviewNames__m__Name_L45:\n        PUSH, __const_262\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L46:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_220\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_23\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_23\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L48\n   
+    __X17zUmpireReviewNames__m__Name_L47:\n        PUSH, __const_263\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L48:\n       
     PUSH, __const_20\n        PUSH, __X17zUmpireReviewNames__m__Name_ret\n       
     COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
     JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n    X11zRosterRules__m__ValidTeam:\n       
@@ -113230,9 +113278,15 @@ MonoBehaviour:
     __X17zUmpireReviewNames__m__Name_intnl_19: %SystemBoolean, null\n    __const_257:
     %SystemString, \"Pitch not resolved\"\n    __X17zUmpireReviewNames__m__Name_intnl_20:
     %SystemBoolean, null\n    __const_258: %SystemString, \"Hit by another batter\"\n   
-    __X11zRosterRules__m__ValidTeam_intnl_0: %SystemBoolean, null\n    __X11zRosterRules__m__ValidTeam_intnl_1:
-    %SystemBoolean, null\n.data_end\n.code_start\n    .export _start\n    _start:\n       
-    PUSH, _registered\n        JUMP_IF_FALSE, __Start_L0\n        JUMP, __Start_L9\n   
+    __const_259: %SystemInt32, 22\n    __X17zUmpireReviewNames__m__Name_intnl_21:
+    %SystemBoolean, null\n    __const_260: %SystemString, \"Ground contact unknown\"\n   
+    __const_261: %SystemInt32, 23\n    __X17zUmpireReviewNames__m__Name_intnl_22:
+    %SystemBoolean, null\n    __const_262: %SystemString, \"Base contact unknown\"\n   
+    __X17zUmpireReviewNames__m__Name_intnl_23: %SystemBoolean, null\n    __const_263:
+    %SystemString, \"Swing unknown\"\n    __X11zRosterRules__m__ValidTeam_intnl_0:
+    %SystemBoolean, null\n    __X11zRosterRules__m__ValidTeam_intnl_1: %SystemBoolean,
+    null\n.data_end\n.code_start\n    .export _start\n    _start:\n        PUSH,
+    _registered\n        JUMP_IF_FALSE, __Start_L0\n        JUMP, __Start_L9\n   
     __Start_L0:\n        PUSH, __const_0\n        PUSH, _registered\n        COPY\n       
     PUSH, __const_1\n        PUSH, __const_2\n        PUSH, __Start_intnl_0\n       
     EXTERN, \"UnityEngineBehaviour.__GetComponent__SystemType__UnityEngineComponent\"\n       
@@ -167846,127 +167900,145 @@ MonoBehaviour:
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_0\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L2\n   
     __X17zUmpireReviewNames__m__Name_L1:\n        PUSH, __const_238\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L2:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L2:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_25\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_1\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_1\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L4\n   
     __X17zUmpireReviewNames__m__Name_L3:\n        PUSH, __const_239\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L4:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L4:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_84\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_2\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_2\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L6\n   
     __X17zUmpireReviewNames__m__Name_L5:\n        PUSH, __const_240\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L6:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L6:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_58\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_3\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_3\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L8\n   
     __X17zUmpireReviewNames__m__Name_L7:\n        PUSH, __const_241\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L8:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L8:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_86\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_4\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_4\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L10\n   
     __X17zUmpireReviewNames__m__Name_L9:\n        PUSH, __const_242\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L10:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L10:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_51\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_5\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_5\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L12\n   
     __X17zUmpireReviewNames__m__Name_L11:\n        PUSH, __const_243\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L12:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L12:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_59\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_6\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_6\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L14\n   
     __X17zUmpireReviewNames__m__Name_L13:\n        PUSH, __const_244\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L14:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L14:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_60\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_7\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_7\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L16\n   
     __X17zUmpireReviewNames__m__Name_L15:\n        PUSH, __const_245\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L16:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L16:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_61\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_8\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_8\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L18\n   
     __X17zUmpireReviewNames__m__Name_L17:\n        PUSH, __const_246\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L18:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L18:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_62\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_9\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_9\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L20\n   
     __X17zUmpireReviewNames__m__Name_L19:\n        PUSH, __const_247\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L20:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L20:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_63\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_10\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_10\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L22\n   
     __X17zUmpireReviewNames__m__Name_L21:\n        PUSH, __const_248\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L22:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L22:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_87\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_11\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_11\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L24\n   
     __X17zUmpireReviewNames__m__Name_L23:\n        PUSH, __const_249\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L24:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L24:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_64\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_12\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_12\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L26\n   
     __X17zUmpireReviewNames__m__Name_L25:\n        PUSH, __const_250\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L26:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L26:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_65\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_13\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_13\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L28\n   
     __X17zUmpireReviewNames__m__Name_L27:\n        PUSH, __const_251\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L28:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L28:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_66\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_14\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_14\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L30\n   
     __X17zUmpireReviewNames__m__Name_L29:\n        PUSH, __const_252\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L30:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L30:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_85\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_15\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_15\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L32\n   
     __X17zUmpireReviewNames__m__Name_L31:\n        PUSH, __const_253\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L32:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L32:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_67\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_16\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_16\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L34\n   
     __X17zUmpireReviewNames__m__Name_L33:\n        PUSH, __const_254\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L34:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L34:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_68\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_17\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_17\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L36\n   
     __X17zUmpireReviewNames__m__Name_L35:\n        PUSH, __const_255\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L36:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L36:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_88\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_18\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_18\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L38\n   
     __X17zUmpireReviewNames__m__Name_L37:\n        PUSH, __const_256\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L38:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L38:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_89\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_19\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_19\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L40\n   
     __X17zUmpireReviewNames__m__Name_L39:\n        PUSH, __const_257\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L40:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L40:\n       
     PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_49\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_20\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
     PUSH, __X17zUmpireReviewNames__m__Name_intnl_20\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L42\n   
     __X17zUmpireReviewNames__m__Name_L41:\n        PUSH, __const_258\n        PUSH,
     __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
-    JUMP, __X17zUmpireReviewNames__m__Name_L42\n    __X17zUmpireReviewNames__m__Name_L42:\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L42:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_259\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_21\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_21\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L44\n   
+    __X17zUmpireReviewNames__m__Name_L43:\n        PUSH, __const_260\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L44:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_261\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_22\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_22\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L46\n   
+    __X17zUmpireReviewNames__m__Name_L45:\n        PUSH, __const_262\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L46:\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_p_0\n        PUSH, __const_220\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_23\n        EXTERN, \"SystemInt32.__op_Equality__SystemInt32_SystemInt32__SystemBoolean\"\n       
+    PUSH, __X17zUmpireReviewNames__m__Name_intnl_23\n        JUMP_IF_FALSE, __X17zUmpireReviewNames__m__Name_L48\n   
+    __X17zUmpireReviewNames__m__Name_L47:\n        PUSH, __const_263\n        PUSH,
+    __X17zUmpireReviewNames__m__Name_ret\n        COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
+    JUMP, __X17zUmpireReviewNames__m__Name_L48\n    __X17zUmpireReviewNames__m__Name_L48:\n       
     PUSH, __const_20\n        PUSH, __X17zUmpireReviewNames__m__Name_ret\n       
     COPY\n        JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n       
     JUMP_INDIRECT, __X17zUmpireReviewNames__m__Name_retjump\n    X11zRosterRules__m__ValidTeam:\n       
@@ -168016,10 +168088,10 @@ MonoBehaviour:
   - "=__recStack_VRCSDKBaseVRCPlayerApi\tArrayAlloc\t=VRCSDKBaseVRCPlayerApiArray\t1024\t\t\t\t\t"
   - "=__X11zRosterRules__m__ShortName_intnl_7\tPrimConst\t=SystemChar\t0\tChar:="
   networkCallableSlots: []
-  optExternBefore: 29836
-  optExternAfter: 29836
-  optInsnBefore: 124013
-  optInsnAfter: 124013
-  optBytesBefore: 987096
-  optBytesAfter: 987096
+  optExternBefore: 29839
+  optExternAfter: 29839
+  optInsnBefore: 124046
+  optInsnAfter: 124046
+  optBytesBefore: 987348
+  optBytesAfter: 987348
   optStage: ran
