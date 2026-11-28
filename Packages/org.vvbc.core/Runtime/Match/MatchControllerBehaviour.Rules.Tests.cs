@@ -728,4 +728,32 @@ public partial class MatchControllerBehaviour
         Rule(PlayRules.JudgeFairBall);
         Assert.AreEqual(TimeRules.RejectedRunnerUnknown, TimeForTest(true, 22), "the batter-runner counts as a runner");
     }
+
+    [TsukimiTest]
+    public void PhysicalPitchMarksAreKeptPerPitchAndValidated()
+    {
+        NewGameForTest(9, 9);
+        Assert.AreEqual(0, BeginForTest(1));
+        Assert.AreEqual(0, PlayRules.PhysicalStage(_tp, 21, 1));
+        int revision = _tp[PlayRules.Revision];
+        Assert.IsTrue(PlayRules.MarkPhysical(_tp, 21, 1, PlayRules.PhysStageCall));
+        Assert.AreEqual(revision + 1, _tp[PlayRules.Revision], "a mark is sent with the play");
+        Assert.IsFalse(PlayRules.MarkPhysical(_tp, 21, 1, PlayRules.PhysStageCall), "the same stage again changes nothing");
+        Assert.IsTrue(PlayRules.MarkPhysical(_tp, 21, 1, PlayRules.PhysStageStrikeout));
+        Assert.AreEqual(PlayRules.PhysStageCall | PlayRules.PhysStageStrikeout, PlayRules.PhysicalStage(_tp, 21, 1));
+        Assert.AreEqual(0, PlayRules.PhysicalStage(_tp, 21, 2), "another pitch has nothing handled");
+        Assert.IsTrue(PlayRules.MarkPhysical(_tp, 21, 2, PlayRules.PhysStageCall), "a new pitch replaces the old one");
+        Assert.AreEqual(0, PlayRules.PhysicalStage(_tp, 21, 1));
+        Assert.AreEqual(0, PlayRules.FindViolation(_tp, _tt, _tm));
+        _tp[PlayRules.PhysStage] = 99;
+        Assert.AreEqual(8, PlayRules.FindViolation(_tp, _tt, _tm), "stage bits out of range");
+        _tp[PlayRules.PhysStage] = 1;
+        _tp[PlayRules.PhysPitcher] = 0;
+        Assert.AreEqual(8, PlayRules.FindViolation(_tp, _tt, _tm), "a number without a pitcher");
+        _tp[PlayRules.PhysPitcher] = 21;
+        Assert.AreEqual(0, PlayRules.FindViolation(_tp, _tt, _tm));
+        Assert.IsFalse(PlayRules.MarkPhysical(_tp, 0, 3, 1), "no pitcher");
+        Assert.AreEqual(PlayRules.ResultEndsLive, Rule(PlayRules.JudgeDeadBall, 0, PlayRules.DeadThreeOuts), "the three-out dead ball is a cause");
+        Assert.AreEqual(PlayRules.RejectedInvalid, Rule(PlayRules.JudgeDeadBall, 0, PlayRules.DeadMax + 1));
+    }
 }

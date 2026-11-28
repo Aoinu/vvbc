@@ -239,7 +239,7 @@ public partial class MatchControllerBehaviour
     public bool ReportDeadBall(int playId, int cause, double serverTime)
     {
         if (!CanCommit() || !IsLive() || playId != _play[PlayRules.PlayId]) return false;
-        if (cause <= PlayRules.DeadNone || cause > PlayRules.DeadOther) return false;
+        if (cause <= PlayRules.DeadNone || cause > PlayRules.DeadMax) return false;
         return EndLive(cause, serverTime);
     }
 
@@ -252,6 +252,11 @@ public partial class MatchControllerBehaviour
     //  6. LastCommittedPlayId; 7. MatchRevision; 8. one send; 9. the roster unlock; 10. dead.
     // Nothing waits for rulings still on the way: they arrive late and are only recorded.
     // Returns false when there was no live play (a repeated Time commits once).
+    private bool EngineHasOpenAdjudication()
+    {
+        return _engine != null && _engine.HasOpenAdjudication();
+    }
+
     private bool EndLive(int cause, double serverTime)
     {
         if (!IsLive()) return false;
@@ -261,6 +266,8 @@ public partial class MatchControllerBehaviour
             // The cause's award does not fit the play (no batter up): committed as it is, flagged.
             _play[PlayRules.DAttention] |= MatchRules.AttentionUnresolvedRuling;
         }
+        // Physical events the umpire engine could not decide yet are never dropped silently.
+        if (EngineHasOpenAdjudication()) _play[PlayRules.DAttention] |= MatchRules.AttentionUnresolvedRuling;
         _play[PlayRules.Live] = 0;
         _play[PlayRules.Revision]++;
         int[] next = new int[MatchRules.Length];

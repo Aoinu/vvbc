@@ -266,6 +266,48 @@ public partial class MatchControllerBehaviour : TsukimiBehaviour
     // placed in a play by their own server time against it (PlayerEventCollectorBehaviour).
     public double GetPlayStartServerTime() { return IsLive() ? _playTimes[PlayRules.TimeStart] : 0.0; }
 
+    // ---- Umpire engine (docs/development/automatic-umpire.md) ----
+
+    // A read-only copy of the live PlayState and its times for the engine on the Owner (it reads
+    // forces, start bases and ruling times with RunnerRules on the copy). False when not live.
+    public bool CopyPlayState(int[] into, double[] times)
+    {
+        if (!IsLive() || into == null || into.Length != PlayRules.Length || times == null || times.Length != PlayRules.TimesLength) return false;
+        for (int i = 0; i < PlayRules.Length; i++) into[i] = _play[i];
+        for (int i = 0; i < PlayRules.TimesLength; i++) times[i] = _playTimes[i];
+        return true;
+    }
+
+    // The committed MatchState the live play started from (the engine composes with it).
+    public bool CopyBaseMatchState(int[] into)
+    {
+        if (!IsLive() || into == null || into.Length != MatchRules.Length) return false;
+        MatchRules.Copy(_baseMatch, into);
+        return true;
+    }
+
+    // The result of the plate appearance that ended last in the live play (PlayRules.Pa*), PaNone
+    // when none ended yet or not live (umpire calls tell ball four from ball).
+    public int GetLastPlateAppearanceResult() { return IsLive() && _play[PlayRules.DPaEnded] > 0 ? _play[PlayRules.DLastPaResult] : PlayRules.PaNone; }
+
+    // What of the physical pitch (pitcher, number) the engine has handled (PlayRules.PhysStage*).
+    public int GetPhysicalPitchStage(int pitcher, int number) { return IsLive() ? PlayRules.PhysicalStage(_play, pitcher, number) : 0; }
+
+    // The engine on the Owner marks a physical pitch's stage as handled (not a ruling). Synced
+    // with the play, so a new Owner's engine never handles that stage again.
+    public bool MarkPhysicalPitch(int playId, int pitcher, int number, int stage)
+    {
+        if (!CanCommit() || !IsLive() || playId != _play[PlayRules.PlayId]) return false;
+        if (!PlayRules.MarkPhysical(_play, pitcher, number, stage)) return false;
+        Publish();
+        return true;
+    }
+
+    // The engine attaches itself (on every client; only the Owner's answers matter). At a commit
+    // an engine with open adjudications flags the play (AttentionUnresolvedRuling).
+    private UmpireEngineBehaviour _engine;
+    public void AttachUmpireEngine(UmpireEngineBehaviour engine) { _engine = engine; }
+
     // Recent manual corrections, newest first: field 0 operator, 1 revision before, 2 after, 3 reason.
     public int GetCorrectionEntry(int index, int field)
     {

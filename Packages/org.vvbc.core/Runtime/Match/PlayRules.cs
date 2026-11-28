@@ -60,6 +60,12 @@ public static class PlayRules
     public const int LogNext = 34;
     public const int PendingCount = 35;
     public const int LogTotal = 36;            // rulings logged in this play (older entries overwritten)
+    // The physical pitch (BallBehaviour PitchLineage: pitcher, number) the umpire engine last
+    // handled, and what of it is handled (PhysStage* bits). Synced and recovered with the play,
+    // so a new Owner's engine never rules the same pitch twice (docs/development/automatic-umpire.md).
+    public const int PhysPitcher = 37;
+    public const int PhysPitchNumber = 38;
+    public const int PhysStage = 39;
 
     public const int SnapRoles = 40;           // 20: team * 10 + role -> playerId, as at the start
     public const int SnapBatters = 60;         // 18: team * 9 + row -> resolved batter (P/DH resolved)
@@ -72,6 +78,13 @@ public static class PlayRules
     public const int MaxPending = 4;
     public const int PendingStride = 5;        // code, runnerId, base, source, seq
     public const int MaxRecentRuns = 4;
+
+    // PhysStage bits.
+    public const int PhysStageCall = 1;        // the pitch's own call (ball, strike, foul, fair ball, catch) is ruled
+    public const int PhysStageStrikeout = 2;   // its third strike is resolved (caught or not)
+    public const int PhysStageBattedBall = 4;  // its batted ball is resolved (fair, foul, caught)
+    public const int PhysStageReview = 8;      // handed to the umpire: never ruled automatically
+    public const int PhysStageAll = 15;
 
     // Server times.
     public const int TimeStart = 0;
@@ -155,6 +168,8 @@ public static class PlayRules
     public const int DeadFoul = 4;
     public const int DeadOutOfPlay = 5;
     public const int DeadOther = 6;
+    public const int DeadThreeOuts = 7;        // the umpire engine ends the live period after the third out has settled
+    public const int DeadMax = 7;
 
     // Attention raised in a play that is carried into MatchState at commit. Runner conflicts
     // and a missing batter are checked again whenever live play starts, so they stay in the play.
@@ -389,7 +404,7 @@ public static class PlayRules
     private static int Dispatch(int[] p, double[] t, int[] m, int code, int runnerId, int arg, int source, int seq, double time, bool umpire)
     {
         if (code == JudgeNoCatch) return ResultApplied;
-        if (code == JudgeDeadBall) return arg > DeadNone && arg <= DeadOther ? ResultEndsLive : RejectedInvalid;
+        if (code == JudgeDeadBall) return arg > DeadNone && arg <= DeadMax ? ResultEndsLive : RejectedInvalid;
         if (code == RulingHit || code == RulingError)
         {
             if (!RosterRules.ValidTeam(arg)) return RejectedInvalid;
@@ -769,6 +784,35 @@ public static class PlayRules
         SetCount(p, 0, 0);
     }
 
+    // ---- Physical pitch handled by the umpire engine ----
+
+    // What of the physical pitch (pitcher, number) is handled already (PhysStage bits), 0 for a
+    // pitch other than the one last handled.
+    public static int PhysicalStage(int[] p, int pitcher, int number)
+    {
+        if (pitcher <= 0 || number <= 0 || p[PhysPitcher] != pitcher || p[PhysPitchNumber] != number) return 0;
+        return p[PhysStage];
+    }
+
+    // Marks stage bits of a physical pitch as handled; a new pitch replaces the old one. Returns
+    // true when something changed (the caller publishes). Not a ruling: no event, no Delta.
+    public static bool MarkPhysical(int[] p, int pitcher, int number, int stage)
+    {
+        if (p[Live] != 1 || pitcher <= 0 || number <= 0 || stage <= 0 || stage > PhysStageAll) return false;
+        if (p[PhysPitcher] != pitcher || p[PhysPitchNumber] != number)
+        {
+            p[PhysPitcher] = pitcher;
+            p[PhysPitchNumber] = number;
+            p[PhysStage] = stage;
+            p[Revision]++;
+            return true;
+        }
+        if ((p[PhysStage] | stage) == p[PhysStage]) return false;
+        p[PhysStage] |= stage;
+        p[Revision]++;
+        return true;
+    }
+
     // ---- Pending rulings (a base still held by a runner ahead) ----
 
     private static int Stash(int[] p, double[] t, int code, int runnerId, int target, int source, int seq, double time)
@@ -881,8 +925,10 @@ public static class PlayRules
         if (batter > 0 && PaId(p, m) <= 0) return 7;
 
         if (!Flag(p[DGameEnd]) || !Flag(p[BattedBall]) || p[PitchSeq] < 0 || p[RecentRuns] < 0 || p[RecentRuns] > MaxRecentRuns
-            || p[EndReason] < DeadNone || p[EndReason] > DeadOther || p[PendingCount] < 0 || p[PendingCount] > MaxPending
+            || p[EndReason] < DeadNone || p[EndReason] > DeadMax || p[PendingCount] < 0 || p[PendingCount] > MaxPending
             || p[DAttention] < 0 || p[DAttention] >= MatchRules.AttentionLimit) return 8;
+        if (p[PhysPitcher] < 0 || p[PhysPitchNumber] < 0 || p[PhysStage] < 0 || p[PhysStage] > PhysStageAll
+            || (p[PhysPitcher] == 0) != (p[PhysPitchNumber] == 0) || (p[PhysPitcher] == 0 && p[PhysStage] != 0)) return 8;
         if (p[Live] == 1 && p[EndReason] != DeadNone) return 8;
 
         int runnerSeq = p[RunnerSeq];
