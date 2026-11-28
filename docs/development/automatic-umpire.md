@@ -269,7 +269,7 @@ works (text only).
 | `… Time 02.wav` | Time | 0.78 s |
 | `UmpirePlayCall.ogg` | Play | 0.29 s (Ogg, 44.1 kHz stereo, 3D) |
 
-The WAV files are, 48 kHz stereo, imported 3D with normalize (one variation per call). Assigned in
+The WAV files are 48 kHz stereo, imported 3D with normalize (one variation per call). Assigned in
 `Match.unity` on the `MatchManager/UmpireCall` instance (scene overrides); the package prefab has
 none, so in a consumer project these references are simply empty.
 
