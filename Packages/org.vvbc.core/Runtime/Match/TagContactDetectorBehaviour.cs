@@ -295,7 +295,10 @@ public partial class TagContactDetectorBehaviour : TsukimiBehaviour
 
     private void RecordTag(PlayerEventCollectorBehaviour collector, int target, int parts, Vector3 position)
     {
-        int slot = collector != null ? collector.Record(ContactRules.TypeTagContactEnter, target, ContactRules.NoBase, parts, position, _holdMode, _holdSeq, _holdPublisher) : -1;
+        int slot = collector != null
+            ? collector.RecordWithArg(ContactRules.TypeTagContactEnter, target, ContactRules.NoBase, parts, position, _holdMode, _holdSeq, _holdPublisher,
+                RunnerDisplayDelayMs(target), Networking.GetServerTimeInSeconds())
+            : -1;
         if (slot < 0)
         {
             _unrecorded++;
@@ -303,6 +306,18 @@ public partial class TagContactDetectorBehaviour : TsukimiBehaviour
         }
         if (feedback != null)
             feedback.PlayLocal(collector.GetRecordField(slot, ContactRules.RecPlay), collector.GetSourceId(), collector.GetRecordField(slot, ContactRules.RecSeq), position);
+    }
+
+    // How late this client shows the tagged runner (VRChat: realtimeSinceStartup - SimulationTime),
+    // in ms, -1 when unknown. Sent with the tag for the umpire engine's optional timing correction;
+    // the contact position is never moved by it.
+    private int RunnerDisplayDelayMs(int target)
+    {
+        VRCPlayerApi player = VRCPlayerApi.GetPlayerById(target);
+        if (!Utilities.IsValid(player)) return -1;
+        float delay = Time.realtimeSinceStartup - Networking.SimulationTime(player);
+        if (!(delay >= 0f) || delay > 2f) return -1;
+        return Mathf.RoundToInt(delay * 1000f);
     }
 
     private PlayerEventCollectorBehaviour LocalCollector()

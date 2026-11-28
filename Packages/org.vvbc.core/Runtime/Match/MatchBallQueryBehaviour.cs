@@ -1,5 +1,6 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.Udon;
 
 // Confirmed possession of the match ball, as MatchControllerBehaviour needs it for Time.
 // T# sees only the own folder and below, and Match/ does not see Ball/, so the controller asks
@@ -32,11 +33,38 @@ public abstract class MatchBallQueryBehaviour : TsukimiBehaviour
     public const int HistoryIsPossession = 2;
     public const int HistoryHold = 3;
     public const int HistoryHolder = 4;
-    public const int HistoryFields = 5;
+    // Read by the umpire engine (docs/development/automatic-umpire.md): what the state was and
+    // which pitch it belongs to (BallBehaviour.HistoryKind* numbers).
+    public const int HistoryKind = 5;
+    public const int HistoryPitcher = 6;
+    public const int HistoryPitchNumber = 7;
+    public const int HistoryBatter = 8;
+    public const int HistoryFields = 9;
+    public const int KindStage = 1;
+    public const int KindPitch = 2;
+    public const int KindHit = 3;
+    public const int KindThrow = 4;
+    public const int KindPossession = 5;
+    public const int KindHandPitch = 6;
     public abstract int HoldHistoryCount();
     public abstract int HoldHistoryCapacity();
     public abstract int HoldHistoryField(int entry, int field);
     public abstract double HoldHistoryTime(int entry);
+    // The ball position the state was published with (a catch: where it was caught).
+    public abstract Vector3 HoldHistoryPosition(int entry);
+
+    // The ball as this client simulates it now (the umpire engine on the MatchManager Owner tracks
+    // a batted ball with it). Local only: nothing is synced for it.
+    public abstract bool BallAvailable();
+    public abstract Vector3 BallPosition();
+    public abstract Vector3 BallVelocity();
+    public abstract bool BallBattedFlight();
+    public abstract bool BallFlightGrounded();
+    public abstract int BallLineagePitcher();
+    public abstract int BallLineageNumber();
+    // listener receives the ball's presentation events (OnBallPitchReleased, OnBallGroundContact,
+    // OnBallBattedFlightStarted, OnBallPresentationChanged) on this client.
+    public abstract void RegisterBallListener(UdonBehaviour listener);
 
     // The local player holds the ball (confirmed) and the region for that hold is usable now.
     public abstract bool LocalTagSensorReady();

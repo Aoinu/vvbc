@@ -54,6 +54,7 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     public const int PendingBallBehind = -13;      // the tag's hold has not reached this client yet
     public const int RejectedSource = -14;         // collector owner and source id differ (nothing read)
     public const int PendingInboxFull = -15;       // the consumer has not taken enough events yet
+    public const int RejectedNotBatter = -9;       // pitch result: the source is not the batter up, or the pitcher not the defense's P
     private const int ResultCodes = 32;
     private const int ResultOffset = 16;
 
@@ -68,9 +69,11 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     public const int LogBase = 5;
     public const int LogParts = 6;
     public const int LogResult = 7;
-    // Inbox entries use LogPlay .. LogParts.
+    // Inbox entries use LogPlay .. LogParts and InboxArg (the record's RecArg: a pitch result's
+    // pitch number, a tag's display delay in ms).
     public const int MaxInbox = 24;
-    public const int InboxStride = 7;
+    public const int InboxStride = 8;
+    public const int InboxArg = 7;
     private const int MaxHistory = 16;
 
     [Header("References")]
@@ -122,6 +125,7 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     private int _ctxPlayId;
     private double _ctxPlayStart;
     private int _ctxDefense = -1;
+    private int _ctxBatter;
     private readonly int[] _ctxRoles = new int[RosterRules.RoleTableLength];
     private readonly int[] _ctxRunners = new int[RunnerRules.SlotCount];
     private bool _ctxHasBall;
@@ -152,7 +156,7 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         if (match != null && !_listening)
         {
             _listening = true;
-            match.AddChangeListener((UdonBehaviour)GetComponent(typeof(UdonBehaviour)));
+            match.AddChangeListener((UdonBehaviour)(Component)this);
         }
     }
 
@@ -196,6 +200,17 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
     public int GetPendingAnnouncementCount() { return _announceCount; }
     public int GetInvalidReceivedCount() { return _invalidReceived; }
     public int GetCollectorCount() { return _collectorCount; }
+
+    // The current base contact bits a player's collector publishes (the highlight state), -1 when
+    // no collector of that player is registered here. The umpire engine starts a player's contact
+    // timeline from it when the events before the play are not in this play's stream.
+    public int GetPlayerTouchMask(int playerId)
+    {
+        if (playerId <= 0) return -1;
+        for (int i = 0; i < _collectorCount; i++)
+            if (_collectors[i] != null && _collectors[i].GetSourceId() == playerId) return _collectors[i].GetTouchMask();
+        return -1;
+    }
     public int GetInboxDroppedWithoutConsumerCount() { return _inboxDropped; }
     public int GetInboxExpiredCount() { return _inboxExpired; }
 
@@ -203,7 +218,7 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
 
     public int GetInboxCount() { return _inboxCount; }
     public int GetInboxCapacity() { return MaxInbox; }
-    // Fields LogPlay, LogSource, LogSeq, LogType, LogTarget, LogBase, LogParts.
+    // Fields LogPlay, LogSource, LogSeq, LogType, LogTarget, LogBase, LogParts, InboxArg.
     public int GetInboxField(int index, int field)
     {
         if (index < 0 || index >= _inboxCount || field < 0 || field >= InboxStride) return 0;
@@ -268,6 +283,7 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         _inbox[to + LogTarget] = r[at + ContactRules.RecTarget];
         _inbox[to + LogBase] = r[at + ContactRules.RecBase];
         _inbox[to + LogParts] = r[at + ContactRules.RecParts];
+        _inbox[to + InboxArg] = r[at + ContactRules.RecArg];
         _inboxTimes[_inboxCount] = time;
         _inboxPositions[_inboxCount] = position;
         _inboxCount++;
@@ -375,6 +391,7 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         _ctxPlayId = match.GetPlayId();
         _ctxPlayStart = match.GetPlayStartServerTime();
         _ctxDefense = match.GetDefenseTeam();
+        _ctxBatter = match.GetBatterId();
         for (int i = 0; i < RosterRules.RoleTableLength; i++) _ctxRoles[i] = match.GetSnapshotRolePlayer(i);
         for (int s = 0; s < RunnerRules.SlotCount; s++)
             _ctxRunners[s] = match.GetRunnerStatus(s) == RunnerRules.StatusActive ? match.GetRunnerPlayer(s) : 0;
@@ -475,6 +492,15 @@ public partial class MatchEventReceiverBehaviour : TsukimiBehaviour
         {
             if (!ContactRules.ValidBase(r[at + ContactRules.RecBase])) return RejectedInvalid;
             return roleSlot < 0 ? RejectedNotParticipant : ResultAccepted;
+        }
+        if (type == ContactRules.TypePitchResult)
+        {
+            if (roleSlot < 0) return RejectedNotParticipant;
+            int flags = r[at + ContactRules.RecParts];
+            if (r[at + ContactRules.RecArg] <= 0 || flags < 0 || flags > ContactRules.PitchFlagAll) return RejectedInvalid;
+            int pitcherSlot = RoleSlotOf(r[at + ContactRules.RecTarget]);
+            if (source != _ctxBatter || pitcherSlot != _ctxDefense * RosterRules.RoleCount + RosterRules.RoleP) return RejectedNotBatter;
+            return ResultAccepted;
         }
         // TagContactEnter
         if (roleSlot < 0) return RejectedNotParticipant;

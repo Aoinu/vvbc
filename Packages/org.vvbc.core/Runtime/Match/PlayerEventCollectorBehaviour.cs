@@ -154,17 +154,28 @@ public partial class PlayerEventCollectorBehaviour : TsukimiBehaviour
     // A tag needs a live play (it is only detected in one); a base event without one waits.
     public int Record(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, int holdPublisher)
     {
+        return RecordWithArg(type, target, baseIndex, parts, position, holdMode, holdSequence, holdPublisher, 0, Networking.GetServerTimeInSeconds());
+    }
+
+    // The same with the record's RecArg (a pitch result's pitch number, a tag's display delay) and
+    // the server time of the observation (a pitch result is timed at its crossing, not its sending).
+    public int RecordWithArg(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, int holdPublisher, int arg, double serverTime)
+    {
         if (!Networking.IsOwner(gameObject)) return -1;
-        double now = Networking.GetServerTimeInSeconds();
         int playId = match != null ? match.GetPlayId() : 0;
         double playStart = match != null ? match.GetPlayStartServerTime() : 0.0;
-        int slot = RecordAt(type, target, baseIndex, parts, position, holdMode, holdSequence, holdPublisher, now, playId, playStart);
+        int slot = RecordAtWithArg(type, target, baseIndex, parts, position, holdMode, holdSequence, holdPublisher, arg, serverTime, playId, playStart);
         if (slot >= 0) AfterLocalChange();
         return slot;
     }
 
     // The recording rules with the clock and the play passed in (tests call this).
     public int RecordAt(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, int holdPublisher, double serverTime, int livePlayId, double playStart)
+    {
+        return RecordAtWithArg(type, target, baseIndex, parts, position, holdMode, holdSequence, holdPublisher, 0, serverTime, livePlayId, playStart);
+    }
+
+    public int RecordAtWithArg(int type, int target, int baseIndex, int parts, Vector3 position, int holdMode, int holdSequence, int holdPublisher, int arg, double serverTime, int livePlayId, double playStart)
     {
         if (!ContactRules.ValidType(type)) return -1;
         if (livePlayId <= 0 && !ContactRules.IsBaseType(type))
@@ -195,6 +206,7 @@ public partial class PlayerEventCollectorBehaviour : TsukimiBehaviour
         _events[at + ContactRules.RecHoldSeq] = holdSequence;
         _events[at + ContactRules.RecFlags] = 0;
         _events[at + ContactRules.RecHoldPublisher] = holdPublisher;
+        _events[at + ContactRules.RecArg] = arg;
         _eventTimes[slot] = serverTime;
         _eventPositions[slot] = position;
         _invalidReason[slot] = ContactEvents.InvalidNone;

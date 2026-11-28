@@ -1,6 +1,7 @@
 using Tsukimi;
 using UnityEngine;
 using VRC.SDKBase;
+using VRC.Udon;
 
 // Hands the confirmed possession of the match Ball to MatchControllerBehaviour and the tag sensor
 // to TagContactDetectorBehaviour. It sits in Runtime/ because it is the only place that sees both
@@ -26,6 +27,16 @@ public partial class MatchBallQueryAdapterBehaviour : MatchBallQueryBehaviour
     public override int HoldHistoryCapacity() { return BallBehaviour.PossessionHistoryCapacity; }
     public override int HoldHistoryField(int entry, int field) { return ball != null ? ball.GetPossessionHistoryField(entry, field) : 0; }
     public override double HoldHistoryTime(int entry) { return ball != null ? ball.GetPossessionHistoryTime(entry) : 0.0; }
+    public override Vector3 HoldHistoryPosition(int entry) { return ball != null ? ball.GetPossessionHistoryPosition(entry) : Vector3.zero; }
+
+    public override bool BallAvailable() { return ball != null; }
+    public override Vector3 BallPosition() { return ball != null ? ball.transform.position : Vector3.zero; }
+    public override Vector3 BallVelocity() { return ball != null && ball.body != null ? ball.body.velocity : Vector3.zero; }
+    public override bool BallBattedFlight() { return ball != null && ball.BattedFlight(); }
+    public override bool BallFlightGrounded() { return ball != null && ball.FlightGrounded(); }
+    public override int BallLineagePitcher() { return ball != null ? ball.CurrentLineagePitcher() : 0; }
+    public override int BallLineageNumber() { return ball != null ? ball.CurrentLineageNumber() : 0; }
+    public override void RegisterBallListener(UdonBehaviour listener) { if (ball != null) ball.RegisterPresentationListener(listener); }
 
     public override bool LocalTagSensorReady()
     {

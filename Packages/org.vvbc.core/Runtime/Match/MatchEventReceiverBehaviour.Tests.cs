@@ -11,6 +11,7 @@ public partial class MatchEventReceiverBehaviour
     private const int AwayRunner = 11;      // away batting (top half): 11..19
     private const int HomePitcher = 21;     // home defending: 21..29, DH 30
     private const int HomeDh = 30;
+    private const int AwayBatter = 12;
     private const int Spectator = 50;
     private readonly int[] _testRecords = new int[Slots * ContactRules.Stride];
     private readonly double[] _testTimes = new double[Slots];
@@ -41,6 +42,7 @@ public partial class MatchEventReceiverBehaviour
         _ctxRoles[RosterRules.RoleSlot(1, RosterRules.RoleDH)] = HomeDh;
         for (int s = 0; s < RunnerRules.SlotCount; s++) _ctxRunners[s] = 0;
         _ctxRunners[0] = AwayRunner;
+        _ctxBatter = AwayBatter;
         _consumer = null;
         _inboxDropped = 0;
         _inboxExpired = 0;
@@ -127,6 +129,40 @@ public partial class MatchEventReceiverBehaviour
         for (int i = 0; i < 3; i++) Read(AwayRunner);
         Assert.AreEqual(3, GetResultCount(ResultDuplicate));
         Assert.AreEqual(1, GetLogTotal(), "a resend is never logged or accepted twice");
+    }
+
+    [TsukimiTest]
+    public void APitchResultComesFromTheBatterAboutTheDefensesPitcher()
+    {
+        VRCPlayerApi owner = Mimic.Join();
+        ResetReceiverForTest();
+        Put(0, 5, 1, ContactRules.TypePitchResult, HomePitcher, ContactRules.NoBase, 0, 0, 101.5);
+        _testRecords[ContactRules.RecParts] = ContactRules.PitchFlagZoneStrike | ContactRules.PitchFlagSwing;
+        _testRecords[ContactRules.RecArg] = 7;
+        Read(AwayBatter);
+        Assert.AreEqual(ResultAccepted, GetLastResult());
+        Assert.AreEqual(1, GetInboxCount());
+        Assert.AreEqual(ContactRules.TypePitchResult, GetInboxField(0, LogType));
+        Assert.AreEqual(7, GetInboxField(0, InboxArg), "the pitch number reaches the engine");
+        Assert.AreEqual(ContactRules.PitchFlagZoneStrike | ContactRules.PitchFlagSwing, GetInboxField(0, LogParts));
+
+        // A runner is not the batter; a pitcher who is not the defense's P is not the pitch's.
+        ClearRecords();
+        Put(0, 5, 1, ContactRules.TypePitchResult, HomePitcher, ContactRules.NoBase, 0, 0, 101.5);
+        _testRecords[ContactRules.RecArg] = 8;
+        Read(AwayRunner);
+        Assert.AreEqual(RejectedNotBatter, GetLastResult());
+        ClearRecords();
+        Put(0, 5, 2, ContactRules.TypePitchResult, HomePitcher + 1, ContactRules.NoBase, 0, 0, 102.5);
+        _testRecords[ContactRules.RecArg] = 8;
+        Read(AwayBatter);
+        Assert.AreEqual(RejectedNotBatter, GetLastResult());
+        // No pitch number, or flags out of range: malformed.
+        ClearRecords();
+        Put(0, 5, 3, ContactRules.TypePitchResult, HomePitcher, ContactRules.NoBase, 0, 0, 103.5);
+        Read(AwayBatter);
+        Assert.AreEqual(RejectedInvalid, GetLastResult());
+        Assert.AreEqual(1, GetInboxCount(), "only the batter's own result is queued");
     }
 
     [TsukimiTest]

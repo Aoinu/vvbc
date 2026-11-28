@@ -47,4 +47,33 @@ public partial class BallBehaviour
         Assert.AreEqual(0, GetPossessionHistoryCount());
         localOnly = false;
     }
+
+    [TsukimiTest]
+    public void TheUmpireReadsKindLineageBatterAndPosition()
+    {
+        localOnly = false;
+        _possessionHistoryCount = 0;
+        _possessionHistoryNext = 0;
+        PitchLineage lineage = new PitchLineage();
+        lineage.pitcher = 21;
+        lineage.number = 4;
+        _acceptedLineage = lineage;
+        _acceptedPosition = new UnityEngine.Vector3(0f, 1.8f, 17f);
+        AcceptForHistoryTest(10, 21, HandPitchState, HoldFree, 0, 101.0);
+        _acceptedBatterId = 11;
+        _acceptedPosition = new UnityEngine.Vector3(0f, 0.9f, 0.4f);
+        AcceptForHistoryTest(11, 11, HitState, HoldFree, 0, 101.45);
+        _acceptedPosition = new UnityEngine.Vector3(10f, 1.2f, 30f);
+        AcceptForHistoryTest(12, 26, PossessionState, HoldGlove, 26, 104.0);
+        Assert.AreEqual(HistoryKindPossession, GetPossessionHistoryField(0, HistoryKind));
+        Assert.AreEqual(21, GetPossessionHistoryField(0, HistoryPitcher), "a catch keeps the pitch's lineage");
+        Assert.AreEqual(4, GetPossessionHistoryField(0, HistoryPitchNumber));
+        Assert.AreEqual(0, GetPossessionHistoryField(0, HistoryBatter));
+        Assert.IsTrue((GetPossessionHistoryPosition(0) - new UnityEngine.Vector3(10f, 1.2f, 30f)).sqrMagnitude < 1e-6f, "where it was caught");
+        Assert.AreEqual(HistoryKindHit, GetPossessionHistoryField(1, HistoryKind));
+        Assert.AreEqual(11, GetPossessionHistoryField(1, HistoryBatter), "the batter of the hit");
+        Assert.AreEqual(HistoryKindHandPitch, GetPossessionHistoryField(2, HistoryKind));
+        Assert.AreEqual(4, GetPossessionHistoryField(2, HistoryPitchNumber));
+        Assert.AreEqual(101.0, GetPossessionHistoryTime(2), "the release time");
+    }
 }

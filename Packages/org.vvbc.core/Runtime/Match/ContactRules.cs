@@ -11,7 +11,19 @@ public static class ContactRules
     public const int TypeBaseTouchEnter = 1;
     public const int TypeBaseTouchExit = 2;
     public const int TypeTagContactEnter = 3;
-    public const int TypeMax = 3;
+    // The batter's own observation of one manual pitch (docs/development/automatic-umpire.md):
+    // RecTarget = pitcher, RecArg = pitch number (the PitchLineage), RecParts = PitchFlag* bits,
+    // time = the plate crossing (or the contact), position = the crossing point. A fact, never a call.
+    public const int TypePitchResult = 4;
+    public const int TypeMax = 4;
+
+    // ---- Pitch result flags (RecParts of a TypePitchResult) ----
+    public const int PitchFlagZoneStrike = 1;   // the strike zone snapshot of the pitch contained the ball
+    public const int PitchFlagBounced = 2;      // the pitch touched the ground before the plate
+    public const int PitchFlagSwing = 4;        // a swing was recognized for this pitch
+    public const int PitchFlagContact = 8;      // this client's bat contact was taken for the pitch (local, not yet confirmed)
+    public const int PitchFlagNoCrossing = 16;  // no crossing could be found (the zone result is unknown)
+    public const int PitchFlagAll = 31;
 
     // ---- Contact parts (bit mask; several can touch at once, the event is still one) ----
     public const int PartCapsule = 1;
@@ -32,7 +44,7 @@ public static class ContactRules
     public const int HoldHand = 2;
 
     // ---- Event record: Stride ints per event (times and positions in parallel arrays) ----
-    public const int Stride = 10;
+    public const int Stride = 11;
     public const int RecPlay = 0;        // play id (0 = not assigned yet)
     public const int RecSeq = 1;         // sequence in (play, source), from 1
     public const int RecType = 2;
@@ -43,6 +55,7 @@ public static class ContactRules
     public const int RecHoldSeq = 7;     // tag: the ball's confirmed hold sequence at the event
     public const int RecFlags = 8;       // FlagInvalid: withdrawn by the sender, never to be read
     public const int RecHoldPublisher = 9; // tag: the publisher of that hold (sequences are per publisher)
+    public const int RecArg = 10;        // pitch result: pitch number; tag: the runner's display delay seen by the fielder, in ms (-1 unknown)
     public const int FlagInvalid = 1;
 
     // ---- Tag hold verification (VerifyHold) ----
@@ -107,6 +120,7 @@ public static class ContactRules
             case TypeBaseTouchEnter: return "BaseTouchEnter";
             case TypeBaseTouchExit: return "BaseTouchExit";
             case TypeTagContactEnter: return "TagContactEnter";
+            case TypePitchResult: return "PitchResult";
         }
         return "-";
     }

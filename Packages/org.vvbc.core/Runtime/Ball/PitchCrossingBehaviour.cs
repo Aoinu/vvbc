@@ -1,5 +1,6 @@
 using Tsukimi;
 using UnityEngine;
+using VRC.Udon;
 
 // Per-pitch state. This component does not depend on a particular pitcher.
 public partial class PitchCrossingBehaviour : TsukimiBehaviour
@@ -15,6 +16,13 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
     public Vector3 frontCrossing;
     public Vector3 resultCrossing;
     public float resultTime;
+    // Told "_OnPitchCrossingResult" once per pitch when its outcome on this client is known: a
+    // result (crossing or ground contact) or a contact that ended the tracking. The batter's pitch
+    // reporter sets it at runtime; unset, nothing is sent.
+    [HideInInspector] public UdonBehaviour resultListener;
+    // The contact ended this pitch's tracking on this client (NotifyContact).
+    [HideInInspector] public bool contactEnded;
+    private bool _resultNotified;
 
     private Vector3 _origin, _forward, _right;
     private float _depth, _width, _bottom, _top, _radius;
@@ -49,6 +57,15 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
         hasResult = false;
         bounced = false;
         _swingPending = false;
+        contactEnded = false;
+        _resultNotified = false;
+    }
+
+    private void NotifyResultListener()
+    {
+        if (_resultNotified || resultListener == null) return;
+        _resultNotified = true;
+        resultListener.SendCustomEvent("_OnPitchCrossingResult");
     }
 
     // Called by the Ball right after BeginPitch for a pitch with a wake. sampleTime is the
@@ -98,6 +115,7 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
                 hasResult = true;
                 tracking = false;
                 ShowResult();
+                NotifyResultListener();
             }
         }
         _previousTime = time;
@@ -136,6 +154,7 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
             frontCrossing = _origin + _forward * _depth + _right * x + Vector3.up * _radius;
             ShowResult();
         }
+        NotifyResultListener();
     }
 
     // Future contact callers provide the last state before the ball was hit.
@@ -145,8 +164,10 @@ public partial class PitchCrossingBehaviour : TsukimiBehaviour
         AcceptSample(time, position, velocity);
         if (hasResult) return;
         tracking = false;
+        contactEnded = true;
         PredictCrossings(time, position, velocity, spin, false);
         if (hasResult) ShowResult();
+        NotifyResultListener();
     }
 
     private void PredictCrossings(float time, Vector3 position, Vector3 velocity, Vector3 spin, bool frontOnly)
